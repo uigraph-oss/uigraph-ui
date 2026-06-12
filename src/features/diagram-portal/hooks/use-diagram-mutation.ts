@@ -1,0 +1,260 @@
+import { GT, privateClient } from '@/api'
+import { useAutoRef } from '@/hooks/use-auto-ref'
+import { useMutation } from '@apollo/client'
+import { Edge, Node } from '@xyflow/react'
+import axios from 'axios'
+import { useEffectExceptOnMount, useEffectState } from 'daily-code/react'
+import ms from 'ms'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
+import {
+  UPDATE_DIAGRAM_MUTATION,
+  UPLOAD_DIAGRAM_PREVIEW_MUTATION,
+} from '../api'
+import { convertDiagramServerDataToString } from '../helpers/diagram-data'
+import { generateDiagramThumbnailFile } from '../helpers/download-image'
+import { DataSource } from '../types/db-flow'
+import { ServerDiagramData } from '../types/diagram'
+
+type TUseDiagramPortalMutationProps = ServerDiagramData & {
+  diagramId: string | null
+  organizationId: string | null
+  folderId: string | null
+  teamId: string | null
+  diagramName: string
+  initialLastUpdatedAt: string | undefined
+  disabled: boolean
+}
+
+export function useDiagramPortalMutation({
+  nodes,
+  edges,
+
+  components,
+  dataSources,
+
+  viewport,
+
+  disabled,
+  diagramId,
+  diagramName,
+  organizationId,
+  folderId,
+  teamId,
+  initialLastUpdatedAt,
+}: TUseDiagramPortalMutationProps) {
+  const [loading, setLoading] = useState(false)
+  const [updateDiagram] = useMutation(UPDATE_DIAGRAM_MUTATION)
+
+  const serverLastUpdatedAt = useMemo(() => {
+    return initialLastUpdatedAt ? new Date(initialLastUpdatedAt).getTime() : 0
+  }, [initialLastUpdatedAt])
+
+  const [lastUpdatedAt, setLastUpdatedAt] = useEffectState(serverLastUpdatedAt)
+
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const helpersRef = useAutoRef({
+    updateDiagram,
+
+    lastUpdatedAt,
+    setLastUpdatedAt,
+
+    nodes,
+    edges,
+    viewport,
+
+    components,
+    dataSources,
+
+    disabled,
+    diagramId,
+    diagramName,
+    organizationId,
+    folderId,
+    teamId,
+  })
+
+  const saveMetaData = useCallback(
+    async (updateThumbnail = false) => {
+      if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current)
+      console.log('> Saving meta data')
+
+      const {
+        updateDiagram,
+
+        lastUpdatedAt,
+        setLastUpdatedAt,
+
+        disabled,
+        diagramId,
+        diagramName,
+        organizationId,
+        folderId,
+        teamId,
+        ...data
+      } = helpersRef.current
+
+      if (!diagramId || !organizationId || disabled) return
+
+      const updatesInput = {
+        organizationId,
+        componentFlowDiagramName: diagramName,
+        componentFlowDiagram: convertDiagramServerDataToString({
+          nodes: data.nodes,
+          edges: data.edges,
+          viewport: data.viewport,
+          components: data.components,
+          dataSources: data.dataSources,
+        }),
+        previewImageFileId: `file_${diagramId.replace('diagram_', '')}`,
+        ...(folderId ? { folderId } : {}),
+        ...(teamId ? { teamId } : {}),
+      }
+
+      const updateInputStringified = JSON.stringify(updatesInput)
+      const isDiagramCached =
+        CACHED_UPDATES.has(diagramId) &&
+        CACHED_UPDATES.get(diagramId) === updateInputStringified
+
+      if (isDiagramCached && !updateThumbnail) {
+        return console.info('Diagram already up to date, skipping update')
+      }
+
+      try {
+        setLoading(true)
+
+        const thumbnail = updateThumbnail
+          ? await getThumbnailFile({
+              diagramId,
+              force: true,
+              nodes: data.nodes,
+              edges: data.edges,
+              components: data.components,
+              dataSources: data.dataSources,
+            })
+          : null
+
+        if (!isDiagramCached) {
+          await updateDiagram({
+            variables: { diagramId, input: updatesInput },
+          })
+          CACHED_UPDATES.set(diagramId, updateInputStringified)
+        }
+
+        if (thumbnail) {
+          uploadThumbnailFile(diagramId, thumbnail.thumbnailFile)
+            .then(() => {
+              setLastUpdatedAt(Date.now())
+              CACHED_THUMBNAIL_FILES.set(diagramId, thumbnail.updateHash)
+            })
+            .catch(() => {
+              toast.error(
+                'Failed to upload diagram thumbnail. Please try again.'
+              )
+            })
+        }
+      } catch {
+        toast.error('Failed to update diagram. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [helpersRef]
+  )
+
+  useEffectExceptOnMount(() => {
+    const { disabled } = helpersRef.current
+    if (disabled) return
+
+    updateTimeoutRef.current = setTimeout(
+      saveMetaData,
+      SAVE_DIAGRAM_DATA_TIMEOUT
+    )
+
+    return () => {
+      if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current)
+    }
+  }, [
+    viewport?.x ?? 0,
+    viewport?.y ?? 0,
+    viewport?.zoom ?? 1,
+
+    nodes,
+    edges,
+    components,
+    dataSources,
+    diagramName,
+
+    saveMetaData,
+    helpersRef,
+    updateTimeoutRef,
+  ])
+
+  return {
+    isMetaUpdating: loading,
+    triggerMetaUpdate: saveMetaData,
+  }
+}
+
+const CACHED_UPDATES = new Map<string, string>()
+const CACHED_THUMBNAIL_FILES = new Map<string, string>()
+
+const SAVE_DIAGRAM_DATA_TIMEOUT = ms('1s')
+
+type GetThumbnailFileProps = {
+  force: boolean
+  nodes: Node[]
+  edges: Edge[]
+  diagramId: string
+  dataSources: DataSource[]
+  components: GT.CustomComponent[]
+}
+
+async function getThumbnailFile({
+  force,
+  nodes,
+  edges,
+  dataSources,
+  components,
+  diagramId,
+}: GetThumbnailFileProps) {
+  const updateHash = JSON.stringify({
+    nodes,
+    edges,
+    components,
+    dataSources,
+  })
+
+  if (!force) {
+    const existsInCache = CACHED_THUMBNAIL_FILES.get(diagramId)
+    if (existsInCache && existsInCache === updateHash) {
+      console.info('Diagram thumbnail already up to date, skipping upload')
+      return null
+    }
+  }
+
+  const thumbnailFile = await generateDiagramThumbnailFile(nodes)
+  return { thumbnailFile, updateHash }
+}
+
+async function uploadThumbnailFile(diagramId: string, file: File) {
+  const { data } = await privateClient.mutate({
+    mutation: UPLOAD_DIAGRAM_PREVIEW_MUTATION,
+    variables: {
+      diagramId,
+      input: {
+        fileExtension: 'webp',
+        fileName: 'preview.webp',
+        contentType: 'image/webp',
+        fileType: 'image/webp',
+      },
+    },
+  })
+
+  const fileUploadURL = data?.v1UpdateDiagramThumbnail?.fileUploadURL
+  if (!fileUploadURL) throw new Error('Failed to get file upload URL')
+
+  await axios.put(fileUploadURL, file, {
+    headers: { 'Content-Type': 'image/webp' },
+  })
+}

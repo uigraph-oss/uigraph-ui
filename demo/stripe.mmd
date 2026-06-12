@@ -1,0 +1,89 @@
+flowchart TD
+
+%% CLIENT START
+A[User clicks Pay] --> B[Create Payment Intent request to backend]
+
+%% BACKEND CREATE INTENT
+B --> C[Backend calls Stripe API: Create PaymentIntent]
+C --> D[Stripe returns client_secret]
+D --> E[Backend sends client_secret to client]
+
+%% CLIENT CONFIRM PAYMENT
+E --> F[Client confirms payment using Stripe.js / SDK]
+
+%% PAYMENT PROCESSING
+F --> G{Payment requires action?}
+
+%% 3DS / SCA FLOW
+G -- Yes --> H[Trigger 3D Secure / Authentication]
+H --> I{Authentication success?}
+I -- No --> J[Payment Failed]
+I -- Yes --> K[Continue payment confirmation]
+
+%% NO ACTION REQUIRED
+G -- No --> K
+
+%% STRIPE PROCESSES PAYMENT
+K --> L{Payment outcome}
+
+L -- Success --> M[PaymentIntent status = succeeded]
+L -- Processing --> N[PaymentIntent status = processing]
+L -- Failure --> O[PaymentIntent status = requires_payment_method]
+
+%% SUCCESS FLOW
+M --> P[Client receives success response]
+P --> Q[Show success UI]
+
+%% PROCESSING (ASYNC METHODS)
+N --> R[Wait for webhook confirmation]
+
+%% FAILURE FLOW
+O --> S[Client shows error]
+S --> T[User retries payment]
+T --> F
+
+%% WEBHOOK HANDLING
+subgraph Webhooks
+    W1[Stripe sends webhook event]
+    W2{Event type}
+
+    W1 --> W2
+
+    W2 -- payment_intent.succeeded --> W3[Mark order as paid]
+    W2 -- payment_intent.processing --> W4[Mark order as pending]
+    W2 -- payment_intent.payment_failed --> W5[Mark order as failed]
+    W2 -- charge.refunded --> W6[Handle refund]
+    W2 -- dispute.created --> W7[Handle dispute]
+
+end
+
+%% CONNECT WEBHOOKS
+M --> W1
+N --> W1
+O --> W1
+
+%% EDGE CASES
+subgraph Edge Cases
+    E1[Network failure before confirmation]
+    E2[Duplicate submission]
+    E3[User closes browser]
+    E4[Webhook delay]
+    E5[Idempotency key prevents duplicates]
+end
+
+F --> E1
+B --> E2
+F --> E3
+W1 --> E4
+C --> E5
+
+%% RETRY LOGIC
+E1 --> B
+E3 --> R
+E4 --> R
+
+%% FINAL STATES
+Q --> Z[End]
+R --> Z
+W3 --> Z
+W5 --> Z

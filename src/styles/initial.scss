@@ -1,0 +1,80 @@
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px transparent;
+    background-color: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    background-color: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .custom-icon-text-size {
+    width: 1em;
+    height: 1em;
+    min-width: 1em;
+    min-height: 1em;
+    max-width: 1em;
+    max-height: 1em;
+  }
+
+  .toaster.group {
+    user-select: none;
+  }
+
+  .magic-shadow {
+    position: relative;
+
+    &::before {
+      content: '';
+      z-index: -1;
+      inset: 0.25rem;
+      position: absolute;
+
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+
+      filter: blur(1rem);
+      background: linear-gradient(
+        123deg,
+        rgb(0, 108, 224) 0%,
+        rgb(41, 94, 255) 50%,
+        rgb(104, 66, 255) 100%
+      );
+    }
+
+    &:hover {
+      &::before {
+        opacity: 1;
+      }
+    }
+  }
+}

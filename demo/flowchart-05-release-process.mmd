@@ -1,0 +1,10 @@
+flowchart TD
+  A[Feature Complete] --> B[Open Pull Request]
+  B --> C[CI Checks]
+  C --> D{Checks Passed?}
+  D -- No --> E[Fix Issues]
+  E --> C
+  D -- Yes --> F[Code Review Approved]
+  F --> G[Merge to Main]
+  G --> H[Deploy to Staging]
+  H --> I[Deploy to Production]

@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor Client
+  participant API as Gateway
+  participant RL as Rate Limiter
+  participant App as Backend App
+
+  Client->>API: GET /reports
+  API->>RL: Check token quota
+  alt Within quota
+    RL-->>API: Allow
+    API->>App: Forward request
+    App-->>API: Response payload
+    API-->>Client: 200 OK
+  else Quota exceeded
+    RL-->>API: Block
+    API-->>Client: 429 Too Many Requests
+  end

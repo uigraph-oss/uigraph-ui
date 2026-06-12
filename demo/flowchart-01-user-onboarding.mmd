@@ -1,0 +1,8 @@
+flowchart TD
+  A[Landing Page] --> B{Has Account?}
+  B -- Yes --> C[Sign In]
+  B -- No --> D[Create Account]
+  C --> E[Dashboard]
+  D --> F[Verify Email]
+  F --> E[Dashboard]
+  E --> G[Start First Project]

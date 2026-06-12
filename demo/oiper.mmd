@@ -1,0 +1,24 @@
+flowchart TD
+    A[Resample Done] --> B{Profile Mode}
+
+    %% Local branch
+    B -- Local --> L1[Accepts the audio, whisper model, language and some other info]
+    L1 --> L2[Processes the audio with whisper model and gets the final text]
+    L2 --> L3[Returns a response with the text and all the timespans]
+    L3 --> Z[Injects the text]
+
+    %% Online branch
+    B -- Online --> O1[Accepts the audio, online llm info, if it was local llm then local llm info]
+    O1 --> O2[Sends the audio to the selected model and gets the final text]
+    O2 --> O3[Returns a response with the text and all the timespans]
+    O3 --> Z
+
+    %% Hybrid branch
+    B -- Hybrid --> H1[Accepts the audio, whisper model, language and some other info + online llm info]
+    H1 --> H2[Processes the audio with whisper model and gets the final text]
+    H2 --> H3[Sends the text to the selected model and gets the final enhanced text]
+    H3 --> H4[Returns a response with the text and all the timespans]
+    H4 --> Z
+
+    %% Final steps
+    Z --> F[Save all the details into db]

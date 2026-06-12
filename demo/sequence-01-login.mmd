@@ -1,0 +1,14 @@
+sequenceDiagram
+  autonumber
+  actor User
+  participant UI as Web App
+  participant Auth as Auth Service
+  participant DB as User DB
+
+  User->>UI: Submit email and password
+  UI->>Auth: POST /login
+  Auth->>DB: Find user by email
+  DB-->>Auth: User record
+  Auth->>Auth: Verify password hash
+  Auth-->>UI: Access token + profile
+  UI-->>User: Redirect to dashboard

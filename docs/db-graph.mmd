@@ -1,0 +1,49 @@
+flowchart LR
+  subgraph A[Table: uigraph-accounts-dev]
+    ORG["organization<br/>pk=organization<br/>sk=organization_id<br/>organizationInfo: name, slug, ownerId, domain, isActive"]
+    TEAM["team<br/>pk=team<br/>sk=team_id"]
+    ACC["account<br/>pk=account<br/>sk=account_id"]
+    COL["collaborator<br/>pk=collaborator<br/>sk=collaborator_id"]
+  end
+
+  subgraph P[Table: uigraph-projects-dev]
+    PROJ["project<br/>pk=project<br/>sk=project_id<br/>projectInfo: organizationId, teamId, name, status"]
+    SRV["service<br/>pk=service<br/>sk=service_id<br/>serviceInfo: organizationId, name, slug, description"]
+    APIG["api_group<br/>pk=api_group<br/>sk=api_group_id<br/>apiGroupInfo: serviceId, version, protocol, spec file ids"]
+    SDOC["service_doc<br/>pk=service_doc<br/>sk=service_doc_id<br/>serviceDocInfo: serviceId, fileId, fileName, fileType"]
+    CMETA["component_meta<br/>pk=component_meta<br/>sk=component_meta_id<br/>componentMetaInfo: organizationId, componentId, componentModalFields"]
+    PAGE["page<br/>pk=page<br/>sk=page_id<br/>pageInfo: projectId, organizationId, pageName, templateType, screenShotFileID"]
+    PPL["page_project_link<br/>pk=page_project_link<br/>sk=page_project_link_id<br/>pageProjectLinkInfo: pageId, projectId, organizationId"]
+    CMT["comment<br/>pk=comment<br/>sk=comment_id<br/>commentInfo: resourceId, organizationId, text, isActive"]
+    API["api_endpoint<br/>pk=api_endpoint<br/>sk=api_endpoint_id<br/>apiEndpointInfo: serviceApiGroupId, componentMetaId, operationId, versionNumber"]
+    CC["custom_component<br/>pk=custom_component<br/>sk=custom_component_id<br/>customComponentInfo: organizationId, name, slug, category, componentFields"]
+  end
+
+  subgraph F[Table: uigraph-files-dev]
+    FILE["file item<br/>pk=file_uuid<br/>file payload stored here"]
+  end
+
+  ORG -->|organizationInfo.ownerId| ACC
+  ORG -->|members / access| COL
+  TEAM -->|team belongs to org| ORG
+  PROJ -->|projectInfo.organizationId| ORG
+  PROJ -->|projectInfo.teamId| TEAM
+  SRV -->|serviceInfo.organizationId| ORG
+  APIG -->|apiGroupInfo.serviceId| SRV
+  SDOC -->|serviceDocInfo.serviceId| SRV
+  SDOC -->|serviceDocInfo.fileId| FILE
+  CMETA -->|componentMetaInfo.organizationId| ORG
+  PAGE -->|pageInfo.projectId| PROJ
+  PAGE -->|pageInfo.organizationId| ORG
+  PAGE -->|pageInfo.screenShotFileID| FILE
+  PPL -->|pageProjectLinkInfo.projectId| PROJ
+  PPL -->|pageProjectLinkInfo.pageId| PAGE
+  PPL -->|pageProjectLinkInfo.organizationId| ORG
+  CMT -->|commentInfo.organizationId| ORG
+  CMT -->|commentInfo.resourceId| PROJ
+  API -->|apiEndpointInfo.serviceApiGroupId| APIG
+  API -->|apiEndpointInfo.componentMetaId| CMETA
+  CC -->|customComponentInfo.organizationId| ORG
+
+  G1[(gs1-index)] -->|project_organization_org_id| PROJ
+  G2[(gs2-index)] -->|project_team_team_id| PROJ

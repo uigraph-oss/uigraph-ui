@@ -1,0 +1,10 @@
+flowchart LR
+  A[Order Placed] --> B[Validate Payment]
+  B --> C{Payment Approved?}
+  C -- No --> D[Notify Failure]
+  C -- Yes --> E[Reserve Inventory]
+  E --> F{Stock Available?}
+  F -- No --> G[Backorder Queue]
+  F -- Yes --> H[Pack Shipment]
+  H --> I[Dispatch Carrier]
+  I --> J[Send Tracking Email]

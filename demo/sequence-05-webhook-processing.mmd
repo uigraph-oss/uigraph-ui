@@ -1,0 +1,16 @@
+sequenceDiagram
+  autonumber
+  participant Provider as External Provider
+  participant Hook as Webhook Endpoint
+  participant Queue as Job Queue
+  participant Worker as Background Worker
+  participant DB as Application DB
+
+  Provider->>Hook: POST event payload
+  Hook->>Hook: Validate signature
+  Hook->>Queue: Enqueue event job
+  Hook-->>Provider: 202 Accepted
+  Queue->>Worker: Deliver next job
+  Worker->>DB: Apply state changes
+  DB-->>Worker: Commit success
+  Worker->>Worker: Mark job complete

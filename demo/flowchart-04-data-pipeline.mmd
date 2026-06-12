@@ -1,0 +1,9 @@
+flowchart LR
+  A[Raw Events] --> B[Ingestion API]
+  B --> C[Message Queue]
+  C --> D[Stream Processor]
+  D --> E{Schema Valid?}
+  E -- No --> F[Dead Letter Queue]
+  E -- Yes --> G[Warehouse Table]
+  G --> H[Transform Jobs]
+  H --> I[Analytics Dashboard]

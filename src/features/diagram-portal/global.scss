@@ -1,0 +1,200 @@
+@property --scale {
+  syntax: '<number>';
+  inherits: false;
+}
+
+.react-flow__node {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  box-shadow: 0 24px 40px 0 transparent !important;
+  transition:
+    opacity 0.1s ease-in-out,
+    box-shadow 0.2s ease-in-out,
+    outline-color 0.2s ease-in-out !important;
+
+  &,
+  .react-flow__handle {
+    border: none !important;
+  }
+
+  &.react-flow__node-default {
+    width: revert !important;
+  }
+
+  &.react-flow__node-shape {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.react-flow__node-comment {
+    z-index: 10000 !important;
+    isolation: isolate !important;
+    pointer-events: none !important;
+  }
+
+  &::before {
+    content: '';
+    inset: 0;
+    z-index: -2;
+    position: absolute;
+
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+
+    filter: blur(1rem);
+    background: linear-gradient(
+      123deg,
+      rgb(0, 108, 224) 0%,
+      rgb(41, 94, 255) 50%,
+      rgb(104, 66, 255) 100%
+    );
+  }
+
+  &:hover &::before {
+    opacity: 0.75;
+  }
+
+  .react-flow__handle {
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
+    border: none !important;
+
+    $handle-margin: -10px;
+    --scale: calc(3 - var(--react-flow-scale));
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      z-index: 100;
+
+      inset: 0;
+      width: 5px !important;
+      height: 5px !important;
+      border-radius: 50% !important;
+
+      opacity: 0 !important;
+      background-color: white !important;
+      outline: 1px solid oklch(70.708% 0.02244 261.79 / 0.33) !important;
+
+      transition:
+        opacity 0.1s ease-in-out,
+        transform 0.1s ease-in-out,
+        box-shadow 0.2s ease-in-out,
+        outline-color 0.2s ease-in-out !important;
+    }
+
+    &:hover:not(.connection-enabled),
+    &.connectingto:not(.connectingfrom) {
+      --scale: calc((3 - var(--react-flow-scale)) * 2);
+    }
+
+    &-top::after {
+      margin-top: $handle-margin;
+      transform: translateX(-50%) scale(var(--scale));
+    }
+
+    &-bottom::after {
+      margin-top: -$handle-margin;
+      transform: translate(-50%, -100%) scale(var(--scale));
+    }
+
+    &-left::after {
+      margin-left: $handle-margin;
+      transform: translateY(-50%) scale(var(--scale));
+    }
+
+    &-right::after {
+      margin-left: -$handle-margin;
+      transform: translate(-100%, -50%) scale(var(--scale));
+    }
+  }
+
+  &.selected .react-flow__handle::after,
+  &:hover .react-flow__handle.connection-enabled::after,
+  .react-flow__handle.connectingto::after,
+  .react-flow__handle.connectingfrom::after {
+    opacity: 1 !important;
+  }
+
+  .react-flow__handle.connectingto::after {
+    outline-color: #0059ea !important;
+    background-color: #0059ea !important;
+  }
+
+  &.selected .react-flow__handle::after {
+    outline-color: #0059ea !important;
+  }
+}
+
+// Make resize handles larger and more visible
+.react-flow__resize-control {
+  --scale: max(1, calc(2.5 - var(--react-flow-scale)));
+  transition: transform 0.1s ease-in-out;
+
+  &.handle {
+    transform: scale(var(--scale)) !important;
+  }
+
+  &.handle:hover,
+  &.handle:active {
+    transform: scale(calc(var(--scale) * 2)) !important;
+  }
+
+  &.line.left,
+  &.line.right,
+  &.line.top,
+  &.line.bottom {
+    border-width: 1.25px !important;
+  }
+
+  &.line.top {
+    transform: translate(0, -50%) scaleY(var(--scale)) !important;
+  }
+
+  &.line.left {
+    transform: translate(-50%) scaleX(var(--scale)) !important;
+  }
+}
+
+.react-flow__viewport.downloading .react-flow__node {
+  outline: 1px solid #e5e7e9 !important;
+
+  &,
+  * {
+    transition: none !important;
+  }
+
+  &::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  &.selected {
+    box-shadow: none !important;
+  }
+}
+
+.react-flow__edge-path {
+  transition: filter 0.25s ease-in-out !important;
+  filter: saturate(1) drop-shadow(0 0 2px transparent) !important;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  filter: saturate(100) drop-shadow(0 0 2px gray) !important;
+}
+
+svg:has(.react-flow__edge:hover) {
+  z-index: 10 !important;
+}
+
+@property --scale {
+  syntax: '<number>';
+  inherits: false;
+}

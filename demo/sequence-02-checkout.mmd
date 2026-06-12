@@ -1,0 +1,16 @@
+sequenceDiagram
+  autonumber
+  actor Shopper
+  participant Store as Storefront
+  participant Cart as Cart Service
+  participant Pay as Payment Gateway
+  participant OMS as Order Service
+
+  Shopper->>Store: Click "Checkout"
+  Store->>Cart: Get current cart
+  Cart-->>Store: Cart items + totals
+  Store->>Pay: Authorize payment
+  Pay-->>Store: Payment approved
+  Store->>OMS: Create order
+  OMS-->>Store: Order confirmation
+  Store-->>Shopper: Show thank-you page

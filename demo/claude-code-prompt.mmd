@@ -1,0 +1,19 @@
+flowchart TD
+    A[User Input] --> B[Context Collection]
+
+    B --> C[Load Project Memory]
+    C --> D[Search Codebase (grep/tools)]
+
+    D --> E[Assemble System Prompt]
+    E --> F[Add Tool Constraints]
+
+    F --> G[Plan Task (Agent Reasoning)]
+    G --> H[Break into Subtasks]
+
+    H --> I[Call Tools / Execute Steps]
+    I --> J[Update Memory]
+
+    J --> K[Refine Output]
+    K --> L[Final Prompt to Model]
+
+    L --> M[Response to User]

@@ -1,0 +1,4 @@
+schema: 'https://api.dev.uigraph.app/graphql/query'
+documents:
+  - 'src/**/*.{graphql,js,ts,jsx,tsx}'
+  - '.gql/**/*.{graphql,js,ts,jsx,tsx}'

@@ -1,0 +1,2061 @@
+{
+  "nodes": [
+    {
+      "data": {
+        "childNodes": ["JobQueue", "JobWorker", "WebhookOut"],
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Async Processing"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ]
+      },
+      "id": "async-layer",
+      "position": {
+        "x": 1020,
+        "y": 812
+      },
+      "style": {
+        "height": 240,
+        "width": 684,
+        "zIndex": -1
+      },
+      "type": "group",
+      "measured": {
+        "width": 684,
+        "height": 240
+      }
+    },
+    {
+      "data": {
+        "childNodes": ["WebApp", "MobileApp"],
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Client Apps"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ]
+      },
+      "id": "clients",
+      "position": {
+        "x": 80,
+        "y": 268
+      },
+      "style": {
+        "height": 268,
+        "width": 72,
+        "zIndex": -1
+      },
+      "type": "group",
+      "measured": {
+        "width": 72,
+        "height": 268
+      }
+    },
+    {
+      "data": {
+        "childNodes": [
+          "AuthService",
+          "WorkflowEngine",
+          "NotifService",
+          "JobWorker"
+        ],
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Core Services"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ]
+      },
+      "id": "core-services",
+      "position": {
+        "x": 672,
+        "y": 169
+      },
+      "style": {
+        "height": 733,
+        "width": 724,
+        "zIndex": -1
+      },
+      "type": "group",
+      "measured": {
+        "width": 724,
+        "height": 733
+      }
+    },
+    {
+      "data": {
+        "childNodes": ["SessionsDB", "UsersDB", "CoreDB"],
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Data Layer"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ]
+      },
+      "id": "data-layer",
+      "position": {
+        "x": 1012,
+        "y": 80
+      },
+      "style": {
+        "height": 777,
+        "width": 1208,
+        "zIndex": -1
+      },
+      "type": "group",
+      "measured": {
+        "width": 1208,
+        "height": 777
+      }
+    },
+    {
+      "data": {
+        "childNodes": ["EmailProvider", "SlackProvider"],
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "External Providers"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ]
+      },
+      "id": "external-providers",
+      "position": {
+        "x": 1534.195847141176,
+        "y": 509.54896178529407
+      },
+      "style": {
+        "height": 418,
+        "width": 210,
+        "zIndex": -1
+      },
+      "type": "group",
+      "measured": {
+        "width": 210,
+        "height": 418
+      },
+      "dragging": false
+    },
+    {
+      "data": {
+        "childNodes": ["ApiGateway"],
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Edge Layer"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ]
+      },
+      "id": "gateway",
+      "position": {
+        "x": 372,
+        "y": 357
+      },
+      "style": {
+        "height": 240,
+        "width": 210,
+        "zIndex": -1
+      },
+      "type": "group",
+      "measured": {
+        "width": 210,
+        "height": 240
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 12,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Orbiflow Web App"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.46563791937970267",
+            "data": [
+              {
+                "value": "Vercel — auto on merge to main"
+              }
+            ],
+            "hidden": true,
+            "label": "Deploy",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.71192171673616",
+            "data": [
+              {
+                "value": "Frontend Platform"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6701598665594293",
+            "data": [
+              {
+                "value": "https://github.com/orbiflow/web-app"
+              }
+            ],
+            "hidden": true,
+            "label": "Repo",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          },
+          {
+            "componentFieldId": "0.22282590193941743",
+            "data": [
+              {
+                "value": "React 18 + TypeScript"
+              }
+            ],
+            "hidden": true,
+            "label": "Stack",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#2C5CF6",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "WebApp",
+      "parentId": "clients",
+      "position": {
+        "x": 112,
+        "y": 288
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "gif",
+      "zIndex": 1,
+      "measured": {
+        "width": 231,
+        "height": 24
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": true,
+        "borderRadius": 10,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "API Gateway"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.42534139048393516",
+            "data": [
+              {
+                "value": "JWT — validated per request"
+              }
+            ],
+            "hidden": true,
+            "label": "Auth",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6062453476923668",
+            "data": [
+              {
+                "value": "https://docs.orbiflow.io/api"
+              }
+            ],
+            "hidden": true,
+            "label": "Docs",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          },
+          {
+            "componentFieldId": "0.38020880078863417",
+            "data": [
+              {
+                "value": "Platform Team"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.16341255032354596",
+            "data": [
+              {
+                "value": 1000
+              }
+            ],
+            "hidden": true,
+            "label": "Rate Limit",
+            "order": 0,
+            "required": false,
+            "type": "Number Input"
+          },
+          {
+            "componentFieldId": "0.7565202159663742",
+            "data": [
+              {
+                "value": true
+              }
+            ],
+            "hidden": true,
+            "label": "TLS",
+            "order": 0,
+            "required": false,
+            "type": "Boolean Toggle"
+          }
+        ],
+        "fill": "#111420",
+        "iconSrc": "/aws-icons/Architecture-Service-Icons_07312025/Arch_Networking-Content-Delivery/64/Arch_Amazon-API-Gateway_64.svg",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#2C5CF6",
+        "strokeAnimation": "dash",
+        "strokeStyle": "solid",
+        "strokeWidth": 3
+      },
+      "draggable": true,
+      "height": 150,
+      "id": "ApiGateway",
+      "parentId": "gateway",
+      "position": {
+        "x": 392,
+        "y": 377
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "cloud",
+      "width": 150,
+      "zIndex": 1,
+      "measured": {
+        "width": 150,
+        "height": 150
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 12,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Orbiflow Mobile"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7584354440255434",
+            "data": [
+              {
+                "value": "Mobile Team"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7502011823192267",
+            "data": [
+              {
+                "value": "https://github.com/orbiflow/mobile-app"
+              }
+            ],
+            "hidden": true,
+            "label": "Repo",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          },
+          {
+            "componentFieldId": "0.5885992741887949",
+            "data": [
+              {
+                "value": "React Native"
+              }
+            ],
+            "hidden": true,
+            "label": "Stack",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.24536256885654795",
+            "data": [
+              {
+                "value": "Beta"
+              }
+            ],
+            "hidden": true,
+            "label": "Status",
+            "options": ["Beta", "GA", "Deprecated"],
+            "order": 0,
+            "required": false,
+            "type": "Dropdown"
+          }
+        ],
+        "fill": "#0d0f18",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#2C5CF6",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "MobileApp",
+      "parentId": "clients",
+      "position": {
+        "x": 100,
+        "y": 466
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "gif",
+      "zIndex": 1,
+      "measured": {
+        "width": 231,
+        "height": 24
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 10,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Auth Service"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.8338000926977338",
+            "data": [
+              {
+                "value": "Node.js 20 + Fastify"
+              }
+            ],
+            "hidden": true,
+            "label": "Language",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7925023832174252",
+            "data": [
+              {
+                "value": "#identity-oncall"
+              }
+            ],
+            "hidden": true,
+            "label": "On-call",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7848613073550135",
+            "data": [
+              {
+                "value": "Identity Team"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.557973569656711",
+            "data": [
+              {
+                "value": "https://github.com/orbiflow/auth-service"
+              }
+            ],
+            "hidden": true,
+            "label": "Repo",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          },
+          {
+            "componentFieldId": "0.8517400753634141",
+            "data": [
+              {
+                "value": "99.99% uptime"
+              }
+            ],
+            "hidden": true,
+            "label": "SLA",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#111420",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "src": "/animated-nodes/Authentication.gif",
+        "stroke": "#6366f1",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "AuthService",
+      "parentId": "core-services",
+      "position": {
+        "x": 704,
+        "y": 189
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "gif",
+      "zIndex": 1,
+      "measured": {
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 10,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Workflow Engine"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7842450306271223",
+            "data": [
+              {
+                "value": "Go 1.22"
+              }
+            ],
+            "hidden": true,
+            "label": "Language",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6752758424722933",
+            "data": [
+              {
+                "value": "Core Platform"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.07888787247682782",
+            "data": [
+              {
+                "value": "https://github.com/orbiflow/workflow-engine"
+              }
+            ],
+            "hidden": true,
+            "label": "Repo",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          },
+          {
+            "componentFieldId": "0.2405102874569649",
+            "data": [
+              {
+                "value": "99.9% uptime"
+              }
+            ],
+            "hidden": true,
+            "label": "SLA",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.912632197144807",
+            "data": [
+              {
+                "value": "https://orbiflow.slack.com/archives/C04WRKFL0W"
+              }
+            ],
+            "hidden": true,
+            "label": "Slack",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          }
+        ],
+        "fill": "#111420",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "src": "/animated-nodes/Settings.gif",
+        "stroke": "#10b981",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "WorkflowEngine",
+      "parentId": "core-services",
+      "position": {
+        "x": 692,
+        "y": 565
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "gif",
+      "zIndex": 1,
+      "measured": {
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 8,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Sessions Store"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.37617181426501367",
+            "data": [
+              {
+                "value": "Identity Team"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.23776939069750735",
+            "data": [
+              {
+                "value": "expires_at"
+              }
+            ],
+            "hidden": true,
+            "label": "TTL field",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.9396528807110847",
+            "data": [
+              {
+                "value": "orbiflow-sessions"
+              }
+            ],
+            "hidden": true,
+            "label": "Table",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.5657142831508082",
+            "data": [
+              {
+                "value": "On-demand"
+              }
+            ],
+            "hidden": true,
+            "label": "Throughput",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "iconSrc": "/aws-icons/Architecture-Service-Icons_07312025/Arch_Database/64/Arch_Amazon-DynamoDB_64.svg",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#6366f1",
+        "strokeStyle": "dashed",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "height": 150,
+      "id": "SessionsDB",
+      "parentId": "data-layer",
+      "position": {
+        "x": 1032,
+        "y": 100
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "cloud",
+      "width": 150,
+      "zIndex": 1,
+      "measured": {
+        "width": 150,
+        "height": 150
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 8,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Users DB"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7720782504817758",
+            "data": [
+              {
+                "value": "PostgreSQL 15"
+              }
+            ],
+            "hidden": true,
+            "label": "Engine",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.08105448616668065",
+            "data": [
+              {
+                "value": "RDS Multi-AZ"
+              }
+            ],
+            "hidden": true,
+            "label": "Host",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.1577932804291069",
+            "data": [
+              {
+                "value": "Identity Team"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "serviceTable": {
+          "serviceDbId": "orbiflow_core",
+          "serviceId": "UIGraph Adapter",
+          "tableName": "users"
+        },
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#6366f1",
+        "strokeStyle": "dashed",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "UsersDB",
+      "parentId": "data-layer",
+      "position": {
+        "x": 1044,
+        "y": 278
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "databaseTableSQL",
+      "zIndex": 1,
+      "measured": {
+        "width": 280,
+        "height": 112
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": true,
+        "borderRadius": 8,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Job Queue"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.22571976117155979",
+            "data": [
+              {
+                "value": true
+              }
+            ],
+            "hidden": true,
+            "label": "DLQ",
+            "order": 0,
+            "required": false,
+            "type": "Boolean Toggle"
+          },
+          {
+            "componentFieldId": "0.013452058436228764",
+            "data": [
+              {
+                "value": 3
+              }
+            ],
+            "hidden": true,
+            "label": "Max receive count",
+            "order": 0,
+            "required": false,
+            "type": "Number Input"
+          },
+          {
+            "componentFieldId": "0.9436268560398837",
+            "data": [
+              {
+                "value": "orbiflow-jobs.fifo"
+              }
+            ],
+            "hidden": true,
+            "label": "Queue",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.26159962271111437",
+            "data": [
+              {
+                "value": "30s"
+              }
+            ],
+            "hidden": true,
+            "label": "Visibility timeout",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#f59e0b",
+        "strokeAnimation": "dash",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "height": 150,
+      "id": "JobQueue",
+      "parentId": "async-layer",
+      "position": {
+        "x": 1040,
+        "y": 832
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "cloud",
+      "width": 150,
+      "zIndex": 1,
+      "measured": {
+        "width": 150,
+        "height": 150
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 8,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Core DB"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.5699933129438486",
+            "data": [
+              {
+                "value": "PostgreSQL 15"
+              }
+            ],
+            "hidden": true,
+            "label": "Engine",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.22132246558931223",
+            "data": [
+              {
+                "value": "RDS Multi-AZ"
+              }
+            ],
+            "hidden": true,
+            "label": "Host",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7461365564979063",
+            "data": [
+              {
+                "value": "Core Platform"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6699884143568458",
+            "data": [
+              {
+                "value": ["workflows", "jobs", "triggers", "audit_log"]
+              }
+            ],
+            "hidden": true,
+            "label": "Tables",
+            "order": 0,
+            "required": false,
+            "type": "Tag Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "serviceTable": {
+          "serviceDbId": "orbiflow_core",
+          "serviceId": "UIGraph Adapter",
+          "tableName": "workflows"
+        },
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#10b981",
+        "strokeStyle": "dashed",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "CoreDB",
+      "parentId": "data-layer",
+      "position": {
+        "x": 1680,
+        "y": 387
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "databaseTableSQL",
+      "zIndex": 1,
+      "measured": {
+        "width": 280,
+        "height": 112
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 10,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Notification Service"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.94729314430018",
+            "data": [
+              {
+                "value": ["Email", "Slack", "Webhook"]
+              }
+            ],
+            "hidden": true,
+            "label": "Channels",
+            "order": 0,
+            "required": false,
+            "type": "Tag Input"
+          },
+          {
+            "componentFieldId": "0.6718771717406304",
+            "data": [
+              {
+                "value": "Node.js 20"
+              }
+            ],
+            "hidden": true,
+            "label": "Language",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.046011129988330124",
+            "data": [
+              {
+                "value": "Core Platform"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.27079568923688324",
+            "data": [
+              {
+                "value": "https://github.com/orbiflow/notif-service"
+              }
+            ],
+            "hidden": true,
+            "label": "Repo",
+            "order": 0,
+            "required": false,
+            "type": "URL Input"
+          }
+        ],
+        "fill": "#111420",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "src": "/animated-nodes/Notification.gif",
+        "stroke": "#ec4899",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "NotifService",
+      "parentId": "core-services",
+      "position": {
+        "x": 1024,
+        "y": 565
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "gif",
+      "zIndex": 1,
+      "measured": {
+        "width": 128,
+        "height": 72
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 10,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Job Worker"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.3756245768346058",
+            "data": [
+              {
+                "value": 50
+              }
+            ],
+            "hidden": true,
+            "label": "Concurrency",
+            "order": 0,
+            "required": false,
+            "type": "Number Input"
+          },
+          {
+            "componentFieldId": "0.08979225491273835",
+            "data": [
+              {
+                "value": "ECS Fargate — autoscaling"
+              }
+            ],
+            "hidden": true,
+            "label": "Deploy",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.18940714311708895",
+            "data": [
+              {
+                "value": "Go 1.22"
+              }
+            ],
+            "hidden": true,
+            "label": "Language",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.3510484096441444",
+            "data": [
+              {
+                "value": "Core Platform"
+              }
+            ],
+            "hidden": true,
+            "label": "Owner",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#111420",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "src": "/animated-nodes/Loading.gif",
+        "stroke": "#f59e0b",
+        "strokeStyle": "solid",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "JobWorker",
+      "parentId": "async-layer",
+      "position": {
+        "x": 1356,
+        "y": 832
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "gif",
+      "zIndex": 1,
+      "measured": {
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 6,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Outbound Webhooks"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6533050000884779",
+            "data": [
+              {
+                "value": "3x with exponential backoff"
+              }
+            ],
+            "hidden": true,
+            "label": "Retry policy",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6970402697004132",
+            "data": [
+              {
+                "value": "HMAC-SHA256"
+              }
+            ],
+            "hidden": true,
+            "label": "Signature",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.479887418256399",
+            "data": [
+              {
+                "value": "10s per attempt"
+              }
+            ],
+            "hidden": true,
+            "label": "Timeout",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "shape": "document",
+        "source": "mermaid",
+        "stroke": "#f59e0b",
+        "strokeStyle": "dotted",
+        "strokeWidth": 2
+      },
+      "draggable": true,
+      "id": "WebhookOut",
+      "parentId": "async-layer",
+      "position": {
+        "x": 1664,
+        "y": 842
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "shape",
+      "zIndex": 1,
+      "measured": {
+        "width": 159,
+        "height": 68
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 8,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Email — Postmark"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7011597862970369",
+            "data": [
+              {
+                "value": "notifications@orbiflow.io"
+              }
+            ],
+            "hidden": true,
+            "label": "From domain",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.9378198676268878",
+            "data": [
+              {
+                "value": "Transactional"
+              }
+            ],
+            "hidden": true,
+            "label": "Type",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#ec4899",
+        "strokeStyle": "dashed",
+        "strokeWidth": 1
+      },
+      "draggable": true,
+      "height": 150,
+      "id": "EmailProvider",
+      "parentId": "external-providers",
+      "position": {
+        "x": 1340,
+        "y": 476
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "cloud",
+      "width": 150,
+      "zIndex": 1,
+      "measured": {
+        "width": 150,
+        "height": 150
+      }
+    },
+    {
+      "data": {
+        "borderAnimationEnabled": false,
+        "borderRadius": 8,
+        "componentFields": [
+          {
+            "componentFieldId": "name",
+            "data": [
+              {
+                "value": "Slack API"
+              }
+            ],
+            "hidden": true,
+            "label": "Name",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.6054328589601206",
+            "data": [
+              {
+                "value": "Incoming Webhooks + Bot API"
+              }
+            ],
+            "hidden": true,
+            "label": "Integration",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          },
+          {
+            "componentFieldId": "0.7659820018352523",
+            "data": [
+              {
+                "value": "chat:write, channels:read"
+              }
+            ],
+            "hidden": true,
+            "label": "Scope",
+            "order": 0,
+            "required": false,
+            "type": "Text Input"
+          }
+        ],
+        "fill": "#0d0f18",
+        "shape": "rectangle",
+        "source": "mermaid",
+        "stroke": "#ec4899",
+        "strokeStyle": "dashed",
+        "strokeWidth": 1
+      },
+      "draggable": true,
+      "height": 150,
+      "id": "SlackProvider",
+      "parentId": "external-providers",
+      "position": {
+        "x": 1340,
+        "y": 654
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "type": "cloud",
+      "width": 150,
+      "zIndex": 1,
+      "measured": {
+        "width": 150,
+        "height": 150
+      }
+    }
+  ],
+  "edges": [
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-WebApp-ApiGateway-0",
+      "label": "HTTPS / REST",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #1976D2",
+        "borderRadius": "4px",
+        "color": "#1976D2",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#1976D2",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "WebApp",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#2C5CF6",
+          "type": "arrow"
+        },
+        "stroke": "#2C5CF6",
+        "strokeWidth": 2
+      },
+      "target": "ApiGateway",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-MobileApp-ApiGateway-1",
+      "label": "HTTPS / REST",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #388E3C",
+        "borderRadius": "4px",
+        "color": "#388E3C",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#388E3C",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "MobileApp",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#2C5CF6",
+          "type": "arrow"
+        },
+        "stroke": "#2C5CF6",
+        "strokeWidth": 2
+      },
+      "target": "ApiGateway",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": true,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-ApiGateway-AuthService-2",
+      "label": "JWT validate + issue",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #F57C00",
+        "borderRadius": "4px",
+        "color": "#F57C00",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#F57C00",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "ApiGateway",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#6366f1",
+          "type": "arrow"
+        },
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "target": "AuthService",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": true,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-ApiGateway-WorkflowEngine-3",
+      "label": "Workflow CRUD + run",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #7B1FA2",
+        "borderRadius": "4px",
+        "color": "#7B1FA2",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#7B1FA2",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "ApiGateway",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#10b981",
+          "type": "arrow"
+        },
+        "stroke": "#10b981",
+        "strokeWidth": 2
+      },
+      "target": "WorkflowEngine",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-AuthService-SessionsDB-4",
+      "label": "read / write session",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #C2185B",
+        "borderRadius": "4px",
+        "color": "#C2185B",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#C2185B",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "AuthService",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#6366f1",
+          "type": "arrow"
+        },
+        "stroke": "#6366f1",
+        "strokeDasharray": "4 2",
+        "strokeWidth": 1
+      },
+      "target": "SessionsDB",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-AuthService-UsersDB-5",
+      "label": "read / write user",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #1976D2",
+        "borderRadius": "4px",
+        "color": "#1976D2",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#1976D2",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "AuthService",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#6366f1",
+          "type": "arrow"
+        },
+        "stroke": "#6366f1",
+        "strokeDasharray": "4 2",
+        "strokeWidth": 1
+      },
+      "target": "UsersDB",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": true,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-WorkflowEngine-JobQueue-6",
+      "label": "enqueue job",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #388E3C",
+        "borderRadius": "4px",
+        "color": "#388E3C",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#388E3C",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "WorkflowEngine",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#f59e0b",
+          "type": "arrow"
+        },
+        "stroke": "#f59e0b",
+        "strokeWidth": 2
+      },
+      "target": "JobQueue",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-WorkflowEngine-CoreDB-7",
+      "label": "read / persist workflow",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #F57C00",
+        "borderRadius": "4px",
+        "color": "#F57C00",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#F57C00",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "WorkflowEngine",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#10b981",
+          "type": "arrow"
+        },
+        "stroke": "#10b981",
+        "strokeDasharray": "4 2",
+        "strokeWidth": 1
+      },
+      "target": "CoreDB",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-WorkflowEngine-NotifService-8",
+      "label": "notify on trigger",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #7B1FA2",
+        "borderRadius": "4px",
+        "color": "#7B1FA2",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#7B1FA2",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "WorkflowEngine",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#ec4899",
+          "type": "arrow"
+        },
+        "stroke": "#ec4899",
+        "strokeDasharray": "1 2",
+        "strokeWidth": 1
+      },
+      "target": "NotifService",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": true,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-JobQueue-JobWorker-9",
+      "label": "poll + consume",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #C2185B",
+        "borderRadius": "4px",
+        "color": "#C2185B",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#C2185B",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "JobQueue",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#f59e0b",
+          "type": "arrow"
+        },
+        "stroke": "#f59e0b",
+        "strokeWidth": 2
+      },
+      "target": "JobWorker",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-JobWorker-CoreDB-10",
+      "label": "write result + audit log",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #1976D2",
+        "borderRadius": "4px",
+        "color": "#1976D2",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#1976D2",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "JobWorker",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#10b981",
+          "type": "arrow"
+        },
+        "stroke": "#10b981",
+        "strokeDasharray": "4 2",
+        "strokeWidth": 1
+      },
+      "target": "CoreDB",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-JobWorker-WebhookOut-11",
+      "label": "dispatch webhook",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #388E3C",
+        "borderRadius": "4px",
+        "color": "#388E3C",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#388E3C",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "JobWorker",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#f59e0b",
+          "type": "arrow"
+        },
+        "stroke": "#f59e0b",
+        "strokeDasharray": "1 2",
+        "strokeWidth": 1
+      },
+      "target": "WebhookOut",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-NotifService-EmailProvider-12",
+      "label": "send email",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #F57C00",
+        "borderRadius": "4px",
+        "color": "#F57C00",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#F57C00",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "NotifService",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#ec4899",
+          "type": "arrow"
+        },
+        "stroke": "#ec4899",
+        "strokeDasharray": "4 2",
+        "strokeWidth": 1
+      },
+      "target": "EmailProvider",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    },
+    {
+      "animated": false,
+      "data": {
+        "source": "mermaid"
+      },
+      "id": "edge-NotifService-SlackProvider-13",
+      "label": "post message",
+      "labelStyle": {
+        "backgroundColor": "white",
+        "border": "1px solid #7B1FA2",
+        "borderRadius": "4px",
+        "color": "#7B1FA2",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "padding": "2px 6px"
+      },
+      "markerEnd": {
+        "color": "#7B1FA2",
+        "height": 20,
+        "type": "arrowclosed",
+        "width": 20
+      },
+      "source": "NotifService",
+      "sourceHandle": "source-right",
+      "style": {
+        "markerEnd": {
+          "color": "#ec4899",
+          "type": "arrow"
+        },
+        "stroke": "#ec4899",
+        "strokeDasharray": "4 2",
+        "strokeWidth": 1
+      },
+      "target": "SlackProvider",
+      "targetHandle": "target-left",
+      "type": "default",
+      "zIndex": 0
+    }
+  ],
+  "components": [],
+  "dataSources": [],
+  "viewport": {
+    "x": 0.12590634186675775,
+    "y": 0.19532875464884297,
+    "zoom": 0.30075625902052894
+  }
+}

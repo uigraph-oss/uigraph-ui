@@ -1,0 +1,413 @@
+import { GT, privateClient } from '@/api'
+import { BetterDialogProvider } from '@/components/better-dialog'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import {
+  COMPONENT_API_CONTRACT_ID,
+  COMPONENT_FLOW_DIAGRAM_ID,
+  COMPONENT_SUPPORT_KB_ID,
+  COMPONENT_TEST_SUITE_ID,
+} from '@/constants/component-meta'
+import { useOrganizationContext } from '@/contexts'
+import { CREATE_DIAGRAM_MUTATION } from '@/features/diagram-portal/api'
+import { GET_SERVICE_DOC_QUERY } from '@/features/services/api/service-doc'
+import { cn } from '@/lib/utils'
+import { arrayNonNullable } from 'daily-code'
+import { useState } from 'react'
+import { FiChevronDown } from 'react-icons/fi'
+import { LuLink } from 'react-icons/lu'
+import { toast } from 'sonner'
+import { getFocalPointComponentIcon } from '../../../helpers/get-component-icon'
+import { ApiContractSelectionModal } from './api-contract-selection-modal'
+import { DeletePointMetaConfirmationModal } from './delete-meta-confirm-modal'
+import { DiagramSelectionModal } from './diagram-selection-modal'
+import {
+  FocalPointMetaMiniCard,
+  FocalPointMetaMiniCardNew,
+} from './meta-mini-card'
+import { FocalPointMetaModal } from './meta-modal'
+import { ServiceDocSelectionModal } from './service-doc-selection-modal'
+import { TestSuiteSelectionModal } from './test-suite-selection-modal'
+
+export type FocalPointMetaSectionProps = {
+  component: GT.Component
+  componentPointMeta: GT.FocalPointMeta[]
+
+  showFocalPointName?: boolean
+  disableCreatePointMeta?: boolean
+
+  createPointMeta: (
+    componentId: string,
+    input: Pick<
+      GT.CreateFocalPointMetaInput,
+      'componentModalFields' | 'componentLinkId' | 'componentFlowDiagram'
+    >
+  ) => Promise<void>
+
+  updatePointMeta: (
+    pointMetaId: string,
+    componentId: string,
+    input: Pick<GT.UpdateFocalPointMetaInput, 'componentModalFields'>
+  ) => Promise<void>
+
+  deletePointMeta: (pointMetaId: string) => Promise<void>
+}
+
+export function FocalPointMetaSection({
+  component,
+  componentPointMeta,
+  createPointMeta,
+  updatePointMeta,
+  deletePointMeta,
+  showFocalPointName,
+  disableCreatePointMeta,
+}: FocalPointMetaSectionProps) {
+  const { organizationId } = useOrganizationContext()
+
+  const [isNewModal, setIsNewModal] = useState(false)
+  const [deleteConfirmationPointMeta, setDeleteConfirmationPointMeta] =
+    useState<string | null>(null)
+
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
+  const isFlowDiagram = component.componentId === COMPONENT_FLOW_DIAGRAM_ID
+  const isApiContract = component.componentId === COMPONENT_API_CONTRACT_ID
+  const isTestSuite = component.componentId === COMPONENT_TEST_SUITE_ID
+  const isServiceDoc = component.componentId === COMPONENT_SUPPORT_KB_ID
+
+  const linkLabel = isFlowDiagram
+    ? 'Diagram'
+    : isApiContract
+      ? 'API Contract'
+      : isTestSuite
+        ? 'Test Suite'
+        : isServiceDoc
+          ? 'Documentation'
+          : undefined
+
+  const canComponentBeLinked = !!linkLabel
+
+  async function startFlowDiagram(meta: GT.FocalPointMeta | null) {
+    if (meta) {
+      if (meta.componentFlowDiagram?.startsWith('diagram_')) {
+        return window.open(`/diagram/${meta.componentFlowDiagram}`)
+      }
+
+      if (meta.componentLinkId?.startsWith('diagram_')) {
+        return window.open(`/diagram/${meta.componentLinkId}`)
+      }
+
+      return toast.error('Invalid diagram ID. Please try again.')
+    }
+
+    try {
+      const { data: createDiagramData } = await privateClient.mutate({
+        mutation: CREATE_DIAGRAM_MUTATION,
+        variables: {
+          input: {
+            organizationId: organizationId,
+            componentFlowDiagram: COMPONENT_FLOW_DIAGRAM_ID,
+          },
+        },
+      })
+
+      const diagramId = createDiagramData?.v1CreateDiagram?.diagramId
+      if (!diagramId) {
+        return toast.error('Failed to create diagram. Please try again.')
+      }
+
+      await createPointMeta(component.componentId!, {
+        componentFlowDiagram: diagramId,
+      })
+      return window.open(`/diagram/${diagramId}`)
+    } catch {
+      void toast.error(
+        'Failed to create diagram or focal point meta. Please try again.'
+      )
+    }
+  }
+
+  function startTestSuite(meta: GT.FocalPointMeta) {
+    const [serviceId, testPackId] = (meta.componentLinkId ?? '').split(':')
+    if (!serviceId || !testPackId)
+      return toast.error('Invalid test suite link. Please try again.')
+    window.open(`/services/${serviceId}/tests?packId=${testPackId}`)
+  }
+
+  async function startServiceDoc(meta: GT.FocalPointMeta) {
+    const [, serviceDocId] = (meta.componentLinkId ?? '').split(':')
+    if (!serviceDocId)
+      return toast.error('Invalid document link. Please try again.')
+    const { data } = await privateClient.query({
+      query: GET_SERVICE_DOC_QUERY,
+      variables: { serviceDocId },
+    })
+    const fileURL = arrayNonNullable(data?.v1GetServiceDoc)[0]?.fileURL
+    if (!fileURL)
+      return toast.error('Unable to open document. Please try again.')
+    window.open(fileURL)
+  }
+
+  function startCompositeLink(meta: GT.FocalPointMeta) {
+    if (isTestSuite) return startTestSuite(meta)
+    if (isServiceDoc) return startServiceDoc(meta)
+  }
+
+  return (
+    <>
+      <Accordion
+        type="single"
+        collapsible
+        className="border-stock overflow-hidden rounded-[0.8125rem] border"
+        value={componentPointMeta.length > 0 ? undefined : 'none'}
+      >
+        <AccordionItem value="item-1">
+          <div
+            key={component.componentId}
+            className="flex w-full items-center justify-between gap-3 rounded-none px-4 py-4"
+          >
+            <div className="flex gap-2">
+              <div className="self-start text-[2.25rem]">
+                {getFocalPointComponentIcon({
+                  component: component.componentId,
+                  category: component.category,
+                })}
+              </div>
+
+              <div className={'flex flex-col gap-1'}>
+                <h4 className="text-sm font-medium">{component.name}</h4>
+
+                <p className="text-xs text-gray-500">{component.description}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-start">
+              {componentPointMeta.length > 0 && (
+                <span className="text-primary bg-primary/20 flex h-5 items-center justify-center rounded-lg p-1 px-2 text-xs font-bold">
+                  {componentPointMeta.length}
+                </span>
+              )}
+
+              <div className="flex items-center">
+                {componentPointMeta.length === 0 && !disableCreatePointMeta && (
+                  <AccordionTrigger
+                    className={cn(
+                      'text-primary bg-primary/5 flex h-9 items-center justify-center rounded-full px-4 font-medium hover:no-underline [&>svg]:last:hidden',
+                      canComponentBeLinked && 'rounded-r-none'
+                    )}
+                    onClick={(e) => {
+                      e.preventDefault()
+
+                      if (component.componentId === COMPONENT_FLOW_DIAGRAM_ID) {
+                        startFlowDiagram(null).catch(console.warn)
+                      } else {
+                        setIsNewModal(true)
+                      }
+                    }}
+                  >
+                    Add
+                  </AccordionTrigger>
+                )}
+
+                {componentPointMeta.length > 0 && (
+                  <AccordionTrigger
+                    className={cn(
+                      'text-primary bg-primary/5 flex h-9 items-center justify-center rounded-full px-2 font-medium hover:no-underline [&>svg]:last:hidden'
+                    )}
+                  >
+                    <FiChevronDown className="text-lg transition-all" />
+                  </AccordionTrigger>
+                )}
+
+                {canComponentBeLinked &&
+                  !disableCreatePointMeta &&
+                  componentPointMeta.length === 0 && (
+                    <button
+                      onClick={() => setIsLinkModalOpen(true)}
+                      className="text-primary border-primary/10 bg-primary/5 flex size-9 items-center justify-center rounded-full rounded-l-none border-l pr-1 font-medium hover:no-underline"
+                    >
+                      <LuLink className="size-4 shrink-0" />
+                    </button>
+                  )}
+              </div>
+            </div>
+          </div>
+
+          <AccordionContent className="border-stock bg-shading-gray border-t p-3">
+            <div
+              className={cn(
+                'flex flex-col gap-2',
+                !disableCreatePointMeta && 'mb-3'
+              )}
+            >
+              {componentPointMeta.map((point, i) => (
+                <FocalPointMetaMiniCard
+                  key={point.focalPointMetaId}
+                  index={i}
+                  pointMeta={point}
+                  component={component}
+                  showFocalPointName={showFocalPointName ?? false}
+                  updatePointMeta={async ({ componentModalFields }) => {
+                    await updatePointMeta(
+                      point.focalPointMetaId!,
+                      component.componentId!,
+                      {
+                        componentModalFields,
+                      }
+                    )
+                  }}
+                  openDeleteConfirmationModal={() =>
+                    setDeleteConfirmationPointMeta(
+                      point.focalPointMetaId ?? null
+                    )
+                  }
+                  startFlowDiagram={() => startFlowDiagram(point)}
+                  startCompositeLink={() => startCompositeLink(point)}
+                />
+              ))}
+            </div>
+
+            {!disableCreatePointMeta && (
+              <FocalPointMetaMiniCardNew
+                startFlowDiagram={() => startFlowDiagram(null)}
+                setIsNewModal={setIsNewModal}
+                setIsLinkModalOpen={setIsLinkModalOpen}
+                isFlowDiagram={isFlowDiagram}
+                linkLabel={linkLabel}
+              />
+            )}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <DeletePointMetaConfirmationModal
+        open={Boolean(deleteConfirmationPointMeta)}
+        onOpenChange={() => setDeleteConfirmationPointMeta(null)}
+        onConfirm={async () => {
+          if (!deleteConfirmationPointMeta) return
+
+          try {
+            await deletePointMeta(deleteConfirmationPointMeta)
+            toast.success('Focal point meta deleted successfully')
+          } catch {
+            toast.error(
+              'Failed to delete focal point meta. Please try again later.'
+            )
+          }
+
+          setDeleteConfirmationPointMeta(null)
+        }}
+      />
+
+      <FocalPointMetaModal
+        submitLabel="Create Now"
+        title={`${'New'} ${component.name}`}
+        description={component.description}
+        fields={arrayNonNullable(component.componentFields)}
+        isOpen={isNewModal}
+        setIsOpen={setIsNewModal}
+        submit={async (formData) => {
+          try {
+            await createPointMeta(component.componentId!, {
+              componentModalFields: formData,
+            })
+            toast.success('Focal point meta created successfully')
+          } catch {
+            return void toast.error(
+              'Failed to create focal point meta. Please try again.'
+            )
+          }
+
+          setIsNewModal(false)
+        }}
+      />
+
+      <BetterDialogProvider
+        open={isLinkModalOpen && isApiContract}
+        onOpenChange={setIsLinkModalOpen}
+      >
+        <ApiContractSelectionModal
+          onSelect={async (formData) => {
+            try {
+              await createPointMeta(component.componentId!, {
+                componentLinkId: formData.apiEndpointId,
+              })
+              setIsLinkModalOpen(false)
+              toast.success('Focal point meta created successfully')
+            } catch {
+              return void toast.error(
+                'Failed to create focal point meta. Please try again.'
+              )
+            }
+          }}
+        />
+      </BetterDialogProvider>
+
+      <BetterDialogProvider
+        open={isLinkModalOpen && isFlowDiagram}
+        onOpenChange={setIsLinkModalOpen}
+      >
+        <DiagramSelectionModal
+          onSelect={async (formData) => {
+            try {
+              await createPointMeta(component.componentId!, {
+                componentLinkId: formData,
+              })
+              toast.success('Focal point meta created successfully')
+              setIsLinkModalOpen(false)
+            } catch {
+              return void toast.error(
+                'Failed to create focal point meta. Please try again.'
+              )
+            }
+          }}
+        />
+      </BetterDialogProvider>
+
+      <BetterDialogProvider
+        open={isLinkModalOpen && isTestSuite}
+        onOpenChange={setIsLinkModalOpen}
+      >
+        <TestSuiteSelectionModal
+          onSelect={async (formData) => {
+            try {
+              await createPointMeta(component.componentId!, {
+                componentLinkId: `${formData.serviceId}:${formData.testPackId}`,
+              })
+              setIsLinkModalOpen(false)
+              toast.success('Focal point meta created successfully')
+            } catch {
+              return void toast.error(
+                'Failed to create focal point meta. Please try again.'
+              )
+            }
+          }}
+        />
+      </BetterDialogProvider>
+
+      <BetterDialogProvider
+        open={isLinkModalOpen && isServiceDoc}
+        onOpenChange={setIsLinkModalOpen}
+      >
+        <ServiceDocSelectionModal
+          onSelect={async (formData) => {
+            try {
+              await createPointMeta(component.componentId!, {
+                componentLinkId: `${formData.serviceId}:${formData.serviceDocId}`,
+              })
+              setIsLinkModalOpen(false)
+              toast.success('Focal point meta created successfully')
+            } catch {
+              return void toast.error(
+                'Failed to create focal point meta. Please try again.'
+              )
+            }
+          }}
+        />
+      </BetterDialogProvider>
+    </>
+  )
+}

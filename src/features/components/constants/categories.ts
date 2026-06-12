@@ -1,0 +1,15 @@
+export const COMPONENT_CATEGORIES = [
+  'Architecture & Flows',
+  'API & Contracts',
+  'Quality & Testing',
+  'Business Logic',
+  'Release & Feature Management',
+  'Support & Operations',
+  'Analytics & Telemetry',
+  'Performance & Reliability',
+  'Security & Compliance',
+  'Ownership & On-call',
+  'Design & UX',
+  'Issue Tracking',
+  'Other',
+]

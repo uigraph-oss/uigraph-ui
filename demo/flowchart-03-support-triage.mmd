@@ -1,0 +1,11 @@
+flowchart TD
+  A[Ticket Received] --> B[Classify Severity]
+  B --> C{Critical?}
+  C -- Yes --> D[Page On-Call Engineer]
+  C -- No --> E[Assign Support Agent]
+  D --> F[Open Incident Channel]
+  E --> G[Gather Reproduction Steps]
+  F --> H[Apply Hotfix]
+  G --> I[Route to Product Team]
+  H --> J[Close Incident]
+  I --> J[Close Ticket]

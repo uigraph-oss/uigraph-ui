@@ -1,0 +1,2 @@
+export const CANVAS_IMAGE_WIDTH = 400
+export const CANVAS_IMAGE_DEFAULT_GAP = 20
