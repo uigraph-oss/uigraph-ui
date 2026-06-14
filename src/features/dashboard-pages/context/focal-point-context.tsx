@@ -1,6 +1,7 @@
 import { GT } from '@/api'
 import { useOrganizationContext } from '@/contexts'
-import { GET_PAGE, GET_PROJECT } from '@/features/dashboard-projects/api'
+import { GET_PAGE } from '@/features/dashboard-projects/api/page'
+import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
 import { useLocalStorage } from '@/hooks/use-localstorage'

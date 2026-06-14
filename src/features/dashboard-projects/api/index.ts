@@ -1,2 +1,2 @@
-export * from './page'
-export * from './project'
+export * from './map-v2'
+export * from './frame-v2'

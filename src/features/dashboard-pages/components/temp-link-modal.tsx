@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useOrganizationContext } from '@/contexts'
-import { GET_PAGE, GET_PROJECT } from '@/features/dashboard-projects/api'
+import { GET_PAGE } from '@/features/dashboard-projects/api/page'
+import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'

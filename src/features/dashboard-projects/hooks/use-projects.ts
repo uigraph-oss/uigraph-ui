@@ -1,19 +1,19 @@
-import { useOrganizationContext } from '@/contexts'
+import { clientV2 } from '@/api-v2/client'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { GET_DIAGRAM_TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
-import { CREATE_PROJECT, GET_PROJECT } from '../api'
+import { CREATE_MAP_V2, MAPS_V2 } from '../api'
 
 export function useProjects() {
-  const { organizationId } = useOrganizationContext()
-  const { data: projectsData, loading: projectsLoading } = useQuery(
-    GET_PROJECT,
-    {
-      fetchPolicy: 'cache-first',
-      variables: { organizationId },
-    }
-  )
+  const organizationId = useCurrentOrganization()?.id
+  const { data: mapsData, loading: mapsLoading } = useQuery(MAPS_V2, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
+  })
 
   const teamsData = useQuery(GET_DIAGRAM_TEAMS, {
     fetchPolicy: 'cache-first',
@@ -26,14 +26,17 @@ export function useProjects() {
     [teamsData.data?.GetTeam]
   )
 
-  const [createProject] = useMutation(CREATE_PROJECT, {
+  const [createProject] = useMutation(CREATE_MAP_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_PROJECT],
+    refetchQueries: [
+      { query: MAPS_V2, variables: { orgId: organizationId! } },
+    ],
   })
 
   return {
-    projectsLoading: projectsLoading && !projectsData?.v1GetProject,
-    projects: arrayNonNullable(projectsData?.v1GetProject),
+    projectsLoading: mapsLoading && !mapsData?.maps,
+    projects: arrayNonNullable(mapsData?.maps),
     teams,
     createProject,
   }

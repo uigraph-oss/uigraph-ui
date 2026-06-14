@@ -1,8 +1,8 @@
-import { uploadProjectFile } from '@/api'
 import { SimpleModalContent, SimpleModalFooter } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { fileToDataUrl } from '@/helpers/file-to-data-url'
 import { convertImageUrlToServerBuffer } from '@/helpers/image-url-to-buffer'
 import { trackGTag } from '@/helpers/track'
 import { FileText } from 'lucide-react'
@@ -22,8 +22,8 @@ export function FigmaImportedView({
   setImportedInfo,
   exitFigmaImport,
 }: FigmaImportedViewProps) {
-  const { organizationId } = useOrganizationContext()
-  const { createPage, projectSlug } = useSingleProject()
+  const organizationId = useCurrentOrganization()?.id
+  const { createFrame, mapId } = useSingleProject()
   const [isCreatingPage, setIsCreatingPage] = useState(false)
 
   async function handleCreatePage() {
@@ -39,26 +39,23 @@ export function FigmaImportedView({
         type: fileData.type,
       })
 
-      const fileId = await uploadProjectFile(file, {
-        orgId: organizationId,
-        projectId: projectSlug,
-      })
+      const screenshot = await fileToDataUrl(file)
 
-      await createPage({
+      await createFrame({
         variables: {
+          orgId: organizationId!,
+          mapId,
           input: {
-            organizationId,
-            projectId: projectSlug,
             templateType: 'default',
-            pageName: importedInfo.name,
+            name: importedInfo.name,
             description: `Imported from Figma: ${importedInfo.name}`,
-            screenShotFileID: fileId,
+            screenshot,
           },
         },
       })
 
       trackGTag('figma_import_completed', {
-        project_id: projectSlug,
+        project_id: mapId,
         page_name: importedInfo.name,
       })
 
