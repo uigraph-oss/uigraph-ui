@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { clientV2 } from '@/api-v2/client'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { formatDistanceToNow } from 'date-fns'
@@ -21,10 +22,11 @@ import {
 } from 'react-icons/lu'
 import { toast } from 'sonner'
 import {
-  CREATE_DIAGRAM_VERSION_MUTATION,
-  GET_DIAGRAM_VERSIONS_QUERY,
-  RESTORE_DIAGRAM_VERSION_MUTATION,
-} from '../api'
+  CREATE_DIAGRAM_VERSION_V2,
+  DIAGRAM_VERSION_CONTENT_V2,
+  DIAGRAM_VERSIONS_V2,
+  RESTORE_DIAGRAM_VERSION_V2,
+} from '../api/versions-v2'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { convertDiagramServerData } from '../helpers/diagram-data'
 import { CompareDiagramVersionModalContent } from './compare-diagram-version-modal-content'
@@ -32,6 +34,7 @@ import { CompareDiagramVersionModalContent } from './compare-diagram-version-mod
 export function DiagramVersion() {
   const {
     diagramId,
+    organizationId,
     tempDiagramState,
     triggerMetaUpdate,
     setTempDiagramState,
@@ -45,33 +48,35 @@ export function DiagramVersion() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false)
   const [showVersionCount, setShowVersionCount] = useState(5)
 
-  const versionsQuery = useQuery(GET_DIAGRAM_VERSIONS_QUERY, {
-    variables: { diagramId: diagramId! },
-    skip: !diagramId,
+  const versionsQuery = useQuery(DIAGRAM_VERSIONS_V2, {
+    client: clientV2,
+    variables: { orgId: organizationId!, diagramId: diagramId! },
+    skip: !diagramId || !organizationId,
   })
+
+  const versionsRefetch = {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries: [
+      {
+        query: DIAGRAM_VERSIONS_V2,
+        variables: { orgId: organizationId!, diagramId: diagramId! },
+      },
+    ],
+  }
 
   const [isCreatingVersion, setIsCreatingVersion] = useState(false)
-  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION_MUTATION, {
-    awaitRefetchQueries: true,
-    refetchQueries: [GET_DIAGRAM_VERSIONS_QUERY],
-  })
+  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION_V2, versionsRefetch)
 
   const [restoreVersion, { loading: isRestoringVersion }] = useMutation(
-    RESTORE_DIAGRAM_VERSION_MUTATION,
-    {
-      awaitRefetchQueries: true,
-      refetchQueries: [GET_DIAGRAM_VERSIONS_QUERY],
-    }
+    RESTORE_DIAGRAM_VERSION_V2,
+    versionsRefetch
   )
 
   const versions = useMemo(() => {
-    return arrayNonNullable(versionsQuery.data?.v1GetDiagramVersions).sort(
-      (a, b) => {
-        return (
-          new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-        )
-      }
-    )
+    return arrayNonNullable(versionsQuery.data?.diagramVersions).sort((a, b) => {
+      return new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    })
   }, [versionsQuery.data])
 
   return (
@@ -85,7 +90,10 @@ export function DiagramVersion() {
               setIsCreatingVersion(true)
               await triggerMetaUpdate(true)
               await createVersion({
-                variables: { diagramId: diagramId! },
+                variables: {
+                  orgId: organizationId!,
+                  diagramId: diagramId!,
+                },
               })
 
               toast.success('Version published successfully')
@@ -115,8 +123,7 @@ export function DiagramVersion() {
               try {
                 if (tempDiagramState) {
                   const versionNumber = versions.find(
-                    (version) =>
-                      version.versionId === tempDiagramState.versionId
+                    (version) => version.id === tempDiagramState.versionId
                   )?.versionNumber
 
                   if (versionNumber == null) {
@@ -125,8 +132,9 @@ export function DiagramVersion() {
 
                   await restoreVersion({
                     variables: {
+                      orgId: organizationId!,
                       diagramId: diagramId!,
-                      versionNumber: versionNumber,
+                      versionId: tempDiagramState.versionId,
                     },
                   })
 
@@ -158,24 +166,38 @@ export function DiagramVersion() {
         value={
           tempDiagramState === null ? 'current' : tempDiagramState.versionId
         }
-        onValueChange={(value) => {
+        onValueChange={async (value) => {
           if (value === 'current') {
             return setTempDiagramState(null)
           }
 
-          const version = versions.find(
-            (version) => version.versionId === value
-          )
+          const version = versions.find((version) => version.id === value)
 
           if (version == null) {
             toast.error('Version not found')
             return setTempDiagramState(null)
           }
 
-          setTempDiagramState({
-            versionId: version.versionId!,
-            ...convertDiagramServerData(version.diagram?.componentFlowDiagram),
-          })
+          try {
+            const { data } = await clientV2.query({
+              query: DIAGRAM_VERSION_CONTENT_V2,
+              variables: {
+                orgId: organizationId!,
+                diagramId: diagramId!,
+                versionId: version.id,
+              },
+            })
+
+            setTempDiagramState({
+              versionId: version.id,
+              ...convertDiagramServerData(
+                data?.diagramVersionContent?.content
+              ),
+            })
+          } catch {
+            toast.error('Failed to load version')
+            setTempDiagramState(null)
+          }
         }}
       >
         <SelectTrigger
@@ -190,10 +212,7 @@ export function DiagramVersion() {
         <SelectContent align="end">
           <SelectItem value="current">Current</SelectItem>
           {versions.slice(0, showVersionCount).map((option) => (
-            <SelectItem
-              key={option.versionId}
-              value={option.versionId ?? 'none'}
-            >
+            <SelectItem key={option.id} value={option.id ?? 'none'}>
               <span>Version {option.versionNumber}</span>
 
               {option.createdAt && (

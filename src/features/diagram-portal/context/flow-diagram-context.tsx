@@ -128,6 +128,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       triggerMetaUpdate,
 
       diagramId,
+      organizationId,
       diagramName,
       setDiagramName,
 

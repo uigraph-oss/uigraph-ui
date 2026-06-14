@@ -1,6 +1,7 @@
 'use client'
 
 import { GT } from '@/api'
+import { DashboardDiagram } from './api/diagrams-v2'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'
@@ -64,7 +65,7 @@ export function DiagramsFolder() {
   })
 
   const filteredDiagrams = useFuse(diagrams, searchQuery, {
-    keys: ['componentFlowDiagramName'],
+    keys: ['name'],
   })
 
   if (isLoading) {
@@ -239,7 +240,7 @@ function DiagramGrid({
   pageSize,
   onPageChange,
 }: {
-  diagrams: GT.Diagram[]
+  diagrams: DashboardDiagram[]
   page: number
   pageSize: number
   onPageChange: (page: number) => void
@@ -255,7 +256,7 @@ function DiagramGrid({
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
       >
         {pageItems.map((diagram) => (
-          <FlowDiagramCard key={diagram.diagramId} diagram={diagram} />
+          <FlowDiagramCard key={diagram.id} diagram={diagram} />
         ))}
       </div>
 
@@ -337,8 +338,9 @@ function AllFlowsCard({
       setIsUpdatingDiagram(true)
       await updateDiagram({
         variables: {
-          diagramId,
-          input: { organizationId, folderId: folder?.folderId },
+          orgId: organizationId!,
+          id: diagramId,
+          input: { folderId: folder?.folderId },
         },
       })
       toast.success('Diagram moved')
@@ -425,8 +427,9 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
       setIsUpdatingDiagram(true)
       await updateDiagram({
         variables: {
-          diagramId,
-          input: { organizationId, folderId: folder.folderId },
+          orgId: organizationId!,
+          id: diagramId,
+          input: { folderId: folder.folderId },
         },
       })
       toast.success('Diagram moved')

@@ -74,9 +74,10 @@ function DashboardDiagramsPageContent() {
             try {
               const { data } = await createDiagram({
                 variables: {
+                  orgId: organizationId!,
                   input: {
-                    organizationId,
-                    componentFlowDiagramName: formData.name,
+                    name: formData.name,
+                    content: '{}',
                     ...(formData.folderId
                       ? { folderId: formData.folderId }
                       : selectedFolderId
@@ -87,7 +88,7 @@ function DashboardDiagramsPageContent() {
                 },
               })
 
-              const diagramId = data?.v1CreateDiagram?.diagramId
+              const diagramId = data?.createDiagram?.id
               if (diagramId) {
                 window.open(`/diagram/${diagramId}`, '_blank')
               }

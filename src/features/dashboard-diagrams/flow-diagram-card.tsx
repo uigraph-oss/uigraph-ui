@@ -1,8 +1,6 @@
-import { GT } from '@/api'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -14,17 +12,18 @@ import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Calendar } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import { DashboardDiagram } from './api/diagrams-v2'
 import { ConfigureDiagramModal } from './configure-diagram-modal'
 import { useDiagramsContext } from './contexts/diagrams-context'
 import { DiagramMoveToFolderModal } from './diagram-move-to-folder-modal'
 import { setDragData } from './helpers/dnd-handler'
 
 type FlowDiagramCardProps = {
-  diagram: GT.Diagram
+  diagram: DashboardDiagram
 }
 
 export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
@@ -36,7 +35,7 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
-  const portalLink = diagram.diagramId ? `/diagram/${diagram.diagramId}` : '#'
+  const portalLink = diagram.id ? `/diagram/${diagram.id}` : '#'
 
   // Images with ratio < 1.4 (portrait or near-square) fill via cover+pan.
   // Only clearly wide/landscape images (ratio >= 1.4) use contain.
@@ -56,24 +55,11 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
       ? new Date(diagram.createdAt)
       : null
 
-  /** Unique profile image URLs (creator + updater); same URL only shown once. */
-  const actorProfileImageUrls = useMemo(() => {
-    const urls = new Set<string>()
-    for (const raw of [
-      diagram.createdByProfileImgUrl,
-      diagram.updatedByProfileImgUrl,
-    ]) {
-      const u = raw?.trim()
-      if (u) urls.add(u)
-    }
-    return Array.from(urls)
-  }, [diagram.createdByProfileImgUrl, diagram.updatedByProfileImgUrl])
-
   return (
     <div
       draggable
       className="group relative"
-      onDragStart={(e) => setDragData(e, diagram.diagramId ?? '')}
+      onDragStart={(e) => setDragData(e, diagram.id ?? '')}
     >
       <Link
         target="_blank"
@@ -85,15 +71,15 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
-            diagram.previewImageFileId
+            diagram.previewImageUrl
               ? 'bg-[#F5F6F8] group-hover:bg-white'
               : 'bg-[#EDEEF1]'
           )}
         >
-          {diagram.previewImageFileId && !imageError ? (
+          {diagram.previewImageUrl && !imageError ? (
             <img
-              src={diagram.previewImageFileId}
-              alt={diagram.componentFlowDiagramName ?? ''}
+              src={diagram.previewImageUrl}
+              alt={diagram.name ?? ''}
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}
               className={cn(
@@ -128,9 +114,8 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         {/* Content */}
         <div className="px-4 py-3">
           <h4 className="line-clamp-1 text-sm font-semibold text-[#111111]">
-            {diagram.componentFlowDiagramName ? (
-              diagram.componentFlowDiagramName.charAt(0).toUpperCase() +
-              diagram.componentFlowDiagramName.slice(1)
+            {diagram.name ? (
+              diagram.name.charAt(0).toUpperCase() + diagram.name.slice(1)
             ) : (
               <span className="text-[#B0B0B2]">Blank Diagram</span>
             )}
@@ -146,23 +131,6 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
               </div>
             ) : (
               <span />
-            )}
-
-            {actorProfileImageUrls.length > 0 && (
-              <div className="flex shrink-0 items-center">
-                {actorProfileImageUrls.map((url, i) => (
-                  <Avatar
-                    key={url}
-                    className={cn(
-                      'pointer-events-none size-7 border-2 border-white bg-[#F0F0F2] shadow-sm',
-                      i > 0 && '-ml-2'
-                    )}
-                  >
-                    <AvatarImage src={url} alt="" className="object-cover" />
-                    <AvatarFallback className="text-[9px] font-medium text-[#A0A0A2]" />
-                  </Avatar>
-                ))}
-              </div>
             )}
           </div>
         </div>
@@ -203,17 +171,17 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         <ConfigureDiagramModal
           mode="update"
           open={renameOpen}
-          defaultName={diagram.componentFlowDiagramName ?? ''}
+          defaultName={diagram.name ?? ''}
           onSubmit={async (data) => {
-            if (!diagram.diagramId) return
+            if (!diagram.id) return
 
             try {
               await updateDiagram({
                 variables: {
-                  diagramId: diagram.diagramId,
+                  orgId: organizationId!,
+                  id: diagram.id,
                   input: {
-                    organizationId,
-                    componentFlowDiagramName: data.name,
+                    name: data.name,
                   },
                 },
               })
@@ -233,11 +201,11 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         title="Do you want to delete this flow diagram?"
         description="Deleting this flow diagram is a permanent action and cannot be undone. Please think carefully before proceeding."
         onConfirm={async () => {
-          if (!diagram.diagramId) return
+          if (!diagram.id) return
 
           try {
             await deleteDiagram({
-              variables: { diagramId: diagram.diagramId },
+              variables: { orgId: organizationId!, id: diagram.id },
             })
             toast.success('Diagram deleted')
             setDeleteOpen(false)
@@ -253,7 +221,7 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         onOpenChange={setMoveToFolderOpen}
       >
         <DiagramMoveToFolderModal
-          diagramId={diagram.diagramId ?? ''}
+          diagramId={diagram.id ?? ''}
           onClose={() => setMoveToFolderOpen(false)}
         />
       </BetterDialogProvider>

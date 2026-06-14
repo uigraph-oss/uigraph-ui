@@ -1,40 +1,88 @@
-import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
+import type { V2 } from '@/api-v2'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { VersionLayout } from '@/components/version-layout'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { DIAGRAM_VERSION_CONTENT_V2 } from '../api/versions-v2'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { FlowDiagramPreview } from '../flow-diagram-preview'
 import { convertDiagramServerData } from '../helpers/diagram-data'
+import { ServerDiagramData } from '../types/diagram'
+
+type DiagramVersionSummary = Pick<
+  V2.DiagramVersion,
+  'id' | 'versionNumber'
+>
 
 export type VersionCompareModalContentProps = {
-  versions: GT.DiagramVersion[]
+  versions: DiagramVersionSummary[]
   currentVersionId: string | null
 }
 
 type CompareSideProps = {
-  versions: GT.DiagramVersion[]
+  versions: DiagramVersionSummary[]
   selectedVersionId: string | null
 }
 
 function CompareSide({ versions, selectedVersionId }: CompareSideProps) {
-  const { latestData } = useFlowDiagramContext()
+  const { latestData, organizationId, diagramId } = useFlowDiagramContext()
+
+  const [content, setContent] = useState<ServerDiagramData | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const version = useMemo(
+    () => versions.find((version) => version.id === selectedVersionId) ?? null,
+    [versions, selectedVersionId]
+  )
+
+  useEffect(() => {
+    if (selectedVersionId === null || !version) {
+      setContent(null)
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+
+    clientV2
+      .query({
+        query: DIAGRAM_VERSION_CONTENT_V2,
+        variables: {
+          orgId: organizationId!,
+          diagramId: diagramId!,
+          versionId: version.id,
+        },
+      })
+      .then(({ data }) => {
+        if (cancelled) return
+        setContent(
+          convertDiagramServerData(data?.diagramVersionContent?.content)
+        )
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedVersionId, version, organizationId, diagramId])
 
   const versionData = useMemo(() => {
     if (selectedVersionId === null) {
       return { name: 'Latest', ...latestData }
     }
+    if (!version || !content) return null
+    return { name: `Version ${version.versionNumber}`, ...content }
+  }, [selectedVersionId, version, content, latestData])
 
-    const version = versions.find(
-      (version) => version.versionId === selectedVersionId
+  if (loading) {
+    return (
+      <div className="flex size-full shrink-0 items-center justify-center">
+        <p>Loading…</p>
+      </div>
     )
-
-    if (!version) return null
-
-    return {
-      name: `Version ${version.versionNumber}`,
-      ...convertDiagramServerData(version.diagram?.componentFlowDiagram),
-    }
-  }, [selectedVersionId, versions, latestData])
+  }
 
   if (!versionData) {
     return (
@@ -66,13 +114,13 @@ export function CompareDiagramVersionModalContent({
   >(null)
 
   const latestVersionId = useMemo(() => {
-    return versions.at(0)?.versionId ?? currentVersionId
+    return versions.at(0)?.id ?? currentVersionId
   }, [versions, currentVersionId])
 
   const leftVersionName = useMemo(() => {
     if (selectedLeftVersionId === null) return 'Latest'
     const version = versions.find(
-      (version) => version.versionId === selectedLeftVersionId
+      (version) => version.id === selectedLeftVersionId
     )
     return version ? `Version ${version.versionNumber}` : 'Latest'
   }, [selectedLeftVersionId, versions])
@@ -80,7 +128,7 @@ export function CompareDiagramVersionModalContent({
   const rightVersionName = useMemo(() => {
     if (selectedRightVersionId === null) return 'Latest'
     const version = versions.find(
-      (version) => version.versionId === selectedRightVersionId
+      (version) => version.id === selectedRightVersionId
     )
     return version ? `Version ${version.versionNumber}` : 'Latest'
   }, [selectedRightVersionId, versions])
@@ -97,7 +145,10 @@ export function CompareDiagramVersionModalContent({
       }
     >
       <VersionLayout
-        versions={versions}
+        versions={versions.map((v) => ({
+          versionId: v.id,
+          versionNumber: v.versionNumber,
+        }))}
         currentVersionId={currentVersionId}
         selectedLeftVersionId={selectedLeftVersionId}
         setSelectedLeftVersionId={setSelectedLeftVersionId}

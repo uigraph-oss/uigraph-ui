@@ -50,8 +50,9 @@ export function DiagramMoveToFolderModal({
 
           await updateDiagram({
             variables: {
-              diagramId,
-              input: { organizationId, folderId: selectedFolderId },
+              orgId: organizationId!,
+              id: diagramId,
+              input: { folderId: selectedFolderId },
             },
           })
 

@@ -1,15 +1,17 @@
+import { clientV2 } from '@/api-v2/client'
 import { useOrganizationContext } from '@/contexts'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo, useState } from 'react'
+import { GET_FOLDER_AND_DIAGRAMS } from '../api/diagrams'
 import {
-  CREATE_DIAGRAM_MUTATION,
-  DELETE_DIAGRAM_MUTATION,
-  GET_FOLDER_AND_DIAGRAMS,
-  UPDATE_DIAGRAM_MUTATION,
-} from '../api/diagrams'
+  CREATE_DIAGRAM_V2,
+  DELETE_DIAGRAM_V2,
+  DIAGRAMS_V2,
+  UPDATE_DIAGRAM_META_V2,
+} from '../api/diagrams-v2'
 import {
   CREATE_DIAGRAM_FOLDER,
   DELETE_DIAGRAM_FOLDER,
@@ -31,6 +33,16 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       fetchPolicy: 'cache-and-network',
       variables: {
         organizationId: organizationId!,
+        folderId: searchParams.folder,
+      },
+    })
+
+    const diagramsV2Query = useQuery(DIAGRAMS_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-and-network',
+      skip: !organizationId,
+      variables: {
+        orgId: organizationId!,
         folderId: searchParams.folder,
       },
     })
@@ -110,19 +122,23 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       awaitRefetchQueries: true,
     })
 
-    const [createDiagram] = useMutation(CREATE_DIAGRAM_MUTATION, {
-      refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
-      awaitRefetchQueries: true,
+    function refetchDiagrams() {
+      return diagramsV2Query.refetch()
+    }
+
+    const [createDiagram] = useMutation(CREATE_DIAGRAM_V2, {
+      client: clientV2,
+      onCompleted: refetchDiagrams,
     })
 
-    const [updateDiagram] = useMutation(UPDATE_DIAGRAM_MUTATION, {
-      refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
-      awaitRefetchQueries: true,
+    const [updateDiagram] = useMutation(UPDATE_DIAGRAM_META_V2, {
+      client: clientV2,
+      onCompleted: refetchDiagrams,
     })
 
-    const [deleteDiagram] = useMutation(DELETE_DIAGRAM_MUTATION, {
-      refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
-      awaitRefetchQueries: true,
+    const [deleteDiagram] = useMutation(DELETE_DIAGRAM_V2, {
+      client: clientV2,
+      onCompleted: refetchDiagrams,
     })
 
     const folders = useMemo(
@@ -136,20 +152,17 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     )
 
     const diagrams = useMemo(
-      () =>
-        arrayNonNullable(
-          folderAndDiagramsData.data?.v1GetDiagramsByOrgId ?? []
-        ),
-      [folderAndDiagramsData.data?.v1GetDiagramsByOrgId]
+      () => arrayNonNullable(diagramsV2Query.data?.diagrams ?? []),
+      [diagramsV2Query.data?.diagrams]
     )
 
     const isFolderDataLoading =
       folderData.loading && !folderData.data?.v1GetFolder
 
     const isFolderAndDiagramsDataLoading =
-      folderAndDiagramsData.loading &&
-      !folderAndDiagramsData.data?.v1GetFolders &&
-      !folderAndDiagramsData.data?.v1GetDiagramsByOrgId
+      (folderAndDiagramsData.loading &&
+        !folderAndDiagramsData.data?.v1GetFolders) ||
+      (diagramsV2Query.loading && !diagramsV2Query.data?.diagrams)
 
     const teamFilteredDiagrams = useMemo(() => {
       if (!resolvedTeamId) return diagrams
@@ -180,6 +193,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       createDiagram,
       updateDiagram,
       deleteDiagram,
+      refetchDiagrams,
     }
   }
 )

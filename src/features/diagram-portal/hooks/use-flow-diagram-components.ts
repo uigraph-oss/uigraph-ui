@@ -1,9 +1,10 @@
 import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { useOrganizationContext } from '@/contexts'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
-import { GET_FLOW_DIAGRAM_COMPONENTS } from '../api'
+import { FLOW_DIAGRAM_COMPONENTS_V2 } from '../api/flow-components-v2'
 
 export type FlowDiagramComponentsGroup = {
   name: string
@@ -12,17 +13,19 @@ export type FlowDiagramComponentsGroup = {
 
 export function useFlowDiagramComponents() {
   const { organizationId } = useOrganizationContext()
-  const { data, loading } = useQuery(GET_FLOW_DIAGRAM_COMPONENTS, {
-    variables: { organizationId },
+  const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS_V2, {
+    client: clientV2,
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
     fetchPolicy: 'cache-first',
   })
 
   const flowDiagramGroups: FlowDiagramComponentsGroup[] = useMemo(() => {
     const nativeComponents = arrayNonNullable(
-      data?.v1GetFlowDiagramComponents?.components
+      data?.flowDiagramComponents?.components
     )
     const customComponents = arrayNonNullable(
-      data?.v1GetFlowDiagramComponents?.customComponents
+      data?.flowDiagramComponents?.customComponents
     )
 
     const components = [...nativeComponents, ...customComponents]
@@ -44,7 +47,7 @@ export function useFlowDiagramComponents() {
 
   return {
     flowDiagramGroups,
-    loading: loading && !data?.v1GetFlowDiagramComponents?.components,
+    loading: loading && !data?.flowDiagramComponents?.components,
   }
 }
 
