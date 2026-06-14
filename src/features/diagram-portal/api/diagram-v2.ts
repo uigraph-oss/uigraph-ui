@@ -31,16 +31,3 @@ export const UPDATE_DIAGRAM_V2 = graphql(`
     }
   }
 `)
-
-export const UPDATE_DIAGRAM_THUMBNAIL_V2 = graphql(`
-  mutation UpdateDiagramThumbnailV2(
-    $orgId: ID!
-    $id: ID!
-    $input: UpdateDiagramThumbnailInput!
-  ) {
-    updateDiagramThumbnail(orgId: $orgId, id: $id, input: $input) {
-      fileId
-      fileUploadURL
-    }
-  }
-`)

@@ -8,7 +8,7 @@ import { useEffectExceptOnMount, useEffectState } from 'daily-code/react'
 import ms from 'ms'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { UPDATE_DIAGRAM_THUMBNAIL_V2, UPDATE_DIAGRAM_V2 } from '../api/diagram-v2'
+import { UPDATE_DIAGRAM_V2 } from '../api/diagram-v2'
 import { convertDiagramServerDataToString } from '../helpers/diagram-data'
 import { generateDiagramThumbnailFile } from '../helpers/download-image'
 import { DataSource } from '../types/db-flow'
@@ -132,13 +132,21 @@ export function useDiagramPortalMutation({
 
         if (!isDiagramCached) {
           await updateDiagram({
-            variables: { orgId: organizationId, id: diagramId, input: updatesInput },
+            variables: {
+              orgId: organizationId,
+              id: diagramId,
+              input: updatesInput,
+            },
           })
           CACHED_UPDATES.set(diagramId, updateInputStringified)
         }
 
         if (thumbnail) {
-          uploadThumbnailFile(organizationId, diagramId, thumbnail.thumbnailFile)
+          uploadThumbnailFile(
+            organizationId,
+            diagramId,
+            thumbnail.thumbnailFile
+          )
             .then(() => {
               setLastUpdatedAt(Date.now())
               CACHED_THUMBNAIL_FILES.set(diagramId, thumbnail.updateHash)
@@ -238,22 +246,12 @@ async function uploadThumbnailFile(
   diagramId: string,
   file: File
 ) {
-  const { data } = await clientV2.mutate({
-    mutation: UPDATE_DIAGRAM_THUMBNAIL_V2,
-    variables: {
-      orgId,
-      id: diagramId,
-      input: {
-        fileName: 'preview.webp',
-        contentType: 'image/webp',
-      },
-    },
-  })
+  const form = new FormData()
+  form.append('file', file)
 
-  const fileUploadURL = data?.updateDiagramThumbnail?.fileUploadURL
-  if (!fileUploadURL) throw new Error('Failed to get file upload URL')
-
-  await axios.put(fileUploadURL, file, {
-    headers: { 'Content-Type': 'image/webp' },
-  })
+  await axios.post(
+    `/api/v1/orgs/${orgId}/diagrams/${diagramId}/thumbnail`,
+    form,
+    { withCredentials: true }
+  )
 }

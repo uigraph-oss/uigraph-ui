@@ -3,23 +3,19 @@
 import { clientV2 } from '@/api-v2/client'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
-import { useMutation, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import axios from 'axios'
 import { arrayNonNullable } from 'daily-code'
 import { openFileExplorer } from 'daily-code/browser'
 import { ImageIcon, Upload } from 'lucide-react'
 import { useMemo } from 'react'
-import { CREATE_DIAGRAM_IMAGE_V2, DIAGRAM_IMAGES_V2 } from '../api/images-v2'
+import { DIAGRAM_IMAGES_V2 } from '../api/images-v2'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
 
 export function SidebarImages() {
   const { diagramId, organizationId } = useFlowDiagramContext()
-
-  const [createDiagramImage] = useMutation(CREATE_DIAGRAM_IMAGE_V2, {
-    client: clientV2,
-  })
 
   const { data, refetch } = useQuery(DIAGRAM_IMAGES_V2, {
     client: clientV2,
@@ -38,23 +34,16 @@ export function SidebarImages() {
       const [file] = await openFileExplorer({ accept: 'image/*' })
       if (!file) return
 
-      const { data } = await createDiagramImage({
-        variables: {
-          orgId: organizationId,
-          diagramId,
-          input: {
-            fileName: file.name,
-            order: images.length,
-          },
-        },
-      })
+      const form = new FormData()
+      form.append('file', file)
+      form.append('fileName', file.name)
+      form.append('order', String(images.length))
 
-      const uploadURL = data?.createDiagramImage?.fileUploadURL
-      if (!uploadURL) throw new Error('Failed to get file upload URL')
-
-      await axios.put(uploadURL, file, {
-        headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      })
+      await axios.post(
+        `/api/v1/orgs/${organizationId}/diagrams/${diagramId}/images`,
+        form,
+        { withCredentials: true }
+      )
 
       await refetch()
     } catch (error) {
