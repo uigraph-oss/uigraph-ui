@@ -18,7 +18,7 @@ import { ReactFlowWrapper } from './react-flow-wrapper'
 import { ServerDiagramData } from './types/diagram'
 
 export function DiagramPortalPage() {
-  const { organizationId } = useOrganizationContext()
+  const organization = useCurrentOrganization()
 
   const { diagramId } = useParams() as { diagramId: string }
 
@@ -26,8 +26,8 @@ export function DiagramPortalPage() {
     client: clientV2,
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
-    skip: !organizationId,
-    variables: { orgId: organizationId!, id: String(diagramId) },
+    skip: !organization.id,
+    variables: { orgId: organization.id, id: String(diagramId) },
   })
 
   const { data: contentData, loading: contentLoading } = useQuery(
@@ -36,8 +36,8 @@ export function DiagramPortalPage() {
       client: clientV2,
       errorPolicy: 'ignore',
       fetchPolicy: 'cache-first',
-      skip: !organizationId,
-      variables: { orgId: organizationId!, id: String(diagramId) },
+      skip: !organization.id,
+      variables: { orgId: organization.id, id: String(diagramId) },
     }
   )
 
@@ -54,7 +54,7 @@ export function DiagramPortalPage() {
   return (
     <FlowDiagramProvider
       diagramId={diagramId}
-      organizationId={organizationId}
+      organizationId={organization.id}
       folderId={data?.diagram?.folderId ?? null}
       teamId={data?.diagram?.teamId ?? null}
       initialData={initialDiagramData}

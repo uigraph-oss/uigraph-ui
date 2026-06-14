@@ -1,7 +1,6 @@
 'use client'
 
 import { GT } from '@/api'
-import { DashboardDiagram } from './api/diagrams-v2'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'
@@ -15,20 +14,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { Folder, FolderOpen, MoreHorizontal } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import { toast } from 'sonner'
 import { useFuse } from '../diagram-portal/hooks/use-fuse'
+import { DashboardDiagram } from './api/diagrams-v2'
 import { ConfigureFolderModal } from './configure-folder-modal'
 import { useDiagramsContext } from './contexts/diagrams-context'
 import { FlowDiagramCard } from './flow-diagram-card'
@@ -37,7 +31,7 @@ import { getDragData } from './helpers/dnd-handler'
 const PAGE_SIZE = 12
 
 export function DiagramsFolder() {
-  const { organizationId } = useOrganizationContext()
+  const organization = useCurrentOrganization()
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
   const [page, setPage] = useState(0)
@@ -51,9 +45,6 @@ export function DiagramsFolder() {
     selectedFolderId,
     setSelectedFolderId,
     createFolder,
-    teams,
-    selectedTeamId,
-    setSelectedTeamId,
   } = useDiagramsContext()
 
   useEffect(() => {
@@ -76,7 +67,6 @@ export function DiagramsFolder() {
     <div className="space-y-6">
       {Boolean(folders.length > 0 || selectedFolderId) && (
         <div className="space-y-3">
-          {/* Search + team filter + back */}
           <div className="flex items-center gap-2">
             <Input
               value={searchQuery}
@@ -84,27 +74,6 @@ export function DiagramsFolder() {
               placeholder="Search folders and flows"
               className="h-9 max-w-sm flex-1 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none focus-visible:bg-white"
             />
-
-            {teams.length > 0 && (
-              <Select
-                value={selectedTeamId ?? '__all__'}
-                onValueChange={(v) =>
-                  setSelectedTeamId(v === '__all__' ? null : v)
-                }
-              >
-                <SelectTrigger className="h-9 w-40 shrink-0 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none">
-                  <SelectValue placeholder="All Teams" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all__">All Teams</SelectItem>
-                  {teams.map((t) => (
-                    <SelectItem key={t.teamId ?? ''} value={t.teamId ?? ''}>
-                      {t.teamName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
 
             {selectedFolderId && (
               <Button
@@ -120,9 +89,7 @@ export function DiagramsFolder() {
             )}
           </div>
 
-          {/* Folder row */}
           <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
-            {/* All Flows — special primary card */}
             {!selectedFolderId && (
               <AllFlowsCard diagramsCount={diagrams.length} />
             )}
@@ -133,7 +100,6 @@ export function DiagramsFolder() {
               />
             )}
 
-            {/* Regular folder chips */}
             {filteredFolders.map((folder) => (
               <FolderChip key={folder.folderId} folder={folder} />
             ))}
@@ -147,7 +113,6 @@ export function DiagramsFolder() {
         </div>
       )}
 
-      {/* Diagram grid */}
       <div>
         <h3 className="text-paragraph mb-3 text-sm font-medium">
           {selectedFolder ? `Flows in ${selectedFolder.name}` : 'All Flows'}
@@ -190,7 +155,7 @@ export function DiagramsFolder() {
               await createFolder({
                 variables: {
                   input: {
-                    organizationId,
+                    organizationId: organization.id,
                     parentId: selectedFolderId,
                     type: 'diagram',
                     name: data.name,
@@ -216,7 +181,6 @@ function getPageWindow(current: number, total: number): (number | '...')[] {
 
   const pages: (number | '...')[] = []
 
-  // Always show first
   pages.push(0)
 
   const windowStart = Math.max(1, current - 1)
@@ -228,7 +192,6 @@ function getPageWindow(current: number, total: number): (number | '...')[] {
 
   if (windowEnd < total - 2) pages.push('...')
 
-  // Always show last
   pages.push(total - 1)
 
   return pages
@@ -372,7 +335,6 @@ function AllFlowsCard({
         handleDrop(diagramId).catch(() => toast.error('Failed to move diagram'))
       }}
     >
-      {/* Blue icon square */}
       <div className="bg-primary flex size-9 shrink-0 items-center justify-center rounded-xl">
         {isUpdatingDiagram ? (
           <SuperCircleLoader className="size-5 text-white" />
@@ -381,7 +343,6 @@ function AllFlowsCard({
         )}
       </div>
 
-      {/* Text */}
       <div className="flex flex-col">
         <span className="text-primary text-sm font-semibold">
           {folder?.name ?? 'All Flows'}
@@ -483,7 +444,6 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
           <span className="max-w-[140px] truncate">{folder.name}</span>
         </button>
 
-        {/* 3-dot menu — appears on hover or when open */}
         <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <DropdownMenuTrigger asChild>
             <button
@@ -516,7 +476,6 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
         </DropdownMenu>
       </div>
 
-      {/* Rename modal */}
       <BetterDialogProvider
         open={isRenameOpen}
         onOpenChange={setIsRenameOpen}
@@ -542,7 +501,6 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
         />
       </BetterDialogProvider>
 
-      {/* Delete confirmation */}
       <BetterDeleteConfirmationModal
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
@@ -555,7 +513,6 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
               organizationId,
             },
           })
-          // If we're inside the deleted folder, navigate out
           if (selectedFolderId === folder.folderId) {
             setSelectedFolderId(null)
           }

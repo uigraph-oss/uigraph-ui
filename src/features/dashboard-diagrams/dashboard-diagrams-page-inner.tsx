@@ -3,8 +3,8 @@
 import { CirclePlusIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
-import { useOrganizationContext } from '@/contexts'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useState } from 'react'
 import { LuFolderPlus } from 'react-icons/lu'
 import { toast } from 'sonner'
@@ -25,15 +25,9 @@ export function DashboardDiagramsPageInner() {
 }
 
 function DashboardDiagramsPageContent() {
-  const { organizationId } = useOrganizationContext()
-  const {
-    createDiagram,
-    createFolder,
-    selectedFolderId,
-    folders,
-    teams,
-    selectedTeamId,
-  } = useDiagramsContext()
+  const organizationId = useCurrentOrganization().id
+  const { createDiagram, createFolder, selectedFolderId, folders } =
+    useDiagramsContext()
 
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
   const [isCreateDiagramOpen, setIsCreateDiagramOpen] = useState(false)
@@ -67,9 +61,9 @@ function DashboardDiagramsPageContent() {
           mode="create"
           open={isCreateDiagramOpen}
           folders={folders}
-          teams={teams}
+          teams={[]}
           defaultFolderId={selectedFolderId}
-          defaultTeamId={selectedTeamId}
+          defaultTeamId={null}
           onSubmit={async (formData) => {
             try {
               const { data } = await createDiagram({

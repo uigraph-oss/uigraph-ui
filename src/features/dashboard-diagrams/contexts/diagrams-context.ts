@@ -1,10 +1,10 @@
 import { clientV2 } from '@/api-v2/client'
-import { useOrganizationContext } from '@/contexts'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { GET_FOLDER_AND_DIAGRAMS } from '../api/diagrams'
 import {
   CREATE_DIAGRAM_V2,
@@ -22,7 +22,7 @@ import { GET_DIAGRAM_ORG_USERS, GET_DIAGRAM_TEAMS } from '../api/teams'
 
 export const [DiagramsContextProvider, useDiagramsContext] = createContext(
   () => {
-    const { organizationId, accountId } = useOrganizationContext()
+    const organization = useCurrentOrganization()
 
     const [searchParams, setSearchParams] = useSearchParamsState(
       'folder',
@@ -32,7 +32,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     const folderAndDiagramsData = useQuery(GET_FOLDER_AND_DIAGRAMS, {
       fetchPolicy: 'cache-and-network',
       variables: {
-        organizationId: organizationId!,
+        organizationId: organization.id,
         folderId: searchParams.folder,
       },
     })
@@ -40,9 +40,9 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     const diagramsV2Query = useQuery(DIAGRAMS_V2, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
-      skip: !organizationId,
+      skip: !organization.id,
       variables: {
-        orgId: organizationId!,
+        orgId: organization.id,
         folderId: searchParams.folder,
       },
     })
@@ -67,14 +67,14 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
 
     const teamsData = useQuery(GET_DIAGRAM_TEAMS, {
       fetchPolicy: 'cache-first',
-      variables: { organizationId: organizationId! },
-      skip: !organizationId,
+      variables: { organizationId: organization.id },
+      skip: !organization.id,
     })
 
     const orgUsersData = useQuery(GET_DIAGRAM_ORG_USERS, {
       fetchPolicy: 'cache-first',
-      variables: { organizationId: organizationId! },
-      skip: !organizationId,
+      variables: { organizationId: organization.id },
+      skip: !organization.id,
     })
 
     const teams = useMemo(
@@ -86,26 +86,6 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       () => arrayNonNullable(orgUsersData.data?.GetOrganizationUsers ?? []),
       [orgUsersData.data?.GetOrganizationUsers]
     )
-
-    // Find current user's teamId to set as default filter
-    const currentUserTeamId = useMemo(() => {
-      const me = orgUsers.find((u) => u.userId === accountId)
-      return me?.teamId ?? null
-    }, [orgUsers, accountId])
-
-    const [selectedTeamId, setSelectedTeamId] = useState<
-      string | null | undefined
-    >(undefined)
-
-    // undefined = not yet initialised (wait for users to load)
-    // null = "All Teams" (user explicitly cleared it)
-    // string = specific team
-    const resolvedTeamId = useMemo(() => {
-      if (selectedTeamId !== undefined) return selectedTeamId
-      // Default to the current user's team once users have loaded
-      if (orgUsersData.loading) return undefined
-      return currentUserTeamId
-    }, [selectedTeamId, currentUserTeamId, orgUsersData.loading])
 
     const [createFolder] = useMutation(CREATE_DIAGRAM_FOLDER, {
       refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
@@ -164,15 +144,9 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
         !folderAndDiagramsData.data?.v1GetFolders) ||
       (diagramsV2Query.loading && !diagramsV2Query.data?.diagrams)
 
-    const teamFilteredDiagrams = useMemo(() => {
-      if (!resolvedTeamId) return diagrams
-      return diagrams.filter((d) => d.teamId === resolvedTeamId)
-    }, [diagrams, resolvedTeamId])
-
     return {
       folders,
-      diagrams: teamFilteredDiagrams,
-      allDiagrams: diagrams,
+      diagrams,
       isLoading: isFolderDataLoading || isFolderAndDiagramsDataLoading,
 
       selectedFolder,
@@ -184,8 +158,6 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
 
       teams,
       orgUsers,
-      selectedTeamId: resolvedTeamId,
-      setSelectedTeamId,
 
       createFolder,
       updateFolder,
