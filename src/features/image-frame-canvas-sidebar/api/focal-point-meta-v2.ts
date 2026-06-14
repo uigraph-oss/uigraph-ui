@@ -14,10 +14,6 @@ export type FocalPointMetaV2 = {
   updatedAt?: string | null
 }
 
-// PointMeta is the shape the focal-point meta picker UI consumes. It mirrors the
-// legacy v1 FocalPointMeta: componentModalFields/componentImages are parsed from
-// the v2 JSON-string columns into arrays, and `id`/`frameId` are aliased to the
-// v1 field names the picker components read.
 export type PointMeta = {
   focalPointMetaId: string
   focalPointId?: string | null
