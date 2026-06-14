@@ -12,7 +12,8 @@ import { FocalPointCanvas } from './focal-point-canvas'
 
 export function FocalPointEditor() {
   const {
-    page,
+    frame,
+    mapId,
     preset,
     setPreset,
 
@@ -88,7 +89,10 @@ export function FocalPointEditor() {
         <div className="h-full overflow-hidden">
           {selectedFocalPoint && (
             <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
-              <FocalPointSidebarContextProvider focalPoint={selectedFocalPoint}>
+              <FocalPointSidebarContextProvider
+                focalPoint={selectedFocalPoint}
+                mapId={mapId}
+              >
                 <FocalPointSidebar
                   focalPoint={selectedFocalPoint}
                   updateFocalPoint={updateFocalPoint}
@@ -101,14 +105,14 @@ export function FocalPointEditor() {
           {selectedFrameGroup && (
             <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
               <GroupSidebar
-                page={page!}
+                frame={frame!}
                 frameGroup={selectedFrameGroup}
                 frameGroupPoints={selectedFrameGroupPoints}
                 updateFrameGroup={async (input) => {
-                  await updateFrameGroup(selectedFrameGroup.pageGroupId!, input)
+                  await updateFrameGroup(selectedFrameGroup.id, input)
                 }}
                 deleteFrameGroup={async () => {
-                  await deleteFrameGroup(selectedFrameGroup.pageGroupId!)
+                  await deleteFrameGroup(selectedFrameGroup.id)
                 }}
               />
             </GridScrollBody>

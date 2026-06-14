@@ -1,5 +1,16 @@
 import { graphql } from '@/api-v2'
 
+export type FocalPointV2 = {
+  id: string
+  frameId?: string | null
+  orgId?: string | null
+  name?: string | null
+  locationX?: number | null
+  locationY?: number | null
+  visibility?: string | null
+  isActive?: boolean | null
+}
+
 export const FOCAL_POINTS_V2 = graphql(`
   query FocalPointsV2($orgId: ID!, $mapId: ID!, $frameId: ID!) {
     focalPoints(orgId: $orgId, mapId: $mapId, frameId: $frameId) {

@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { SuperCircleLoader } from '@/components/loader'
 import {
   Accordion,
@@ -11,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -21,14 +21,20 @@ import { DeleteFocalPointConfirmationModal } from './delete-focal-point-confirm-
 export type FocalPointDetailsApi = {
   updateFocalPoint: (
     pointId: string,
-    input: GT.UpdateFocalPointInput
+    input: {
+      name?: string
+      locationX?: number
+      locationY?: number
+      visibility?: string
+      isActive?: boolean
+    }
   ) => Promise<void>
 
   deleteFocalPoint: (pointId: string) => Promise<void>
 }
 
 type FocalPointDetailsProps = FocalPointDetailsApi & {
-  focalPoint: GT.FocalPoint
+  focalPoint: FocalPointV2
   unselectFocalPoint: () => void
 }
 
@@ -47,11 +53,9 @@ export function FocalPointDetails({
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
     useState(false)
 
-  const [localName, setLocalName] = useEffectState(
-    focalPoint.focalPointName || ''
-  )
+  const [localName, setLocalName] = useEffectState(focalPoint.name || '')
 
-  const hasChanges = localName !== focalPoint.focalPointName
+  const hasChanges = localName !== focalPoint.name
 
   return (
     <div>
@@ -91,10 +95,8 @@ export function FocalPointDetails({
                   onClick={async () => {
                     try {
                       setIsUpdatingFocalPoint(true)
-                      await updateFocalPoint(focalPoint.focalPointId!, {
-                        organizationId: focalPoint.organizationId!,
-                        pageId: focalPoint.pageId!,
-                        focalPointName: localName,
+                      await updateFocalPoint(focalPoint.id, {
+                        name: localName,
                       })
                     } catch {
                       toast.error('Failed to update focal point')
@@ -143,7 +145,7 @@ export function FocalPointDetails({
           onConfirm={async () => {
             try {
               setIsDeletingFocalPoint(true)
-              await deleteFocalPoint(focalPoint.focalPointId!)
+              await deleteFocalPoint(focalPoint.id)
               toast.success('Focal point deleted successfully')
               unselectFocalPoint()
             } catch {

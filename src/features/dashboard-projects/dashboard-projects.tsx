@@ -2,9 +2,9 @@
 
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
 import { trackGTag } from '@/helpers/track'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { BasicFilterInput } from './components/basic-filters'

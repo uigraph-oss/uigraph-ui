@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -7,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { FrameLinkV2 } from '@/features/dashboard-pages/api/links-v2'
 import { cn } from '@/lib/utils'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
@@ -18,12 +18,10 @@ import { SvgDot } from './svg-dot'
 
 type LinkedProjectDotProps = {
   contentSize: 'sm' | 'md'
-  projectLink: GT.PageProjectLink
+  projectLink: FrameLinkV2
 
   deleteProjectLink: () => Promise<void>
-  updateProjectLink: (
-    data: Pick<GT.UpdatePageProjectLinkInput, 'label'>
-  ) => Promise<void>
+  updateProjectLink: (data: { label: string }) => Promise<void>
 }
 
 export function LinkedProjectDot({
@@ -46,7 +44,7 @@ export function LinkedProjectDot({
           <a
             target="_blank"
             rel="noreferrer"
-            href={`/dashboard/maps/${projectLink.projectId}`}
+            href={`/dashboard/maps/${projectLink.targetMapId}`}
             style={getViewPointPositionStyle({
               x: projectLink.locationX!,
               y: projectLink.locationY!,

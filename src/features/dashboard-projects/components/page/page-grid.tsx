@@ -15,9 +15,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
 import { Calendar, MoreVertical } from 'lucide-react'
 import { useState } from 'react'

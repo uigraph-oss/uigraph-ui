@@ -1,64 +1,88 @@
-import { GT } from '@/api'
-import { useOrganizationContext } from '@/contexts'
-import { GET_PAGE } from '@/features/dashboard-projects/api/page'
-import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
+import { clientV2 } from '@/api-v2/client'
+import { FRAME_BY_ID_V2, MAP_V2 } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
 import { useLocalStorage } from '@/hooks/use-localstorage'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
-  CREATE_FOCAL_POINT,
-  CREATE_FRAME_GROUP,
-  CREATE_PAGE_PAGE_LINK,
-  CREATE_PAGE_PROJECT_LINK,
-  DELETE_FOCAL_POINT,
-  DELETE_PAGE_PAGE_LINK,
-  DELETE_PAGE_PROJECT_LINK,
-  UPDATE_FOCAL_POINT,
-  UPDATE_PAGE_PAGE_LINK,
-  UPDATE_PAGE_PROJECT_LINK,
-} from '../api'
-import { GET_CANVAS_POINTS } from '../api/canvas'
-import { DELETE_FRAME_GROUP, UPDATE_FRAME_GROUP } from '../api/frame-group'
+  CREATE_FOCAL_POINT_V2,
+  DELETE_FOCAL_POINT_V2,
+  FOCAL_POINTS_V2,
+  UPDATE_FOCAL_POINT_V2,
+} from '../api/focal-point-v2'
+import {
+  CREATE_FRAME_GROUP_V2,
+  DELETE_FRAME_GROUP_V2,
+  FRAME_GROUPS_V2,
+  UPDATE_FRAME_GROUP_V2,
+} from '../api/frame-group-v2'
+import {
+  CREATE_FRAME_LINK_V2,
+  DELETE_FRAME_LINK_V2,
+  FRAME_LINKS_V2,
+  UPDATE_FRAME_LINK_V2,
+} from '../api/links-v2'
 import { FocalPointPreset } from '../types'
 
 export const [FocalPointContextProvider, useFocalPointContext] = createContext(
   () => {
-    const { pageId } = useParams() as { pageId?: string }
+    const { frameId: frameIdParam } = useParams() as { frameId?: string }
+    const frameId = String(frameIdParam)
     const canvasTarget = useCanvasTarget()
 
-    const { organizationId } = useOrganizationContext()
+    const orgId = useCurrentOrganization()?.id
 
-    const pageQuery = useQuery(GET_PAGE, {
+    const frameQuery = useQuery(FRAME_BY_ID_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { pageId: String(pageId) },
-      skip: !pageId,
+      variables: { orgId: orgId!, id: frameId },
+      skip: !orgId || !frameIdParam,
     })
 
-    const canvasQuery = useQuery(GET_CANVAS_POINTS, {
+    const frame = frameQuery.data?.frameById ?? null
+    const mapId = frame?.mapId ?? ''
+
+    const mapQuery = useQuery(MAP_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { pageId: String(pageId) },
-      skip: !pageId,
+      variables: { orgId: orgId!, id: mapId },
+      skip: !orgId || !mapId,
     })
 
-    const page = useMemo(
-      () => pageQuery.data?.v1GetPage?.[0] ?? null,
-      [pageQuery.data?.v1GetPage]
-    )
+    const map = mapQuery.data?.map ?? null
 
-    const projectQuery = useQuery(GET_PROJECT, {
-      fetchPolicy: 'cache-first',
-      variables: { projectId: String(page?.projectId), organizationId },
-      skip: !page?.projectId,
+    const listVars = { orgId: orgId!, mapId, frameId }
+    const listSkip = { skip: !orgId || !mapId }
+
+    const focalPointsQuery = useQuery(FOCAL_POINTS_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-and-network',
+      variables: listVars,
+      ...listSkip,
+    })
+
+    const groupsQuery = useQuery(FRAME_GROUPS_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-and-network',
+      variables: listVars,
+      ...listSkip,
+    })
+
+    const linksQuery = useQuery(FRAME_LINKS_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-and-network',
+      variables: listVars,
+      ...listSkip,
     })
 
     const [zoom, setZoom] = useState(100)
 
-    const LOCAL_STORAGE_KEY = `focal-point-preset:${pageId}`
+    const LOCAL_STORAGE_KEY = `focal-point-preset:${frameId}`
     const [preset, setPreset] = useLocalStorage<FocalPointPreset | null>(
       LOCAL_STORAGE_KEY,
       null
@@ -66,117 +90,86 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
 
     const [newPoint, setNewPoint] = useState<{
       type: 'focal' | 'link'
-      position: {
-        x: number
-        y: number
-      } | null
+      position: { x: number; y: number } | null
     } | null>(null)
 
     const [drawRectMode, setDrawRectMode] = useState<{
       type: 'group'
-      position: {
-        x: number
-        y: number
-        width: number
-        height: number
-      } | null
+      position: { x: number; y: number; width: number; height: number } | null
     } | null>(null)
 
-    const commonMutationOptions = {
-      awaitRefetchQueries: true,
-      refetchQueries: [GET_CANVAS_POINTS],
-    }
+    const refetchFocalPoints = [{ query: FOCAL_POINTS_V2, variables: listVars }]
+    const refetchGroups = [{ query: FRAME_GROUPS_V2, variables: listVars }]
+    const refetchLinks = [{ query: FRAME_LINKS_V2, variables: listVars }]
 
-    const [createFocalPoint] = useMutation(
-      CREATE_FOCAL_POINT,
-      commonMutationOptions
+    const mutationBase = { client: clientV2, awaitRefetchQueries: true }
+
+    const [createFocalPointMutation] = useMutation(CREATE_FOCAL_POINT_V2, {
+      ...mutationBase,
+      refetchQueries: refetchFocalPoints,
+    })
+    const [updateFocalPointMutation] = useMutation(UPDATE_FOCAL_POINT_V2, {
+      ...mutationBase,
+      refetchQueries: refetchFocalPoints,
+    })
+    const [deleteFocalPointMutation] = useMutation(DELETE_FOCAL_POINT_V2, {
+      ...mutationBase,
+      refetchQueries: refetchFocalPoints,
+    })
+
+    const [createFrameGroupMutation] = useMutation(CREATE_FRAME_GROUP_V2, {
+      ...mutationBase,
+      refetchQueries: refetchGroups,
+    })
+    const [updateFrameGroupMutation] = useMutation(UPDATE_FRAME_GROUP_V2, {
+      ...mutationBase,
+      refetchQueries: refetchGroups,
+    })
+    const [deleteFrameGroupMutation] = useMutation(DELETE_FRAME_GROUP_V2, {
+      ...mutationBase,
+      refetchQueries: refetchGroups,
+    })
+
+    const [createFrameLinkMutation] = useMutation(CREATE_FRAME_LINK_V2, {
+      ...mutationBase,
+      refetchQueries: refetchLinks,
+    })
+    const [updateFrameLinkMutation] = useMutation(UPDATE_FRAME_LINK_V2, {
+      ...mutationBase,
+      refetchQueries: refetchLinks,
+    })
+    const [deleteFrameLinkMutation] = useMutation(DELETE_FRAME_LINK_V2, {
+      ...mutationBase,
+      refetchQueries: refetchLinks,
+    })
+
+    const focalPoints = useMemo(
+      () => arrayNonNullable(focalPointsQuery.data?.focalPoints),
+      [focalPointsQuery.data?.focalPoints]
+    )
+    const frameGroups = useMemo(
+      () => arrayNonNullable(groupsQuery.data?.frameGroups),
+      [groupsQuery.data?.frameGroups]
+    )
+    const frameLinks = useMemo(
+      () => arrayNonNullable(linksQuery.data?.frameLinks),
+      [linksQuery.data?.frameLinks]
     )
 
-    const [updateFocalPoint] = useMutation(
-      UPDATE_FOCAL_POINT,
-      commonMutationOptions
+    const selectedFocalPoint = useMemo(
+      () => focalPoints.find((f) => f.id === canvasTarget.focalPoint),
+      [focalPoints, canvasTarget.focalPoint]
     )
 
-    const [deleteFocalPoint] = useMutation(
-      DELETE_FOCAL_POINT,
-      commonMutationOptions
+    const selectedFrameGroup = useMemo(
+      () => frameGroups.find((g) => g.id === canvasTarget.frameGroup),
+      [frameGroups, canvasTarget.frameGroup]
     )
-
-    const [createFrameGroup] = useMutation(
-      CREATE_FRAME_GROUP,
-      commonMutationOptions
-    )
-
-    const [updateFrameGroup] = useMutation(
-      UPDATE_FRAME_GROUP,
-      commonMutationOptions
-    )
-
-    const [deleteFrameGroup] = useMutation(
-      DELETE_FRAME_GROUP,
-      commonMutationOptions
-    )
-
-    const [createPageLink] = useMutation(
-      CREATE_PAGE_PAGE_LINK,
-      commonMutationOptions
-    )
-
-    const [updatePageLink] = useMutation(
-      UPDATE_PAGE_PAGE_LINK,
-      commonMutationOptions
-    )
-
-    const [deletePageLink] = useMutation(
-      DELETE_PAGE_PAGE_LINK,
-      commonMutationOptions
-    )
-
-    const [createProjectLink] = useMutation(
-      CREATE_PAGE_PROJECT_LINK,
-      commonMutationOptions
-    )
-
-    const [updateProjectLink] = useMutation(
-      UPDATE_PAGE_PROJECT_LINK,
-      commonMutationOptions
-    )
-
-    const [deleteProjectLink] = useMutation(
-      DELETE_PAGE_PROJECT_LINK,
-      commonMutationOptions
-    )
-
-    const project = useMemo(
-      () => projectQuery.data?.v1GetProject?.[0] ?? null,
-      [projectQuery.data?.v1GetProject]
-    )
-
-    const canvasInfo = useMemo(() => {
-      return {
-        focalPoints: arrayNonNullable(canvasQuery.data?.v1GetFocalPoint),
-        frameGroups: arrayNonNullable(canvasQuery.data?.v1GetPageGroup),
-        pageLinks: arrayNonNullable(canvasQuery.data?.v1GetPagePageLink),
-        projectLinks: arrayNonNullable(canvasQuery.data?.v1GetPageProjectLink),
-      }
-    }, [canvasQuery.data])
-
-    const selectedFocalPoint = useMemo(() => {
-      return canvasInfo.focalPoints.find(
-        (f) => f.focalPointId === canvasTarget.focalPoint
-      )
-    }, [canvasInfo.focalPoints, canvasTarget.focalPoint])
-
-    const selectedFrameGroup = useMemo(() => {
-      return canvasInfo.frameGroups.find(
-        (g) => g.pageGroupId === canvasTarget.frameGroup
-      )
-    }, [canvasInfo.frameGroups, canvasTarget.frameGroup])
 
     const selectedFrameGroupPoints = useMemo(() => {
-      if (!selectedFrameGroup || canvasInfo.focalPoints.length === 0) return []
+      if (!selectedFrameGroup || focalPoints.length === 0) return []
 
-      return canvasInfo.focalPoints.filter((f) =>
+      return focalPoints.filter((f) =>
         isPointWithinRect(
           {
             x: selectedFrameGroup.locationX!,
@@ -184,13 +177,10 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
             width: selectedFrameGroup.width!,
             height: selectedFrameGroup.height!,
           },
-          {
-            x: f.locationX!,
-            y: f.locationY!,
-          }
+          { x: f.locationX!, y: f.locationY! }
         )
       )
-    }, [canvasInfo.focalPoints, selectedFrameGroup])
+    }, [focalPoints, selectedFrameGroup])
 
     return {
       zoom,
@@ -210,138 +200,123 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
       selectedFrameGroup,
       selectedFrameGroupPoints,
 
-      page,
-      pageLoading: !page && pageQuery.loading,
+      orgId,
+      mapId,
+      frameId,
 
-      project,
-      projectLoading:
-        (!page && pageQuery.loading) || (!project && projectQuery.loading),
+      frame,
+      frameLoading: !frame && frameQuery.loading,
 
-      focalPoints: canvasInfo.focalPoints,
-      frameGroups: canvasInfo.frameGroups,
-      pageLinks: canvasInfo.pageLinks,
-      projectLinks: canvasInfo.projectLinks,
+      map,
+      mapLoading: (!frame && frameQuery.loading) || (!map && mapQuery.loading),
 
-      createFocalPoint(
-        input: Omit<GT.CreateFocalPointInput, 'pageId' | 'organizationId'>
-      ) {
-        return createFocalPoint({
-          variables: {
-            input: {
-              ...input,
-              organizationId,
-              pageId: String(pageId),
-            },
-          },
+      focalPoints,
+      frameGroups,
+      frameLinks,
+
+      createFocalPoint(input: {
+        name: string
+        locationX: number
+        locationY: number
+        visibility?: string
+        isActive?: boolean
+      }) {
+        return createFocalPointMutation({
+          variables: { orgId: orgId!, mapId, frameId, input },
         })
       },
 
       async updateFocalPoint(
-        pointId: string,
-        input: Omit<GT.UpdateFocalPointInput, 'pageId' | 'organizationId'>
+        id: string,
+        input: {
+          name?: string
+          locationX?: number
+          locationY?: number
+          visibility?: string
+          isActive?: boolean
+        }
       ) {
-        await updateFocalPoint({
-          variables: {
-            focalPointId: pointId,
-            input: {
-              ...input,
-              organizationId,
-              pageId: String(pageId),
-            },
-          },
+        await updateFocalPointMutation({
+          variables: { orgId: orgId!, mapId, frameId, id, input },
         })
       },
 
-      async deleteFocalPoint(pointId: string) {
-        await deleteFocalPoint({
-          variables: { focalPointId: pointId },
+      async deleteFocalPoint(id: string) {
+        await deleteFocalPointMutation({
+          variables: { orgId: orgId!, mapId, frameId, id },
         })
       },
 
-      createFrameGroup(
-        input: Omit<GT.CreatePageGroupInput, 'pageId' | 'organizationId'>
-      ) {
-        return createFrameGroup({
-          variables: {
-            input: {
-              ...input,
-              organizationId,
-              pageId: String(pageId),
-            },
-          },
+      createFrameGroup(input: {
+        name: string
+        description?: string
+        locationX: number
+        locationY: number
+        width: number
+        height: number
+        order?: number
+      }) {
+        return createFrameGroupMutation({
+          variables: { orgId: orgId!, mapId, frameId, input },
         })
       },
 
       updateFrameGroup(
-        pageGroupId: string,
-        input: Omit<GT.UpdatePageGroupInput, 'pageId' | 'organizationId'>
+        id: string,
+        input: {
+          name?: string
+          description?: string
+          locationX?: number
+          locationY?: number
+          width?: number
+          height?: number
+          order?: number
+        }
       ) {
-        return updateFrameGroup({
-          variables: {
-            pageGroupId,
-            input: {
-              ...input,
-              organizationId,
-              pageId: String(pageId),
-            },
-          },
+        return updateFrameGroupMutation({
+          variables: { orgId: orgId!, mapId, frameId, id, input },
         })
       },
 
-      deleteFrameGroup(pageGroupId: string) {
-        return deleteFrameGroup({ variables: { pageGroupId } })
-      },
-
-      createPageLink(
-        input: Omit<GT.CreatePagePageLinkInput, 'pageId' | 'organizationId'>
-      ) {
-        return createPageLink({
-          variables: {
-            input: { ...input, organizationId, pageId: String(pageId) },
-          },
+      deleteFrameGroup(id: string) {
+        return deleteFrameGroupMutation({
+          variables: { orgId: orgId!, mapId, frameId, id },
         })
       },
 
-      updatePageLink(
-        linkId: string,
-        input: Omit<GT.UpdatePagePageLinkInput, 'pageId' | 'organizationId'>
-      ) {
-        return updatePageLink({
-          variables: {
-            linkId,
-            input: { ...input, organizationId, pageId: String(pageId) },
-          },
+      createFrameLink(input: {
+        kind: string
+        targetFrameId?: string
+        targetMapId?: string
+        label?: string
+        locationX: number
+        locationY: number
+      }) {
+        return createFrameLinkMutation({
+          variables: { orgId: orgId!, mapId, frameId, input },
         })
       },
 
-      deletePageLink(linkId: string) {
-        return deletePageLink({ variables: { linkId } })
-      },
-
-      createProjectLink(
-        input: Omit<GT.CreatePageProjectLinkInput, 'pageId' | 'organizationId'>
+      updateFrameLink(
+        id: string,
+        input: {
+          kind?: string
+          targetFrameId?: string
+          targetMapId?: string
+          label?: string
+          locationX?: number
+          locationY?: number
+        }
       ) {
-        return createProjectLink({
-          variables: {
-            input: { ...input, organizationId, pageId: String(pageId) },
-          },
+        return updateFrameLinkMutation({
+          variables: { orgId: orgId!, mapId, frameId, id, input },
         })
       },
 
-      updateProjectLink(
-        linkId: string,
-        input: Omit<GT.UpdatePageProjectLinkInput, 'pageId' | 'organizationId'>
-      ) {
-        return updateProjectLink({
-          variables: {
-            linkId,
-            input: { ...input, organizationId, pageId: String(pageId) },
-          },
+      deleteFrameLink(id: string) {
+        return deleteFrameLinkMutation({
+          variables: { orgId: orgId!, mapId, frameId, id },
         })
-      },
-
-      deleteProjectLink(linkId: string) {
-        return deleteProjectLink({ variables: { linkId } })
       },
     }
   }

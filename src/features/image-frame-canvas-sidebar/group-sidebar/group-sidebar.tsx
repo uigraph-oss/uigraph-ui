@@ -12,7 +12,7 @@ import {
 type GroupSidebarProps = GroupSidebarDetailsProps
 
 export function GroupSidebar({
-  page,
+  frame,
   frameGroup,
   frameGroupPoints,
   updateFrameGroup,
@@ -60,14 +60,14 @@ export function GroupSidebar({
       <div className="flex-1 overflow-auto pb-2">
         {activeTab === 'details' ? (
           <GroupSidebarDetails
-            page={page}
+            frame={frame}
             frameGroup={frameGroup}
             frameGroupPoints={frameGroupPoints}
             updateFrameGroup={updateFrameGroup}
             deleteFrameGroup={deleteFrameGroup}
           />
         ) : (
-          <CommentsContextProvider resourceId={frameGroup.pageGroupId!}>
+          <CommentsContextProvider resourceId={frameGroup.id}>
             <CommentsSection />
           </CommentsContextProvider>
         )}

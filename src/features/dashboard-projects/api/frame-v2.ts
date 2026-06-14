@@ -68,6 +68,30 @@ export const FRAME_V2 = graphql(`
   }
 `)
 
+export const FRAME_BY_ID_V2 = graphql(`
+  query FrameByIdV2($orgId: ID!, $id: ID!) {
+    frameById(orgId: $orgId, id: $id) {
+      id
+      mapId
+      orgId
+      parentFrameId
+      name
+      description
+      templateType
+      screenshotKey
+      screenshotContentHash
+      screenshotUrl
+      status
+      order
+      source
+      createdBy
+      updatedBy
+      createdAt
+      updatedAt
+    }
+  }
+`)
+
 export const CREATE_FRAME_V2 = graphql(`
   mutation CreateFrameV2($orgId: ID!, $mapId: ID!, $input: CreateFrameInput!) {
     createFrame(orgId: $orgId, mapId: $mapId, input: $input) {

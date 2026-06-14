@@ -1,3 +1,4 @@
+import { GT } from '@/api'
 import { graphql } from '@/api-v2'
 
 export type FocalPointMetaV2 = {
@@ -10,6 +11,49 @@ export type FocalPointMetaV2 = {
   componentImages?: string | null
   componentFlowDiagram?: string | null
   componentModalFields?: string | null
+  updatedAt?: string | null
+}
+
+// PointMeta is the shape the focal-point meta picker UI consumes. It mirrors the
+// legacy v1 FocalPointMeta: componentModalFields/componentImages are parsed from
+// the v2 JSON-string columns into arrays, and `id`/`frameId` are aliased to the
+// v1 field names the picker components read.
+export type PointMeta = {
+  focalPointMetaId: string
+  focalPointId?: string | null
+  pageId?: string | null
+  componentId?: string | null
+  componentLinkId?: string | null
+  componentFlowDiagram?: string | null
+  componentImages: string[]
+  componentModalFields: GT.ComponentField[]
+  updatedAt?: string | null
+}
+
+function parseJsonArray<T>(raw?: string | null): T[] {
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as T[]) : []
+  } catch {
+    return []
+  }
+}
+
+export function toPointMeta(m: FocalPointMetaV2): PointMeta {
+  return {
+    focalPointMetaId: m.id,
+    focalPointId: m.focalPointId,
+    pageId: m.frameId,
+    componentId: m.componentId,
+    componentLinkId: m.componentLinkId,
+    componentFlowDiagram: m.componentFlowDiagram,
+    componentImages: parseJsonArray<string>(m.componentImages),
+    componentModalFields: parseJsonArray<GT.ComponentField>(
+      m.componentModalFields
+    ),
+    updatedAt: m.updatedAt,
+  }
 }
 
 export const FOCAL_POINT_META_V2 = graphql(`

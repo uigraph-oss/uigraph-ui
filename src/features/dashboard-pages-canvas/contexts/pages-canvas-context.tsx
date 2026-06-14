@@ -1,26 +1,39 @@
-import { GT, privateClient } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import {
-  DELETE_FOCAL_POINT,
-  DELETE_FRAME_GROUP,
-  GET_FOCAL_POINT,
-  GET_FRAME_GROUP,
-  UPDATE_FOCAL_POINT,
-  UPDATE_FRAME_GROUP,
-} from '@/features/dashboard-pages/api'
-import { GET_CANVAS_POINTS } from '@/features/dashboard-pages/api/canvas'
+  CANVAS_V2,
+  UPSERT_CANVAS_V2,
+} from '@/features/dashboard-pages/api/canvas-v2'
+import {
+  DELETE_FOCAL_POINT_V2,
+  FOCAL_POINTS_V2,
+  FocalPointV2,
+  UPDATE_FOCAL_POINT_V2,
+} from '@/features/dashboard-pages/api/focal-point-v2'
+import {
+  DELETE_FRAME_GROUP_V2,
+  FRAME_GROUPS_V2,
+  FrameGroupV2,
+  UPDATE_FRAME_GROUP_V2,
+} from '@/features/dashboard-pages/api/frame-group-v2'
+import {
+  FRAME_LINKS_V2,
+  FrameLinkV2,
+} from '@/features/dashboard-pages/api/links-v2'
+import { DashboardFrame, DashboardMap } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
-import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
-import { useEffect, useMemo, useState } from 'react'
-import { CREATE_PAGE_CANVAS, GET_PAGE_CANVAS } from '../api'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export type PagesCanvasContextInput = {
-  pages: GT.Page[]
-  project: GT.Project
+  pages: DashboardFrame[]
+  project: DashboardMap
 }
+
+type CanvasItem = { pageId: string; position: { x: number; y: number } }
 
 export const [PagesCanvasContextProvider, usePagesCanvasContext] =
   createContext(
@@ -28,108 +41,113 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
       const canvasTarget = useCanvasTarget()
       const [zoom, setZoom] = useState(0)
 
-      const pageCanvasRes = useQuery(GET_PAGE_CANVAS, {
-        variables: {
-          projectId: project.projectId!,
-          organizationId: project.organizationId!,
-        },
+      const orgId = useCurrentOrganization()?.id
+      const mapId = project.id
+
+      const canvasRes = useQuery(CANVAS_V2, {
+        client: clientV2,
+        variables: { orgId: orgId!, mapId },
+        skip: !orgId || !mapId,
       })
 
-      const [createPageCanvas, createPageCanvasRes] = useMutation(
-        CREATE_PAGE_CANVAS,
-        {
-          awaitRefetchQueries: true,
-          refetchQueries: [
-            {
-              query: GET_PAGE_CANVAS,
-              variables: {
-                projectId: project.projectId!,
-                organizationId: project.organizationId!,
-              },
-            },
-          ],
-        }
-      )
+      const [upsertCanvas, upsertCanvasRes] = useMutation(UPSERT_CANVAS_V2, {
+        client: clientV2,
+        awaitRefetchQueries: true,
+        refetchQueries: [
+          { query: CANVAS_V2, variables: { orgId: orgId!, mapId } },
+        ],
+      })
 
-      const [focalPoints, setFocalPoints] = useState<GT.FocalPoint[]>([])
-      const [frameGroups, setFrameGroups] = useState<GT.PageGroup[]>([])
-      const [pageLinks, setPageLinks] = useState<GT.PagePageLink[]>([])
-      const [projectLinks, setProjectLinks] = useState<GT.PageProjectLink[]>([])
+      const [focalPoints, setFocalPoints] = useState<FocalPointV2[]>([])
+      const [frameGroups, setFrameGroups] = useState<FrameGroupV2[]>([])
+      const [pageLinks, setPageLinks] = useState<FrameLinkV2[]>([])
+      const [projectLinks, setProjectLinks] = useState<FrameLinkV2[]>([])
+
+      const loadCanvasPoints = useCallback(async () => {
+        if (!orgId || !mapId) return
+
+        const results = await Promise.all(
+          pages.map((frame) =>
+            Promise.all([
+              clientV2.query({
+                query: FOCAL_POINTS_V2,
+                variables: { orgId, mapId, frameId: frame.id },
+                fetchPolicy: 'network-only',
+              }),
+              clientV2.query({
+                query: FRAME_GROUPS_V2,
+                variables: { orgId, mapId, frameId: frame.id },
+                fetchPolicy: 'network-only',
+              }),
+              clientV2.query({
+                query: FRAME_LINKS_V2,
+                variables: { orgId, mapId, frameId: frame.id },
+                fetchPolicy: 'network-only',
+              }),
+            ])
+          )
+        )
+
+        const allFocalPoints = results.flatMap(
+          ([fp]) => fp.data?.focalPoints ?? []
+        )
+        const allGroups = results.flatMap(([, g]) => g.data?.frameGroups ?? [])
+        const allLinks = results.flatMap(([, , l]) => l.data?.frameLinks ?? [])
+
+        setFocalPoints(allFocalPoints)
+        setFrameGroups(allGroups)
+        setPageLinks(allLinks.filter((l) => l.kind === 'frame'))
+        setProjectLinks(allLinks.filter((l) => l.kind === 'map'))
+      }, [pages, orgId, mapId])
 
       useEffect(() => {
-        async function loadCanvasPoints() {
-          const promises = pages.map((page) =>
-            privateClient.query({
-              query: GET_CANVAS_POINTS,
-              variables: { pageId: page.pageId! },
-            })
-          )
-
-          const results = await Promise.all(promises)
-          const frameGroupsData = results
-            .map((result) => arrayNonNullable(result.data.v1GetPageGroup))
-            .flat()
-          const focalPointsData = results
-            .map((result) => arrayNonNullable(result.data.v1GetFocalPoint))
-            .flat()
-          const pageLinksData = results
-            .map((result) => arrayNonNullable(result.data.v1GetPagePageLink))
-            .flat()
-          const projectLinksData = results
-            .map((result) => arrayNonNullable(result.data.v1GetPageProjectLink))
-            .flat()
-
-          setFocalPoints(focalPointsData)
-          setFrameGroups(frameGroupsData)
-          setPageLinks(pageLinksData)
-          setProjectLinks(projectLinksData)
-        }
-
         loadCanvasPoints().catch(console.error)
-      }, [pages])
+      }, [loadCanvasPoints])
+
+      const pageCanvasItems = useMemo<CanvasItem[]>(() => {
+        const raw = canvasRes.data?.canvas?.framePositions
+        if (!raw) return []
+        try {
+          const parsed = JSON.parse(raw) as Record<
+            string,
+            { x: number; y: number }
+          >
+          return Object.entries(parsed).map(([pageId, position]) => ({
+            pageId,
+            position,
+          }))
+        } catch {
+          return []
+        }
+      }, [canvasRes.data?.canvas?.framePositions])
 
       const selectedFocalPointId = canvasTarget.focalPoint
       const selectedFocalPoint = useMemo(
-        () => focalPoints.find((f) => f.focalPointId === selectedFocalPointId),
+        () => focalPoints.find((f) => f.id === selectedFocalPointId),
         [focalPoints, selectedFocalPointId]
       )
 
       const selectedFrameGroupId = canvasTarget.frameGroup
       const selectedFrameGroup = useMemo(
-        () => frameGroups.find((g) => g.pageGroupId === selectedFrameGroupId),
+        () => frameGroups.find((g) => g.id === selectedFrameGroupId),
         [frameGroups, selectedFrameGroupId]
       )
 
-      const [updateFocalPoint, updateFocalPointRes] = useMutation(
-        UPDATE_FOCAL_POINT,
-        {
-          awaitRefetchQueries: true,
-          refetchQueries: [GET_FOCAL_POINT],
-        }
+      const [updateFocalPointMutation, updateFocalPointRes] = useMutation(
+        UPDATE_FOCAL_POINT_V2,
+        { client: clientV2 }
       )
-
-      const [deleteFocalPoint, deleteFocalPointRes] = useMutation(
-        DELETE_FOCAL_POINT,
-        {
-          awaitRefetchQueries: true,
-          refetchQueries: [GET_FOCAL_POINT],
-        }
+      const [deleteFocalPointMutation, deleteFocalPointRes] = useMutation(
+        DELETE_FOCAL_POINT_V2,
+        { client: clientV2 }
       )
-
-      const [updateFrameGroup, updateFrameGroupRes] = useMutation(
-        UPDATE_FRAME_GROUP,
-        {
-          awaitRefetchQueries: true,
-          refetchQueries: [GET_FRAME_GROUP],
-        }
+      const [updateFrameGroupMutation, updateFrameGroupRes] = useMutation(
+        UPDATE_FRAME_GROUP_V2,
+        { client: clientV2 }
       )
-
-      const [deleteFrameGroup, deleteFrameGroupRes] = useMutation(
-        DELETE_FRAME_GROUP,
-        {
-          awaitRefetchQueries: true,
-          refetchQueries: [GET_FRAME_GROUP],
-        }
+      const [deleteFrameGroupMutation, deleteFrameGroupRes] = useMutation(
+        DELETE_FRAME_GROUP_V2,
+        { client: clientV2 }
       )
 
       const selectedFrameGroupPoints = useMemo(() => {
@@ -151,26 +169,26 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
         zoom,
         setZoom,
 
-        isCreatePageCanvasLoading: createPageCanvasRes.loading,
-        createPageCanvas(
-          zoom: number,
-          pageCanvasItems: GT.PageCanvasItemInput[]
-        ) {
-          return createPageCanvas({
+        isCreatePageCanvasLoading: upsertCanvasRes.loading,
+        async createPageCanvas(zoomValue: number, items: CanvasItem[]) {
+          const framePositions = Object.fromEntries(
+            items.map((i) => [i.pageId, i.position])
+          )
+          return upsertCanvas({
             variables: {
+              orgId: orgId!,
+              mapId,
               input: {
-                organizationId: project.organizationId!,
-                projectId: project.projectId!,
-                pageCanvasItems,
-                zoom,
+                zoom: zoomValue,
+                framePositions: JSON.stringify(framePositions),
               },
             },
           })
         },
 
-        isPageCanvasLoading: pageCanvasRes.loading,
-        pageCanvasZoom: pageCanvasRes.data?.v1GetPageCanvas?.zoom,
-        pageCanvasItems: pageCanvasRes.data?.v1GetPageCanvas?.pageCanvasItems,
+        isPageCanvasLoading: canvasRes.loading,
+        pageCanvasZoom: canvasRes.data?.canvas?.zoom,
+        pageCanvasItems,
 
         pages,
         project,
@@ -187,39 +205,73 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
         selectedFrameGroupPoints,
 
         isUpdateFocalPointLoading: updateFocalPointRes.loading,
-        updateFocalPoint(
+        async updateFocalPoint(
           focalPointId: string,
-          input: GT.UpdateFocalPointInput
+          input: { name?: string; locationX?: number; locationY?: number }
         ) {
-          return updateFocalPoint({
+          const fp = focalPoints.find((f) => f.id === focalPointId)
+          await updateFocalPointMutation({
             variables: {
-              focalPointId,
+              orgId: orgId!,
+              mapId,
+              frameId: fp?.frameId ?? '',
+              id: focalPointId,
               input,
             },
           })
+          await loadCanvasPoints()
         },
 
         isDeleteFocalPointLoading: deleteFocalPointRes.loading,
-        deleteFocalPoint(focalPointId: string) {
-          return deleteFocalPoint({
+        async deleteFocalPoint(focalPointId: string) {
+          const fp = focalPoints.find((f) => f.id === focalPointId)
+          await deleteFocalPointMutation({
             variables: {
-              focalPointId,
+              orgId: orgId!,
+              mapId,
+              frameId: fp?.frameId ?? '',
+              id: focalPointId,
             },
           })
+          await loadCanvasPoints()
         },
 
         isUpdateFrameGroupLoading: updateFrameGroupRes.loading,
-        updateFrameGroup(frameGroupId: string, input: GT.UpdatePageGroupInput) {
-          return updateFrameGroup({
-            variables: { pageGroupId: frameGroupId, input },
+        async updateFrameGroup(
+          frameGroupId: string,
+          input: {
+            name?: string
+            locationX?: number
+            locationY?: number
+            width?: number
+            height?: number
+          }
+        ) {
+          const group = frameGroups.find((g) => g.id === frameGroupId)
+          await updateFrameGroupMutation({
+            variables: {
+              orgId: orgId!,
+              mapId,
+              frameId: group?.frameId ?? '',
+              id: frameGroupId,
+              input,
+            },
           })
+          await loadCanvasPoints()
         },
 
         isDeleteFrameGroupLoading: deleteFrameGroupRes.loading,
-        deleteFrameGroup(frameGroupId: string) {
-          return deleteFrameGroup({
-            variables: { pageGroupId: frameGroupId },
+        async deleteFrameGroup(frameGroupId: string) {
+          const group = frameGroups.find((g) => g.id === frameGroupId)
+          await deleteFrameGroupMutation({
+            variables: {
+              orgId: orgId!,
+              mapId,
+              frameId: group?.frameId ?? '',
+              id: frameGroupId,
+            },
           })
+          await loadCanvasPoints()
         },
       }
     },

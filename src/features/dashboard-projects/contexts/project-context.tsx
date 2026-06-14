@@ -2,9 +2,9 @@
 
 import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { DashboardPageLayout } from '@/features/dashboard/dashboard-layout'
 import { DashboardSectionHeader } from '@/features/dashboard/dashboard-section'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'

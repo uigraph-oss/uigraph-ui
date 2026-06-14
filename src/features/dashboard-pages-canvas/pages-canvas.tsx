@@ -38,6 +38,7 @@ function PagesReactFlowCanvas() {
     setZoom,
     pageCanvasZoom,
     pages,
+    project,
     pageCanvasItems,
     createPageCanvas,
     isCreatePageCanvasLoading,
@@ -69,11 +70,11 @@ function PagesReactFlowCanvas() {
     const savedItems = arrayNonNullable(pageCanvasItems)
 
     return pages.map<Node>((page, i) => {
-      const savedItem = savedItems.find((p) => p.pageId === page.pageId)
+      const savedItem = savedItems.find((p) => p.pageId === page.id)
 
       return {
         type: 'image',
-        id: page.pageId!,
+        id: page.id,
         position: {
           y: savedItems.length
             ? (savedItem?.position?.y ?? 0)
@@ -162,7 +163,10 @@ function PagesReactFlowCanvas() {
       {!selectedFrameGroup && selectedFocalPoint && (
         <div className="mt-[-66px]">
           <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
-            <FocalPointSidebarContextProvider focalPoint={selectedFocalPoint}>
+            <FocalPointSidebarContextProvider
+              focalPoint={selectedFocalPoint}
+              mapId={project.id}
+            >
               <FocalPointSidebar
                 focalPoint={selectedFocalPoint}
                 updateFocalPoint={async (focalPointId, input) => {
@@ -181,14 +185,14 @@ function PagesReactFlowCanvas() {
         <div className="mt-[-66px]">
           <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
             <GroupSidebar
-              page={pages.find((p) => p.pageId === selectedFrameGroup.pageId)!}
+              frame={pages.find((p) => p.id === selectedFrameGroup.frameId)!}
               frameGroup={selectedFrameGroup}
               frameGroupPoints={selectedFrameGroupPoints}
               updateFrameGroup={async (input) => {
-                await updateFrameGroup(selectedFrameGroup.pageGroupId!, input)
+                await updateFrameGroup(selectedFrameGroup.id, input)
               }}
               deleteFrameGroup={async () => {
-                await deleteFrameGroup(selectedFrameGroup.pageGroupId!)
+                await deleteFrameGroup(selectedFrameGroup.id)
               }}
             />
           </GridScrollBody>

@@ -21,21 +21,21 @@ function ImageNode({ id }: NodeProps) {
     selectedFrameGroup,
   } = usePagesCanvasContext()
 
-  const page = useMemo(() => pages.find((p) => p.pageId === id), [pages, id])
+  const page = useMemo(() => pages.find((p) => p.id === id), [pages, id])
   const pageFocalPoints = useMemo(
-    () => focalPoints.filter((p) => p.pageId === id),
+    () => focalPoints.filter((p) => p.frameId === id),
     [focalPoints, id]
   )
   const pageFrameGroups = useMemo(
-    () => frameGroups.filter((g) => g.pageId === id),
+    () => frameGroups.filter((g) => g.frameId === id),
     [frameGroups, id]
   )
   const pagePageLinks = useMemo(
-    () => pageLinks.filter((l) => l.pageId === id),
+    () => pageLinks.filter((l) => l.frameId === id),
     [pageLinks, id]
   )
   const pageProjectLinks = useMemo(
-    () => projectLinks.filter((l) => l.pageId === id),
+    () => projectLinks.filter((l) => l.frameId === id),
     [projectLinks, id]
   )
 
@@ -44,7 +44,7 @@ function ImageNode({ id }: NodeProps) {
   return (
     <div className="w-[400px] overflow-hidden rounded-md bg-white shadow-sm">
       <ImageFrameCanvas
-        page={page}
+        frame={page}
         onEmptyClick={() => {
           canvasTarget.clearTarget()
         }}
@@ -52,22 +52,20 @@ function ImageNode({ id }: NodeProps) {
           <>
             {pageFrameGroups.map((frameGroup) => (
               <FrameGroupRect
-                key={frameGroup.pageGroupId}
-                page={page}
+                key={frameGroup.id}
+                frame={page}
                 frameGroup={frameGroup}
                 contentSize="sm"
-                isSelected={
-                  selectedFrameGroup?.pageGroupId === frameGroup.pageGroupId
-                }
+                isSelected={selectedFrameGroup?.id === frameGroup.id}
                 onClick={() => {
-                  canvasTarget.setTarget('group', frameGroup.pageGroupId!)
+                  canvasTarget.setTarget('group', frameGroup.id)
                 }}
               />
             ))}
 
             {pagePageLinks.map((pageLink) => (
               <LinkedPageDot
-                key={pageLink.linkId}
+                key={pageLink.id}
                 pageLink={pageLink}
                 contentSize="sm"
                 deletePageLink={async () => {
@@ -81,7 +79,7 @@ function ImageNode({ id }: NodeProps) {
 
             {pageProjectLinks.map((projectLink) => (
               <LinkedProjectDot
-                key={projectLink.linkId}
+                key={projectLink.id}
                 projectLink={projectLink}
                 contentSize="sm"
                 deleteProjectLink={async () => {
@@ -95,11 +93,11 @@ function ImageNode({ id }: NodeProps) {
 
             {pageFocalPoints.map((focalPoint) => (
               <FocalPointDot
-                key={focalPoint.focalPointId}
+                key={focalPoint.id}
                 focalPoint={focalPoint}
                 contentSize="sm"
                 onClick={() => {
-                  canvasTarget.setTarget('point', focalPoint.focalPointId!)
+                  canvasTarget.setTarget('point', focalPoint.id)
                 }}
               />
             ))}

@@ -16,24 +16,24 @@ import { AddLinkModal } from './temp-link-modal'
 
 export function FocalPointCanvas() {
   const {
-    page,
+    frame,
     preset,
     newPoint,
     drawRectMode,
 
     focalPoints,
     frameGroups,
-    pageLinks,
-    projectLinks,
+    frameLinks,
 
     canvasTarget,
     selectedFrameGroup,
 
-    updatePageLink,
-    deletePageLink,
-    updateProjectLink,
-    deleteProjectLink,
+    updateFrameLink,
+    deleteFrameLink,
   } = useFocalPointContext()
+
+  const pageLinks = frameLinks.filter((link) => link.kind === 'frame')
+  const projectLinks = frameLinks.filter((link) => link.kind === 'map')
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -81,7 +81,7 @@ export function FocalPointCanvas() {
         }}
       >
         <ImageFrameCanvas
-          page={page!}
+          frame={frame!}
           setCanvasSize={({ width, height }) => setAspectRatio(width / height)}
           onEmptyClick={() => {
             canvasTarget.clearTarget()
@@ -90,64 +90,52 @@ export function FocalPointCanvas() {
             <>
               {frameGroups.map((frameGroup) => (
                 <FrameGroupRect
-                  page={page!}
-                  key={frameGroup.pageGroupId}
+                  frame={frame!}
+                  key={frameGroup.id}
                   frameGroup={frameGroup}
-                  isSelected={
-                    selectedFrameGroup?.pageGroupId === frameGroup.pageGroupId
-                  }
+                  isSelected={selectedFrameGroup?.id === frameGroup.id}
                   contentSize="md"
                   onClick={() => {
-                    canvasTarget.setTarget('group', frameGroup.pageGroupId!)
+                    canvasTarget.setTarget('group', frameGroup.id)
                   }}
                 />
               ))}
 
               {pageLinks.map((pageLink) => (
                 <LinkedPageDot
-                  key={pageLink.linkId}
+                  key={pageLink.id}
                   pageLink={pageLink}
                   contentSize="md"
                   deletePageLink={async () => {
-                    await deletePageLink(pageLink.linkId!)
+                    await deleteFrameLink(pageLink.id)
                   }}
                   updatePageLink={async (data) => {
-                    await updatePageLink(pageLink.linkId!, {
-                      ...data,
-                      locationX: pageLink.locationX!,
-                      locationY: pageLink.locationY!,
-                      linkedPageId: pageLink.linkedPageId!,
-                    })
+                    await updateFrameLink(pageLink.id, { label: data.label })
                   }}
                 />
               ))}
 
               {projectLinks.map((projectLink) => (
                 <LinkedProjectDot
-                  key={projectLink.linkId}
+                  key={projectLink.id}
                   projectLink={projectLink}
                   contentSize="md"
                   deleteProjectLink={async () => {
-                    await deleteProjectLink(projectLink.linkId!)
+                    await deleteFrameLink(projectLink.id)
                   }}
                   updateProjectLink={async (data) => {
-                    await updateProjectLink(projectLink.linkId!, {
-                      ...data,
-                      locationX: projectLink.locationX!,
-                      locationY: projectLink.locationY!,
-                      projectId: projectLink.projectId!,
-                    })
+                    await updateFrameLink(projectLink.id, { label: data.label })
                   }}
                 />
               ))}
 
               {focalPoints.map((focalPoint) => (
                 <FocalPointDot
-                  key={focalPoint.focalPointId}
+                  key={focalPoint.id}
                   focalPoint={focalPoint}
                   contentSize="md"
                   onClick={() => {
-                    canvasTarget.setTarget('point', focalPoint.focalPointId!)
+                    canvasTarget.setTarget('point', focalPoint.id)
                   }}
                 />
               ))}

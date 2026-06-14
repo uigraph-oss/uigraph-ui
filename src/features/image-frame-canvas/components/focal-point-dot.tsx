@@ -1,11 +1,11 @@
-import { GT } from '@/api'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
 import { cn } from '@/lib/utils'
 import { getViewPointPositionStyle } from '../helpers'
 import { SvgDot } from './svg-dot'
 
 type FocalPointDotProps = {
   contentSize: 'sm' | 'md'
-  focalPoint: GT.FocalPoint
+  focalPoint: FocalPointV2
   onClick: () => void
 }
 

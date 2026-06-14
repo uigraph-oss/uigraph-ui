@@ -3,11 +3,11 @@
 
 import '../global.css'
 
-import { GT } from '@/api'
+import { DashboardFrame } from '@/features/dashboard-projects/api'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 
 export type ImageFrameCanvasProps = {
-  page: GT.Page
+  frame: DashboardFrame
   content?: ReactNode
 
   onEmptyClick?: () => void
@@ -15,7 +15,7 @@ export type ImageFrameCanvasProps = {
 }
 
 export function ImageFrameCanvas({
-  page,
+  frame,
   content,
   onEmptyClick,
   setCanvasSize,
@@ -46,8 +46,8 @@ export function ImageFrameCanvas({
       `}</style>
 
       <img
-        src={page.screenShotFileUrl!}
-        alt={page.pageName ?? 'Default'}
+        src={frame.screenshotUrl!}
+        alt={frame.name ?? 'Default'}
         className="!h-auto !w-full"
         onClick={onEmptyClick}
         onLoad={(e) => {

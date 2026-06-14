@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { trackGTag } from '@/helpers/track'
 import { fileToDataUrl } from '@/helpers/file-to-data-url'
+import { trackGTag } from '@/helpers/track'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { ChevronDown, CirclePlus } from 'lucide-react'
@@ -125,9 +125,7 @@ function DashboardProjectContent() {
         </div>
 
         {viewMode === 'grid' && <PagesGrid pages={filteredPages} />}
-        {viewMode === 'canvas' && (
-          <PagesCanvas pages={frames} project={map} />
-        )}
+        {viewMode === 'canvas' && <PagesCanvas pages={frames} project={map} />}
       </div>
 
       <ConfigurePageModal

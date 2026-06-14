@@ -13,7 +13,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { PlusIcon } from '../../../assets/svgs/component-icons'
-import { FocalPointVisibility } from '../api'
 import { useFocalPointContext } from '../context/focal-point-context'
 
 type AddFocalPointModalProps = {
@@ -62,13 +61,13 @@ export function AddFocalPointModal({ x, y }: AddFocalPointModalProps) {
           className="space-y-6 p-3"
           onSubmit={form.handleSubmit(async ({ name }) => {
             const { data } = await createFocalPoint({
-              visibility: FocalPointVisibility.ProjectWide,
-              focalPointName: name,
+              visibility: 'public',
+              name,
               locationX: x,
               locationY: y,
             })
 
-            const id = data?.v1CreateFocalPoint?.focalPointId
+            const id = data?.createFocalPoint?.id
 
             trackGTag('create_focal_point', {
               focal_point_id: id,

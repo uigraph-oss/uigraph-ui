@@ -1,6 +1,6 @@
 import { clientV2 } from '@/api-v2/client'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { GET_DIAGRAM_TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -29,9 +29,7 @@ export function useProjects() {
   const [createProject] = useMutation(CREATE_MAP_V2, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [
-      { query: MAPS_V2, variables: { orgId: organizationId! } },
-    ],
+    refetchQueries: [{ query: MAPS_V2, variables: { orgId: organizationId! } }],
   })
 
   return {

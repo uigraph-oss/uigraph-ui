@@ -16,21 +16,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
 import { Calendar, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
-import {
-  DashboardMap,
-  DELETE_MAP_V2,
-  MAPS_V2,
-  UPDATE_MAP_V2,
-} from '../../api'
+import { DashboardMap, DELETE_MAP_V2, MAPS_V2, UPDATE_MAP_V2 } from '../../api'
 import { ConfigureProjectModal } from './project-configure-modal'
 
 export function ProjectGrid({ projects }: { projects: DashboardMap[] }) {

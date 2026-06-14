@@ -12,16 +12,17 @@ import {
   COMPONENT_SUPPORT_KB_ID,
   COMPONENT_TEST_SUITE_ID,
 } from '@/constants/component-meta'
-import { useOrganizationContext } from '@/contexts'
 import { CREATE_DIAGRAM_MUTATION } from '@/features/diagram-portal/api'
 import { GET_SERVICE_DOC_QUERY } from '@/features/services/api/service-doc'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { arrayNonNullable } from 'daily-code'
 import { useState } from 'react'
 import { FiChevronDown } from 'react-icons/fi'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getFocalPointComponentIcon } from '../../../helpers/get-component-icon'
+import { PointMeta } from '../api/focal-point-meta-v2'
 import { ApiContractSelectionModal } from './api-contract-selection-modal'
 import { DeletePointMetaConfirmationModal } from './delete-meta-confirm-modal'
 import { DiagramSelectionModal } from './diagram-selection-modal'
@@ -35,23 +36,24 @@ import { TestSuiteSelectionModal } from './test-suite-selection-modal'
 
 export type FocalPointMetaSectionProps = {
   component: GT.Component
-  componentPointMeta: GT.FocalPointMeta[]
+  componentPointMeta: PointMeta[]
 
   showFocalPointName?: boolean
   disableCreatePointMeta?: boolean
 
   createPointMeta: (
     componentId: string,
-    input: Pick<
-      GT.CreateFocalPointMetaInput,
-      'componentModalFields' | 'componentLinkId' | 'componentFlowDiagram'
-    >
+    input: {
+      componentModalFields?: GT.ComponentFieldInput[]
+      componentLinkId?: string
+      componentFlowDiagram?: string
+    }
   ) => Promise<void>
 
   updatePointMeta: (
     pointMetaId: string,
     componentId: string,
-    input: Pick<GT.UpdateFocalPointMetaInput, 'componentModalFields'>
+    input: { componentModalFields?: GT.ComponentFieldInput[] }
   ) => Promise<void>
 
   deletePointMeta: (pointMetaId: string) => Promise<void>
@@ -66,7 +68,7 @@ export function FocalPointMetaSection({
   showFocalPointName,
   disableCreatePointMeta,
 }: FocalPointMetaSectionProps) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const [isNewModal, setIsNewModal] = useState(false)
   const [deleteConfirmationPointMeta, setDeleteConfirmationPointMeta] =
@@ -90,7 +92,7 @@ export function FocalPointMetaSection({
 
   const canComponentBeLinked = !!linkLabel
 
-  async function startFlowDiagram(meta: GT.FocalPointMeta | null) {
+  async function startFlowDiagram(meta: PointMeta | null) {
     if (meta) {
       if (meta.componentFlowDiagram?.startsWith('diagram_')) {
         return window.open(`/diagram/${meta.componentFlowDiagram}`)
@@ -130,14 +132,14 @@ export function FocalPointMetaSection({
     }
   }
 
-  function startTestSuite(meta: GT.FocalPointMeta) {
+  function startTestSuite(meta: PointMeta) {
     const [serviceId, testPackId] = (meta.componentLinkId ?? '').split(':')
     if (!serviceId || !testPackId)
       return toast.error('Invalid test suite link. Please try again.')
     window.open(`/services/${serviceId}/tests?packId=${testPackId}`)
   }
 
-  async function startServiceDoc(meta: GT.FocalPointMeta) {
+  async function startServiceDoc(meta: PointMeta) {
     const [, serviceDocId] = (meta.componentLinkId ?? '').split(':')
     if (!serviceDocId)
       return toast.error('Invalid document link. Please try again.')
@@ -151,7 +153,7 @@ export function FocalPointMetaSection({
     window.open(fileURL)
   }
 
-  function startCompositeLink(meta: GT.FocalPointMeta) {
+  function startCompositeLink(meta: PointMeta) {
     if (isTestSuite) return startTestSuite(meta)
     if (isServiceDoc) return startServiceDoc(meta)
   }
