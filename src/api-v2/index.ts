@@ -1,4 +1,4 @@
-export { v2Client } from './client'
+export * from './client'
 
-export { graphql as graphqlV2 } from './.gql'
+export { graphql } from './.gql'
 export type * as V2 from './.gql/graphql'
