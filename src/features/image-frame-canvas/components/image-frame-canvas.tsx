@@ -4,6 +4,7 @@
 import '../global.css'
 
 import { DashboardFrame } from '@/features/dashboard-projects/api'
+import { assetUrl } from '@/helpers/asset-url'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 
 export type ImageFrameCanvasProps = {
@@ -46,7 +47,7 @@ export function ImageFrameCanvas({
       `}</style>
 
       <img
-        src={frame.screenshotUrl!}
+        src={assetUrl(frame.screenshotAssetId, frame.screenshotContentHash)}
         alt={frame.name ?? 'Default'}
         className="!h-auto !w-full"
         onClick={onEmptyClick}

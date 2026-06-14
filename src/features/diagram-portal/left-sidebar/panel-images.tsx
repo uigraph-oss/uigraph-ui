@@ -3,6 +3,7 @@
 import { clientV2 } from '@/api-v2/client'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
+import { assetUrl } from '@/helpers/asset-url'
 import { useQuery } from '@apollo/client'
 import axios from 'axios'
 import { arrayNonNullable } from 'daily-code'
@@ -81,7 +82,7 @@ export function SidebarImages() {
                         event.dataTransfer,
                         'image',
                         {
-                          src: image.fileURL || '',
+                          src: assetUrl(image.assetId) || '',
                           componentFields: [
                             {
                               componentFieldId: 'name',
@@ -103,7 +104,7 @@ export function SidebarImages() {
                     }}
                   >
                     <img
-                      src={image.fileURL || ''}
+                      src={assetUrl(image.assetId) || ''}
                       alt={image.fileName || ''}
                       className="w-[9.5rem] rounded-md"
                     />

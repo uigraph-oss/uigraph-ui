@@ -25,7 +25,8 @@ export const env = {
       'https://uigraph.app',
 
     assetsOrigin:
-      process.env.NEXT_PUBLIC_ASSETS_URL ?? 'https://assets.uigraph.app',
+      process.env.NEXT_PUBLIC_ASSETS_URL ??
+      'http://localhost:9000/uigraph/assets',
   }),
 
   features: {

@@ -5,7 +5,8 @@ export type DashboardDiagram = {
   name?: string | null
   folderId?: string | null
   teamId?: string | null
-  previewImageUrl?: string | null
+  previewAssetId?: string | null
+  previewContentHash?: string | null
   createdAt?: string | null
   updatedAt?: string | null
 }
@@ -18,7 +19,8 @@ export const DIAGRAMS_V2 = graphql(`
       folderId
       teamId
       name
-      previewImageUrl
+      previewAssetId
+      previewContentHash
       createdBy
       updatedBy
       createdAt

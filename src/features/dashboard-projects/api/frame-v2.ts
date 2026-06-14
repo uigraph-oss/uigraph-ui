@@ -8,9 +8,8 @@ export type DashboardFrame = {
   name?: string | null
   description?: string | null
   templateType?: string | null
-  screenshotKey?: string | null
+  screenshotAssetId?: string | null
   screenshotContentHash?: string | null
-  screenshotUrl?: string | null
   status?: string | null
   order?: number | null
   source?: string | null
@@ -30,9 +29,8 @@ export const FRAMES_V2 = graphql(`
       name
       description
       templateType
-      screenshotKey
+      screenshotAssetId
       screenshotContentHash
-      screenshotUrl
       status
       order
       source
@@ -54,9 +52,8 @@ export const FRAME_V2 = graphql(`
       name
       description
       templateType
-      screenshotKey
+      screenshotAssetId
       screenshotContentHash
-      screenshotUrl
       status
       order
       source
@@ -78,9 +75,8 @@ export const FRAME_BY_ID_V2 = graphql(`
       name
       description
       templateType
-      screenshotKey
+      screenshotAssetId
       screenshotContentHash
-      screenshotUrl
       status
       order
       source

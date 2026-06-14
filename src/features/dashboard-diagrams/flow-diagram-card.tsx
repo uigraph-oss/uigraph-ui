@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useOrganizationContext } from '@/contexts'
+import { assetUrl } from '@/helpers/asset-url'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Calendar } from 'lucide-react'
@@ -42,6 +43,11 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
+  const previewSrc = assetUrl(
+    diagram.previewAssetId,
+    diagram.previewContentHash
+  )
+
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
     if (naturalHeight > 0) {
@@ -71,14 +77,12 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
-            diagram.previewImageUrl
-              ? 'bg-[#F5F6F8] group-hover:bg-white'
-              : 'bg-[#EDEEF1]'
+            previewSrc ? 'bg-[#F5F6F8] group-hover:bg-white' : 'bg-[#EDEEF1]'
           )}
         >
-          {diagram.previewImageUrl && !imageError ? (
+          {previewSrc && !imageError ? (
             <img
-              src={diagram.previewImageUrl}
+              src={previewSrc}
               alt={diagram.name ?? ''}
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}

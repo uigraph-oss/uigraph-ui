@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { assetUrl } from '@/helpers/asset-url'
 import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -55,6 +56,11 @@ function PageCard({ page }: { page: DashboardFrame }) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
+  const screenshotSrc = assetUrl(
+    page.screenshotAssetId,
+    page.screenshotContentHash
+  )
+
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
     if (naturalHeight > 0) {
@@ -72,15 +78,15 @@ function PageCard({ page }: { page: DashboardFrame }) {
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
-            page.screenshotUrl && !imageError
+            screenshotSrc && !imageError
               ? 'bg-[#F5F6F8] group-hover:bg-white'
               : 'bg-[#EDEEF1]'
           )}
         >
-          {page.screenshotUrl && !imageError ? (
+          {screenshotSrc && !imageError ? (
             <img
               alt={page.name ?? 'Frame Image'}
-              src={page.screenshotUrl}
+              src={screenshotSrc}
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}
               className={cn(

@@ -5,8 +5,7 @@ export const DIAGRAM_IMAGES_V2 = graphql(`
     diagramImages(orgId: $orgId, diagramId: $diagramId) {
       diagramImageId
       diagramId
-      fileId
-      fileURL
+      assetId
       fileName
       order
       createdAt
