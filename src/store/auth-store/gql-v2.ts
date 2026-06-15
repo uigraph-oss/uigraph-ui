@@ -14,8 +14,10 @@ export const GET_ME_AND_ORG_V2 = graphql(`
       id
       name
       slug
-      role
-      active
+      membership {
+        role
+        joinedAt
+      }
     }
   }
 `)
