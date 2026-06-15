@@ -10,20 +10,21 @@ import { useMemo, useState } from 'react'
 import { HiOutlineTrash } from 'react-icons/hi2'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
+import { PointMeta } from '../api/focal-point-meta-v2'
 import { FocalPointName } from './focal-point-name'
 import { FocalPointMetaModal } from './meta-modal'
 
 type FocalPointMetaMiniCardProps = {
   index: number
   component: GT.Component
-  pointMeta: GT.FocalPointMeta
+  pointMeta: PointMeta
   showFocalPointName: boolean
   startFlowDiagram: () => void
   startCompositeLink: () => void
   openDeleteConfirmationModal: () => void
-  updatePointMeta: (
-    input: Pick<GT.UpdateFocalPointMetaInput, 'componentModalFields'>
-  ) => Promise<void>
+  updatePointMeta: (input: {
+    componentModalFields?: GT.ComponentFieldInput[]
+  }) => Promise<void>
 }
 
 export function FocalPointMetaMiniCard({

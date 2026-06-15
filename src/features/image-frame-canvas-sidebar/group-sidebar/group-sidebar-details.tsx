@@ -1,21 +1,34 @@
-import { GT } from '@/api'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group-v2'
+import { DashboardFrame } from '@/features/dashboard-projects/api'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { DeleteFocalPointConfirmationModal } from '../point-sidebar/delete-focal-point-confirm-modal'
 import { BasicSection } from './basic-section'
 import { ComponentsSection } from './components-section'
 
+export type FrameGroupUpdateInput = {
+  name?: string
+  description?: string
+  locationX?: number
+  locationY?: number
+  width?: number
+  height?: number
+  order?: number
+}
+
 export type GroupSidebarDetailsProps = {
-  page: GT.Page
-  frameGroup: GT.PageGroup
-  frameGroupPoints: GT.FocalPoint[]
-  updateFrameGroup: (input: GT.UpdatePageGroupInput) => Promise<void>
+  frame: DashboardFrame
+  frameGroup: FrameGroupV2
+  frameGroupPoints: FocalPointV2[]
+  updateFrameGroup: (input: FrameGroupUpdateInput) => Promise<void>
   deleteFrameGroup: () => Promise<void>
 }
 
 export function GroupSidebarDetails({
+  frame,
   frameGroup,
   frameGroupPoints,
   updateFrameGroup,
@@ -32,7 +45,10 @@ export function GroupSidebarDetails({
         updateFrameGroup={updateFrameGroup}
       />
 
-      <ComponentsSection focalPoints={frameGroupPoints} />
+      <ComponentsSection
+        focalPoints={frameGroupPoints}
+        mapId={frame.mapId ?? ''}
+      />
 
       <div className="px-4 pb-2">
         <Button

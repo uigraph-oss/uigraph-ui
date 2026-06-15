@@ -2,9 +2,9 @@
 
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import { useOrganizationContext } from '@/contexts'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
 import { trackGTag } from '@/helpers/track'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { BasicFilterInput } from './components/basic-filters'
@@ -13,7 +13,7 @@ import { ProjectGrid } from './components/project/project-grid'
 import { useProjects } from './hooks/use-projects'
 
 export function DashboardProjects() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { projects, createProject, projectsLoading, teams } = useProjects()
   const [createProjectOpen, setCreateProjectOpen] = useState(false)
 
@@ -77,7 +77,14 @@ export function DashboardProjects() {
         onOpenChange={setCreateProjectOpen}
         submitForm={async (data) => {
           await createProject({
-            variables: { input: { organizationId, ...data } },
+            variables: {
+              orgId: organizationId!,
+              input: {
+                name: data.name,
+                description: data.description || '',
+                teamId: data.teamId || undefined,
+              },
+            },
           })
 
           trackGTag('create_project', {

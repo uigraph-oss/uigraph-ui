@@ -1,4 +1,7 @@
-import { GET_FOCAL_POINT } from '@/features/dashboard-pages/api'
+import { clientV2 } from '@/api-v2/client'
+import { FOCAL_POINTS_V2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { FRAME_BY_ID_V2 } from '@/features/dashboard-projects/api'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
@@ -9,18 +12,29 @@ export function FocalPointName({
   pageId: string
   focalPointId: string
 }) {
-  const { data } = useQuery(GET_FOCAL_POINT, {
+  const orgId = useCurrentOrganization()?.id
+
+  const frameQuery = useQuery(FRAME_BY_ID_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { pageId },
+    variables: { orgId: orgId!, id: pageId },
+    skip: !orgId || !pageId,
   })
 
-  const focalPoint = useMemo(() => {
-    return data?.v1GetFocalPoint?.filter(
-      (focalPoint) => focalPoint?.focalPointId === focalPointId
-    )
-  }, [data?.v1GetFocalPoint, focalPointId])
+  const mapId = frameQuery.data?.frameById?.mapId ?? ''
 
-  const focalPointName = focalPoint?.[0]?.focalPointName
+  const { data } = useQuery(FOCAL_POINTS_V2, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: { orgId: orgId!, mapId, frameId: pageId },
+    skip: !orgId || !mapId || !pageId,
+  })
+
+  const focalPointName = useMemo(
+    () => data?.focalPoints?.find((f) => f?.id === focalPointId)?.name,
+    [data?.focalPoints, focalPointId]
+  )
+
   if (!focalPointName) return null
 
   return <span className="text-paragraph ml-2 text-xs">({focalPointName})</span>

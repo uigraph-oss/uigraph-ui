@@ -1,56 +1,51 @@
 'use client'
 
-import { uploadGlobalFile } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
-import { useMutation, useQuery } from '@apollo/client'
+import { assetUrl } from '@/helpers/asset-url'
+import { useQuery } from '@apollo/client'
+import axios from 'axios'
 import { arrayNonNullable } from 'daily-code'
 import { openFileExplorer } from 'daily-code/browser'
 import { ImageIcon, Upload } from 'lucide-react'
 import { useMemo } from 'react'
-import {
-  CREATE_DIAGRAM_IMAGE_MUTATION,
-  GET_DIAGRAM_IMAGES_QUERY,
-} from '../api/images'
+import { DIAGRAM_IMAGES_V2 } from '../api/images-v2'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
 
 export function SidebarImages() {
-  const { diagramId } = useFlowDiagramContext()
+  const { diagramId, organizationId } = useFlowDiagramContext()
 
-  const [createDiagramImage] = useMutation(CREATE_DIAGRAM_IMAGE_MUTATION, {
-    refetchQueries: [GET_DIAGRAM_IMAGES_QUERY],
-    awaitRefetchQueries: true,
-  })
-
-  const { data, refetch } = useQuery(GET_DIAGRAM_IMAGES_QUERY, {
-    variables: { diagramId: diagramId! },
-    skip: !diagramId,
+  const { data, refetch } = useQuery(DIAGRAM_IMAGES_V2, {
+    client: clientV2,
+    variables: { orgId: organizationId!, diagramId: diagramId! },
+    skip: !diagramId || !organizationId,
   })
 
   const images = useMemo(() => {
-    return arrayNonNullable(data?.v1GetDiagramImages)
-  }, [data?.v1GetDiagramImages])
+    return arrayNonNullable(data?.diagramImages)
+  }, [data?.diagramImages])
 
   async function handleUploadImage() {
-    if (!diagramId) return
+    if (!diagramId || !organizationId) return
 
     try {
       const [file] = await openFileExplorer({ accept: 'image/*' })
       if (!file) return
 
-      const fileId = await uploadGlobalFile(file)
-      await createDiagramImage({
-        variables: {
-          diagramId,
-          input: {
-            fileId,
-            fileName: file.name,
-            order: images.length,
-          },
-        },
-      })
+      const form = new FormData()
+      form.append('file', file)
+      form.append('fileName', file.name)
+      form.append('order', String(images.length))
+
+      await axios.post(
+        `/api/v1/orgs/${organizationId}/diagrams/${diagramId}/images`,
+        form,
+        { withCredentials: true }
+      )
+
       await refetch()
     } catch (error) {
       console.error('Error uploading image:', error)
@@ -87,7 +82,7 @@ export function SidebarImages() {
                         event.dataTransfer,
                         'image',
                         {
-                          src: image.fileURL || '',
+                          src: assetUrl(image.assetId) || '',
                           componentFields: [
                             {
                               componentFieldId: 'name',
@@ -109,7 +104,7 @@ export function SidebarImages() {
                     }}
                   >
                     <img
-                      src={image.fileURL || ''}
+                      src={assetUrl(image.assetId) || ''}
                       alt={image.fileName || ''}
                       className="w-[9.5rem] rounded-md"
                     />

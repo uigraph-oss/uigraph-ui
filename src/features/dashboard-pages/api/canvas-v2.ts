@@ -1,0 +1,33 @@
+import { graphql } from '@/api-v2'
+
+export const CANVAS_V2 = graphql(`
+  query CanvasV2($orgId: ID!, $mapId: ID!) {
+    canvas(orgId: $orgId, mapId: $mapId) {
+      mapId
+      orgId
+      zoom
+      navigationX
+      navigationY
+      framePositions
+      updatedAt
+    }
+  }
+`)
+
+export const UPSERT_CANVAS_V2 = graphql(`
+  mutation UpsertCanvasV2(
+    $orgId: ID!
+    $mapId: ID!
+    $input: UpsertCanvasInput!
+  ) {
+    upsertCanvas(orgId: $orgId, mapId: $mapId, input: $input) {
+      mapId
+      orgId
+      zoom
+      navigationX
+      navigationY
+      framePositions
+      updatedAt
+    }
+  }
+`)

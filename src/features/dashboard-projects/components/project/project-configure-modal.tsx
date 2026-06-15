@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useOrganizationContext } from '@/contexts'
 import { GET_TEAM } from '@/features/dashboard-settings/api'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { arrayNonNullable } from 'daily-code'
@@ -48,8 +48,11 @@ export function ConfigureProjectModal({
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const { organizationId } = useOrganizationContext()
-  const teamRes = useQuery(GET_TEAM, { variables: { organizationId } })
+  const organizationId = useCurrentOrganization()?.id
+  const teamRes = useQuery(GET_TEAM, {
+    variables: { organizationId: organizationId! },
+    skip: !organizationId,
+  })
   const teams = arrayNonNullable(teamRes.data?.GetTeam)
 
   const {

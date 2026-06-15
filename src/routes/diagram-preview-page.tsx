@@ -1,4 +1,9 @@
-import { GET_DIAGRAM_QUERY } from '@/features/diagram-portal/api'
+import { clientV2 } from '@/api-v2/client'
+import { useOrganizationContext } from '@/contexts'
+import {
+  DIAGRAM_CONTENT_V2,
+  DIAGRAM_V2,
+} from '@/features/diagram-portal/api/diagram-v2'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useQuery } from '@apollo/client'
 import { lazy, Suspense, useMemo } from 'react'
@@ -11,21 +16,35 @@ const FlowDiagramPreview = lazy(() =>
 )
 
 export function DiagramPreviewPage() {
+  const { organizationId } = useOrganizationContext()
   const { diagramId } = useParams<{ diagramId: string }>()
 
-  const { data, loading } = useQuery(GET_DIAGRAM_QUERY, {
-    variables: { diagramId: diagramId! },
+  const skip = !diagramId || !organizationId
+
+  const { data, loading } = useQuery(DIAGRAM_V2, {
+    client: clientV2,
+    variables: { orgId: organizationId!, id: diagramId! },
     fetchPolicy: 'cache-first',
-    skip: !diagramId,
+    skip,
   })
 
-  const diagramData = useMemo(() => {
-    const diagram = data?.v1GetDiagram
-    if (!diagram) return null
-    return convertDiagramServerData(diagram.componentFlowDiagram)
-  }, [data?.v1GetDiagram])
+  const { data: contentData, loading: contentLoading } = useQuery(
+    DIAGRAM_CONTENT_V2,
+    {
+      client: clientV2,
+      variables: { orgId: organizationId!, id: diagramId! },
+      fetchPolicy: 'cache-first',
+      skip,
+    }
+  )
 
-  if (loading) return <div>Loading diagram...</div>
+  const diagramData = useMemo(() => {
+    const content = contentData?.diagramContent?.content
+    if (!content) return null
+    return convertDiagramServerData(content)
+  }, [contentData?.diagramContent?.content])
+
+  if (loading || contentLoading) return <div>Loading diagram...</div>
   if (!diagramData) return <div>No diagram found</div>
 
   return (
@@ -34,7 +53,7 @@ export function DiagramPreviewPage() {
         <FlowDiagramPreview
           data={diagramData}
           options={{ forceNoBackground: true }}
-          name={data?.v1GetDiagram?.componentFlowDiagramName}
+          name={data?.diagram?.name}
         />
       </Suspense>
     </div>

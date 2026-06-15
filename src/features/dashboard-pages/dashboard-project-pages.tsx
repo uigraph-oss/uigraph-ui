@@ -1,6 +1,5 @@
 'use client'
 
-import { uploadProjectFile } from '@/api'
 import { FigmaIcon } from '@/assets/svgs'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,8 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { fileToDataUrl } from '@/helpers/file-to-data-url'
 import { trackGTag } from '@/helpers/track'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { ChevronDown, CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { DashboardPageSectionLayout } from '../dashboard'
@@ -31,7 +32,8 @@ import {
 function DashboardProjectContent() {
   const [searchParams, setSearchParams] = useSearchParamsState('viewMode')
 
-  const { project, pages, createPage } = useSingleProject()
+  const organizationId = useCurrentOrganization()?.id
+  const { map, frames, mapId, createFrame } = useSingleProject()
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isFigmaImportModalOpen, setIsFigmaImportModalOpen] = useState(false)
@@ -39,11 +41,9 @@ function DashboardProjectContent() {
   const [sortBy, setSortBy] = useState<string>('')
 
   const filteredPages = useMemo(() => {
-    let result = pages
+    let result = frames
     if (sortBy === 'name') {
-      result = [...result].sort((a, b) =>
-        a.pageName!.localeCompare(b.pageName!)
-      )
+      result = [...result].sort((a, b) => a.name!.localeCompare(b.name!))
     } else if (sortBy === 'createdAt') {
       result = [...result].sort(
         (a, b) =>
@@ -51,9 +51,11 @@ function DashboardProjectContent() {
       )
     }
     return result
-  }, [pages, sortBy])
+  }, [frames, sortBy])
 
   const viewMode = (searchParams.viewMode ?? 'grid') as ViewMode
+
+  if (!map) return null
 
   return (
     <DashboardPageSectionLayout
@@ -61,7 +63,7 @@ function DashboardProjectContent() {
       description="Manage and organize all frames within this map. Create, edit, and collaborate on individual frames."
       crumbs={[
         { to: '/dashboard/maps', label: 'Maps' },
-        { to: '/dashboard/maps/' + project.projectId, label: project.name },
+        { to: '/dashboard/maps/' + map.id, label: map.name },
       ]}
       headerContent={
         <div className="flex">
@@ -84,7 +86,7 @@ function DashboardProjectContent() {
               <DropdownMenuItem
                 onClick={() => {
                   trackGTag('figma_import_initiated', {
-                    project_id: project.projectId,
+                    project_id: map.id,
                   })
                   setIsFigmaImportModalOpen(true)
                 }}
@@ -123,9 +125,7 @@ function DashboardProjectContent() {
         </div>
 
         {viewMode === 'grid' && <PagesGrid pages={filteredPages} />}
-        {viewMode === 'canvas' && (
-          <PagesCanvas pages={pages} project={project} />
-        )}
+        {viewMode === 'canvas' && <PagesCanvas pages={frames} project={map} />}
       </div>
 
       <ConfigurePageModal
@@ -135,20 +135,19 @@ function DashboardProjectContent() {
         ctaLabel="Add Frame"
         description="Create a new frame for this map."
         submitForm={async (data) => {
-          const screenshotFileId = await uploadProjectFile(data.imageFile!, {
-            orgId: project.organizationId!,
-            projectId: project.projectId!,
-          })
+          const screenshot = data.imageFile
+            ? await fileToDataUrl(data.imageFile)
+            : undefined
 
-          await createPage({
+          await createFrame({
             variables: {
+              orgId: organizationId!,
+              mapId,
               input: {
-                organizationId: project.organizationId!,
-                projectId: project.projectId!,
-                pageName: data.name,
+                name: data.name,
                 description: data.description,
                 templateType: data.profileId,
-                screenShotFileID: screenshotFileId,
+                screenshot,
               },
             },
           })
@@ -156,7 +155,7 @@ function DashboardProjectContent() {
           trackGTag('create_page', {
             page_name: data.name,
             template_type: data.profileId,
-            project_id: project.projectId,
+            project_id: map.id,
           })
 
           setIsCreateModalOpen(false)

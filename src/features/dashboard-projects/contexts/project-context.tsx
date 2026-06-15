@@ -1,86 +1,95 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
-import { useOrganizationContext } from '@/contexts'
 import { DashboardPageLayout } from '@/features/dashboard/dashboard-layout'
 import { DashboardSectionHeader } from '@/features/dashboard/dashboard-section'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
-  CREATE_PAGE,
-  DELETE_PAGE,
-  GET_PROJECT_AND_PAGES,
-  UPDATE_PAGE,
+  CREATE_FRAME_V2,
+  DELETE_FRAME_V2,
+  FRAMES_V2,
+  MAP_V2,
+  UPDATE_FRAME_V2,
 } from '../api'
 
 export const [SingleProjectProvider, useSingleProject] = createContext(
   () => {
-    const { organizationId } = useOrganizationContext()
-    const { projectSlug } = useParams() as { projectSlug: string }
+    const organizationId = useCurrentOrganization()?.id
+    const { mapId } = useParams() as { mapId: string }
 
-    const { data, loading } = useQuery(GET_PROJECT_AND_PAGES, {
-      variables: { projectId: projectSlug, organizationId },
+    const mapQuery = useQuery(MAP_V2, {
+      client: clientV2,
+      variables: { orgId: organizationId!, id: mapId },
       fetchPolicy: 'cache-and-network',
+      skip: !organizationId,
     })
 
-    const [createPage, { loading: isCreatingPage }] = useMutation(CREATE_PAGE, {
-      awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: GET_PROJECT_AND_PAGES,
-          variables: { projectId: projectSlug, organizationId },
-        },
-      ],
+    const framesQuery = useQuery(FRAMES_V2, {
+      client: clientV2,
+      variables: { orgId: organizationId!, mapId },
+      fetchPolicy: 'cache-and-network',
+      skip: !organizationId,
     })
 
-    const [deletePage, { loading: isPageDeleting }] = useMutation(DELETE_PAGE, {
-      awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: GET_PROJECT_AND_PAGES,
-          variables: { projectId: projectSlug, organizationId },
-        },
-      ],
-    })
+    const refetchFrames = [
+      { query: FRAMES_V2, variables: { orgId: organizationId!, mapId } },
+    ]
 
-    const [updatePage, { loading: isPageUpdating }] = useMutation(UPDATE_PAGE, {
-      awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: GET_PROJECT_AND_PAGES,
-          variables: { projectId: projectSlug, organizationId },
-        },
-      ],
-    })
+    const [createFrame, { loading: isCreatingFrame }] = useMutation(
+      CREATE_FRAME_V2,
+      {
+        client: clientV2,
+        awaitRefetchQueries: true,
+        refetchQueries: refetchFrames,
+      }
+    )
+
+    const [deleteFrame, { loading: isFrameDeleting }] = useMutation(
+      DELETE_FRAME_V2,
+      {
+        client: clientV2,
+        awaitRefetchQueries: true,
+        refetchQueries: refetchFrames,
+      }
+    )
+
+    const [updateFrame, { loading: isFrameUpdating }] = useMutation(
+      UPDATE_FRAME_V2,
+      {
+        client: clientV2,
+        awaitRefetchQueries: true,
+        refetchQueries: refetchFrames,
+      }
+    )
 
     return {
-      loading: loading && !data?.v1GetProject,
-      project: useMemo(
-        () => arrayNonNullable(data?.v1GetProject)[0],
-        [data?.v1GetProject]
-      ),
-      pages: useMemo(
-        () => arrayNonNullable(data?.v1GetPage),
-        [data?.v1GetPage]
+      loading: mapQuery.loading && !mapQuery.data?.map,
+      map: useMemo(() => mapQuery.data?.map ?? null, [mapQuery.data?.map]),
+      frames: useMemo(
+        () => arrayNonNullable(framesQuery.data?.frames),
+        [framesQuery.data?.frames]
       ),
 
-      projectSlug,
+      mapId,
 
-      createPage,
-      deletePage,
-      updatePage,
+      createFrame,
+      deleteFrame,
+      updateFrame,
 
-      isCreatingPage,
-      isPageDeleting,
-      isPageUpdating,
+      isCreatingFrame,
+      isFrameDeleting,
+      isFrameUpdating,
     }
   },
   {
     useChildrenProvider(children, value) {
-      if (!value.loading && value.project) return children
+      if (!value.loading && value.map) return children
 
       return (
         <DashboardPageLayout
@@ -93,7 +102,7 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
 
           {value.loading && <SectionLoader />}
 
-          {!value.loading && !value.project && (
+          {!value.loading && !value.map && (
             <div className="flex h-[400px] w-full items-center justify-center">
               <p className="text-gray-500">No map found</p>
             </div>

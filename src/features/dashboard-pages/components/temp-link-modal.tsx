@@ -12,6 +12,7 @@ import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { PlusIcon } from '../../../assets/svgs/component-icons'
 
+import { clientV2 } from '@/api-v2/client'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -20,8 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useOrganizationContext } from '@/contexts'
-import { GET_PAGE, GET_PROJECT } from '@/features/dashboard-projects/api'
+import { FRAMES_V2, MAPS_V2 } from '@/features/dashboard-projects/api'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -33,45 +34,47 @@ type AddLinkModalProps = {
 }
 
 const createLinkModalSchema = z.object({
-  projectId: z.string().min(1, 'Project ID is required'),
-  pageId: z.string().nullable().optional(),
+  targetMapId: z.string().min(1, 'Map is required'),
+  targetFrameId: z.string().nullable().optional(),
   label: z.string(),
 })
 
 export function AddLinkModal({ x, y }: AddLinkModalProps) {
-  const { organizationId } = useOrganizationContext()
-  const { setNewPoint, createPageLink, createProjectLink } =
-    useFocalPointContext()
+  const orgId = useCurrentOrganization()?.id
+  const { setNewPoint, createFrameLink } = useFocalPointContext()
 
   const form = useForm({
     resolver: zodResolver(createLinkModalSchema),
     defaultValues: {
       label: '',
-      projectId: '',
-      pageId: null,
+      targetMapId: '',
+      targetFrameId: null,
     },
   })
 
-  const projectsQuery = useQuery(GET_PROJECT, {
+  const mapsQuery = useQuery(MAPS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId },
+    variables: { orgId: orgId! },
+    skip: !orgId,
   })
 
-  const projectId = form.watch('projectId')
-  const pagesQuery = useQuery(GET_PAGE, {
+  const targetMapId = form.watch('targetMapId')
+  const framesQuery = useQuery(FRAMES_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { projectId },
-    skip: !projectId,
+    variables: { orgId: orgId!, mapId: targetMapId },
+    skip: !orgId || !targetMapId,
   })
 
-  const projects = useMemo(
-    () => arrayNonNullable(projectsQuery.data?.v1GetProject),
-    [projectsQuery.data?.v1GetProject]
+  const maps = useMemo(
+    () => arrayNonNullable(mapsQuery.data?.maps),
+    [mapsQuery.data?.maps]
   )
 
-  const pages = useMemo(
-    () => arrayNonNullable(pagesQuery.data?.v1GetPage),
-    [pagesQuery.data?.v1GetPage]
+  const frames = useMemo(
+    () => arrayNonNullable(framesQuery.data?.frames),
+    [framesQuery.data?.frames]
   )
 
   return (
@@ -102,16 +105,18 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
         <form
           className="space-y-6 p-3"
           onSubmit={form.handleSubmit(async (formData) => {
-            if (formData.pageId) {
-              await createPageLink({
-                linkedPageId: formData.pageId,
+            if (formData.targetFrameId) {
+              await createFrameLink({
+                kind: 'frame',
+                targetFrameId: formData.targetFrameId,
                 label: formData.label,
                 locationX: x,
                 locationY: y,
               })
             } else {
-              await createProjectLink({
-                projectId: formData.projectId,
+              await createFrameLink({
+                kind: 'map',
+                targetMapId: formData.targetMapId,
                 label: formData.label,
                 locationX: x,
                 locationY: y,
@@ -122,11 +127,11 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
           })}
         >
           <Controller
-            name="projectId"
+            name="targetMapId"
             control={form.control}
             render={({ field }) => (
               <label className="block">
-                <span className="mb-3 block">Project</span>
+                <span className="mb-3 block">Map</span>
 
                 <Select
                   {...field}
@@ -134,23 +139,20 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
                   onValueChange={field.onChange}
                 >
                   <SelectTrigger className="!h-14 w-full rounded-2xl bg-white">
-                    <SelectValue placeholder="Select project" />
+                    <SelectValue placeholder="Select map" />
                   </SelectTrigger>
                   <SelectContent>
-                    {projects.map((project) => (
-                      <SelectItem
-                        key={project.projectId}
-                        value={project.projectId ?? 'none'}
-                      >
-                        {project.name}
+                    {maps.map((map) => (
+                      <SelectItem key={map.id} value={map.id}>
+                        {map.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                {form.formState.errors.projectId?.message && (
+                {form.formState.errors.targetMapId?.message && (
                   <p className="text-destructive mt-2 text-xs">
-                    {form.formState.errors.projectId.message}
+                    {form.formState.errors.targetMapId.message}
                   </p>
                 )}
               </label>
@@ -158,11 +160,11 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
           />
 
           <Controller
-            name="pageId"
+            name="targetFrameId"
             control={form.control}
             render={({ field }) => (
               <label className="block">
-                <span className="mb-3 block">Page</span>
+                <span className="mb-3 block">Frame</span>
 
                 <Select
                   {...field}
@@ -170,23 +172,20 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
                   onValueChange={field.onChange}
                 >
                   <SelectTrigger className="!h-14 w-full rounded-2xl bg-white">
-                    <SelectValue placeholder="Select page" />
+                    <SelectValue placeholder="Select frame" />
                   </SelectTrigger>
                   <SelectContent>
-                    {pages.map((page) => (
-                      <SelectItem
-                        key={page.pageId}
-                        value={page.pageId ?? 'none'}
-                      >
-                        {page.pageName}
+                    {frames.map((frame) => (
+                      <SelectItem key={frame.id} value={frame.id}>
+                        {frame.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                {form.formState.errors.pageId?.message && (
+                {form.formState.errors.targetFrameId?.message && (
                   <p className="text-destructive mt-2 text-xs">
-                    {form.formState.errors.pageId.message}
+                    {form.formState.errors.targetFrameId.message}
                   </p>
                 )}
               </label>
@@ -230,7 +229,7 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting && <SuperCircleLoader />}
-              Save Focal Point
+              Save Link
             </Button>
           </div>
         </form>

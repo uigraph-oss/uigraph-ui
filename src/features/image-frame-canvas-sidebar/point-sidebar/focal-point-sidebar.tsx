@@ -1,9 +1,9 @@
 'use client'
 
-import { GT } from '@/api'
 import { CommentIcon, NoteIcon } from '@/assets/svgs/component-icons'
 import { CrossButton } from '@/components/cross-button'
 import { SuperLogoLoader } from '@/components/loader'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
 import { useState } from 'react'
 import { CommentsContextProvider } from '../../comments/contexts/comments-context'
@@ -12,7 +12,7 @@ import { useFocalPointSidebarContext } from '../contexts/focal-point-sidebar-con
 import { FocalPointDetails, FocalPointDetailsApi } from './focal-point-details'
 
 type FocalPointDrawerProps = FocalPointDetailsApi & {
-  focalPoint: GT.FocalPoint
+  focalPoint: FocalPointV2
 }
 
 export function FocalPointSidebar({
@@ -75,7 +75,7 @@ export function FocalPointSidebar({
                 deleteFocalPoint={deleteFocalPoint}
               />
             ) : (
-              <CommentsContextProvider resourceId={focalPoint.focalPointId!}>
+              <CommentsContextProvider resourceId={focalPoint.id}>
                 <CommentsSection />
               </CommentsContextProvider>
             )}

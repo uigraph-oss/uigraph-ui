@@ -120,11 +120,11 @@ export function AppRoutes() {
           <Route path="/dashboard/components" element={<ComponentsPage />} />
           <Route path="/dashboard/maps" element={<DashboardProjects />} />
           <Route
-            path="/dashboard/maps/:projectSlug"
+            path="/dashboard/maps/:mapId"
             element={<DashboardProjectPage />}
           />
           <Route
-            path="/dashboard/frame/:pageId"
+            path="/dashboard/frame/:frameId"
             element={<DashboardMapFramePage />}
           />
 

@@ -1,67 +1,19 @@
+import { MeAndOrgQuery } from '@/api-v2/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
+import { GET_ME_AND_ORG_V2 } from './gql-v2'
 import { useAuthStore } from './use-auth-store'
 
-export interface AuthenticatedUser {
-  userId: string
-  email: string
-  name: string
-  login: string
-  kind: 'user' | 'service_account'
-  isAdmin: boolean
-  authProvider: string
-}
-
-export interface UserOrganization {
-  id: string
-  name: string
-  slug: string
-  role: string
-}
+export type AuthenticatedUser = MeAndOrgQuery['me']
+export type UserOrganization = MeAndOrgQuery['myOrgs'][number]
 
 export async function bootstrapSession() {
   try {
-    const [meRes, orgsRes] = await Promise.all([
-      fetch('/api/v1/auth/me', { credentials: 'include' }),
-      fetch('/api/v1/auth/orgs', { credentials: 'include' }),
-    ])
-
-    if (!meRes.ok) {
-      return useAuthStore.setState({
-        status: 'unauthenticated',
-        organizations: [],
-        user: null,
-      })
-    }
-
-    const me = (await meRes.json()) as {
-      userId: string
-      email: string
-      name: string
-      login: string
-      kind: 'user' | 'service_account'
-      isAdmin: boolean
-      authProvider: string
-    }
-
-    let organizations: UserOrganization[] = []
-    if (orgsRes.ok) {
-      const orgsData = (await orgsRes.json()) as {
-        orgs: UserOrganization[]
-      }
-      organizations = orgsData.orgs
-    }
+    const { data } = await clientV2.query({ query: GET_ME_AND_ORG_V2 })
 
     useAuthStore.setState({
       status: 'authenticated',
-      user: {
-        userId: me.userId,
-        email: me.email,
-        name: me.name,
-        login: me.login,
-        kind: me.kind,
-        isAdmin: me.isAdmin,
-        authProvider: me.authProvider,
-      },
-      organizations,
+      user: data.me,
+      organizations: data.myOrgs,
     })
   } catch {
     useAuthStore.setState({

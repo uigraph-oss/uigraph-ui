@@ -1,48 +1,56 @@
-import { GT, privateClient } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
-import { useOrganizationContext } from '@/contexts'
-import { useMutation } from '@apollo/client'
-import { arrayNonNullable } from 'daily-code'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  DELETE_FOCAL_POINT_META,
-  GET_FOCAL_POINT_META,
-  UPDATE_FOCAL_POINT_META,
-} from '../api/focal-point-meta'
+  DELETE_FOCAL_POINT_META_V2,
+  FOCAL_POINT_META_V2,
+  PointMeta,
+  toPointMeta,
+  UPDATE_FOCAL_POINT_META_V2,
+} from '../api/focal-point-meta-v2'
 import { FocalPointComponentsSection } from '../components/focal-point-component-group'
 
 type ComponentsSectionProps = {
-  focalPoints: GT.FocalPoint[]
+  focalPoints: FocalPointV2[]
+  mapId: string
 }
 
-export function ComponentsSection({ focalPoints }: ComponentsSectionProps) {
-  const { organizationId } = useOrganizationContext()
+export function ComponentsSection({
+  focalPoints,
+  mapId,
+}: ComponentsSectionProps) {
+  const orgId = useCurrentOrganization()?.id
 
   const [isPointMetaLoading, setIsPointMetaLoading] = useState(false)
-  const [pointMetaList, setPointMetaList] = useState<GT.FocalPointMeta[]>([])
-
-  const [updatePointMeta] = useMutation(UPDATE_FOCAL_POINT_META)
-  const [deletePointMeta] = useMutation(DELETE_FOCAL_POINT_META)
+  const [pointMetaList, setPointMetaList] = useState<PointMeta[]>([])
 
   useEffect(() => {
     async function fetchPointMetaList() {
-      const promises = focalPoints.map(async (focalPoint) => {
-        const pointMetaList = await privateClient.query({
-          query: GET_FOCAL_POINT_META,
-          variables: { focalPointId: focalPoint.focalPointId! },
-          fetchPolicy: 'cache-first',
-        })
+      if (!orgId || !mapId) return
 
-        return pointMetaList
-      })
+      const results = await Promise.all(
+        focalPoints.map((focalPoint) =>
+          clientV2.query({
+            query: FOCAL_POINT_META_V2,
+            variables: {
+              orgId,
+              mapId,
+              frameId: focalPoint.frameId ?? '',
+              focalPointId: focalPoint.id,
+            },
+            fetchPolicy: 'cache-first',
+          })
+        )
+      )
 
-      const pointMetaList = await Promise.all(promises)
-      const flatPointMetaList = pointMetaList
-        .map((result) => result.data?.v1GetFocalPointMeta)
-        .flat()
+      const flat = results
+        .flatMap((result) => result.data?.focalPointMeta ?? [])
+        .map(toPointMeta)
 
-      setPointMetaList(arrayNonNullable(flatPointMetaList))
+      setPointMetaList(flat)
     }
 
     setIsPointMetaLoading(true)
@@ -53,7 +61,7 @@ export function ComponentsSection({ focalPoints }: ComponentsSectionProps) {
       .finally(() => {
         setIsPointMetaLoading(false)
       })
-  }, [focalPoints])
+  }, [focalPoints, orgId, mapId])
 
   if (isPointMetaLoading) {
     return <SectionLoader label="Loading point meta list" />
@@ -70,43 +78,58 @@ export function ComponentsSection({ focalPoints }: ComponentsSectionProps) {
         )
       }}
       deletePointMeta={async (pointMetaId) => {
-        await deletePointMeta({
-          variables: { focalPointMetaId: pointMetaId },
+        const meta = pointMetaList.find(
+          (m) => m.focalPointMetaId === pointMetaId
+        )
+        if (!meta) throw new Error('Point meta not found')
+
+        await clientV2.mutate({
+          mutation: DELETE_FOCAL_POINT_META_V2,
+          variables: {
+            orgId: orgId!,
+            mapId,
+            frameId: meta.pageId ?? '',
+            focalPointId: meta.focalPointId ?? '',
+            id: pointMetaId,
+          },
         })
 
         setPointMetaList((prev) =>
-          prev.filter((meta) => meta.focalPointMetaId !== pointMetaId)
+          prev.filter((m) => m.focalPointMetaId !== pointMetaId)
         )
       }}
       updatePointMeta={async (pointMetaId, componentId, input) => {
-        const pointMeta = pointMetaList.find(
-          (meta) => meta.focalPointMetaId === pointMetaId
+        const meta = pointMetaList.find(
+          (m) => m.focalPointMetaId === pointMetaId
         )
+        if (!meta) throw new Error('Point meta not found')
 
-        if (!pointMeta) {
-          throw new Error('Point meta not found')
-        }
-
-        const { data } = await updatePointMeta({
+        const { data } = await clientV2.mutate({
+          mutation: UPDATE_FOCAL_POINT_META_V2,
           variables: {
-            focalPointMetaId: pointMetaId,
+            orgId: orgId!,
+            mapId,
+            frameId: meta.pageId ?? '',
+            focalPointId: meta.focalPointId ?? '',
+            id: pointMetaId,
             input: {
-              ...input,
               componentId,
-              organizationId,
-              pageId: pointMeta.pageId!,
-              focalPointId: pointMeta.focalPointId!,
-              componentModalFields: input.componentModalFields,
+              componentModalFields: input.componentModalFields
+                ? JSON.stringify(input.componentModalFields)
+                : undefined,
             },
           },
         })
 
-        if (data?.v1UpdateFocalPointMeta) {
+        if (data?.updateFocalPointMeta) {
           setPointMetaList((prev) =>
-            prev.map((meta) =>
-              meta.focalPointMetaId === pointMetaId
-                ? data.v1UpdateFocalPointMeta!
-                : meta
+            prev.map((m) =>
+              m.focalPointMetaId === pointMetaId
+                ? {
+                    ...m,
+                    componentModalFields: input.componentModalFields ?? [],
+                  }
+                : m
             )
           )
         }

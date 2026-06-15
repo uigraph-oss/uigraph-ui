@@ -26,11 +26,11 @@ function FocalPointPageInner() {
     newPoint,
     setNewPoint,
 
-    page,
-    pageLoading,
+    frame,
+    frameLoading,
 
-    project,
-    projectLoading,
+    map,
+    mapLoading,
 
     drawRectMode,
     setDrawRectMode,
@@ -44,24 +44,24 @@ function FocalPointPageInner() {
       crumbs={[
         { to: `/dashboard/maps`, label: 'Maps' },
         {
-          to: `/dashboard/maps/${page?.projectId}`,
-          label: projectLoading ? (
+          to: `/dashboard/maps/${map?.id}`,
+          label: mapLoading ? (
             <SuperCircleLoader />
           ) : (
-            (project?.name ?? 'Untitled Project')
+            (map?.name ?? 'Untitled Map')
           ),
         },
         {
-          to: `/dashboard/frame/${page?.pageId}`,
-          label: pageLoading ? (
+          to: `/dashboard/frame/${frame?.id}`,
+          label: frameLoading ? (
             <SuperCircleLoader />
           ) : (
-            (page?.pageName ?? 'Frame')
+            (frame?.name ?? 'Frame')
           ),
         },
       ]}
       headerContent={
-        page && (
+        frame && (
           <div className="flex items-center gap-2">
             <Button
               preset={newPoint?.type === 'link' ? 'destructive' : 'primary'}
@@ -129,14 +129,14 @@ function FocalPointPageInner() {
         )
       }
     >
-      {page ? (
+      {frame ? (
         <FocalPointEditor />
       ) : (
         <>
-          {pageLoading ? (
+          {frameLoading ? (
             <SectionLoader />
           ) : (
-            <div className="text-center text-gray-500">Page not found</div>
+            <div className="text-center text-gray-500">Frame not found</div>
           )}
         </>
       )}

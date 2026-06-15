@@ -4,7 +4,7 @@ export default {
   generates: {
     './src/api/.gql/': {
       schema: 'https://api.dev.uigraph.app/graphql/query',
-      documents: ['./src/**/*.{ts,tsx}', '!./src/api-v2/**/*'],
+      documents: ['./src/**/*.{ts,tsx}', '!./src/**/*-v2.{ts,tsx}'],
 
       preset: 'client',
 
@@ -24,8 +24,8 @@ export default {
     },
 
     './src/api-v2/.gql/': {
-      schema: process.env.CODEGEN_V2_SCHEMA ?? 'http://localhost:8090/graphql',
-      documents: ['./src/api-v2/**/*.{ts,tsx}'],
+      schema: '../uigraph-graphql/graph/schema/*.graphqls',
+      documents: ['./src/**/*-v2.{ts,tsx}'],
 
       preset: 'client',
 

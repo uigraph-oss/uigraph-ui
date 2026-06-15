@@ -63,7 +63,7 @@ export function DrawRectArea({
           className="space-y-6 p-3"
           onSubmit={form.handleSubmit(async ({ name }) => {
             await createFrameGroup({
-              groupName: name,
+              name,
               locationX: x,
               locationY: y,
               width,

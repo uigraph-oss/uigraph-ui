@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { SuperCircleLoader } from '@/components/loader'
 import {
   Accordion,
@@ -11,13 +10,20 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group-v2'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 type BasicSectionProps = {
-  frameGroup: GT.PageGroup
-  updateFrameGroup: (input: GT.UpdatePageGroupInput) => Promise<void>
+  frameGroup: FrameGroupV2
+  updateFrameGroup: (input: {
+    name?: string
+    locationX?: number
+    locationY?: number
+    width?: number
+    height?: number
+  }) => Promise<void>
 }
 
 export function BasicSection({
@@ -26,9 +32,9 @@ export function BasicSection({
 }: BasicSectionProps) {
   const [isUpdatingGroup, setIsUpdatingGroup] = useState(false)
 
-  const [localName, setLocalName] = useEffectState(frameGroup.groupName || '')
+  const [localName, setLocalName] = useEffectState(frameGroup.name || '')
 
-  const hasChanges = localName !== frameGroup.groupName
+  const hasChanges = localName !== frameGroup.name
 
   return (
     <Accordion
@@ -68,13 +74,11 @@ export function BasicSection({
                   try {
                     setIsUpdatingGroup(true)
                     await updateFrameGroup({
-                      organizationId: frameGroup.organizationId!,
-                      pageId: frameGroup.pageId!,
-                      groupName: localName,
-                      locationX: frameGroup.locationX,
-                      locationY: frameGroup.locationY,
-                      width: frameGroup.width,
-                      height: frameGroup.height,
+                      name: localName,
+                      locationX: frameGroup.locationX ?? 0,
+                      locationY: frameGroup.locationY ?? 0,
+                      width: frameGroup.width ?? 0,
+                      height: frameGroup.height ?? 0,
                     })
                   } catch {
                     toast.error('Failed to update group')

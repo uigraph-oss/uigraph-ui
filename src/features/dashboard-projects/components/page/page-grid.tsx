@@ -1,10 +1,8 @@
 'use client'
 
-import { GT } from '@/api'
 import { SimpleModalBase } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionNotFound } from '@/components/section-not-found'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   DialogDescription,
@@ -17,18 +15,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { assetUrl } from '@/helpers/asset-url'
 import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
-import { arrayNonNullable } from 'daily-code'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
 import { Calendar, MoreVertical } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
+import { DashboardFrame } from '../../api'
 import { useSingleProject } from '../../contexts/project-context'
 import { ConfigurePageModal } from './configure-page-modal'
 
-export function PagesGrid({ pages }: { pages: GT.Page[] }) {
+export function PagesGrid({ pages }: { pages: DashboardFrame[] }) {
   if (pages.length === 0) {
     return <SectionNotFound label="No frames found" />
   }
@@ -39,14 +39,16 @@ export function PagesGrid({ pages }: { pages: GT.Page[] }) {
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}
     >
       {pages.map((page) => (
-        <PageCard key={page.pageId} page={page} />
+        <PageCard key={page.id} page={page} />
       ))}
     </div>
   )
 }
 
-function PageCard({ page }: { page: GT.Page }) {
-  const { deletePage, updatePage, isPageDeleting } = useSingleProject()
+function PageCard({ page }: { page: DashboardFrame }) {
+  const organizationId = useCurrentOrganization()?.id
+  const { mapId, deleteFrame, updateFrame, isFrameDeleting } =
+    useSingleProject()
 
   const [isEditPage, setEditPage] = useState(false)
   const [isDeletePage, setDeletePage] = useState(false)
@@ -54,9 +56,9 @@ function PageCard({ page }: { page: GT.Page }) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const collaborators = useMemo(
-    () => arrayNonNullable(page.collaborators),
-    [page.collaborators]
+  const screenshotSrc = assetUrl(
+    page.screenshotAssetId,
+    page.screenshotContentHash
   )
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -69,22 +71,22 @@ function PageCard({ page }: { page: GT.Page }) {
   return (
     <div className="group relative">
       <Link
-        to={`/dashboard/frame/${page.pageId}`}
+        to={`/dashboard/frame/${page.id}`}
         className="relative block cursor-pointer overflow-hidden rounded-[1.4525rem] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#E2E4E6] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]"
       >
         {/* Preview area — flush to card edges */}
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
-            page.screenShotFileUrl && !imageError
+            screenshotSrc && !imageError
               ? 'bg-[#F5F6F8] group-hover:bg-white'
               : 'bg-[#EDEEF1]'
           )}
         >
-          {page.screenShotFileUrl && !imageError ? (
+          {screenshotSrc && !imageError ? (
             <img
-              alt={page.pageName ?? 'Page Image'}
-              src={page.screenShotFileUrl}
+              alt={page.name ?? 'Frame Image'}
+              src={screenshotSrc}
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}
               className={cn(
@@ -119,7 +121,7 @@ function PageCard({ page }: { page: GT.Page }) {
         {/* Content */}
         <div className="px-4 py-3">
           <h4 className="line-clamp-1 text-sm font-semibold text-[#111111]">
-            {page.pageName ?? (
+            {page.name ?? (
               <span className="text-[#B0B0B2]">Untitled Frame</span>
             )}
           </h4>
@@ -133,28 +135,6 @@ function PageCard({ page }: { page: GT.Page }) {
                   : 'N/A'}
               </span>
             </div>
-
-            {collaborators.length > 0 && (
-              <div className="flex shrink-0 items-center">
-                {collaborators.slice(0, 3).map((collaborator, i) => (
-                  <Avatar
-                    key={i}
-                    className={cn(
-                      'pointer-events-none size-7 border-2 border-white bg-[#F0F0F2] shadow-sm',
-                      i > 0 && '-ml-2'
-                    )}
-                  >
-                    <AvatarImage
-                      src={collaborator?.profileImgUrl || '/placeholder.svg'}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="text-[9px] font-medium text-[#A0A0A2]">
-                      {collaborator?.name?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </Link>
@@ -194,24 +174,26 @@ function PageCard({ page }: { page: GT.Page }) {
         ctaLabel="Save Changes"
         description="Edit the details of the frame."
         submitForm={async (data) => {
-          await updatePage({
+          await updateFrame({
             variables: {
-              pageId: page.pageId!,
+              orgId: organizationId!,
+              mapId,
+              id: page.id,
               input: {
-                pageName: data.name,
+                name: data.name,
                 description: data.description,
               },
             },
           })
 
           trackGTag('update_page', {
-            page_id: page.pageId,
+            page_id: page.id,
           })
 
           setEditPage(false)
         }}
         initialValues={{
-          name: page.pageName ?? '',
+          name: page.name ?? '',
           description: page.description ?? '',
         }}
       />
@@ -241,19 +223,19 @@ function PageCard({ page }: { page: GT.Page }) {
           <Button
             variant="destructive"
             className={'h-11'}
-            disabled={isPageDeleting}
+            disabled={isFrameDeleting}
             onClick={async () => {
               trackGTag('delete_page', {
-                page_id: page.pageId,
+                page_id: page.id,
               })
 
-              await deletePage({
-                variables: { pageId: page.pageId || '' },
+              await deleteFrame({
+                variables: { orgId: organizationId!, mapId, id: page.id },
               })
               setDeletePage(false)
             }}
           >
-            {isPageDeleting && <SuperCircleLoader />}
+            {isFrameDeleting && <SuperCircleLoader />}
             Delete
           </Button>
         </div>

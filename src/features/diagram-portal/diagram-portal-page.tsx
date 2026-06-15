@@ -2,13 +2,14 @@
 
 import './global.scss'
 
+import { clientV2 } from '@/api-v2/client'
 import { GlobalLoader } from '@/components/loader/global-loader'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store/use-auth-store'
 import { useQuery } from '@apollo/client'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { GET_DIAGRAM_QUERY } from './api'
+import { DIAGRAM_CONTENT_V2, DIAGRAM_V2 } from './api/diagram-v2'
 import { DataSourcesProvider } from './context/data-sources-context'
 import { FlowDiagramProvider } from './context/flow-diagram-context'
 import { FlowDiagramLayout } from './flow-diagram-layout'
@@ -17,36 +18,48 @@ import { ReactFlowWrapper } from './react-flow-wrapper'
 import { ServerDiagramData } from './types/diagram'
 
 export function DiagramPortalPage() {
-  const { organizationId } = useOrganizationContext()
+  const organization = useCurrentOrganization()
 
   const { diagramId } = useParams() as { diagramId: string }
 
-  const { data, loading } = useQuery(GET_DIAGRAM_QUERY, {
+  const { data, loading } = useQuery(DIAGRAM_V2, {
+    client: clientV2,
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
-    variables: { diagramId: String(diagramId) },
+    skip: !organization.id,
+    variables: { orgId: organization.id, id: String(diagramId) },
   })
 
+  const { data: contentData, loading: contentLoading } = useQuery(
+    DIAGRAM_CONTENT_V2,
+    {
+      client: clientV2,
+      errorPolicy: 'ignore',
+      fetchPolicy: 'cache-first',
+      skip: !organization.id,
+      variables: { orgId: organization.id, id: String(diagramId) },
+    }
+  )
+
   const initialDiagramData = useMemo<ServerDiagramData>(() => {
-    return convertDiagramServerData(data?.v1GetDiagram?.componentFlowDiagram)
-  }, [data?.v1GetDiagram?.componentFlowDiagram])
+    return convertDiagramServerData(contentData?.diagramContent?.content)
+  }, [contentData?.diagramContent?.content])
 
   const lastUpdatedAt = useMemo(() => {
-    if (!data?.v1GetDiagram?.previewImageFileId) return undefined
-    return data?.v1GetDiagram?.updatedAt ?? undefined
-  }, [data?.v1GetDiagram])
+    return data?.diagram?.updatedAt ?? undefined
+  }, [data?.diagram?.updatedAt])
 
-  if (loading) return <GlobalLoader />
+  if (loading || contentLoading) return <GlobalLoader />
 
   return (
     <FlowDiagramProvider
       diagramId={diagramId}
-      organizationId={organizationId}
-      folderId={data?.v1GetDiagram?.folderId ?? null}
-      teamId={data?.v1GetDiagram?.teamId ?? null}
+      organizationId={organization.id}
+      folderId={data?.diagram?.folderId ?? null}
+      teamId={data?.diagram?.teamId ?? null}
       initialData={initialDiagramData}
       initialInfo={{
-        name: data?.v1GetDiagram?.componentFlowDiagramName ?? undefined,
+        name: data?.diagram?.name ?? undefined,
         lastUpdatedAt,
       }}
     >

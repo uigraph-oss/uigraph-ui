@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { GT, privateClient } from '@/api'
 import { useOrganizationContext } from '@/contexts'
-import { GET_PAGE } from '@/features/dashboard-projects/api'
+import { GET_PAGE } from '@/features/dashboard-projects/api/page'
 import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
 import { GET_FOCAL_POINT_META_BY_COMPONENT_META_ID } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
 

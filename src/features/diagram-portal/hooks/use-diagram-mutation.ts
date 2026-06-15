@@ -1,4 +1,5 @@
-import { GT, privateClient } from '@/api'
+import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { useMutation } from '@apollo/client'
 import { Edge, Node } from '@xyflow/react'
@@ -7,10 +8,7 @@ import { useEffectExceptOnMount, useEffectState } from 'daily-code/react'
 import ms from 'ms'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import {
-  UPDATE_DIAGRAM_MUTATION,
-  UPLOAD_DIAGRAM_PREVIEW_MUTATION,
-} from '../api'
+import { UPDATE_DIAGRAM_V2 } from '../api/diagram-v2'
 import { convertDiagramServerDataToString } from '../helpers/diagram-data'
 import { generateDiagramThumbnailFile } from '../helpers/download-image'
 import { DataSource } from '../types/db-flow'
@@ -44,7 +42,7 @@ export function useDiagramPortalMutation({
   initialLastUpdatedAt,
 }: TUseDiagramPortalMutationProps) {
   const [loading, setLoading] = useState(false)
-  const [updateDiagram] = useMutation(UPDATE_DIAGRAM_MUTATION)
+  const [updateDiagram] = useMutation(UPDATE_DIAGRAM_V2, { client: clientV2 })
 
   const serverLastUpdatedAt = useMemo(() => {
     return initialLastUpdatedAt ? new Date(initialLastUpdatedAt).getTime() : 0
@@ -97,16 +95,14 @@ export function useDiagramPortalMutation({
       if (!diagramId || !organizationId || disabled) return
 
       const updatesInput = {
-        organizationId,
-        componentFlowDiagramName: diagramName,
-        componentFlowDiagram: convertDiagramServerDataToString({
+        name: diagramName,
+        content: convertDiagramServerDataToString({
           nodes: data.nodes,
           edges: data.edges,
           viewport: data.viewport,
           components: data.components,
           dataSources: data.dataSources,
         }),
-        previewImageFileId: `file_${diagramId.replace('diagram_', '')}`,
         ...(folderId ? { folderId } : {}),
         ...(teamId ? { teamId } : {}),
       }
@@ -136,13 +132,21 @@ export function useDiagramPortalMutation({
 
         if (!isDiagramCached) {
           await updateDiagram({
-            variables: { diagramId, input: updatesInput },
+            variables: {
+              orgId: organizationId,
+              id: diagramId,
+              input: updatesInput,
+            },
           })
           CACHED_UPDATES.set(diagramId, updateInputStringified)
         }
 
         if (thumbnail) {
-          uploadThumbnailFile(diagramId, thumbnail.thumbnailFile)
+          uploadThumbnailFile(
+            organizationId,
+            diagramId,
+            thumbnail.thumbnailFile
+          )
             .then(() => {
               setLastUpdatedAt(Date.now())
               CACHED_THUMBNAIL_FILES.set(diagramId, thumbnail.updateHash)
@@ -237,24 +241,17 @@ async function getThumbnailFile({
   return { thumbnailFile, updateHash }
 }
 
-async function uploadThumbnailFile(diagramId: string, file: File) {
-  const { data } = await privateClient.mutate({
-    mutation: UPLOAD_DIAGRAM_PREVIEW_MUTATION,
-    variables: {
-      diagramId,
-      input: {
-        fileExtension: 'webp',
-        fileName: 'preview.webp',
-        contentType: 'image/webp',
-        fileType: 'image/webp',
-      },
-    },
-  })
+async function uploadThumbnailFile(
+  orgId: string,
+  diagramId: string,
+  file: File
+) {
+  const form = new FormData()
+  form.append('file', file)
 
-  const fileUploadURL = data?.v1UpdateDiagramThumbnail?.fileUploadURL
-  if (!fileUploadURL) throw new Error('Failed to get file upload URL')
-
-  await axios.put(fileUploadURL, file, {
-    headers: { 'Content-Type': 'image/webp' },
-  })
+  await axios.post(
+    `/api/v1/orgs/${orgId}/diagrams/${diagramId}/thumbnail`,
+    form,
+    { withCredentials: true }
+  )
 }

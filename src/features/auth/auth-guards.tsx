@@ -49,7 +49,7 @@ export function MustHaveOrganizationGuard({ children }: PropsWithChildren) {
 }
 
 export function MustBeServerAdminGuard({ children }: PropsWithChildren) {
-  const isAdmin = useAuthStore((state) => state.user?.isAdmin)
+  const isAdmin = useAuthStore((state) => state.user?.role === 'admin')
   if (!isAdmin) {
     return <Navigate to="/" replace />
   }
