@@ -5,7 +5,6 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
-import { GET_FOLDER_AND_DIAGRAMS } from '../api/diagrams'
 import {
   CREATE_DIAGRAM_V2,
   DELETE_DIAGRAM_V2,
@@ -13,73 +12,82 @@ import {
   UPDATE_DIAGRAM_META_V2,
 } from '../api/diagrams-v2'
 import {
-  CREATE_DIAGRAM_FOLDER,
-  DELETE_DIAGRAM_FOLDER,
-  GET_DIAGRAM_FOLDER,
-  UPDATE_DIAGRAM_FOLDER,
-} from '../api/folders'
-import { GET_DIAGRAM_ORG_USERS, GET_DIAGRAM_TEAMS } from '../api/teams'
+  CREATE_FOLDER_V2,
+  DELETE_FOLDER_V2,
+  FOLDER_V2,
+  FOLDERS_V2,
+  UPDATE_FOLDER_V2,
+} from '../api/folders-v2'
+import { GET_DIAGRAM_ORG_USERS } from '../api/teams'
+import { TEAMS_V2 } from '../api/teams-v2'
 
 export const [DiagramsContextProvider, useDiagramsContext] = createContext(
   () => {
     const organization = useCurrentOrganization()
+    const orgId = organization.id
 
     const [searchParams, setSearchParams] = useSearchParamsState(
       'folder',
-      'parent'
+      'parent',
+      'team'
     )
 
-    const folderAndDiagramsData = useQuery(GET_FOLDER_AND_DIAGRAMS, {
+    const selectedFolderId = searchParams.folder
+    const selectedTeamId = searchParams.team
+
+    const foldersQuery = useQuery(FOLDERS_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-and-network',
-      variables: {
-        organizationId: organization.id,
-        folderId: searchParams.folder,
-      },
+      skip: !orgId,
+      variables: { orgId: orgId!, type: 'diagram' },
     })
 
     const diagramsV2Query = useQuery(DIAGRAMS_V2, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
-      skip: !organization.id,
+      skip: !orgId,
       variables: {
-        orgId: organization.id,
-        folderId: searchParams.folder,
+        orgId: orgId!,
+        folderId: selectedFolderId,
       },
     })
 
-    const folderData = useQuery(GET_DIAGRAM_FOLDER, {
+    const folderData = useQuery(FOLDER_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { folderId: searchParams.folder! },
-      skip: !searchParams.folder,
+      variables: { orgId: orgId!, id: selectedFolderId! },
+      skip: !orgId || !selectedFolderId,
     })
 
     const selectedFolder = useMemo(
-      () => folderData.data?.v1GetFolder ?? null,
-      [folderData.data?.v1GetFolder]
+      () => folderData.data?.folder ?? null,
+      [folderData.data?.folder]
     )
 
     const selectedFolderParentId = selectedFolder?.parentId
-    const parentFolderData = useQuery(GET_DIAGRAM_FOLDER, {
+    const parentFolderData = useQuery(FOLDER_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { folderId: selectedFolderParentId! },
-      skip: !selectedFolderParentId,
+      variables: { orgId: orgId!, id: selectedFolderParentId! },
+      skip: !orgId || !selectedFolderParentId,
     })
 
-    const teamsData = useQuery(GET_DIAGRAM_TEAMS, {
+    const teamsData = useQuery(TEAMS_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { organizationId: organization.id },
-      skip: !organization.id,
+      variables: { orgId: orgId! },
+      skip: !orgId,
     })
 
     const orgUsersData = useQuery(GET_DIAGRAM_ORG_USERS, {
       fetchPolicy: 'cache-first',
-      variables: { organizationId: organization.id },
-      skip: !organization.id,
+      variables: { organizationId: orgId },
+      skip: !orgId,
     })
 
     const teams = useMemo(
-      () => arrayNonNullable(teamsData.data?.GetTeam ?? []),
-      [teamsData.data?.GetTeam]
+      () => arrayNonNullable(teamsData.data?.teams ?? []),
+      [teamsData.data?.teams]
     )
 
     const orgUsers = useMemo(
@@ -87,18 +95,23 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       [orgUsersData.data?.GetOrganizationUsers]
     )
 
-    const [createFolder] = useMutation(CREATE_DIAGRAM_FOLDER, {
-      refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
+    const folderListVariables = { orgId: orgId!, type: 'diagram' as const }
+
+    const [createFolder] = useMutation(CREATE_FOLDER_V2, {
+      client: clientV2,
+      refetchQueries: [{ query: FOLDERS_V2, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
-    const [updateFolder] = useMutation(UPDATE_DIAGRAM_FOLDER, {
-      refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
+    const [updateFolder] = useMutation(UPDATE_FOLDER_V2, {
+      client: clientV2,
+      refetchQueries: [{ query: FOLDERS_V2, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
-    const [deleteFolder] = useMutation(DELETE_DIAGRAM_FOLDER, {
-      refetchQueries: [GET_FOLDER_AND_DIAGRAMS],
+    const [deleteFolder] = useMutation(DELETE_FOLDER_V2, {
+      client: clientV2,
+      refetchQueries: [{ query: FOLDERS_V2, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
@@ -121,39 +134,61 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       onCompleted: refetchDiagrams,
     })
 
-    const folders = useMemo(
-      () => arrayNonNullable(folderAndDiagramsData.data?.v1GetFolders ?? []),
-      [folderAndDiagramsData.data?.v1GetFolders]
+    const allFolders = useMemo(
+      () => arrayNonNullable(foldersQuery.data?.folders),
+      [foldersQuery.data?.folders]
     )
+
+    const teamScopedFolders = useMemo(() => {
+      if (!selectedTeamId) return allFolders
+      return allFolders.filter((f) => !f.teamId || f.teamId === selectedTeamId)
+    }, [allFolders, selectedTeamId])
+
+    const folders = useMemo(() => {
+      if (selectedFolderId) {
+        return teamScopedFolders.filter((f) => f.parentId === selectedFolderId)
+      }
+      return teamScopedFolders.filter((f) => !f.parentId)
+    }, [teamScopedFolders, selectedFolderId])
 
     const parentFolder = useMemo(
-      () => parentFolderData.data?.v1GetFolder ?? null,
-      [parentFolderData.data?.v1GetFolder]
+      () => parentFolderData.data?.folder ?? null,
+      [parentFolderData.data?.folder]
     )
 
-    const diagrams = useMemo(
+    const allDiagrams = useMemo(
       () => arrayNonNullable(diagramsV2Query.data?.diagrams ?? []),
       [diagramsV2Query.data?.diagrams]
     )
 
+    const diagrams = useMemo(() => {
+      if (!selectedTeamId) return allDiagrams
+      return allDiagrams.filter((d) => d.teamId === selectedTeamId)
+    }, [allDiagrams, selectedTeamId])
+
     const isFolderDataLoading =
-      folderData.loading && !folderData.data?.v1GetFolder
+      folderData.loading && !folderData.data?.folder && !!selectedFolderId
 
     const isFolderAndDiagramsDataLoading =
-      (folderAndDiagramsData.loading &&
-        !folderAndDiagramsData.data?.v1GetFolders) ||
+      (foldersQuery.loading && !foldersQuery.data?.folders) ||
       (diagramsV2Query.loading && !diagramsV2Query.data?.diagrams)
 
     return {
       folders,
+      allFolders,
       diagrams,
       isLoading: isFolderDataLoading || isFolderAndDiagramsDataLoading,
 
       selectedFolder,
       parentFolder,
-      selectedFolderId: searchParams.folder,
+      selectedFolderId,
       setSelectedFolderId: (folderId: string | null) => {
         setSearchParams({ folder: folderId })
+      },
+
+      selectedTeamId,
+      setSelectedTeamId: (teamId: string | null) => {
+        setSearchParams({ team: teamId })
       },
 
       teams,

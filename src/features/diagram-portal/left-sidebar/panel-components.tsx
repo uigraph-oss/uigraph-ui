@@ -223,7 +223,7 @@ export function SidebarComponents() {
                                           data:
                                             field.label === 'Name'
                                               ? [{ value: type.name }]
-                                              : field.data,
+                                              : undefined,
                                         })),
                                       }
                                     )
