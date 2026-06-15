@@ -3,7 +3,7 @@
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { Plus } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -24,7 +24,7 @@ import { ServiceAccountTable } from './service-account-table'
 import { ServiceAccountTokensModal } from './service-account-tokens-modal'
 
 export function ServiceAccountsPage() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id as string
   const [accounts, setAccounts] = useState<ServiceAccount[]>([])
   const [scopes, setScopes] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
