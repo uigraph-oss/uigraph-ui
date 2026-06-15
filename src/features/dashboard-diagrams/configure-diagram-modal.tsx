@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,11 +11,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { DashboardFolder } from './api/folders-v2'
+import { DashboardTeam } from './api/teams-v2'
 
-const diagramSchema = z.object({
+const createDiagramSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  folderId: z.string().optional(),
+  teamId: z.string().min(1, 'Team is required'),
+})
+
+const updateDiagramSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   folderId: z.string().optional(),
   teamId: z.string().optional(),
@@ -28,9 +35,19 @@ type ConfigureDiagramModalProps = {
   defaultName?: string
   defaultFolderId?: string | null
   defaultTeamId?: string | null
-  folders?: GT.Folder[]
-  teams?: GT.TeamInfo[]
-  onSubmit: SubmitHandler<z.infer<typeof diagramSchema>>
+  folders?: DashboardFolder[]
+  teams?: DashboardTeam[]
+  onSubmit: SubmitHandler<
+    z.infer<typeof createDiagramSchema> | z.infer<typeof updateDiagramSchema>
+  >
+}
+
+function foldersForTeam(
+  folders: DashboardFolder[],
+  teamId: string | undefined
+) {
+  if (!teamId) return folders.filter((f) => !f.teamId)
+  return folders.filter((f) => f.teamId === teamId)
 }
 
 export function ConfigureDiagramModal({
@@ -39,12 +56,14 @@ export function ConfigureDiagramModal({
   defaultName = '',
   defaultFolderId,
   defaultTeamId,
-  folders,
-  teams,
+  folders = [],
+  teams = [],
   onSubmit,
 }: ConfigureDiagramModalProps) {
   const form = useForm({
-    resolver: zodResolver(diagramSchema),
+    resolver: zodResolver(
+      mode === 'create' ? createDiagramSchema : updateDiagramSchema
+    ),
     defaultValues: {
       name: defaultName,
       folderId: defaultFolderId ?? undefined,
@@ -52,15 +71,43 @@ export function ConfigureDiagramModal({
     },
   })
 
+  const selectedTeamId = form.watch('teamId')
+
+  const availableFolders = useMemo(
+    () => foldersForTeam(folders, selectedTeamId),
+    [folders, selectedTeamId]
+  )
+
   useEffect(() => {
     if (open) {
+      const teamId = defaultTeamId ?? undefined
+      const folderOptions = foldersForTeam(folders, teamId)
+      const folderId =
+        defaultFolderId && folderOptions.some((f) => f.id === defaultFolderId)
+          ? defaultFolderId
+          : undefined
+
       form.reset({
         name: defaultName,
-        folderId: defaultFolderId ?? undefined,
-        teamId: defaultTeamId ?? undefined,
+        teamId,
+        folderId,
       })
     }
-  }, [defaultName, defaultFolderId, defaultTeamId, open, form])
+  }, [defaultName, defaultFolderId, defaultTeamId, folders, open, form])
+
+  useEffect(() => {
+    const currentFolderId = form.getValues('folderId')
+    if (!selectedTeamId && currentFolderId) {
+      form.setValue('folderId', undefined)
+      return
+    }
+    if (
+      currentFolderId &&
+      !availableFolders.some((f) => f.id === currentFolderId)
+    ) {
+      form.setValue('folderId', undefined)
+    }
+  }, [availableFolders, form, selectedTeamId])
 
   return (
     <BetterDialogContent
@@ -106,76 +153,74 @@ export function ConfigureDiagramModal({
         </div>
 
         {mode === 'create' && (
-          <div className="grid grid-cols-2 gap-3">
-            {folders && folders.length > 0 && (
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-[#6B7280]">
-                  Folder <span className="text-[#9CA3AF]">(optional)</span>
-                </Label>
-                <Controller
-                  name="folderId"
-                  control={form.control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value ?? '__none__'}
-                      onValueChange={(v) =>
-                        field.onChange(v === '__none__' ? undefined : v)
-                      }
-                    >
-                      <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm">
-                        <SelectValue placeholder="No folder" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">No folder</SelectItem>
-                        {folders.map((f) => (
-                          <SelectItem
-                            key={f.folderId ?? ''}
-                            value={f.folderId ?? ''}
-                          >
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-[#6B7280]">Team</Label>
+              <Controller
+                name="teamId"
+                control={form.control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm">
+                      <SelectValue placeholder="Select a team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teams.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>
+                          {t.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {form.formState.errors.teamId && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.teamId.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-[#6B7280]">
+                Folder <span className="text-[#9CA3AF]">(optional)</span>
+              </Label>
+              <Controller
+                name="folderId"
+                control={form.control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value ?? '__none__'}
+                    onValueChange={(v) =>
+                      field.onChange(v === '__none__' ? undefined : v)
+                    }
+                    disabled={!selectedTeamId}
+                  >
+                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm disabled:opacity-60">
+                      <SelectValue
+                        placeholder={
+                          selectedTeamId ? 'No folder' : 'Select a team first'
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">No folder</SelectItem>
+                      {availableFolders.length === 0 ? (
+                        <SelectItem value="__empty__" disabled>
+                          No folders for this team
+                        </SelectItem>
+                      ) : (
+                        availableFolders.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>
                             {f.name}
                           </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-            )}
-
-            {teams && teams.length > 0 && (
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-[#6B7280]">
-                  Team <span className="text-[#9CA3AF]">(optional)</span>
-                </Label>
-                <Controller
-                  name="teamId"
-                  control={form.control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value ?? '__none__'}
-                      onValueChange={(v) =>
-                        field.onChange(v === '__none__' ? undefined : v)
-                      }
-                    >
-                      <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm">
-                        <SelectValue placeholder="No team" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">No team</SelectItem>
-                        {teams.map((t) => (
-                          <SelectItem
-                            key={t.teamId ?? ''}
-                            value={t.teamId ?? ''}
-                          >
-                            {t.teamName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-            )}
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
           </div>
         )}
       </form>

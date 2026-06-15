@@ -26,8 +26,14 @@ export function DashboardDiagramsPageInner() {
 
 function DashboardDiagramsPageContent() {
   const organizationId = useCurrentOrganization().id
-  const { createDiagram, createFolder, selectedFolderId, folders } =
-    useDiagramsContext()
+  const {
+    createDiagram,
+    createFolder,
+    selectedFolderId,
+    selectedTeamId,
+    allFolders,
+    teams,
+  } = useDiagramsContext()
 
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
   const [isCreateDiagramOpen, setIsCreateDiagramOpen] = useState(false)
@@ -60,10 +66,10 @@ function DashboardDiagramsPageContent() {
         <ConfigureDiagramModal
           mode="create"
           open={isCreateDiagramOpen}
-          folders={folders}
-          teams={[]}
+          folders={allFolders}
+          teams={teams}
           defaultFolderId={selectedFolderId}
-          defaultTeamId={null}
+          defaultTeamId={selectedTeamId}
           onSubmit={async (formData) => {
             try {
               const { data } = await createDiagram({
@@ -74,10 +80,8 @@ function DashboardDiagramsPageContent() {
                     content: '{}',
                     ...(formData.folderId
                       ? { folderId: formData.folderId }
-                      : selectedFolderId
-                        ? { folderId: selectedFolderId }
-                        : {}),
-                    ...(formData.teamId ? { teamId: formData.teamId } : {}),
+                      : {}),
+                    teamId: formData.teamId,
                   },
                 },
               })
@@ -104,15 +108,18 @@ function DashboardDiagramsPageContent() {
       >
         <ConfigureFolderModal
           mode="create"
+          teams={teams}
+          defaultTeamId={selectedTeamId}
           onSubmit={async (formData) => {
             try {
               await createFolder({
                 variables: {
+                  orgId: organizationId!,
                   input: {
-                    organizationId,
                     name: formData.name,
                     type: 'diagram',
-                    parentId: selectedFolderId,
+                    parentId: selectedFolderId ?? undefined,
+                    teamId: formData.teamId,
                     order: 1,
                   },
                 },

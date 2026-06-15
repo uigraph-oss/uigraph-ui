@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'
@@ -14,7 +13,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { useOrganizationContext } from '@/contexts'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { Folder, FolderOpen, MoreHorizontal } from 'lucide-react'
@@ -23,6 +28,7 @@ import { IoArrowBack } from 'react-icons/io5'
 import { toast } from 'sonner'
 import { useFuse } from '../diagram-portal/hooks/use-fuse'
 import { DashboardDiagram } from './api/diagrams-v2'
+import { DashboardFolder } from './api/folders-v2'
 import { ConfigureFolderModal } from './configure-folder-modal'
 import { useDiagramsContext } from './contexts/diagrams-context'
 import { FlowDiagramCard } from './flow-diagram-card'
@@ -44,12 +50,15 @@ export function DiagramsFolder() {
     parentFolder,
     selectedFolderId,
     setSelectedFolderId,
+    selectedTeamId,
+    setSelectedTeamId,
+    teams,
     createFolder,
   } = useDiagramsContext()
 
   useEffect(() => {
     setPage(0)
-  }, [selectedFolderId, searchQuery])
+  }, [selectedFolderId, selectedTeamId, searchQuery])
 
   const filteredFolders = useFuse(folders, searchQuery, {
     keys: ['name'],
@@ -65,30 +74,47 @@ export function DiagramsFolder() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search folders and flows"
+          className="h-9 max-w-sm flex-1 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none focus-visible:bg-white"
+        />
+
+        <Select
+          value={selectedTeamId ?? '__all__'}
+          onValueChange={(v) => setSelectedTeamId(v === '__all__' ? null : v)}
+        >
+          <SelectTrigger className="h-9 w-40 shrink-0 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none">
+            <SelectValue placeholder="All Teams" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">All Teams</SelectItem>
+            {teams.map((t) => (
+              <SelectItem key={t.id} value={t.id}>
+                {t.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {selectedFolderId && (
+          <Button
+            preset="outline"
+            className="h-9 shrink-0 text-sm"
+            onClick={() =>
+              setSelectedFolderId(selectedFolder?.parentId ?? null)
+            }
+          >
+            <IoArrowBack className="size-3.5" />
+            {parentFolder?.name ?? 'All Flows'}
+          </Button>
+        )}
+      </div>
+
       {Boolean(folders.length > 0 || selectedFolderId) && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search folders and flows"
-              className="h-9 max-w-sm flex-1 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none focus-visible:bg-white"
-            />
-
-            {selectedFolderId && (
-              <Button
-                preset="outline"
-                className="h-9 shrink-0 text-sm"
-                onClick={() =>
-                  setSelectedFolderId(selectedFolder?.parentId ?? null)
-                }
-              >
-                <IoArrowBack className="size-3.5" />
-                {parentFolder?.name ?? 'All Flows'}
-              </Button>
-            )}
-          </div>
-
           <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
             {!selectedFolderId && (
               <AllFlowsCard diagramsCount={diagrams.length} />
@@ -101,7 +127,7 @@ export function DiagramsFolder() {
             )}
 
             {filteredFolders.map((folder) => (
-              <FolderChip key={folder.folderId} folder={folder} />
+              <FolderChip key={folder.id} folder={folder} />
             ))}
 
             {!selectedFolderId &&
@@ -133,8 +159,8 @@ export function DiagramsFolder() {
         ) : (
           <SectionNotFound
             label={
-              searchQuery
-                ? 'No flows match your search.'
+              searchQuery || selectedTeamId
+                ? 'No flows match your filters.'
                 : selectedFolder
                   ? 'No diagrams in this folder yet.'
                   : 'No diagrams yet.'
@@ -150,15 +176,18 @@ export function DiagramsFolder() {
       >
         <ConfigureFolderModal
           mode="create"
+          teams={teams}
+          defaultTeamId={selectedTeamId}
           onSubmit={async (data) => {
             try {
               await createFolder({
                 variables: {
+                  orgId: organization.id,
                   input: {
-                    organizationId: organization.id,
-                    parentId: selectedFolderId,
-                    type: 'diagram',
                     name: data.name,
+                    type: 'diagram',
+                    parentId: selectedFolderId ?? undefined,
+                    teamId: data.teamId,
                     order: 1,
                   },
                 },
@@ -280,10 +309,10 @@ function AllFlowsCard({
   folder,
 }: {
   diagramsCount: number
-  folder?: GT.Folder
+  folder?: DashboardFolder
 }) {
+  const organizationId = useCurrentOrganization().id
   const { setSelectedFolderId, updateDiagram } = useDiagramsContext()
-  const { organizationId } = useOrganizationContext()
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isUpdatingDiagram, setIsUpdatingDiagram] = useState(false)
 
@@ -303,7 +332,7 @@ function AllFlowsCard({
         variables: {
           orgId: organizationId!,
           id: diagramId,
-          input: { folderId: folder?.folderId },
+          input: { folderId: folder?.id },
         },
       })
       toast.success('Diagram moved')
@@ -322,7 +351,7 @@ function AllFlowsCard({
         'border-primary bg-primary/8 relative flex h-16 shrink-0 cursor-default items-center gap-3 rounded-2xl border-2 px-4 text-left transition-all',
         isDraggingOver && 'border-primary bg-primary/15 scale-[1.02]'
       )}
-      onClick={() => setSelectedFolderId(folder?.folderId ?? null)}
+      onClick={() => setSelectedFolderId(folder?.id ?? null)}
       onDragLeave={() => setIsDraggingOver(false)}
       onDragOver={(e) => {
         e.preventDefault()
@@ -356,8 +385,8 @@ function AllFlowsCard({
 }
 
 /** Regular folder chip */
-function FolderChip({ folder }: { folder: GT.Folder }) {
-  const { organizationId } = useOrganizationContext()
+function FolderChip({ folder }: { folder: DashboardFolder }) {
+  const organizationId = useCurrentOrganization().id
   const {
     selectedFolderId,
     setSelectedFolderId,
@@ -372,7 +401,7 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const isSelected = selectedFolderId === folder.folderId
+  const isSelected = selectedFolderId === folder.id
 
   useEffect(() => {
     if (!isDraggingOver) return
@@ -390,7 +419,7 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
         variables: {
           orgId: organizationId!,
           id: diagramId,
-          input: { folderId: folder.folderId },
+          input: { folderId: folder.id },
         },
       })
       toast.success('Diagram moved')
@@ -415,7 +444,7 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
                 ? 'border-primary/30 bg-primary/5 text-primary'
                 : 'border-[#E8EAEC] text-[#111] hover:border-[#D0D2D4] hover:bg-[#FAFAFA]'
           )}
-          onClick={() => setSelectedFolderId(folder.folderId ?? null)}
+          onClick={() => setSelectedFolderId(folder.id ?? null)}
           onDragLeave={() => setIsDraggingOver(false)}
           onDragOver={(e) => {
             e.preventDefault()
@@ -488,8 +517,9 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
             try {
               await updateFolder({
                 variables: {
-                  folderId: folder.folderId!,
-                  input: { organizationId, name: data.name },
+                  orgId: organizationId!,
+                  id: folder.id,
+                  input: { name: data.name },
                 },
               })
               toast.success('Folder renamed')
@@ -509,11 +539,11 @@ function FolderChip({ folder }: { folder: GT.Folder }) {
         onConfirm={async () => {
           await deleteFolder({
             variables: {
-              folderId: folder.folderId!,
-              organizationId,
+              orgId: organizationId!,
+              id: folder.id,
             },
           })
-          if (selectedFolderId === folder.folderId) {
+          if (selectedFolderId === folder.id) {
             setSelectedFolderId(null)
           }
           toast.success('Folder deleted')

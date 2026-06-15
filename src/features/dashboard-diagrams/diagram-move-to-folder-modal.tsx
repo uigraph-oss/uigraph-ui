@@ -1,17 +1,13 @@
-import { GT } from '@/api'
 import { FolderIcon } from '@/assets/svgs'
 import { BetterDialogContent } from '@/components/better-dialog'
-import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
-import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
-import { useQuery } from '@apollo/client'
-import { arrayNonNullable } from 'daily-code'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { GET_DIAGRAM_FOLDERS } from './api/folders'
+import { DashboardFolder } from './api/folders-v2'
 import { useDiagramsContext } from './contexts/diagrams-context'
 
 type DiagramMoveToFolderModalProps = {
@@ -23,18 +19,15 @@ export function DiagramMoveToFolderModal({
   diagramId,
   onClose,
 }: DiagramMoveToFolderModalProps) {
-  const { updateDiagram } = useDiagramsContext()
+  const organizationId = useCurrentOrganization().id
+  const { updateDiagram, allFolders, isLoading } = useDiagramsContext()
   const [isDiagramUpdating, setIsDiagramUpdating] = useState(false)
-
-  const { organizationId } = useOrganizationContext()
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
-  const { data, loading } = useQuery(GET_DIAGRAM_FOLDERS, {
-    fetchPolicy: 'cache-first',
-    variables: { organizationId },
-  })
 
-  const folders = arrayNonNullable(data?.v1GetFolders)
-  const isFoldersLoading = loading && !data?.v1GetFolders
+  const rootFolders = useMemo(
+    () => allFolders.filter((folder) => !folder.parentId),
+    [allFolders]
+  )
 
   return (
     <BetterDialogContent
@@ -66,19 +59,20 @@ export function DiagramMoveToFolderModal({
         }
       }}
     >
-      {isFoldersLoading ? (
+      {isLoading ? (
         <SectionLoader label="Loading folders..." />
-      ) : folders.length === 0 ? (
+      ) : rootFolders.length === 0 ? (
         <div className="bg-background/60 mb-1 flex h-10 w-full flex-col items-center justify-center gap-4 rounded-md px-2">
           <p className="text-paragraph text-[10px] uppercase">
             No folders found
           </p>
         </div>
       ) : (
-        folders.map((folder) => (
+        rootFolders.map((folder) => (
           <FolderNode
-            key={folder?.folderId}
+            key={folder.id}
             folder={folder}
+            allFolders={allFolders}
             selectedFolderId={selectedFolderId}
             selectFolder={setSelectedFolderId}
           />
@@ -90,34 +84,28 @@ export function DiagramMoveToFolderModal({
 
 function FolderNode({
   folder,
+  allFolders,
   selectedFolderId,
   selectFolder,
 }: {
-  folder: GT.Folder
+  folder: DashboardFolder
+  allFolders: DashboardFolder[]
   selectedFolderId: string | null
   selectFolder: (folderId: string | null) => void
 }) {
-  const { organizationId } = useOrganizationContext()
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const { data, loading } = useQuery(GET_DIAGRAM_FOLDERS, {
-    skip: !isExpanded || !folder.folderId,
-    fetchPolicy: 'cache-first',
-    variables: {
-      organizationId,
-      parentId: folder.folderId,
-    },
-  })
-
-  const isFoldersLoading = loading && !data?.v1GetFolders
-  const folders = arrayNonNullable(data?.v1GetFolders)
+  const childFolders = useMemo(
+    () => allFolders.filter((f) => f.parentId === folder.id),
+    [allFolders, folder.id]
+  )
 
   return (
     <div>
       <div
         className={cn(
           'bg-background hover:bg-stock mb-1 flex h-14 items-center justify-start rounded-[1rem] transition-all',
-          selectedFolderId === folder.folderId && 'bg-primary/20!'
+          selectedFolderId === folder.id && 'bg-primary/20!'
         )}
       >
         <button
@@ -138,9 +126,7 @@ function FolderNode({
           onDoubleClick={() => setIsExpanded((prev) => !prev)}
           onClick={() =>
             selectFolder(
-              selectedFolderId === folder.folderId
-                ? null
-                : (folder.folderId ?? null)
+              selectedFolderId === folder.id ? null : (folder.id ?? null)
             )
           }
         >
@@ -159,21 +145,18 @@ function FolderNode({
             animate={{ opacity: 1, height: 'auto' }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            {isFoldersLoading ? (
-              <div className="bg-background/60 mb-1 flex h-12 w-full flex-col items-center justify-center gap-4 rounded-md px-2">
-                <SuperCircleLoader />
-              </div>
-            ) : folders.length === 0 ? (
+            {childFolders.length === 0 ? (
               <div className="bg-background/60 mb-1 flex h-12 w-full flex-col items-center justify-center gap-4 rounded-md px-2">
                 <p className="text-paragraph text-xs uppercase">
                   No folders found
                 </p>
               </div>
             ) : (
-              folders.map((folder) => (
+              childFolders.map((child) => (
                 <FolderNode
-                  key={folder?.folderId}
-                  folder={folder}
+                  key={child.id}
+                  folder={child}
+                  allFolders={allFolders}
                   selectedFolderId={selectedFolderId}
                   selectFolder={selectFolder}
                 />

@@ -1,6 +1,7 @@
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
+import { clientV2 } from '@/api-v2/client'
 import { useOrganizationContext } from '@/contexts'
-import { GET_COMPONENTS } from '@/features/components/api'
+import { GET_COMPONENTS_V2 } from '@/features/components/api/components-v2'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -8,15 +9,17 @@ import { ComponentsGroup } from '../types'
 
 export function useComponents() {
   const { organizationId } = useOrganizationContext()
-  const { data, loading } = useQuery(GET_COMPONENTS, {
-    variables: { organizationId },
+  const { data, loading } = useQuery(GET_COMPONENTS_V2, {
+    client: clientV2,
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
     fetchPolicy: 'cache-first',
   })
 
   const focalPointGroups: ComponentsGroup[] = useMemo(() => {
-    const nativeComponents = arrayNonNullable(data?.v1GetComponents?.components)
+    const nativeComponents = arrayNonNullable(data?.components?.components)
     const customComponents = arrayNonNullable(
-      data?.v1GetComponents?.customComponents
+      data?.components?.customComponents
     )
 
     const components = [...nativeComponents, ...customComponents]
@@ -29,7 +32,6 @@ export function useComponents() {
         groupMap[groupName] = { name: groupName, components: [] }
       }
 
-      // @ts-expect-error Ignore
       groupMap[groupName].components.push(transformComponentToSectionItem(comp))
     }
 
@@ -38,11 +40,11 @@ export function useComponents() {
 
   return {
     focalPointGroups,
-    loading: loading && !data?.v1GetComponents?.components,
+    loading: loading && !data?.components?.components,
   }
 }
 
-function transformComponentToSectionItem(input: GT.Component): GT.Component {
+function transformComponentToSectionItem(input: V2.Component): V2.Component {
   return {
     ...input,
     componentFields: arrayNonNullable(input.componentFields).map((field) => {

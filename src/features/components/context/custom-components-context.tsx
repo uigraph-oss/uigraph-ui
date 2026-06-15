@@ -1,4 +1,6 @@
 import { GT } from '@/api'
+import { V2 } from '@/api-v2'
+import { clientV2 } from '@/api-v2/client'
 import { useOrganizationContext } from '@/contexts'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -6,24 +8,26 @@ import { createContext } from 'daily-code/react'
 import {
   CREATE_CUSTOM_COMPONENT,
   DELETE_CUSTOM_COMPONENT,
-  GET_COMPONENTS,
   UPDATE_CUSTOM_COMPONENT,
 } from '../api'
+import { GET_COMPONENTS_V2 } from '../api/components-v2'
 
 export const [CustomComponentsContextProvider, useCustomComponentsContext] =
   createContext(() => {
     const { organizationId } = useOrganizationContext()
 
-    const { data, loading } = useQuery(GET_COMPONENTS, {
-      variables: { organizationId },
+    const { data, loading } = useQuery(GET_COMPONENTS_V2, {
+      client: clientV2,
+      variables: { orgId: organizationId! },
+      skip: !organizationId,
     })
 
     const [createCustomComponent] = useMutation(CREATE_CUSTOM_COMPONENT, {
       awaitRefetchQueries: true,
       refetchQueries: [
         {
-          query: GET_COMPONENTS,
-          variables: { organizationId },
+          query: GET_COMPONENTS_V2,
+          variables: { orgId: organizationId },
         },
       ],
     })
@@ -32,8 +36,8 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       awaitRefetchQueries: true,
       refetchQueries: [
         {
-          query: GET_COMPONENTS,
-          variables: { organizationId },
+          query: GET_COMPONENTS_V2,
+          variables: { orgId: organizationId },
         },
       ],
     })
@@ -42,20 +46,17 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       awaitRefetchQueries: true,
       refetchQueries: [
         {
-          query: GET_COMPONENTS,
-          variables: { organizationId },
+          query: GET_COMPONENTS_V2,
+          variables: { orgId: organizationId },
         },
       ],
     })
 
     return {
       fetchingComponents: loading,
-      loadingComponents:
-        loading && !data?.v1GetComponents?.customComponents?.length,
-      nativeComponents: arrayNonNullable(data?.v1GetComponents?.components),
-      customComponents: arrayNonNullable(
-        data?.v1GetComponents?.customComponents
-      ),
+      loadingComponents: loading && !data?.components?.customComponents?.length,
+      nativeComponents: arrayNonNullable(data?.components?.components),
+      customComponents: arrayNonNullable(data?.components?.customComponents),
 
       createCustomComponent(
         name: string,
@@ -91,7 +92,7 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       },
 
       updateCustomComponent(
-        component: GT.CustomComponent,
+        component: V2.Component,
         name: string,
         category: string,
         description: string,
@@ -102,8 +103,8 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
             componentId: component.componentId!,
             input: {
               type: component.type ?? 'custom',
-              status: component.status ?? 'active',
 
+              status: component.isActive === false ? 'inactive' : 'active',
               name,
               category,
               description,
