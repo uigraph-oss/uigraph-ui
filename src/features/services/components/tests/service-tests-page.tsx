@@ -1,6 +1,7 @@
 'use client'
 
 import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -42,6 +43,8 @@ export function ServiceTestsPage() {
 
 function ServiceTestsPageContent() {
   const {
+    orgId,
+    serviceId,
     selectedPackId,
     selectedPack,
     isTestPacksLoading,
@@ -63,8 +66,8 @@ function ServiceTestsPageContent() {
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false)
   const [isTestCaseDetailDrawerOpen, setIsTestCaseDetailDrawerOpen] =
     useState(false)
-  const [caseToEdit, setCaseToEdit] = useState<GT.TestCase | null>(null)
-  const [caseToView, setCaseToView] = useState<GT.TestCase | null>(null)
+  const [caseToEdit, setCaseToEdit] = useState<TestCase | null>(null)
+  const [caseToView, setCaseToView] = useState<TestCase | null>(null)
   const [isRunPackModalOpen, setIsRunPackModalOpen] = useState(false)
 
   function handleNewTestPack() {
@@ -126,7 +129,7 @@ function ServiceTestsPageContent() {
     setIsCreateCaseModalOpen(true)
   }
 
-  function handleEditTestCase(testCase: GT.TestCase) {
+  function handleEditTestCase(testCase: TestCase) {
     setCaseToEdit(testCase)
     setIsUpdateCaseModalOpen(true)
   }
@@ -260,6 +263,8 @@ function ServiceTestsPageContent() {
             onSubmit={async (data) => {
               await createTestCaseMutation({
                 variables: {
+                  orgId: orgId!,
+                  serviceId,
                   input: {
                     order: 0,
                     testPackId: selectedPackId,
@@ -289,7 +294,9 @@ function ServiceTestsPageContent() {
             onSubmit={async (data) => {
               await updateTestCaseMutation({
                 variables: {
-                  testCaseId: caseToEdit.testCaseId!,
+                  orgId: orgId!,
+                  serviceId,
+                  id: caseToEdit.testCaseId!,
                   input: {
                     testPackId: caseToEdit.testPackId!,
                     order: caseToEdit.order ?? 0,

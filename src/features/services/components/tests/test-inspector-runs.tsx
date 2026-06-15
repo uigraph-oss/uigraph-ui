@@ -1,20 +1,23 @@
 'use client'
 
 import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
 import { ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { GET_TEST_RUN_RESULTS_QUERY } from '../../api/test-run-results'
-import { GET_TEST_RUNS_QUERY } from '../../api/test-runs'
+import { TEST_RUN_RESULTS_V2, TEST_RUNS_V2 } from '../../api/tests-v2'
+import { useServiceContext } from '../../contexts/service-context'
 import { RunDetailsView } from './run-details-view'
 
 type TestInspectorRunsProps = {
-  testCase: GT.TestCase
+  testCase: TestCase
 }
 
 type ViewState = 'list' | 'details'
@@ -22,33 +25,34 @@ type ViewState = 'list' | 'details'
 export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   const [view, setView] = useState<ViewState>('list')
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
-  // Reset state when test case changes
+  const orgId = useCurrentOrganization().id
+  const { serviceId } = useServiceContext()
+
   useEffect(() => {
     setView('list')
     setSelectedRunId(null)
   }, [testCase.testCaseId])
 
-  // Query all test runs for the test pack
-  const { data: runsData, loading: runsLoading } = useQuery(
-    GET_TEST_RUNS_QUERY,
-    {
-      fetchPolicy: 'cache-first',
-      variables: { testPackId: testCase.testPackId ?? '' },
-      skip: !testCase.testPackId,
-    }
-  )
+  const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS_V2, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: {
+      orgId: orgId!,
+      serviceId,
+      testPackId: testCase.testPackId ?? '',
+    },
+    skip: !orgId || !serviceId || !testCase.testPackId,
+  })
 
   const testRuns = useMemo(
-    () => arrayNonNullable(runsData?.v1GetTestRuns),
-    [runsData?.v1GetTestRuns]
+    () => arrayNonNullable(runsData?.testRuns),
+    [runsData?.testRuns]
   )
 
-  // For each run, query results to find if this test case has a result
   const runsWithResults = useMemo(() => {
     return testRuns.filter((run: GT.TestRun) => run.testRunId)
   }, [testRuns])
 
-  // Sort runs by executedAt descending (most recent first)
   const sortedRuns = useMemo(() => {
     return [...runsWithResults].sort((a: GT.TestRun, b: GT.TestRun) => {
       const dateA = a.executedAt ? new Date(a.executedAt).getTime() : 0
@@ -90,6 +94,7 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
       <RunDetailsView
         testRunId={selectedRunId}
         testPackId={testCase.testPackId ?? null}
+        serviceId={serviceId}
       />
     )
   }
@@ -112,6 +117,8 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
           <TestRunRow
             key={run.testRunId}
             run={run}
+            orgId={orgId!}
+            serviceId={serviceId}
             testCaseId={testCase.testCaseId ?? null}
             onClick={() => run.testRunId && handleRunClick(run.testRunId)}
             getStatusBadgeVariant={getStatusBadgeVariant}
@@ -124,6 +131,8 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
 
 type TestRunRowProps = {
   run: GT.TestRun
+  orgId: string
+  serviceId: string
   testCaseId?: string | null
   onClick: () => void
   getStatusBadgeVariant: (status: string | null) => string
@@ -131,22 +140,28 @@ type TestRunRowProps = {
 
 function TestRunRow({
   run,
+  orgId,
+  serviceId,
   testCaseId,
   onClick,
   getStatusBadgeVariant: _getStatusBadgeVariant,
 }: TestRunRowProps) {
-  const { data: resultsData } = useQuery(GET_TEST_RUN_RESULTS_QUERY, {
+  const { data: resultsData } = useQuery(TEST_RUN_RESULTS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { testRunId: run.testRunId ?? '' },
+    variables: {
+      orgId,
+      serviceId,
+      testRunId: run.testRunId ?? '',
+    },
     skip: !run.testRunId,
   })
 
   const results = useMemo(
-    () => arrayNonNullable(resultsData?.v1GetTestRunResults),
-    [resultsData?.v1GetTestRunResults]
+    () => arrayNonNullable(resultsData?.testRunResults),
+    [resultsData?.testRunResults]
   )
 
-  // Find result for this specific test case
   const testCaseResult = useMemo(() => {
     return results.find(
       (r: GT.TestRunResult) => r.testCaseId === testCaseId

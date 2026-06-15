@@ -1,28 +1,36 @@
-import { useOrganizationContext } from '@/contexts'
-import { GET_SERVICE_DB_QUERY } from '@/features/services/api/service-db'
-import { GET_SERVICES_QUERY } from '@/features/services/api/services'
+import { clientV2 } from '@/api-v2/client'
+import {
+  SERVICE_DBS_V2,
+  serviceDBToLegacy,
+} from '@/features/services/api/service-db-v2'
+import { SERVICES_V2 } from '@/features/services/api/services-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 
 export function usePanelServicesDb() {
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null
   )
 
-  const servicesResult = useQuery(GET_SERVICES_QUERY, {
+  const servicesResult = useQuery(SERVICES_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
     variables: {
-      organizationId: organizationId,
+      orgId: orgId!,
     },
+    skip: !orgId,
   })
 
-  const servicesDbResult = useQuery(GET_SERVICE_DB_QUERY, {
+  const servicesDbResult = useQuery(SERVICE_DBS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    skip: !selectedServiceId,
+    skip: !orgId || !selectedServiceId,
     variables: {
-      serviceId: selectedServiceId,
+      orgId: orgId!,
+      serviceId: selectedServiceId!,
     },
   })
 
@@ -34,12 +42,19 @@ export function usePanelServicesDb() {
     isServicesDbLoading: servicesDbResult.loading && !servicesDbResult.data,
 
     services: useMemo(
-      () => arrayNonNullable(servicesResult.data?.v1GetServices),
+      () =>
+        arrayNonNullable(servicesResult.data?.services).map((service) => ({
+          ...service,
+          serviceId: service.id,
+        })),
       [servicesResult.data]
     ),
 
     servicesDb: useMemo(
-      () => arrayNonNullable(servicesDbResult.data?.v1GetServiceDB),
+      () =>
+        arrayNonNullable(servicesDbResult.data?.serviceDBs).map(
+          serviceDBToLegacy
+        ),
       [servicesDbResult.data]
     ),
   }

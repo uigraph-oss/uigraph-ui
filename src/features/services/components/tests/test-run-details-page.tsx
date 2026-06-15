@@ -1,10 +1,13 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useNavigate, useParams } from 'react-router-dom'
-import { GET_TEST_RUN_QUERY } from '../../api/test-runs'
+import { TEST_RUN_V2 } from '../../api/tests-v2'
+import { useServiceContext } from '../../contexts/service-context'
 import { RunDetailsView } from './run-details-view'
 
 export function TestRunDetailsPage() {
@@ -13,6 +16,8 @@ export function TestRunDetailsPage() {
     testRunId?: string | string[]
   }
   const navigate = useNavigate()
+  const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
   const testRunId =
     typeof params.testRunId === 'string'
       ? params.testRunId
@@ -20,12 +25,13 @@ export function TestRunDetailsPage() {
         ? params.testRunId[0]
         : undefined
 
-  const { data, loading } = useQuery(GET_TEST_RUN_QUERY, {
-    variables: { testRunId: testRunId ?? '' },
-    skip: !testRunId,
+  const { data, loading } = useQuery(TEST_RUN_V2, {
+    client: clientV2,
+    variables: { orgId: orgId!, serviceId, id: testRunId ?? '' },
+    skip: !orgId || !serviceId || !testRunId,
   })
 
-  const testRun = data?.v1GetTestRun
+  const testRun = data?.testRun
 
   if (loading) {
     return (
@@ -57,13 +63,6 @@ export function TestRunDetailsPage() {
       </div>
     )
   }
-
-  const serviceId =
-    typeof params.serviceId === 'string'
-      ? params.serviceId
-      : Array.isArray(params.serviceId)
-        ? params.serviceId[0]
-        : undefined
 
   return (
     <RunDetailsView

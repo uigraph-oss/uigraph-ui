@@ -9,7 +9,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { CodeMirrorWrapped } from '@/features/component-meta'
-import { GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY } from '@/features/services/api/api-endpoints'
+import { clientV2 } from '@/api-v2/client'
+import { API_ENDPOINTS_V2 } from '@/features/services/api/api-endpoints-v2'
+import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -77,26 +80,35 @@ function applyEndpointSelection(
 }
 
 export function FormApiSection({ form }: { form: FormType }) {
+  const orgId = useCurrentOrganization().id
   const isApiType = form.watch('type') === 'api'
   const apiSpec = form.watch('apiSpec') ?? ''
   const selectedOperation = form.watch('operation') ?? ''
-  const { apiGroupId } = parseApiSpecValue(apiSpec)
+  const { serviceId, apiGroupId } = parseApiSpecValue(apiSpec)
 
   const { data: endpointsData, loading: isEndpointsLoading } = useQuery(
-    GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
+    API_ENDPOINTS_V2,
     {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { serviceApiGroupId: apiGroupId },
-      skip: !apiGroupId,
+      variables: {
+        orgId: orgId!,
+        serviceId,
+        apiGroupId,
+      },
+      skip: !orgId || !serviceId || !apiGroupId,
     }
   )
 
   const endpointOptions = useMemo(
     () =>
       deriveRestEndpointOptions(
-        arrayNonNullable(endpointsData?.v1GetAPIEndpointsWithMeta)
+        endpointsToLegacyWithMeta(
+          arrayNonNullable(endpointsData?.apiEndpoints),
+          orgId!
+        )
       ),
-    [endpointsData?.v1GetAPIEndpointsWithMeta]
+    [endpointsData?.apiEndpoints, orgId]
   )
 
   const selectedEndpoint = endpointOptions.find(

@@ -78,8 +78,18 @@ export function CompareApiGroupVersionsModal() {
     }
   }, [selectedVersionBId, apiGroupVersions, serviceApiGroupId])
 
-  const versionA = useVersionEndpoints(versionAGroupId, versionANumber ?? null)
-  const versionB = useVersionEndpoints(versionBGroupId, versionBNumber ?? null)
+  const { serviceId } = useServiceApiEndpointsContext()
+
+  const versionA = useVersionEndpoints(
+    serviceId,
+    versionAGroupId,
+    versionANumber ?? null
+  )
+  const versionB = useVersionEndpoints(
+    serviceId,
+    versionBGroupId,
+    versionBNumber ?? null
+  )
 
   const versionAName = useMemo(() => {
     if (selectedVersionAId === null) return 'Latest'

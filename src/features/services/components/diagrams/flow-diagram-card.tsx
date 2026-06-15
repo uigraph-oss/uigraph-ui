@@ -1,4 +1,5 @@
 import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -10,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { assetUrl } from '@/helpers/asset-url'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
 import { Calendar } from 'lucide-react'
@@ -18,9 +21,9 @@ import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DIAGRAM_MUTATION,
-  GET_SERVICE_DIAGRAMS_WITH_META_QUERY,
-} from '../../api/service-diagram'
+  DELETE_SERVICE_DIAGRAM_V2,
+  SERVICE_DIAGRAMS_V2,
+} from '../../api/service-diagram-v2'
 import { useServiceContext } from '../../contexts/service-context'
 
 export function FlowDiagramCard({
@@ -31,14 +34,13 @@ export function FlowDiagramCard({
   serviceDiagram: ServiceDiagram
 }) {
   const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
 
-  const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM_MUTATION, {
-    refetchQueries: [
-      {
-        query: GET_SERVICE_DIAGRAMS_WITH_META_QUERY,
-        variables: { serviceId },
-      },
-    ],
+  const listVars = { orgId: orgId!, serviceId }
+
+  const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM_V2, {
+    client: clientV2,
+    refetchQueries: [{ query: SERVICE_DIAGRAMS_V2, variables: listVars }],
     awaitRefetchQueries: true,
   })
 
@@ -47,6 +49,12 @@ export function FlowDiagramCard({
     useState(false)
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
+
+  const previewContentHash =
+    'previewContentHash' in diagram
+      ? (diagram.previewContentHash as string | null | undefined)
+      : undefined
+  const previewSrc = assetUrl(diagram.previewImageFileId, previewContentHash)
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
@@ -78,9 +86,9 @@ export function FlowDiagramCard({
               : 'bg-[#EDEEF1]'
           )}
         >
-          {diagram.previewImageFileId && !imageError ? (
+          {previewSrc && !imageError ? (
             <img
-              src={diagram.previewImageFileId}
+              src={previewSrc}
               alt={diagram.componentFlowDiagramName ?? ''}
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}
@@ -185,7 +193,9 @@ export function FlowDiagramCard({
           try {
             await deleteServiceDiagram({
               variables: {
-                serviceDiagramId: serviceDiagram.serviceDiagramId || '',
+                orgId: orgId!,
+                serviceId,
+                diagramId: serviceDiagram.serviceDiagramDiagramId || '',
               },
             })
             setIsDeleteConfirmationOpen(false)

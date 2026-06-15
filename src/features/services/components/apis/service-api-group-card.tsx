@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import {
   CloudflareWorkerIcon,
   MoreVerticalIcon,
@@ -14,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { LegacyAPIGroupView } from '@/features/services/api/api-v2-adapters'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { Network, Share2 } from 'lucide-react'
@@ -52,9 +52,13 @@ function getProtocolLabel(protocol: string) {
 }
 
 interface ServiceApiEndpointGroupCardProps {
-  group: GT.ServiceApiGroup
+  group: LegacyAPIGroupView
   deleteGroup: () => Promise<unknown>
-  updateGroup: (input: GT.UpdateServiceApiGroupInput) => Promise<unknown>
+  updateGroup: (input: {
+    name?: string
+    specFile?: File
+    importSource?: 'openapi' | 'graphql' | 'grpc'
+  }) => Promise<unknown>
 }
 
 export function ServiceApiEndpointGroupCard({
@@ -95,22 +99,14 @@ export function ServiceApiEndpointGroupCard({
         label: `gRPC${group.grpcSpecFileIds.length > 1 ? ` (${group.grpcSpecFileIds.length})` : ''}`,
       })
     }
-    if (group.serverlessFunctionsFileId) {
-      files.push({
-        icon: <CloudflareWorkerIcon className="h-3 w-3" />,
-        label: 'Serverless',
-      })
-    }
 
     return files
   }, [group])
 
   const protocol = useMemo(() => {
-    // Use the protocol field if available, otherwise fall back to inferring from spec files
     if (group.protocol) {
       return group.protocol.toLowerCase()
     }
-    // Fallback logic for backwards compatibility
     if (group.graphqlSpecFileIds && group.graphqlSpecFileIds.length > 0)
       return 'graphql'
     if (group.grpcSpecFileIds && group.grpcSpecFileIds.length > 0) return 'grpc'
@@ -224,22 +220,14 @@ export function ServiceApiEndpointGroupCard({
             name: group.name ?? group.version ?? '',
             openApiSpecFileId: group.openApiSpecFileId || undefined,
             swaggerSpecFileId: group.swaggerSpecFileId || undefined,
-            graphqlSpecFileIds:
-              group.graphqlSpecFileIds?.filter(
-                (id): id is string => id != null
-              ) || undefined,
-            grpcSpecFileIds:
-              group.grpcSpecFileIds?.filter((id): id is string => id != null) ||
-              undefined,
+            graphqlSpecFileIds: group.graphqlSpecFileIds ?? undefined,
+            grpcSpecFileIds: group.grpcSpecFileIds ?? undefined,
           }}
           onSubmit={async (data) => {
             await updateGroup({
-              serviceId: group.serviceId ?? '',
               name: data.name,
-              openApiSpecFileId: data.openApiSpecFileId ?? undefined,
-              swaggerSpecFileId: data.swaggerSpecFileId ?? undefined,
-              graphqlSpecFileIds: data.graphqlSpecFileIds ?? undefined,
-              grpcSpecFileIds: data.grpcSpecFileIds ?? undefined,
+              specFile: data.specFile,
+              importSource: data.importSource,
             })
 
             toast.success('API Group updated successfully')

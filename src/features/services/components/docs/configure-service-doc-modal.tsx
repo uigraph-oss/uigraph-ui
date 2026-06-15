@@ -1,6 +1,5 @@
 'use client'
 
-import { uploadProjectFile } from '@/api'
 import { UploadTopIcon } from '@/assets/svgs/component-icons'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -14,7 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatBytesToHumanReadable } from 'daily-code'
@@ -22,7 +20,7 @@ import { openFileExplorer } from 'daily-code/browser'
 import { FileText, TrashIcon } from 'lucide-react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
-import { useServiceContext } from '../../contexts/service-context'
+import { readFileAsBase64 } from '../../api/service-doc-v2'
 import {
   DOCUMENT_FILE_TYPES,
   getDocumentFileTypeKey,
@@ -38,14 +36,18 @@ export const configureServiceDocSchema = z.object({
   description: z.string().optional(),
 })
 
-type ServerData = Omit<z.infer<typeof configureServiceDocSchema>, 'file'> & {
-  fileId: string
+export type ServiceDocFormData = {
+  fileId?: string
+  contentBase64?: string
+  fileName?: string
+  fileType?: string
+  description?: string
 }
 
 type ConfigureServiceDocModalProps = {
   mode: 'create' | 'update'
-  defaultValues?: Partial<ServerData>
-  onSubmit: SubmitHandler<ServerData>
+  defaultValues?: Partial<ServiceDocFormData>
+  onSubmit: SubmitHandler<ServiceDocFormData>
 }
 
 export function ConfigureServiceDocModal({
@@ -53,9 +55,6 @@ export function ConfigureServiceDocModal({
   defaultValues,
   onSubmit,
 }: ConfigureServiceDocModalProps) {
-  const { serviceId } = useServiceContext()
-  const { organizationId } = useOrganizationContext()
-
   const form = useForm({
     resolver: zodResolver(configureServiceDocSchema),
     defaultValues: {
@@ -68,20 +67,22 @@ export function ConfigureServiceDocModal({
 
   async function handleSubmit(data: z.infer<typeof configureServiceDocSchema>) {
     try {
-      const fileId =
-        data.file instanceof File
-          ? await uploadProjectFile(data.file, {
-              orgId: organizationId,
-              projectId: serviceId,
-            })
-          : data.file
+      let contentBase64: string | undefined
+      let fileId: string | undefined
 
-      if (!fileId) {
-        throw new Error('File ID is required')
+      if (data.file instanceof File) {
+        contentBase64 = await readFileAsBase64(data.file)
+      } else if (typeof data.file === 'string') {
+        fileId = data.file
+      }
+
+      if (mode === 'create' && !contentBase64) {
+        throw new Error('File content is required')
       }
 
       await onSubmit({
         fileId,
+        contentBase64,
         fileName: data.fileName,
         fileType: data.fileType,
         description: data.description,

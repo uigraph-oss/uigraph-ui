@@ -1,5 +1,6 @@
 import { GT } from '@/api'
 import { TestCasePriority } from '@/api/.gql/graphql'
+import type { TestCase as V2TestCase } from '@/api-v2/.gql/graphql'
 import z from 'zod'
 import { configureTestCaseSchema } from './schema'
 
@@ -233,22 +234,29 @@ export function transformToUpdateTestCase(
   }
 }
 
+function priorityToSchemaValue(
+  priority?: string | TestCasePriority | null
+): 'p0' | 'p1' | 'p2' | 'p3' {
+  if (!priority) return 'p2'
+  const normalized = String(priority).toUpperCase()
+  const map: Record<string, 'p0' | 'p1' | 'p2' | 'p3'> = {
+    P0: 'p0',
+    P1: 'p1',
+    P2: 'p2',
+    P3: 'p3',
+  }
+  return map[normalized] ?? 'p2'
+}
+
 export function transformTestCaseToSchema(
-  testCase: GT.TestCase
+  testCase: GT.TestCase | V2TestCase
 ): z.infer<typeof configureTestCaseSchema> {
   return {
     title: testCase.title!,
     description:
       testCase.description === null ? undefined : testCase.description,
     type: testCase.type as z.infer<typeof configureTestCaseSchema>['type'],
-    priority: (
-      {
-        [TestCasePriority.P0]: 'p0',
-        [TestCasePriority.P1]: 'p1',
-        [TestCasePriority.P2]: 'p2',
-        [TestCasePriority.P3]: 'p3',
-      } as const
-    )[testCase.priority as TestCasePriority],
+    priority: priorityToSchemaValue(testCase.priority),
     tags: testCase.labels === null ? undefined : testCase.labels,
     linkedTicket:
       testCase.linkedTicket === null ? undefined : testCase.linkedTicket,

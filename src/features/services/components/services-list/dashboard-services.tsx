@@ -12,8 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useOrganizationContext } from '@/contexts'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import {
+  toCreateServiceInput,
+  toUpdateServiceInput,
+} from '@/features/services/api/services-v2'
 import { cn } from '@/lib/utils'
 import { CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -27,9 +30,8 @@ export function DashboardServices() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  const { organizationId } = useOrganizationContext()
-
   const {
+    orgId,
     services,
     allServices,
     isServicesLoading,
@@ -43,7 +45,6 @@ export function DashboardServices() {
     deleteService,
   } = useDashboardServicesList()
 
-  // Normalize categories case-insensitively so "Backend" and "backend" merge
   const categories = useMemo(() => {
     const counts = new Map<string, number>()
     for (const s of services) {
@@ -94,7 +95,6 @@ export function DashboardServices() {
         <SectionNotFound label="No services yet." />
       ) : (
         <>
-          {/* Toolbar */}
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <Input
               value={searchQuery}
@@ -116,8 +116,8 @@ export function DashboardServices() {
                 <SelectContent>
                   <SelectItem value="__all__">All Teams</SelectItem>
                   {teams.map((t) => (
-                    <SelectItem key={t.teamId ?? ''} value={t.teamId ?? ''}>
-                      {t.teamName}
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -156,25 +156,25 @@ export function DashboardServices() {
             >
               {filtered.map((service, index) => (
                 <ServiceCard
-                  key={service.serviceId}
+                  key={service.id}
                   service={service}
                   index={index}
-                  stats={
-                    service.serviceId
-                      ? statsByServiceId.get(service.serviceId)
-                      : undefined
-                  }
+                  stats={statsByServiceId.get(service.id)}
                   statsLoading={isStatsLoading}
                   updateService={(data) =>
                     updateService({
-                      variables: { serviceId: service.serviceId!, input: data },
+                      variables: {
+                        orgId: orgId!,
+                        id: service.id,
+                        input: toUpdateServiceInput(data),
+                      },
                     })
                   }
                   deleteService={() =>
                     deleteService({
                       variables: {
-                        serviceId: service.serviceId!,
-                        organizationId: service.organizationId!,
+                        orgId: orgId!,
+                        id: service.id,
                       },
                     })
                   }
@@ -193,7 +193,10 @@ export function DashboardServices() {
           mode="create"
           onSubmit={async (data) => {
             await createService({
-              variables: { input: { ...data, organizationId } },
+              variables: {
+                orgId: orgId!,
+                input: toCreateServiceInput(data),
+              },
             })
             toast.success('Service created successfully')
             setCreateServiceOpen(false)

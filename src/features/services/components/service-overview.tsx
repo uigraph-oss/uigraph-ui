@@ -1,8 +1,9 @@
 'use client'
 
-import { useOrganizationContext } from '@/contexts'
-import { GET_DIAGRAM_TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { clientV2 } from '@/api-v2/client'
+import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
 import { useServiceContext } from '@/features/services/contexts/service-context'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -70,26 +71,27 @@ function normalizeRepoUrl(url?: string | null): string | undefined {
 
 export function ServiceOverview() {
   const { service } = useServiceContext()
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
 
-  const teamsRes = useQuery(GET_DIAGRAM_TEAMS, {
+  const teamsRes = useQuery(TEAMS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
-    skip: !organizationId,
+    variables: { orgId: orgId! },
+    skip: !orgId,
   })
   const teams = useMemo(
-    () => arrayNonNullable(teamsRes.data?.GetTeam ?? []),
-    [teamsRes.data?.GetTeam]
+    () => arrayNonNullable(teamsRes.data?.teams ?? []),
+    [teamsRes.data?.teams]
   )
 
   if (!service) return null
 
   const teamName = service.teamId
-    ? (teams.find((t) => t.teamId === service.teamId)?.teamName ?? null)
+    ? (teams.find((t) => t.id === service.teamId)?.name ?? null)
     : null
 
   const bandColor = getCategoryColor(service.category)
-  const avatarColor = getAvatarColor(service.serviceId || service.name || '')
+  const avatarColor = getAvatarColor(service.id || service.name || '')
   const repoHref = normalizeRepoUrl(service.gitRepoUrl as string | undefined)
 
   const labels =
@@ -99,19 +101,19 @@ export function ServiceOverview() {
     repoHref && {
       icon: <FaGithub className="size-4 text-[#24292E]" />,
       label: 'Repository',
-      sub: service.gitRepoName || 'View on GitHub',
+      sub: 'View on GitHub',
       href: repoHref,
     },
     service.jiraProjectUrl && {
       icon: <FaJira className="size-4 text-[#0052CC]" />,
       label: 'Jira Project',
-      sub: service.jiraProjectName || 'View Project',
+      sub: 'View Project',
       href: service.jiraProjectUrl,
     },
     service.slackChannelUrl && {
       icon: <FaSlack className="size-4 text-[#4A154B]" />,
       label: 'Slack Channel',
-      sub: service.slackChannelName || 'View Channel',
+      sub: 'View Channel',
       href: service.slackChannelUrl,
     },
   ].filter(Boolean) as {

@@ -1,9 +1,13 @@
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
-import { useOrganizationContext } from '@/contexts'
-import { GET_SERVICE_DOC_QUERY } from '@/features/services/api/service-doc'
-import { GET_SERVICES_QUERY } from '@/features/services/api/services'
+import {
+  SERVICE_DOCS_V2,
+  serviceDocToLegacy,
+} from '@/features/services/api/service-doc-v2'
+import { SERVICES_V2 } from '@/features/services/api/services-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { arrayNonNullable } from 'daily-code'
@@ -24,7 +28,7 @@ const serviceDocSchema = z.object({
 export function ServiceDocSelectionModal({
   onSelect,
 }: ServiceDocSelectionModalProps) {
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
 
   const form = useForm({
     resolver: zodResolver(serviceDocSchema),
@@ -37,29 +41,33 @@ export function ServiceDocSelectionModal({
   const selectedServiceId = form.watch('serviceId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(
-    GET_SERVICES_QUERY,
+    SERVICES_V2,
     {
-      variables: { organizationId },
+      client: clientV2,
+      variables: { orgId: orgId! },
       fetchPolicy: 'cache-first',
+      skip: !orgId,
     }
   )
 
   const { data: serviceDocsData, loading: serviceDocsLoading } = useQuery(
-    GET_SERVICE_DOC_QUERY,
+    SERVICE_DOCS_V2,
     {
-      variables: { serviceId: selectedServiceId },
+      client: clientV2,
+      variables: { orgId: orgId!, serviceId: selectedServiceId },
       fetchPolicy: 'cache-first',
-      skip: !selectedServiceId,
+      skip: !orgId || !selectedServiceId,
     }
   )
 
   const services = useMemo(
-    () => arrayNonNullable(servicesData?.v1GetServices),
+    () => arrayNonNullable(servicesData?.services),
     [servicesData]
   )
 
   const serviceDocs = useMemo(
-    () => arrayNonNullable(serviceDocsData?.v1GetServiceDoc),
+    () =>
+      arrayNonNullable(serviceDocsData?.serviceDocs).map(serviceDocToLegacy),
     [serviceDocsData]
   )
 
@@ -87,7 +95,7 @@ export function ServiceDocSelectionModal({
             <SelectSearch
               value={selectedServiceId}
               options={services.map((service) => ({
-                value: service.serviceId ?? '',
+                value: service.id ?? '',
                 label: service.name ?? '',
               }))}
               onChange={(value) => {

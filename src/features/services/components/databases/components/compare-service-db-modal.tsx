@@ -1,12 +1,17 @@
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { VersionLayout } from '@/components/version-layout'
-import { GET_DIAGRAM_QUERY } from '@/features/diagram-portal/api'
+import {
+  DIAGRAM_CONTENT_V2,
+  DIAGRAM_V2,
+} from '@/features/diagram-portal/api/diagram-v2'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { ServerDiagramData } from '@/features/diagram-portal/types/diagram'
 import { useServiceDbContext } from '@/features/services/contexts/service-db-context'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
@@ -20,6 +25,7 @@ type DiagramCompareSideProps = {
 
 function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
   const { dbVersions } = useServiceDbContext()
+  const orgId = useCurrentOrganization().id
 
   const selectedDiagramId = useMemo(() => {
     const version = dbVersions.find(
@@ -28,23 +34,37 @@ function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
     return version?.serviceDB?.dbDiagramId
   }, [dbVersions, selectedVersion])
 
-  const { data, loading } = useQuery(GET_DIAGRAM_QUERY, {
-    variables: { diagramId: selectedDiagramId! },
-    skip: !selectedDiagramId,
+  const skip = !selectedDiagramId || !orgId
+
+  const { loading } = useQuery(DIAGRAM_V2, {
+    client: clientV2,
+    variables: { orgId: orgId!, id: selectedDiagramId! },
+    skip,
     fetchPolicy: 'cache-first',
   })
 
+  const { data: contentData, loading: contentLoading } = useQuery(
+    DIAGRAM_CONTENT_V2,
+    {
+      client: clientV2,
+      variables: { orgId: orgId!, id: selectedDiagramId! },
+      skip,
+      fetchPolicy: 'cache-first',
+    }
+  )
+
   const diagramData = useMemo<ServerDiagramData | null>(() => {
-    if (!data?.v1GetDiagram) return null
-    return convertDiagramServerData(data.v1GetDiagram.componentFlowDiagram)
-  }, [data?.v1GetDiagram])
+    const content = contentData?.diagramContent?.content
+    if (!content) return null
+    return convertDiagramServerData(content)
+  }, [contentData?.diagramContent?.content])
 
   const versionName = useMemo(() => {
     if (selectedVersion === null) return 'Latest'
     return `Version ${selectedVersion}`
   }, [selectedVersion])
 
-  if (loading) {
+  if (loading || contentLoading) {
     return (
       <div className="flex size-full items-center justify-center">
         <SectionLoader />

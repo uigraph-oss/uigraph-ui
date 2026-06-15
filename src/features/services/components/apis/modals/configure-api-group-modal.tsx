@@ -1,11 +1,9 @@
-import { uploadProjectFile } from '@/api'
 import { OpenApiIcon } from '@/assets/svgs'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatBytesToHumanReadable } from 'daily-code'
@@ -34,10 +32,8 @@ type ConfigureApiGroupModalProps = {
   }
   onSubmit: (data: {
     name: string
-    openApiSpecFileId?: string
-    swaggerSpecFileId?: string
-    graphqlSpecFileIds?: string[]
-    grpcSpecFileIds?: string[]
+    importSource?: ImportSource
+    specFile?: File
   }) => Promise<void>
 }
 
@@ -46,8 +42,6 @@ export function ConfigureApiGroupModal({
   defaultValues,
   onSubmit,
 }: ConfigureApiGroupModalProps) {
-  const { organizationId } = useOrganizationContext()
-
   const initialImportSource: ImportSource =
     defaultValues?.openApiSpecFileId || defaultValues?.swaggerSpecFileId
       ? 'openapi'
@@ -141,60 +135,33 @@ export function ConfigureApiGroupModal({
     try {
       setIsUploading(true)
 
-      const submitData: {
-        name: string
-        openApiSpecFileId?: string
-        swaggerSpecFileId?: string
-        graphqlSpecFileIds?: string[]
-        grpcSpecFileIds?: string[]
-      } = {
+      const primaryFile = uploadedFiles[0]
+      let specFile: File | undefined
+      if (primaryFile) {
+        if (
+          (importSource === 'graphql' || importSource === 'grpc') &&
+          uploadedFiles.length > 1
+        ) {
+          const parts: string[] = []
+          for (const file of uploadedFiles) {
+            parts.push(await file.text())
+          }
+          specFile = new File([parts.join('\n')], primaryFile.name, {
+            type: primaryFile.type,
+          })
+        } else {
+          specFile = primaryFile
+        }
+      }
+
+      await onSubmit({
         name: data.name.trim(),
-      }
-
-      switch (importSource) {
-        case 'openapi': {
-          const file = uploadedFiles[0]
-          if (file) {
-            const fileId = await uploadProjectFile(uploadedFiles[0], {
-              orgId: organizationId,
-              projectId: '123',
-            })
-
-            submitData.openApiSpecFileId = fileId
-          }
-
-          break
-        }
-        case 'graphql': {
-          const fileIds: string[] = []
-          for (const file of uploadedFiles) {
-            const fileId = await uploadProjectFile(file, {
-              orgId: organizationId,
-              projectId: '123',
-            })
-            fileIds.push(fileId)
-          }
-          submitData.graphqlSpecFileIds = fileIds
-          break
-        }
-        case 'grpc': {
-          const fileIds: string[] = []
-          for (const file of uploadedFiles) {
-            const fileId = await uploadProjectFile(file, {
-              orgId: organizationId,
-              projectId: '123',
-            })
-            fileIds.push(fileId)
-          }
-          submitData.grpcSpecFileIds = fileIds
-          break
-        }
-      }
-
-      await onSubmit(submitData)
+        importSource,
+        specFile,
+      })
     } catch (error) {
       console.error(error)
-      setFileError('Failed to upload file. Please try again.')
+      setFileError('Failed to process file. Please try again.')
     } finally {
       setIsUploading(false)
     }

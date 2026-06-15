@@ -1,4 +1,9 @@
-import { GET_SERVICE_DB_QUERY } from '@/features/services/api/service-db'
+import { clientV2 } from '@/api-v2/client'
+import {
+  SERVICE_DB_V2,
+  serviceDBToLegacy,
+} from '@/features/services/api/service-db-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Node, NodeProps, NodeResizeControl } from '@xyflow/react'
 import { arrayNonNullable } from 'daily-code'
@@ -177,17 +182,22 @@ function DatabaseTableNodeRemoteSource({
   selected,
 }: NodeProps<TDatabaseTableSQLNode>) {
   const { serviceId, serviceDbId, tableName } = data.serviceTable!
+  const orgId = useCurrentOrganization().id
 
-  const { data: serviceDbData, loading } = useQuery(GET_SERVICE_DB_QUERY, {
+  const { data: serviceDbData, loading } = useQuery(SERVICE_DB_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    skip: !serviceId || !serviceDbId,
+    skip: !orgId || !serviceId || !serviceDbId,
     variables: {
+      orgId: orgId!,
       serviceId,
-      serviceDBId: serviceDbId,
+      id: serviceDbId,
     },
   })
 
-  const serviceDb = serviceDbData?.v1GetServiceDB?.[0]
+  const serviceDb = serviceDbData?.serviceDB
+    ? serviceDBToLegacy(serviceDbData.serviceDB)
+    : null
 
   const [isCodeMode, setIsCodeMode] = useState(false)
 

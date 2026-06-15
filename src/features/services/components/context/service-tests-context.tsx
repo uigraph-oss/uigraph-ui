@@ -1,30 +1,28 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { GT } from '@/api'
-import { useOrganizationContext } from '@/contexts'
-import { useApolloClient, useMutation, useQuery } from '@apollo/client'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useCallback, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  CREATE_TEST_CASE_MUTATION,
-  DELETE_TEST_CASE_MUTATION,
-  GET_TEST_CASES_QUERY,
-  UPDATE_TEST_CASE_MUTATION,
-} from '../../api/test-cases'
-import {
-  CREATE_TEST_PACK_MUTATION,
-  DELETE_TEST_PACK_MUTATION,
-  GET_TEST_PACKS_QUERY,
-  UPDATE_TEST_PACK_MUTATION,
-} from '../../api/test-packs'
-import {
-  CREATE_TEST_RUN_MUTATION,
-  GET_TEST_RUNS_QUERY,
-  GET_TEST_RUNS_SUMMARY_QUERY,
-} from '../../api/test-runs'
+  CREATE_TEST_CASE_V2,
+  CREATE_TEST_PACK_V2,
+  CREATE_TEST_RUN_V2,
+  DELETE_TEST_CASE_V2,
+  DELETE_TEST_PACK_V2,
+  TEST_CASES_V2,
+  TEST_PACKS_V2,
+  TEST_RUNS_SUMMARY_V2,
+  TEST_RUNS_V2,
+  UPDATE_TEST_CASE_V2,
+  UPDATE_TEST_PACK_V2,
+} from '../../api/tests-v2'
 import {
   transformTestCaseToSchema,
   transformToCreateTestCase,
@@ -34,62 +32,86 @@ type ServiceTestsContextProps = {
   serviceId: string
 }
 
+type TestCaseRow = TestCase
+
 export const [ServiceTestsContextProvider, useServiceTestsContext] =
   createContext(({ serviceId }: ServiceTestsContextProps) => {
     const navigate = useNavigate()
     const { pathname } = useLocation()
     const [searchParams] = useSearchParams()
-    const client = useApolloClient()
-    const { organizationId } = useOrganizationContext()
+    const orgId = useCurrentOrganization().id
 
     const selectedPackId = searchParams.get('packId')
 
-    const { data: packsData, loading: packsLoading } = useQuery(
-      GET_TEST_PACKS_QUERY,
-      {
-        fetchPolicy: 'cache-first',
-        variables: { serviceId },
-        skip: !serviceId,
-      }
-    )
+    const packsVars = { orgId: orgId!, serviceId }
+    const casesVars = {
+      orgId: orgId!,
+      serviceId,
+      testPackId: selectedPackId ?? '',
+    }
+    const runsVars = {
+      orgId: orgId!,
+      serviceId,
+      testPackId: selectedPackId ?? undefined,
+    }
+    const packRunsVars = {
+      orgId: orgId!,
+      serviceId,
+      testPackId: selectedPackId ?? '',
+    }
 
-    const { data: casesData, loading: casesLoading } = useQuery(
-      GET_TEST_CASES_QUERY,
-      {
-        fetchPolicy: 'cache-first',
-        variables: { testPackId: selectedPackId ?? '' },
-        skip: !selectedPackId,
-      }
-    )
-
-    const { data: runsData } = useQuery(GET_TEST_RUNS_QUERY, {
+    const { data: packsData, loading: packsLoading } = useQuery(TEST_PACKS_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { serviceId },
-      skip: !serviceId,
+      variables: packsVars,
+      skip: !orgId || !serviceId,
+    })
+
+    const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-first',
+      variables: casesVars,
+      skip: !orgId || !serviceId || !selectedPackId,
+    })
+
+    const { data: packRunsData } = useQuery(TEST_RUNS_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-first',
+      variables: packRunsVars,
+      skip: !orgId || !serviceId || !selectedPackId,
+    })
+
+    const { data: summaryRunsData } = useQuery(TEST_RUNS_SUMMARY_V2, {
+      client: clientV2,
+      fetchPolicy: 'cache-first',
+      variables: runsVars,
+      skip: !orgId || !serviceId || !!selectedPackId,
     })
 
     const testPacks = useMemo(() => {
-      const packs = arrayNonNullable(packsData?.v1GetTestPacks)
+      const packs = arrayNonNullable(packsData?.testPacks)
       return [...packs].sort((a, b) => {
         const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0
         const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0
         return bTime - aTime
       })
-    }, [packsData?.v1GetTestPacks])
+    }, [packsData?.testPacks])
 
-    const testCases = useMemo<GT.TestCase[]>(() => {
-      const cases = arrayNonNullable(casesData?.v1GetTestCases)
+    const testCases = useMemo<TestCaseRow[]>(() => {
+      const cases = arrayNonNullable(casesData?.testCases)
       return [...cases].sort((a, b) => {
         const aOrder = a.order ?? 0
         const bOrder = b.order ?? 0
         return aOrder - bOrder
       })
-    }, [casesData?.v1GetTestCases])
+    }, [casesData?.testCases])
 
-    const testRuns = useMemo(
-      () => arrayNonNullable(runsData?.v1GetTestRuns),
-      [runsData?.v1GetTestRuns]
-    )
+    const testRuns = useMemo(() => {
+      if (selectedPackId) {
+        return arrayNonNullable(packRunsData?.testRuns)
+      }
+      return arrayNonNullable(summaryRunsData?.testRunsSummary)
+    }, [packRunsData?.testRuns, selectedPackId, summaryRunsData?.testRunsSummary])
 
     const selectedPack = useMemo(() => {
       return (
@@ -97,86 +119,58 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       )
     }, [testPacks, selectedPackId])
 
-    const isTestPacksLoading = packsLoading && !packsData?.v1GetTestPacks
-    const isTestCasesLoading = casesLoading && !casesData?.v1GetTestCases
+    const isTestPacksLoading = packsLoading && !packsData?.testPacks
+    const isTestCasesLoading = casesLoading && !casesData?.testCases
 
-    const [createTestPack] = useMutation(CREATE_TEST_PACK_MUTATION, {
-      refetchQueries: [
-        { query: GET_TEST_PACKS_QUERY, variables: { serviceId } },
-        { query: GET_TEST_RUNS_QUERY, variables: { serviceId } },
-        {
-          query: GET_TEST_RUNS_SUMMARY_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-      ],
+    const packRefetchQueries = [
+      { query: TEST_PACKS_V2, variables: packsVars },
+      selectedPackId
+        ? { query: TEST_RUNS_V2, variables: packRunsVars }
+        : { query: TEST_RUNS_SUMMARY_V2, variables: runsVars },
+    ]
+
+    const caseRefetchQueries = [
+      { query: TEST_CASES_V2, variables: casesVars },
+      selectedPackId
+        ? { query: TEST_RUNS_V2, variables: packRunsVars }
+        : { query: TEST_RUNS_SUMMARY_V2, variables: runsVars },
+    ]
+
+    const [createTestPack] = useMutation(CREATE_TEST_PACK_V2, {
+      client: clientV2,
+      refetchQueries: packRefetchQueries,
     })
 
-    const [updateTestPack] = useMutation(UPDATE_TEST_PACK_MUTATION, {
-      refetchQueries: [
-        { query: GET_TEST_PACKS_QUERY, variables: { serviceId } },
-        { query: GET_TEST_RUNS_QUERY, variables: { serviceId } },
-        {
-          query: GET_TEST_RUNS_SUMMARY_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-      ],
+    const [updateTestPack] = useMutation(UPDATE_TEST_PACK_V2, {
+      client: clientV2,
+      refetchQueries: packRefetchQueries,
     })
 
-    const [deleteTestPack] = useMutation(DELETE_TEST_PACK_MUTATION, {
-      refetchQueries: [
-        { query: GET_TEST_PACKS_QUERY, variables: { serviceId } },
-        { query: GET_TEST_RUNS_QUERY, variables: { serviceId } },
-        {
-          query: GET_TEST_RUNS_SUMMARY_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-      ],
+    const [deleteTestPack] = useMutation(DELETE_TEST_PACK_V2, {
+      client: clientV2,
+      refetchQueries: packRefetchQueries,
     })
 
-    const [createTestCaseMutation] = useMutation(CREATE_TEST_CASE_MUTATION, {
-      refetchQueries: [
-        {
-          query: GET_TEST_CASES_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-        { query: GET_TEST_RUNS_QUERY, variables: { serviceId } },
-        {
-          query: GET_TEST_RUNS_SUMMARY_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-      ],
+    const [createTestCaseMutation] = useMutation(CREATE_TEST_CASE_V2, {
+      client: clientV2,
+      refetchQueries: caseRefetchQueries,
     })
 
-    const [updateTestCaseMutation] = useMutation(UPDATE_TEST_CASE_MUTATION, {
-      refetchQueries: [
-        {
-          query: GET_TEST_CASES_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-        { query: GET_TEST_RUNS_QUERY, variables: { serviceId } },
-        {
-          query: GET_TEST_RUNS_SUMMARY_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-      ],
+    const [updateTestCaseMutation] = useMutation(UPDATE_TEST_CASE_V2, {
+      client: clientV2,
+      refetchQueries: caseRefetchQueries,
     })
 
-    const [deleteTestCaseMutation] = useMutation(DELETE_TEST_CASE_MUTATION, {
-      refetchQueries: [
-        {
-          query: GET_TEST_CASES_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
-      ],
+    const [deleteTestCaseMutation] = useMutation(DELETE_TEST_CASE_V2, {
+      client: clientV2,
+      refetchQueries: [{ query: TEST_CASES_V2, variables: casesVars }],
     })
 
-    const [createTestRun] = useMutation(CREATE_TEST_RUN_MUTATION, {
+    const [createTestRun] = useMutation(CREATE_TEST_RUN_V2, {
+      client: clientV2,
       refetchQueries: [
-        { query: GET_TEST_RUNS_QUERY, variables: { serviceId } },
-        {
-          query: GET_TEST_RUNS_SUMMARY_QUERY,
-          variables: { testPackId: selectedPackId ?? '' },
-        },
+        { query: TEST_RUNS_V2, variables: packRunsVars },
+        { query: TEST_RUNS_SUMMARY_V2, variables: runsVars },
       ],
     })
 
@@ -203,14 +197,15 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         try {
           const result = await createTestPack({
             variables: {
+              orgId: orgId!,
+              serviceId,
               input: {
-                serviceId,
                 name: data.name,
                 type: data.type,
               },
             },
           })
-          const newPackId = result.data?.v1CreateTestPack?.testPackId
+          const newPackId = result.data?.createTestPack?.testPackId
           if (newPackId) {
             handleSelectPack(newPackId)
             toast.success('Test pack created successfully')
@@ -224,7 +219,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           throw error
         }
       },
-      [createTestPack, handleSelectPack, serviceId]
+      [createTestPack, handleSelectPack, orgId, serviceId]
     )
 
     const updatePack = useCallback(
@@ -235,9 +230,10 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         try {
           await updateTestPack({
             variables: {
-              testPackId,
+              orgId: orgId!,
+              serviceId,
+              id: testPackId,
               input: {
-                serviceId,
                 name: data.name,
                 type: data.type,
               },
@@ -250,18 +246,19 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           throw error
         }
       },
-      [serviceId, updateTestPack]
+      [orgId, serviceId, updateTestPack]
     )
 
     const deletePack = useCallback(
       async (testPackId: string) => {
-        if (!organizationId) return
+        if (!orgId) return
 
         try {
           await deleteTestPack({
             variables: {
-              testPackId,
-              organizationId,
+              orgId,
+              serviceId,
+              id: testPackId,
             },
           })
 
@@ -276,7 +273,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           throw error
         }
       },
-      [clearSelectedPack, deleteTestPack, organizationId, selectedPackId]
+      [clearSelectedPack, deleteTestPack, orgId, selectedPackId, serviceId]
     )
 
     const createTestCaseHandler = useCallback(
@@ -295,6 +292,8 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         try {
           await createTestCaseMutation({
             variables: {
+              orgId: orgId!,
+              serviceId,
               input: {
                 testPackId: data.testPackId,
                 title: data.title,
@@ -328,7 +327,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           throw error
         }
       },
-      [createTestCaseMutation]
+      [createTestCaseMutation, orgId, serviceId]
     )
 
     const updateTestCaseHandler = useCallback(
@@ -351,7 +350,9 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         try {
           await updateTestCaseMutation({
             variables: {
-              testCaseId,
+              orgId: orgId!,
+              serviceId,
+              id: testCaseId,
               input: {
                 testPackId: data.testPackId,
                 title: data.title,
@@ -385,35 +386,41 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           throw error
         }
       },
-      [updateTestCaseMutation]
+      [orgId, serviceId, updateTestCaseMutation]
     )
 
     const duplicateTestCase = useCallback(
-      async (testCase: GT.TestCase) => {
+      async (testCase: TestCaseRow) => {
         if (!testCase.testPackId) {
           toast.error('Cannot duplicate test case: missing test pack ID')
           return
         }
 
         try {
-          const { data: casesData } = await client.query({
-            query: GET_TEST_CASES_QUERY,
-            variables: { testPackId: testCase.testPackId },
+          const { data: freshCasesData } = await clientV2.query({
+            query: TEST_CASES_V2,
+            variables: {
+              orgId: orgId!,
+              serviceId,
+              testPackId: testCase.testPackId,
+            },
             fetchPolicy: 'network-only',
           })
-          const existingCases = arrayNonNullable(casesData?.v1GetTestCases)
+          const existingCases = arrayNonNullable(freshCasesData?.testCases)
           const maxOrder = existingCases.reduce(
-            (max: number, tc: GT.TestCase) => Math.max(max, tc.order ?? 0),
+            (max, tc) => Math.max(max, tc.order ?? 0),
             0
           )
           const newOrder = maxOrder + 1
 
           await createTestCaseMutation({
             variables: {
+              orgId: orgId!,
+              serviceId,
               input: {
                 testPackId: testCase.testPackId,
                 ...transformToCreateTestCase(
-                  transformTestCaseToSchema(testCase)
+                  transformTestCaseToSchema(testCase as GT.TestCase)
                 ),
                 title: `${testCase.title || 'Untitled'} (Copy)`,
                 order: newOrder,
@@ -428,7 +435,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           console.error(error)
         }
       },
-      [client, createTestCaseMutation]
+      [clientV2, createTestCaseMutation, orgId, serviceId]
     )
 
     const reorderTestCase = useCallback(
@@ -445,7 +452,9 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
 
           await updateTestCaseMutation({
             variables: {
-              testCaseId,
+              orgId: orgId!,
+              serviceId,
+              id: testCaseId,
               input: {
                 testPackId: testCaseToUpdate.testPackId,
                 type: testCaseToUpdate.type || 'manual',
@@ -483,7 +492,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           console.error(error)
         }
       },
-      [testCases, updateTestCaseMutation]
+      [orgId, serviceId, testCases, updateTestCaseMutation]
     )
 
     const confirmRunPack = useCallback(
@@ -493,16 +502,17 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         try {
           const result = await createTestRun({
             variables: {
+              orgId: orgId!,
+              serviceId,
               input: {
                 testPackId: selectedPackId,
-                serviceId,
                 environment: data.environment,
                 releaseLabel: data.releaseLabel,
               },
             },
           })
 
-          const testRunId = result.data?.v1CreateTestRun?.testRunId
+          const testRunId = result.data?.createTestRun?.testRunId
           if (testRunId) {
             navigate(`/services/${serviceId}/tests/run/${testRunId}`)
             toast.success('Test run created successfully')
@@ -515,10 +525,11 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           throw error
         }
       },
-      [createTestRun, navigate, selectedPackId, serviceId]
+      [createTestRun, navigate, orgId, selectedPackId, serviceId]
     )
 
     return {
+      orgId,
       serviceId,
       selectedPackId,
       selectedPack,

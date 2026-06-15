@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -83,7 +83,7 @@ export type TestRunResultDraft = {
 }
 
 type TestCaseExecutionCardProps = {
-  testCase: GT.TestCase
+  testCase: TestCase
   existingResult?: TestRunResult | null
   draft?: TestRunResultDraft | null
   status?: 'passed' | 'failed' | 'skipped' | 'blocked' | null

@@ -1,26 +1,46 @@
+import { clientV2 } from '@/api-v2/client'
 import { GT } from '@/api'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import { GET_DIAGRAM_QUERY } from '@/features/diagram-portal/api'
+import {
+  DIAGRAM_CONTENT_V2,
+  DIAGRAM_V2,
+} from '@/features/diagram-portal/api/diagram-v2'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 import { TbExternalLink } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
 
 export function SelectedDatabaseDiagramSection({ db }: { db: GT.ServiceDb }) {
-  const { data, loading } = useQuery(GET_DIAGRAM_QUERY, {
-    variables: { diagramId: db.dbDiagramId! },
+  const orgId = useCurrentOrganization().id
+  const diagramId = db.dbDiagramId
+  const skip = !diagramId || !orgId
+
+  const { data, loading } = useQuery(DIAGRAM_V2, {
+    client: clientV2,
+    variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'cache-first',
-    skip: !db.dbDiagramId,
+    skip,
   })
 
-  const diagramData = useMemo(() => {
-    const diagram = data?.v1GetDiagram
-    if (!diagram) return null
+  const { data: contentData, loading: contentLoading } = useQuery(
+    DIAGRAM_CONTENT_V2,
+    {
+      client: clientV2,
+      variables: { orgId: orgId!, id: diagramId! },
+      fetchPolicy: 'cache-first',
+      skip,
+    }
+  )
 
-    const result = convertDiagramServerData(diagram.componentFlowDiagram)
+  const diagramData = useMemo(() => {
+    const content = contentData?.diagramContent?.content
+    if (!content) return null
+
+    const result = convertDiagramServerData(content)
     const resultNodes = result.nodes.map((node) => ({
       ...node,
       data: { ...node.data, isForcedOpen: true },
@@ -30,19 +50,33 @@ export function SelectedDatabaseDiagramSection({ db }: { db: GT.ServiceDb }) {
       ...result,
       nodes: resultNodes,
     }
-  }, [data?.v1GetDiagram])
+  }, [contentData?.diagramContent?.content])
 
-  if (loading) return <SectionLoader />
+  if (!diagramId) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center text-sm text-[#939395]">
+        No data model diagram linked to this database
+      </div>
+    )
+  }
 
-  if (!diagramData) return <div>No diagram found</div>
+  if (loading || contentLoading) return <SectionLoader />
+
+  if (!diagramData) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center text-sm text-[#939395]">
+        No diagram found
+      </div>
+    )
+  }
 
   return (
     <div className="relative isolate h-full w-full pt-4">
       <div className="border-stock flex h-full w-full overflow-hidden rounded-[1rem] border">
         <FlowDiagramPreview
-          key={db.dbDiagramId}
+          key={diagramId}
           data={diagramData}
-          name={data?.v1GetDiagram?.componentFlowDiagramName}
+          name={data?.diagram?.name ?? undefined}
         />
       </div>
 
@@ -52,7 +86,7 @@ export function SelectedDatabaseDiagramSection({ db }: { db: GT.ServiceDb }) {
         preset="primary"
         className="absolute top-6 right-2 shadow-lg"
       >
-        <Link to={`/diagram/${db.dbDiagramId}`} target="_blank">
+        <Link to={`/diagram/${diagramId}`} target="_blank">
           <TbExternalLink />
           Open in Diagram Editor
         </Link>

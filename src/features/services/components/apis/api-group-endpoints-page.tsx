@@ -264,7 +264,9 @@ function ApiGroupEndpointsPageContent() {
 
   const provenance = useMemo(() => {
     const repoUrl = service?.gitRepoUrl?.trim() || null
-    const repoName = service?.gitRepoName?.trim()
+    const repoName = repoUrl
+      ? repoUrl.replace(/\.git$/, '').split('/').pop() || null
+      : null
     const commitFull = service?.lastCommitSha?.trim() || null
     const commitShort = commitFull?.slice(0, 7) || null
     const compactLabel = getCompactRepoLabel(repoUrl, repoName, commitShort)
@@ -282,7 +284,6 @@ function ApiGroupEndpointsPageContent() {
     apiGroup?.updatedAt,
     selectedRelease?.createdAt,
     selectedRelease?.createdBy,
-    service?.gitRepoName,
     service?.gitRepoUrl,
     service?.lastCommitSha,
   ])

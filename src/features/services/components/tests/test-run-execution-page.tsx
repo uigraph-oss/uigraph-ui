@@ -1,14 +1,16 @@
 'use client'
 
-import { GT, uploadProjectFile } from '@/api'
+import { uploadProjectFile } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useOrganizationContext } from '@/contexts'
 import { env } from '@/env'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
@@ -23,17 +25,16 @@ import {
 import { IoPause, IoPlaySkipForwardOutline } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { GET_TEST_CASES_QUERY } from '../../api/test-cases'
 import {
-  CREATE_TEST_RUN_RESULT_MUTATION,
-  GET_TEST_RUN_RESULTS_QUERY,
-  UPDATE_TEST_RUN_RESULT_MUTATION,
-} from '../../api/test-run-results'
-import {
-  GET_TEST_RUN_QUERY,
-  GET_TEST_RUNS_SUMMARY_QUERY,
-  UPDATE_TEST_RUN_MUTATION,
-} from '../../api/test-runs'
+  CREATE_TEST_RUN_RESULT_V2,
+  TEST_CASES_V2,
+  TEST_RUN_RESULTS_V2,
+  TEST_RUN_V2,
+  TEST_RUNS_SUMMARY_V2,
+  UPDATE_TEST_RUN_RESULT_V2,
+  UPDATE_TEST_RUN_V2,
+} from '../../api/tests-v2'
+import { useServiceContext } from '../../contexts/service-context'
 import { normalizeTestCaseIdForMatch } from '../../utils/normalize-test-case-id'
 import {
   TestCaseExecutionCard,
@@ -149,15 +150,18 @@ export function TestRunExecutionPage() {
   }
   const navigate = useNavigate()
   const testRunId = params.testRunId
-  const serviceId = params.serviceId
-  const { organizationId } = useOrganizationContext()
+  const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
 
-  const { data: runData, loading: runLoading } = useQuery(GET_TEST_RUN_QUERY, {
-    variables: { testRunId },
-    skip: !testRunId,
+  const runVars = { orgId: orgId!, serviceId, id: testRunId }
+
+  const { data: runData, loading: runLoading } = useQuery(TEST_RUN_V2, {
+    client: clientV2,
+    variables: runVars,
+    skip: !orgId || !serviceId || !testRunId,
   })
 
-  const testRun = runData?.v1GetTestRun
+  const testRun = runData?.testRun
 
   const runStatus = (testRun?.status ?? '').toLowerCase()
   const isRunning = runStatus === 'running'
@@ -166,47 +170,57 @@ export function TestRunExecutionPage() {
 
   const testPackId = testRun?.testPackId
 
-  const { data: casesData, loading: casesLoading } = useQuery(
-    GET_TEST_CASES_QUERY,
-    {
-      variables: { testPackId: testPackId! },
-      skip: !testPackId,
-    }
-  )
+  const casesVars = {
+    orgId: orgId!,
+    serviceId,
+    testPackId: testPackId!,
+  }
+  const resultsVars = { orgId: orgId!, serviceId, testRunId }
+  const summaryVars = {
+    orgId: orgId!,
+    serviceId,
+    testPackId: testPackId ?? undefined,
+  }
+
+  const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES_V2, {
+    client: clientV2,
+    variables: casesVars,
+    skip: !orgId || !serviceId || !testPackId,
+  })
 
   const {
     data: resultsData,
     loading: resultsLoading,
     refetch: refetchResults,
-  } = useQuery(GET_TEST_RUN_RESULTS_QUERY, {
-    variables: { testRunId },
-    skip: !testRunId,
+  } = useQuery(TEST_RUN_RESULTS_V2, {
+    client: clientV2,
+    variables: resultsVars,
+    skip: !orgId || !serviceId || !testRunId,
   })
 
   const refetchQueries = useMemo(
     () => [
-      ...(testRunId
-        ? [{ query: GET_TEST_RUN_QUERY, variables: { testRunId } }]
-        : []),
-
+      ...(testRunId ? [{ query: TEST_RUN_V2, variables: runVars }] : []),
       ...(testPackId
-        ? [{ query: GET_TEST_RUNS_SUMMARY_QUERY, variables: { testPackId } }]
+        ? [{ query: TEST_RUNS_SUMMARY_V2, variables: summaryVars }]
         : []),
     ],
-    [testRunId, testPackId]
+    [testRunId, testPackId, orgId, serviceId]
   )
 
-  const [createTestRunResult] = useMutation(CREATE_TEST_RUN_RESULT_MUTATION, {
+  const [createTestRunResult] = useMutation(CREATE_TEST_RUN_RESULT_V2, {
+    client: clientV2,
     refetchQueries,
   })
 
-  const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION, {
+  const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_V2, {
+    client: clientV2,
     refetchQueries,
   })
 
   const [updateTestRun, { loading: isCompleting }] = useMutation(
-    UPDATE_TEST_RUN_MUTATION,
-    { refetchQueries }
+    UPDATE_TEST_RUN_V2,
+    { client: clientV2, refetchQueries }
   )
 
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)
@@ -217,14 +231,14 @@ export function TestRunExecutionPage() {
     new Map()
   )
 
-  const testCases = useMemo<GT.TestCase[]>(() => {
-    const cases = arrayNonNullable(casesData?.v1GetTestCases)
+  const testCases = useMemo<TestCase[]>(() => {
+    const cases = arrayNonNullable(casesData?.testCases)
     return [...cases].sort((a, b) => {
       const aOrder = a.order ?? 0
       const bOrder = b.order ?? 0
       return aOrder - bOrder
     })
-  }, [casesData?.v1GetTestCases])
+  }, [casesData?.testCases])
 
   useEffect(() => {
     if (testCases.length === 0) return
@@ -232,8 +246,8 @@ export function TestRunExecutionPage() {
   }, [testCases.length])
 
   const testRunResults = useMemo(() => {
-    return arrayNonNullable(resultsData?.v1GetTestRunResults)
-  }, [resultsData?.v1GetTestRunResults])
+    return arrayNonNullable(resultsData?.testRunResults)
+  }, [resultsData?.testRunResults])
 
   const resultsMap = useMemo(() => {
     const map = new Map<string, TestRunResult>()
@@ -445,18 +459,27 @@ export function TestRunExecutionPage() {
       screenshotUrls: [...uploadedUrls, ...newUrls],
     }
 
-    if (existingResult) {
+    if (existingResult?.testRunResultId) {
       await updateTestRunResult({
-        variables: { input },
+        variables: {
+          orgId: orgId!,
+          serviceId,
+          id: existingResult.testRunResultId,
+          input,
+        },
       })
     } else {
       await createTestRunResult({
-        variables: { input },
+        variables: {
+          orgId: orgId!,
+          serviceId,
+          input,
+        },
       })
     }
 
     const refetchResult = await refetchResults()
-    const freshResults = refetchResult?.data?.v1GetTestRunResults ?? []
+    const freshResults = refetchResult?.data?.testRunResults ?? []
     const freshResult = Array.isArray(freshResults)
       ? (freshResults.find(
           (r) =>
@@ -499,7 +522,7 @@ export function TestRunExecutionPage() {
   }
 
   async function handleScreenshotUpload(files: File[]): Promise<string[]> {
-    if (!organizationId || !serviceId) {
+    if (!orgId || !serviceId) {
       throw new Error(
         'Organization ID and Service ID are required for file upload'
       )
@@ -509,7 +532,7 @@ export function TestRunExecutionPage() {
     for (const file of files) {
       try {
         const fileId = await uploadProjectFile(file, {
-          orgId: organizationId,
+          orgId,
           projectId: serviceId,
         })
         const url = `${env.assetsOrigin}/${fileId}`
@@ -543,7 +566,9 @@ export function TestRunExecutionPage() {
       const completedAt = new Date().toISOString()
       await updateTestRun({
         variables: {
-          testRunId: testRunId!,
+          orgId: orgId!,
+          serviceId,
+          id: testRunId!,
           input: {
             overallStatus,
             status: 'completed',
@@ -566,7 +591,9 @@ export function TestRunExecutionPage() {
     if (!isRunning) return
     const result = await updateTestRun({
       variables: {
-        testRunId: testRunId!,
+        orgId: orgId!,
+        serviceId,
+        id: testRunId!,
         input: { status: 'aborted' },
       },
     })
@@ -707,7 +734,7 @@ export function TestRunExecutionPage() {
                   <div className="text-foreground flex items-center gap-2 text-sm font-medium">
                     <Avatar className="size-5">
                       <AvatarImage
-                        src={testRun.executedByProfileImgUrl || ''}
+                        src=""
                         className="object-cover"
                       />
                       <AvatarFallback className="text-[10px]">
@@ -1003,7 +1030,7 @@ export function TestRunExecutionPage() {
                       onDraftChange={(draft) =>
                         updateDraft(selectedTestCaseId, draft)
                       }
-                      organizationId={organizationId}
+                      organizationId={orgId}
                       projectId={serviceId}
                       readOnly={isRunLocked}
                       recordOnly

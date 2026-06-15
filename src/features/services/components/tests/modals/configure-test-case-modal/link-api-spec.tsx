@@ -10,11 +10,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useOrganizationContext } from '@/contexts'
-import { GET_SERVICE_API_GROUPS_QUERY } from '@/features/services/api/api-endpoints'
-import { GET_SERVICES_QUERY } from '@/features/services/api/services'
+import { clientV2 } from '@/api-v2/client'
+import { API_GROUPS_V2 } from '@/features/services/api/api-endpoints-v2'
+import { SERVICES_V2 } from '@/features/services/api/services-v2'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
@@ -22,22 +23,25 @@ import { LuChevronDown, LuChevronRight, LuLoaderCircle } from 'react-icons/lu'
 import { buildApiSpecValue, parseApiSpecValue } from './api-selection-utils'
 
 function ApiGroupsSection({
+  orgId,
   serviceId,
   value,
   onChange,
 }: {
+  orgId: string
   serviceId: string
   value: string
   onChange: (value: string) => void
 }) {
-  const { data, loading } = useQuery(GET_SERVICE_API_GROUPS_QUERY, {
+  const { data, loading } = useQuery(API_GROUPS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { serviceId },
-    skip: !serviceId,
+    variables: { orgId, serviceId },
+    skip: !orgId || !serviceId,
   })
 
-  const groups = arrayNonNullable(data?.v1GetServiceAPIGroups).filter((group) =>
-    Boolean(group.serviceApiGroupId)
+  const groups = arrayNonNullable(data?.apiGroups).filter((group) =>
+    Boolean(group.id)
   )
 
   if (loading) {
@@ -51,11 +55,11 @@ function ApiGroupsSection({
   }
 
   return groups.map((group) => {
-    const apiSpecValue = buildApiSpecValue(serviceId, group.serviceApiGroupId!)
+    const apiSpecValue = buildApiSpecValue(serviceId, group.id)
 
     return (
       <Button
-        key={group.serviceApiGroupId}
+        key={group.id}
         type="button"
         variant="ghost"
         onClick={() => onChange(apiSpecValue)}
@@ -80,42 +84,42 @@ export function LinkApiSpecSelect({
   value: string
   onChange: (value: string) => void
 }) {
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
   const { serviceId: currentServiceId } = useServiceContext()
   const [open, setOpen] = useState(false)
 
   const { serviceId, apiGroupId } = parseApiSpecValue(value)
 
   const { data: servicesData, loading: isServicesLoading } = useQuery(
-    GET_SERVICES_QUERY,
+    SERVICES_V2,
     {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { organizationId },
-      skip: !organizationId,
+      variables: { orgId: orgId! },
+      skip: !orgId,
     }
   )
 
-  const services = arrayNonNullable(servicesData?.v1GetServices).filter(
-    (service) => Boolean(service.serviceId)
+  const services = arrayNonNullable(servicesData?.services).filter((service) =>
+    Boolean(service.id)
   )
 
   const defaultExpandedServiceIds = useMemo(
-    () => arrayNonNullable(services.map((service) => service.serviceId)),
+    () => arrayNonNullable(services.map((service) => service.id)),
     [services]
   )
 
   const { data: selectedGroupsData, loading: isSelectedGroupsLoading } =
-    useQuery(GET_SERVICE_API_GROUPS_QUERY, {
+    useQuery(API_GROUPS_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { serviceId },
-      skip: !serviceId,
+      variables: { orgId: orgId!, serviceId },
+      skip: !orgId || !serviceId,
     })
 
-  const selectedService = services.find(
-    (service) => service.serviceId === serviceId
-  )
-  const selectedGroup = selectedGroupsData?.v1GetServiceAPIGroups?.find(
-    (group) => group?.serviceApiGroupId === apiGroupId
+  const selectedService = services.find((service) => service.id === serviceId)
+  const selectedGroup = selectedGroupsData?.apiGroups?.find(
+    (group) => group?.id === apiGroupId
   )
   const hasSelectedValue = Boolean(value)
   const hasResolvedSelectedInfo = Boolean(selectedService && selectedGroup)
@@ -197,8 +201,8 @@ export function LinkApiSpecSelect({
           >
             {services.map((service) => (
               <AccordionItem
-                key={service.serviceId}
-                value={service.serviceId!}
+                key={service.id}
+                value={service.id}
                 className="rounded-none border-b border-[#e8edf3] last:border-b-0"
               >
                 <AccordionTrigger className="border-b border-[#e8edf3] px-3 py-2.5 hover:no-underline">
@@ -206,7 +210,7 @@ export function LinkApiSpecSelect({
                     <span className="text-sm font-medium text-[#111827]">
                       {service.name?.trim() || 'Untitled Service'}
                     </span>
-                    {service.serviceId === currentServiceId && (
+                    {service.id === currentServiceId && (
                       <span className="rounded-full bg-[#eef2ff] px-2 py-0.5 text-[11px] font-medium text-[#4f46e5]">
                         Current
                       </span>
@@ -216,7 +220,8 @@ export function LinkApiSpecSelect({
 
                 <AccordionContent className="pt-0 pb-0">
                   <ApiGroupsSection
-                    serviceId={service.serviceId!}
+                    orgId={orgId!}
+                    serviceId={service.id}
                     value={value}
                     onChange={(nextValue) => {
                       setOpen(false)

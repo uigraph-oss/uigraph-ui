@@ -35,7 +35,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
         crumbs={[
           { to: '/services', label: 'Services' },
           {
-            to: `/services/${service?.serviceId}`,
+            to: `/services/${service?.id}`,
             label: isServiceLoading ? (
               <SuperCircleLoader />
             ) : (
@@ -43,7 +43,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
             ),
           },
           {
-            to: `/services/${service?.serviceId}/${activeTab}`,
+            to: `/services/${service?.id}/${activeTab}`,
             label: isServiceLoading ? <SuperCircleLoader /> : activeTabLabel,
           },
         ]}
@@ -66,7 +66,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
                     activeTab === tab.id && 'border-primary'
                   )}
                   onClick={() =>
-                    navigate(`/services/${service.serviceId}/${tab.id}`, {
+                    navigate(`/services/${service.id}/${tab.id}`, {
                       replace: true,
                     })
                   }
