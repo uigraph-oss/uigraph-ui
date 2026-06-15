@@ -1,12 +1,17 @@
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
-import { useOrganizationContext } from '@/contexts'
 import {
-  GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
-  GET_SERVICE_API_GROUPS_QUERY,
-} from '@/features/services/api/api-endpoints'
-import { GET_SERVICES_QUERY } from '@/features/services/api/services'
+  API_ENDPOINTS_V2,
+  API_GROUPS_V2,
+} from '@/features/services/api/api-endpoints-v2'
+import {
+  apiGroupToLegacy,
+  endpointToLegacyWithMeta,
+} from '@/features/services/api/api-v2-adapters'
+import { SERVICES_V2 } from '@/features/services/api/services-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { flattenMetaData } from '@uigraph/sdk'
@@ -29,7 +34,7 @@ const apiContactSchema = z.object({
 export function ApiContractSelectionModal({
   onSelect,
 }: ApiContractSelectionModalProps) {
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
 
   const form = useForm({
     resolver: zodResolver(apiContactSchema),
@@ -44,61 +49,74 @@ export function ApiContractSelectionModal({
   const selectedApiGroupId = form.watch('apiGroupId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(
-    GET_SERVICES_QUERY,
+    SERVICES_V2,
     {
-      variables: { organizationId },
+      client: clientV2,
+      variables: { orgId: orgId! },
       fetchPolicy: 'cache-first',
+      skip: !orgId,
     }
   )
 
   const { data: apiGroupsData, loading: apiGroupsLoading } = useQuery(
-    GET_SERVICE_API_GROUPS_QUERY,
+    API_GROUPS_V2,
     {
-      variables: { serviceId: selectedServiceId },
+      client: clientV2,
+      variables: { orgId: orgId!, serviceId: selectedServiceId },
       fetchPolicy: 'cache-first',
-      skip: !selectedServiceId,
+      skip: !orgId || !selectedServiceId,
     }
   )
 
   const { data: apiEndpointsData, loading: apiEndpointsLoading } = useQuery(
-    GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
+    API_ENDPOINTS_V2,
     {
-      variables: { serviceApiGroupId: selectedApiGroupId },
+      client: clientV2,
+      variables: {
+        orgId: orgId!,
+        serviceId: selectedServiceId,
+        apiGroupId: selectedApiGroupId,
+      },
       fetchPolicy: 'cache-first',
-      skip: !selectedApiGroupId,
+      skip: !orgId || !selectedServiceId || !selectedApiGroupId,
     }
   )
 
   const services = useMemo(
-    () => arrayNonNullable(servicesData?.v1GetServices),
+    () => arrayNonNullable(servicesData?.services),
     [servicesData]
   )
 
   const apiGroups = useMemo(
-    () => arrayNonNullable(apiGroupsData?.v1GetServiceAPIGroups),
+    () => arrayNonNullable(apiGroupsData?.apiGroups).map(apiGroupToLegacy),
     [apiGroupsData]
   )
 
   const apiEndpointOptions = useMemo(() => {
-    const aes = arrayNonNullable(apiEndpointsData?.v1GetAPIEndpointsWithMeta)
-    return aes
-      .filter((ae) => ae.apiEndpoint?.componentMetaId)
-      .map((ae) => {
-        const fields = arrayNonNullable(ae.componentMeta?.componentModalFields)
-        const flattened = flattenMetaData(fields, fields)
+    const endpoints = arrayNonNullable(apiEndpointsData?.apiEndpoints)
+    return endpoints.map((endpoint) => {
+      const legacy = endpointToLegacyWithMeta(endpoint, orgId!)
+      const fields = arrayNonNullable(
+        legacy.componentMeta?.componentModalFields
+      )
+      const flattened = flattenMetaData(fields, fields)
 
-        const nameId = fields.find(
-          (field) => field?.label?.toLowerCase() === 'name'
-        )?.componentFieldId
+      const nameId = fields.find(
+        (field) => field?.label?.toLowerCase() === 'name'
+      )?.componentFieldId
 
-        const nameValue = nameId ? flattened[nameId] : null
+      const nameValue = nameId ? flattened[nameId] : null
 
-        return {
-          value: ae.apiEndpoint!.componentMetaId!,
-          label: nameValue ?? ae.apiEndpoint?.componentMetaId ?? '',
-        }
-      })
-  }, [apiEndpointsData])
+      return {
+        value: legacy.apiEndpoint.apiEndpointId ?? '',
+        label: String(
+          nameValue ||
+            legacy.apiEndpoint.apiEndpointId ||
+            `${endpoint.method} ${endpoint.path}`
+        ),
+      }
+    })
+  }, [apiEndpointsData, orgId])
 
   return (
     <BetterDialogContent
@@ -124,7 +142,7 @@ export function ApiContractSelectionModal({
             <SelectSearch
               value={selectedServiceId}
               options={services.map((service) => ({
-                value: service.serviceId ?? '',
+                value: service.id ?? '',
                 label: service.name ?? '',
               }))}
               onChange={(value) => {

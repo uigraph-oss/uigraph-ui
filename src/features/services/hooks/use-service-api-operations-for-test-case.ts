@@ -1,12 +1,15 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import {
-  GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
-  GET_SERVICE_API_GROUPS_QUERY,
-} from '../api/api-endpoints'
+  API_ENDPOINTS_V2,
+  API_GROUPS_V2,
+} from '../api/api-endpoints-v2'
+import { endpointsToLegacyWithMeta } from '../api/api-v2-adapters'
 import {
   deriveApiOperations,
   getProtocolFromApiGroup,
@@ -20,48 +23,57 @@ export type ApiGroupForTestCase = {
 }
 
 export function useServiceApiOperationsForTestCase(serviceId: string | null) {
+  const orgId = useCurrentOrganization().id
   const [selectedApiGroupId, setSelectedApiGroupId] = useState<string | null>(
     null
   )
 
   const { data: groupsData, loading: groupsLoading } = useQuery(
-    GET_SERVICE_API_GROUPS_QUERY,
+    API_GROUPS_V2,
     {
-      variables: { serviceId: serviceId! },
-      skip: !serviceId,
+      client: clientV2,
+      variables: { orgId: orgId!, serviceId: serviceId! },
+      skip: !orgId || !serviceId,
       fetchPolicy: 'cache-first',
     }
   )
 
   const apiGroups = useMemo((): ApiGroupForTestCase[] => {
-    const raw = arrayNonNullable(groupsData?.v1GetServiceAPIGroups)
+    const raw = arrayNonNullable(groupsData?.apiGroups)
     return raw.map((g) => ({
-      serviceApiGroupId: g.serviceApiGroupId ?? '',
+      serviceApiGroupId: g.id,
       version: g.version ?? null,
       protocol: g.protocol ?? null,
     }))
-  }, [groupsData?.v1GetServiceAPIGroups])
+  }, [groupsData?.apiGroups])
 
   const { data: endpointsData, loading: endpointsLoading } = useQuery(
-    GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
+    API_ENDPOINTS_V2,
     {
-      variables: { serviceApiGroupId: selectedApiGroupId! },
-      skip: !selectedApiGroupId,
+      client: clientV2,
+      variables: {
+        orgId: orgId!,
+        serviceId: serviceId!,
+        apiGroupId: selectedApiGroupId!,
+      },
+      skip: !orgId || !serviceId || !selectedApiGroupId,
       fetchPolicy: 'cache-first',
     }
   )
 
   const endpointsWithMeta = useMemo(
-    () => arrayNonNullable(endpointsData?.v1GetAPIEndpointsWithMeta),
-    [endpointsData?.v1GetAPIEndpointsWithMeta]
+    () =>
+      endpointsToLegacyWithMeta(
+        arrayNonNullable(endpointsData?.apiEndpoints),
+        orgId!
+      ),
+    [endpointsData?.apiEndpoints, orgId]
   )
 
   const selectedGroupRaw = useMemo(
     () =>
-      groupsData?.v1GetServiceAPIGroups?.find(
-        (g) => g?.serviceApiGroupId === selectedApiGroupId
-      ) ?? null,
-    [groupsData?.v1GetServiceAPIGroups, selectedApiGroupId]
+      groupsData?.apiGroups?.find((g) => g.id === selectedApiGroupId) ?? null,
+    [groupsData?.apiGroups, selectedApiGroupId]
   )
 
   const protocol = useMemo(

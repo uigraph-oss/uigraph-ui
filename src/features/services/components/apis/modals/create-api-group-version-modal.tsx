@@ -1,4 +1,5 @@
 import { BetterDialogProvider } from '@/components/better-dialog'
+import { readSpecFile } from '@/features/services/api/api-endpoints-v2'
 import { toast } from 'sonner'
 import { useServiceApiEndpointsContext } from '../../../contexts/service-api-endpoints'
 import { ConfigureApiGroupModal } from './configure-api-group-modal'
@@ -18,14 +19,13 @@ export function CreateApiGroupVersionModal({
       <ConfigureApiGroupModal
         mode="publish"
         onSubmit={async (data) => {
+          const spec = data.specFile ? await readSpecFile(data.specFile) : ''
           await createServiceApiGroupVersion({
             variables: {
               apiGroupId: serviceApiGroupId,
               input: {
                 label: data.name,
-                openApiSpecFileId: data.openApiSpecFileId,
-                graphqlSpecFileIds: data.graphqlSpecFileIds,
-                grpcSpecFileIds: data.grpcSpecFileIds,
+                spec,
               },
             },
           })

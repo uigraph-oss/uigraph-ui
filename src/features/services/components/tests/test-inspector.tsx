@@ -1,6 +1,7 @@
 'use client'
 
 import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -11,11 +12,11 @@ import { TestInspectorRuns } from './test-inspector-runs'
 import { TestInspectorTabs } from './test-inspector-tabs'
 
 type TestInspectorProps = {
-  testCase: GT.TestCase | null
+  testCase: TestCase | null
   testPack: GT.TestPack | null
   open: boolean
   onClose: () => void
-  onEdit?: (testCase: GT.TestCase) => void
+  onEdit?: (testCase: TestCase) => void
   onRunTest?: () => void
   onRerun?: () => void
   onAttachEvidence?: () => void

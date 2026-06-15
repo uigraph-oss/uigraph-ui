@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
 import { Reorder } from 'framer-motion'
 import {
@@ -30,23 +29,23 @@ import {
 } from './modals/configure-test-case-modal/transformers'
 
 type TestCaseListProps = {
-  onView?: (testCase: GT.TestCase) => void
+  onView?: (testCase: TestCase) => void
 }
 
 type DragState = {
-  originalItems: GT.TestCase[]
+  originalItems: TestCase[]
   draggedItemId: string | null
 }
 
 function getOrder(
-  item: GT.TestCase | undefined,
+  item: TestCase | undefined,
   fallbackIndex: number
 ): number {
   return item?.order ?? fallbackIndex + 1
 }
 
 function calculateNewOrder(
-  items: GT.TestCase[],
+  items: TestCase[],
   movedIndex: number
 ): number | null {
   if (items.length === 0) return null
@@ -79,7 +78,7 @@ export function TestCaseList({ onView }: TestCaseListProps) {
   const { testCases, serviceId, duplicateTestCase, reorderTestCase } =
     useServiceTestsContext()
 
-  const [items, setItems] = useState<GT.TestCase[]>(testCases)
+  const [items, setItems] = useState<TestCase[]>(testCases)
   const dragStateRef = useRef<DragState>({
     originalItems: [],
     draggedItemId: null,
@@ -89,7 +88,7 @@ export function TestCaseList({ onView }: TestCaseListProps) {
     setItems(testCases)
   }, [testCases])
 
-  function handleReorder(newItems: GT.TestCase[]) {
+  function handleReorder(newItems: TestCase[]) {
     setItems(newItems)
   }
 
@@ -152,10 +151,10 @@ export function TestCaseList({ onView }: TestCaseListProps) {
 }
 
 type TestCaseRowProps = {
-  testCase: GT.TestCase
+  testCase: TestCase
   serviceId: string
-  onView?: (testCase: GT.TestCase) => void
-  onDuplicate: (testCase: GT.TestCase) => void
+  onView?: (testCase: TestCase) => void
+  onDuplicate: (testCase: TestCase) => void
   onDragStart?: (itemId: string) => void
   onDragEnd?: () => void
 }
@@ -167,10 +166,8 @@ function TestCaseRow({
   onDragStart,
   onDragEnd,
 }: TestCaseRowProps) {
-  const { updateTestCaseMutation, deleteTestCaseMutation } =
+  const { orgId, serviceId, updateTestCaseMutation, deleteTestCaseMutation } =
     useServiceTestsContext()
-
-  const { organizationId } = useOrganizationContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -191,7 +188,7 @@ function TestCaseRow({
   }
 
   async function handleConfirmDelete() {
-    if (!testCase.testCaseId || !testCase.testPackId || !organizationId) {
+    if (!testCase.testCaseId || !testCase.testPackId || !orgId) {
       toast.error('Unable to delete test case')
       return
     }
@@ -199,8 +196,9 @@ function TestCaseRow({
     try {
       await deleteTestCaseMutation({
         variables: {
-          testCaseId: testCase.testCaseId,
-          organizationId,
+          orgId,
+          serviceId,
+          id: testCase.testCaseId,
         },
       })
       toast.success('Test case deleted successfully')
@@ -356,7 +354,9 @@ function TestCaseRow({
             onSubmit={async (data) => {
               await updateTestCaseMutation({
                 variables: {
-                  testCaseId: testCase.testCaseId!,
+                  orgId: orgId!,
+                  serviceId,
+                  id: testCase.testCaseId!,
                   input: {
                     order: testCase.order ?? 0,
                     testPackId: testCase.testPackId!,

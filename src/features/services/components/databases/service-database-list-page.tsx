@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { DynamoDBIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -15,11 +16,12 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { ChevronDown, Upload } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { GET_SERVICE_DB_QUERY } from '../../api/service-db'
+import { SERVICE_DBS_V2, serviceDBToLegacy } from '../../api/service-db-v2'
 import { useServiceContext } from '../../contexts/service-context'
 import { DBSchemaUploadModal } from './components/db-schema-upload-modal'
 import { NosqlBuilderModal } from './components/nosql-builder-modal'
@@ -27,19 +29,22 @@ import { ServiceDatabaseCard } from './service-database-card'
 
 export function ServiceDatabaseListPage() {
   const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [isNosqlBuilderModalOpen, setIsNosqlBuilderModalOpen] = useState(false)
 
-  const { data, loading } = useQuery(GET_SERVICE_DB_QUERY, {
+  const listVars = { orgId: orgId!, serviceId }
+
+  const { data, loading } = useQuery(SERVICE_DBS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: {
-      serviceId: serviceId,
-    },
+    variables: listVars,
+    skip: !orgId || !serviceId,
   })
 
   const databaseSchemas = useMemo(() => {
-    return arrayNonNullable(data?.v1GetServiceDB)
-  }, [data])
+    return arrayNonNullable(data?.serviceDBs).map(serviceDBToLegacy)
+  }, [data?.serviceDBs])
 
   return (
     <div className="flex h-full flex-col">

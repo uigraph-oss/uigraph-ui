@@ -1,15 +1,16 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase, TestRun, TestRunResult } from '@/api-v2/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import {
   BetterDialogCloseButton,
   BetterDialogContent,
 } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { DialogTitle } from '@/components/ui/dialog'
-import { useOrganizationContext } from '@/contexts'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
@@ -24,7 +25,7 @@ import {
 } from 'lucide-react'
 import { Fragment } from 'react'
 import { toast } from 'sonner'
-import { GET_SERVICES_QUERY } from '../../api/services'
+import { SERVICES_V2 } from '../../api/services-v2'
 import {
   getTestTypeConfig,
   normalizeTestTypeKey,
@@ -43,12 +44,12 @@ type ReportStats = {
 }
 
 type StepResult = {
-  testCase: GT.TestCase
-  result: GT.TestRunResult | null
+  testCase: TestCase
+  result: TestRunResult | null
 }
 
 export type TestRunReportDialogProps = {
-  testRun: GT.TestRun
+  testRun: TestRun
   stepResults: StepResult[]
   stats: ReportStats
 }
@@ -302,7 +303,7 @@ function MetaStrip({
   testRun,
   serviceName,
 }: {
-  testRun: GT.TestRun
+  testRun: TestRun
   serviceName: string | null
 }) {
   const runId = testRun.testRunId?.slice(-8) ?? '—'
@@ -781,7 +782,7 @@ function ReportPreview({
   stats,
 }: {
   serviceName: string | null
-  testRun: GT.TestRun
+  testRun: TestRun
   stepResults: StepResult[]
   stats: ReportStats
 }) {
@@ -824,7 +825,7 @@ function ReportPreview({
 
 function generateMarkdown(
   serviceName: string | null,
-  testRun: GT.TestRun,
+  testRun: TestRun,
   stepResults: StepResult[],
   stats: ReportStats
 ): string {
@@ -945,17 +946,17 @@ export function TestRunReportDialog({
   stepResults,
   stats,
 }: TestRunReportDialogProps) {
-  const { organizationId } = useOrganizationContext()
-  const { data: serviceData } = useQuery(GET_SERVICES_QUERY, {
+  const orgId = useCurrentOrganization().id
+  const { data: serviceData } = useQuery(SERVICES_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: {
-      organizationId: organizationId ?? '',
-      serviceId: testRun.serviceId ?? '',
-    },
-    skip: !organizationId || !testRun.serviceId,
+    variables: { orgId: orgId! },
+    skip: !orgId,
   })
   const serviceName =
-    arrayNonNullable(serviceData?.v1GetServices)[0]?.name ?? null
+    arrayNonNullable(serviceData?.services).find(
+      (service) => service.id === testRun.serviceId
+    )?.name ?? null
   const [tabs, activeTab] = useBetterTabs(
     [
       { id: 'preview', label: 'Preview' },

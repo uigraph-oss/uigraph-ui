@@ -1,6 +1,6 @@
 'use client'
 
-import { ServiceDoc } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
 import { Calendar, Download, Eye, Pencil, Trash2 } from 'lucide-react'
@@ -20,10 +21,11 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DOC_MUTATION,
-  GET_SERVICE_DOC_QUERY,
-  UPDATE_SERVICE_DOC_MUTATION,
-} from '../../api/service-doc'
+  DELETE_SERVICE_DOC_V2,
+  SERVICE_DOCS_V2,
+  UPDATE_SERVICE_DOC_V2,
+  serviceDocToLegacy,
+} from '../../api/service-doc-v2'
 import { useServiceContext } from '../../contexts/service-context'
 import {
   getDocumentFileTypeIcon,
@@ -132,16 +134,25 @@ function DocCardThumbnail({
   return <>{fallback}</>
 }
 
-export function ServiceDocCard({ serviceDoc }: { serviceDoc: ServiceDoc }) {
+export function ServiceDocCard({
+  serviceDoc,
+}: {
+  serviceDoc: ReturnType<typeof serviceDocToLegacy>
+}) {
   const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
 
-  const [updateServiceDoc] = useMutation(UPDATE_SERVICE_DOC_MUTATION, {
-    refetchQueries: [GET_SERVICE_DOC_QUERY],
+  const listVars = { orgId: orgId!, serviceId }
+
+  const [updateServiceDoc] = useMutation(UPDATE_SERVICE_DOC_V2, {
+    client: clientV2,
+    refetchQueries: [{ query: SERVICE_DOCS_V2, variables: listVars }],
     awaitRefetchQueries: true,
   })
 
-  const [deleteServiceDoc] = useMutation(DELETE_SERVICE_DOC_MUTATION, {
-    refetchQueries: [GET_SERVICE_DOC_QUERY],
+  const [deleteServiceDoc] = useMutation(DELETE_SERVICE_DOC_V2, {
+    client: clientV2,
+    refetchQueries: [{ query: SERVICE_DOCS_V2, variables: listVars }],
     awaitRefetchQueries: true,
   })
 
@@ -317,7 +328,11 @@ export function ServiceDocCard({ serviceDoc }: { serviceDoc: ServiceDoc }) {
         onConfirm={async () => {
           try {
             await deleteServiceDoc({
-              variables: { serviceDocId: serviceDoc.serviceDocId! },
+              variables: {
+                orgId: orgId!,
+                serviceId,
+                id: serviceDoc.serviceDocId!,
+              },
             })
             setIsDeleteConfirmationOpen(false)
             toast.success('Documentation deleted successfully')
@@ -343,13 +358,16 @@ export function ServiceDocCard({ serviceDoc }: { serviceDoc: ServiceDoc }) {
             try {
               await updateServiceDoc({
                 variables: {
-                  serviceDocId: serviceDoc.serviceDocId!,
+                  orgId: orgId!,
+                  serviceId,
+                  id: serviceDoc.serviceDocId!,
                   input: {
-                    serviceId: serviceId,
-                    fileId: formData.fileId,
                     fileName: formData.fileName,
                     fileType: formData.fileType,
                     description: formData.description,
+                    ...(formData.contentBase64
+                      ? { contentBase64: formData.contentBase64 }
+                      : {}),
                   },
                 },
               })

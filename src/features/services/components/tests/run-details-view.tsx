@@ -1,6 +1,7 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase, TestRunResult } from '@/api-v2/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { CrossButton } from '@/components/cross-button'
@@ -23,15 +24,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Play } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GET_TEST_CASES_QUERY } from '../../api/test-cases'
-import { GET_TEST_RUN_RESULTS_QUERY } from '../../api/test-run-results'
-import { GET_TEST_RUN_QUERY } from '../../api/test-runs'
+import {
+  TEST_CASES_V2,
+  TEST_RUN_RESULTS_V2,
+  TEST_RUN_V2,
+} from '../../api/tests-v2'
+import { useServiceContext } from '../../contexts/service-context'
 import { normalizeTestCaseIdForMatch } from '../../utils/normalize-test-case-id'
 import type { StatusFilter } from './run-details-header'
 import { RunDetailsHeader } from './run-details-header'
@@ -59,9 +64,12 @@ export function RunDetailsView({
   serviceId,
 }: RunDetailsViewProps) {
   const navigate = useNavigate()
+  const orgId = useCurrentOrganization().id
+  const { serviceId: contextServiceId } = useServiceContext()
+  const resolvedServiceId = serviceId ?? contextServiceId
   const [selectedPanelStep, setSelectedPanelStep] = useState<{
-    testCase: GT.TestCase
-    result: GT.TestRunResult | null
+    testCase: TestCase
+    result: TestRunResult | null
   } | null>(null)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [stepResultsPage, setStepResultsPage] = useState(1)
@@ -82,38 +90,54 @@ export function RunDetailsView({
     setStepResultsPage(1)
   }, [statusFilter, typeFilter])
 
-  const { data: runData, loading: runLoading } = useQuery(GET_TEST_RUN_QUERY, {
+  const runVars = {
+    orgId: orgId!,
+    serviceId: resolvedServiceId,
+    id: testRunId,
+  }
+  const resultsVars = {
+    orgId: orgId!,
+    serviceId: resolvedServiceId,
+    testRunId,
+  }
+  const casesVars = {
+    orgId: orgId!,
+    serviceId: resolvedServiceId,
+    testPackId: testPackId ?? '',
+  }
+
+  const { data: runData, loading: runLoading } = useQuery(TEST_RUN_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { testRunId },
-    skip: !testRunId,
+    variables: runVars,
+    skip: !orgId || !resolvedServiceId || !testRunId,
   })
 
   const { data: resultsData, loading: resultsLoading } = useQuery(
-    GET_TEST_RUN_RESULTS_QUERY,
+    TEST_RUN_RESULTS_V2,
     {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { testRunId },
-      skip: !testRunId,
+      variables: resultsVars,
+      skip: !orgId || !resolvedServiceId || !testRunId,
     }
   )
 
-  const { data: casesData, loading: casesLoading } = useQuery(
-    GET_TEST_CASES_QUERY,
-    {
-      fetchPolicy: 'cache-first',
-      variables: { testPackId: testPackId ?? '' },
-      skip: !testPackId,
-    }
-  )
+  const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES_V2, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: casesVars,
+    skip: !orgId || !resolvedServiceId || !testPackId,
+  })
 
-  const testRun = runData?.v1GetTestRun
+  const testRun = runData?.testRun
   const results = useMemo(
-    () => arrayNonNullable(resultsData?.v1GetTestRunResults),
-    [resultsData?.v1GetTestRunResults]
+    () => arrayNonNullable(resultsData?.testRunResults),
+    [resultsData?.testRunResults]
   )
   const testCases = useMemo(
-    () => arrayNonNullable(casesData?.v1GetTestCases),
-    [casesData?.v1GetTestCases]
+    () => arrayNonNullable(casesData?.testCases),
+    [casesData?.testCases]
   )
 
   const STATUS_PRIORITY: Record<string, number> = {
@@ -540,12 +564,12 @@ export function RunDetailsView({
         </AnimatePresence>
       </div>
 
-      {isRunning && serviceId && (
+      {isRunning && resolvedServiceId && (
         <div className="border-border bg-background sticky bottom-0 flex items-center justify-end gap-2 border-t px-6 py-4">
           <Button
             preset="primary"
             onClick={() =>
-              navigate(`/services/${serviceId}/tests/run/${testRunId}`)
+              navigate(`/services/${resolvedServiceId}/tests/run/${testRunId}`)
             }
           >
             <Play className="h-4 w-4" />
@@ -597,8 +621,8 @@ function TestCaseDetailsPanel({
   onClose,
   onImageClick,
 }: {
-  testCase: GT.TestCase
-  result: GT.TestRunResult | null
+  testCase: TestCase
+  result: TestRunResult | null
   onClose: () => void
   onImageClick: (url: string) => void
 }) {

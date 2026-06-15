@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
 import { Delta } from 'quill'
@@ -109,7 +109,7 @@ function AssertionList({
   )
 }
 
-function APIDefinition({ testCase }: { testCase: GT.TestCase }) {
+function APIDefinition({ testCase }: { testCase: TestCase }) {
   const api = testCase.api
   if (!api) return null
 
@@ -172,7 +172,7 @@ function APIDefinition({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function GraphQLDefinition({ testCase }: { testCase: GT.TestCase }) {
+function GraphQLDefinition({ testCase }: { testCase: TestCase }) {
   const gql = testCase.graphql
   if (!gql) return null
 
@@ -222,7 +222,7 @@ function GraphQLDefinition({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function DatabaseDefinition({ testCase }: { testCase: GT.TestCase }) {
+function DatabaseDefinition({ testCase }: { testCase: TestCase }) {
   const db = testCase.database
   if (!db) return null
 
@@ -270,7 +270,7 @@ function DatabaseDefinition({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function GRPCDefinition({ testCase }: { testCase: GT.TestCase }) {
+function GRPCDefinition({ testCase }: { testCase: TestCase }) {
   const grpc = testCase.grpc
   if (!grpc) return null
 
@@ -328,7 +328,7 @@ function GRPCDefinition({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function ManualDefinition({ testCase }: { testCase: GT.TestCase }) {
+function ManualDefinition({ testCase }: { testCase: TestCase }) {
   const manual = testCase.manual
   const steps = manual?.steps
   const sortedSteps = steps
@@ -417,7 +417,7 @@ function ManualDefinition({ testCase }: { testCase: GT.TestCase }) {
 export function TestRunExecutionDefinitionPanel({
   testCase,
 }: {
-  testCase: GT.TestCase
+  testCase: TestCase
 }) {
   const type = (testCase.type ?? '').toLowerCase()
 

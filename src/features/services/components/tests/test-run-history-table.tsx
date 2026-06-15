@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -21,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format, isValid } from 'date-fns'
@@ -28,7 +30,7 @@ import { Filter, X } from 'lucide-react'
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GET_TEST_RUNS_SUMMARY_QUERY } from '../../api/test-runs'
+import { TEST_RUNS_SUMMARY_V2 } from '../../api/tests-v2'
 import { useServiceContext } from '../../contexts/service-context'
 
 type TestRunSummary = {
@@ -60,6 +62,7 @@ const STATUS_OPTIONS = ['running', 'completed', 'aborted', 'cancelled'] as const
 export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   const navigate = useNavigate()
   const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [executedBy, setExecutedBy] = useState('')
   const [showFilters, setShowFilters] = useState(false)
@@ -67,17 +70,22 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   const [pageSize, setPageSize] = useState(10)
 
   const { data: runsData, loading: runsLoading } = useQuery(
-    GET_TEST_RUNS_SUMMARY_QUERY,
+    TEST_RUNS_SUMMARY_V2,
     {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { testPackId: testPackId! },
-      skip: !testPackId,
+      variables: {
+        orgId: orgId!,
+        serviceId,
+        testPackId: testPackId!,
+      },
+      skip: !orgId || !serviceId || !testPackId,
     }
   )
 
   const testRuns = useMemo(
-    () => arrayNonNullable(runsData?.v1GetTestRunsSummary),
-    [runsData?.v1GetTestRunsSummary]
+    () => arrayNonNullable(runsData?.testRunsSummary),
+    [runsData?.testRunsSummary]
   )
 
   const filteredAndSortedRuns = useMemo(() => {

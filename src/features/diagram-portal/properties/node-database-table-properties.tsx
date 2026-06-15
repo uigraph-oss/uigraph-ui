@@ -3,7 +3,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { GET_SERVICE_DB_QUERY } from '@/features/services/api/service-db'
+import { clientV2 } from '@/api-v2/client'
+import {
+  SERVICE_DB_V2,
+  serviceDBToLegacy,
+} from '@/features/services/api/service-db-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
@@ -311,17 +316,22 @@ function NodeDatabaseTablePropertiesLocalSource() {
 function NodeDatabaseTablePropertiesRemoteSource() {
   const { data } = useSingleSelectedNode<TDatabaseTableSQLNode>()
   const serviceTable = data?.serviceTable
+  const orgId = useCurrentOrganization().id
   const [isCodeMode, setIsCodeMode] = useState(false)
-  const { data: serviceDbData, loading } = useQuery(GET_SERVICE_DB_QUERY, {
+  const { data: serviceDbData, loading } = useQuery(SERVICE_DB_V2, {
+    client: clientV2,
     variables: {
-      serviceId: serviceTable?.serviceId,
-      serviceDBId: serviceTable?.serviceDbId,
+      orgId: orgId!,
+      serviceId: serviceTable?.serviceId ?? '',
+      id: serviceTable?.serviceDbId ?? '',
     },
-    skip: !serviceTable,
+    skip: !orgId || !serviceTable?.serviceId || !serviceTable?.serviceDbId,
     fetchPolicy: 'cache-first',
   })
 
-  const serviceDb = serviceDbData?.v1GetServiceDB?.[0]
+  const serviceDb = serviceDbData?.serviceDB
+    ? serviceDBToLegacy(serviceDbData.serviceDB)
+    : undefined
 
   // Parse noSQLSchema for NoSQL dialects
   const noSQLContent = useMemo(() => {

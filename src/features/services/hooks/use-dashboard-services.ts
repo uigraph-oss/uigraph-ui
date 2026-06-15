@@ -1,66 +1,69 @@
-import { useOrganizationContext } from '@/contexts'
+import { clientV2 } from '@/api-v2/client'
+import { GET_DIAGRAM_ORG_USERS } from '@/features/dashboard-diagrams/api/teams'
+import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
 import {
-  GET_DIAGRAM_ORG_USERS,
-  GET_DIAGRAM_TEAMS,
-} from '@/features/dashboard-diagrams/api/teams'
-import {
-  GET_SERVICE_STATS_QUERY,
+  SERVICE_STATS_V2,
   type ServiceStatsRow,
-} from '@/features/services/api/service-stats'
+} from '@/features/services/api/service-stats-v2'
 import {
-  CREATE_SERVICE_MUTATION,
-  DELETE_SERVICE_MUTATION,
-  GET_SERVICES_QUERY,
-  UPDATE_SERVICE_MUTATION,
-} from '@/features/services/api/services'
+  CREATE_SERVICE_V2,
+  DELETE_SERVICE_V2,
+  SERVICES_V2,
+  UPDATE_SERVICE_V2,
+} from '@/features/services/api/services-v2'
+import { useCurrentOrganization, useAuthenticatedUser } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 
 export function useDashboardServicesList(serviceId?: string) {
-  const { organizationId, accountId } = useOrganizationContext()
+  const organization = useCurrentOrganization()
+  const orgId = organization.id
+  const accountId = useAuthenticatedUser().userId
 
-  const { data, loading } = useQuery(GET_SERVICES_QUERY, {
-    variables: { organizationId, serviceId },
+  const servicesVariables = { orgId: orgId! }
+
+  const { data, loading } = useQuery(SERVICES_V2, {
+    client: clientV2,
+    variables: servicesVariables,
     fetchPolicy: 'cache-and-network',
+    skip: !orgId,
   })
 
-  const { data: statsData, loading: statsLoading } = useQuery(
-    GET_SERVICE_STATS_QUERY,
-    {
-      variables: { organizationId, serviceId },
-      fetchPolicy: 'cache-and-network',
-      skip: !organizationId,
-      // Safe rollout if `v1GetServiceStats` is not on the API yet — cards show zeros.
-      errorPolicy: 'ignore',
-    }
-  )
+  const { data: statsData, loading: statsLoading } = useQuery(SERVICE_STATS_V2, {
+    client: clientV2,
+    variables: { orgId: orgId!, serviceId },
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    errorPolicy: 'ignore',
+  })
 
   const statsByServiceId = useMemo(() => {
     const m = new Map<string, ServiceStatsRow>()
-    for (const row of arrayNonNullable(statsData?.v1GetServiceStats)) {
+    for (const row of arrayNonNullable(statsData?.serviceStats)) {
       if (row?.serviceId) {
         m.set(row.serviceId, row)
       }
     }
     return m
-  }, [statsData?.v1GetServiceStats])
+  }, [statsData?.serviceStats])
 
-  const teamsData = useQuery(GET_DIAGRAM_TEAMS, {
+  const teamsData = useQuery(TEAMS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
-    skip: !organizationId,
+    variables: { orgId: orgId! },
+    skip: !orgId,
   })
 
   const orgUsersData = useQuery(GET_DIAGRAM_ORG_USERS, {
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
-    skip: !organizationId,
+    variables: { organizationId: orgId },
+    skip: !orgId,
   })
 
   const teams = useMemo(
-    () => arrayNonNullable(teamsData.data?.GetTeam ?? []),
-    [teamsData.data?.GetTeam]
+    () => arrayNonNullable(teamsData.data?.teams ?? []),
+    [teamsData.data?.teams]
   )
 
   const orgUsers = useMemo(
@@ -73,7 +76,6 @@ export function useDashboardServicesList(serviceId?: string) {
     return me?.teamId ?? null
   }, [orgUsers, accountId])
 
-  // undefined = not yet initialised, null = All Teams, string = specific team
   const [selectedTeamId, setSelectedTeamId] = useState<
     string | null | undefined
   >(undefined)
@@ -84,24 +86,27 @@ export function useDashboardServicesList(serviceId?: string) {
     return currentUserTeamId
   }, [selectedTeamId, currentUserTeamId, orgUsersData.loading])
 
-  const [createService] = useMutation(CREATE_SERVICE_MUTATION, {
+  const [createService] = useMutation(CREATE_SERVICE_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_SERVICES_QUERY, GET_SERVICE_STATS_QUERY],
+    refetchQueries: [{ query: SERVICES_V2, variables: servicesVariables }],
   })
 
-  const [updateService] = useMutation(UPDATE_SERVICE_MUTATION, {
+  const [updateService] = useMutation(UPDATE_SERVICE_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_SERVICES_QUERY, GET_SERVICE_STATS_QUERY],
+    refetchQueries: [{ query: SERVICES_V2, variables: servicesVariables }],
   })
 
-  const [deleteService] = useMutation(DELETE_SERVICE_MUTATION, {
+  const [deleteService] = useMutation(DELETE_SERVICE_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_SERVICES_QUERY, GET_SERVICE_STATS_QUERY],
+    refetchQueries: [{ query: SERVICES_V2, variables: servicesVariables }],
   })
 
   const allServices = useMemo(
-    () => arrayNonNullable(data?.v1GetServices),
-    [data?.v1GetServices]
+    () => arrayNonNullable(data?.services),
+    [data?.services]
   )
 
   const services = useMemo(() => {
@@ -110,8 +115,9 @@ export function useDashboardServicesList(serviceId?: string) {
   }, [allServices, resolvedTeamId])
 
   return {
-    isServicesLoading: loading && !data?.v1GetServices,
-    isStatsLoading: statsLoading && !statsData?.v1GetServiceStats,
+    orgId,
+    isServicesLoading: loading && !data?.services,
+    isStatsLoading: statsLoading && !statsData?.serviceStats,
     services,
     allServices,
     statsByServiceId,

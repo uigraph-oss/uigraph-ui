@@ -1,14 +1,18 @@
 'use client'
 
 import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
-import { GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY } from '@/features/services/api/api-endpoints'
+import { clientV2 } from '@/api-v2/client'
+import { API_ENDPOINTS_V2 } from '@/features/services/api/api-endpoints-v2'
+import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import {
   deriveRestEndpointOptions,
   parseApiSpecValue,
 } from '@/features/services/components/tests/modals/configure-test-case-modal/api-selection-utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { Delta } from 'quill'
@@ -180,7 +184,7 @@ function Overview({
   testCase,
   testPack,
 }: {
-  testCase: GT.TestCase
+  testCase: TestCase
   testPack: GT.TestPack | null
 }) {
   const reservedTags = new Set([
@@ -236,26 +240,32 @@ function Overview({
   )
 }
 
-function APIDetails({ testCase }: { testCase: GT.TestCase }) {
+function APIDetails({ testCase }: { testCase: TestCase }) {
+  const orgId = useCurrentOrganization().id
   const api = testCase.api
-  const { apiGroupId } = parseApiSpecValue(api?.apiSpecId)
+  const { serviceId, apiGroupId } = parseApiSpecValue(api?.apiSpecId)
 
-  const { data: endpointsData } = useQuery(
-    GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
-    {
-      fetchPolicy: 'cache-first',
-      variables: { serviceApiGroupId: apiGroupId },
-      skip: !apiGroupId,
-    }
-  )
+  const { data: endpointsData } = useQuery(API_ENDPOINTS_V2, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: {
+      orgId: orgId!,
+      serviceId,
+      apiGroupId,
+    },
+    skip: !orgId || !serviceId || !apiGroupId,
+  })
 
   const endpointLabel = useMemo(() => {
     if (!api?.operationId || !endpointsData) return null
     const options = deriveRestEndpointOptions(
-      arrayNonNullable(endpointsData.v1GetAPIEndpointsWithMeta)
+      endpointsToLegacyWithMeta(
+        arrayNonNullable(endpointsData.apiEndpoints),
+        orgId!
+      )
     )
     return options.find((o) => o.value === api.operationId)?.label ?? null
-  }, [api?.operationId, endpointsData])
+  }, [api?.operationId, endpointsData, orgId])
 
   if (!api) return null
 
@@ -373,7 +383,7 @@ function APIDetails({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function GraphQLDetails({ testCase }: { testCase: GT.TestCase }) {
+function GraphQLDetails({ testCase }: { testCase: TestCase }) {
   const gql = testCase.graphql
   if (!gql) return null
 
@@ -426,7 +436,7 @@ function GraphQLDetails({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function DatabaseDetails({ testCase }: { testCase: GT.TestCase }) {
+function DatabaseDetails({ testCase }: { testCase: TestCase }) {
   const db = testCase.database
   if (!db) return null
 
@@ -475,7 +485,7 @@ function DatabaseDetails({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function GRPCDetails({ testCase }: { testCase: GT.TestCase }) {
+function GRPCDetails({ testCase }: { testCase: TestCase }) {
   const grpc = testCase.grpc
   if (!grpc) return null
 
@@ -543,7 +553,7 @@ function GRPCDetails({ testCase }: { testCase: GT.TestCase }) {
   )
 }
 
-function ManualDetails({ testCase }: { testCase: GT.TestCase }) {
+function ManualDetails({ testCase }: { testCase: TestCase }) {
   const manual = testCase.manual
   const steps = manual?.steps
     ? [...manual.steps].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
@@ -646,7 +656,7 @@ function ManualDetails({ testCase }: { testCase: GT.TestCase }) {
 }
 
 type TestInspectorDetailsProps = {
-  testCase: GT.TestCase
+  testCase: TestCase
   testPack: GT.TestPack | null
 }
 

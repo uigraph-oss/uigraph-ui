@@ -1,4 +1,5 @@
-import { Service, UpdateServiceInput } from '@/api/.gql/graphql'
+import type { ServiceStatsRow } from '@/features/services/api/service-stats'
+import type { DashboardService } from '@/features/services/api/services-v2'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
@@ -15,7 +16,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import type { ServiceStatsRow } from '@/features/services/api/service-stats'
 import { cn } from '@/lib/utils'
 import { objectOmitNull } from 'daily-code'
 import { format } from 'date-fns'
@@ -25,12 +25,21 @@ import { toast } from 'sonner'
 import { ConfigureServiceModal } from './configure-service-modal'
 
 interface ServiceCardProps {
-  service: Service
+  service: DashboardService
   index?: number
   stats?: ServiceStatsRow
   statsLoading?: boolean
   deleteService: () => Promise<unknown>
-  updateService: (service: UpdateServiceInput) => Promise<unknown>
+  updateService: (data: {
+    name: string
+    category: string
+    description: string
+    teamId?: string
+    labels?: string[]
+    gitRepoUrl?: string
+    jiraProjectUrl?: string
+    slackChannelUrl?: string
+  }) => Promise<unknown>
 }
 
 // Category → top band color: semantic, tells you what kind of service this is
@@ -91,7 +100,7 @@ function getRepoHost(url: string): string {
   }
 }
 
-function getSubtitle(service: Service): string | null {
+function getSubtitle(service: DashboardService): string | null {
   if (service.gitRepoUrl) return getRepoHost(service.gitRepoUrl)
   if (service.jiraProjectUrl) return getRepoHost(service.jiraProjectUrl)
   if (service.slackChannelUrl) return service.slackChannelUrl
@@ -120,7 +129,7 @@ export function ServiceCard({
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
   const bandColor = getCategoryColor(service.category)
-  const avatarColor = getAvatarColor(service.serviceId || service.name || '')
+  const avatarColor = getAvatarColor(service.id || service.name || '')
   const subtitle = getSubtitle(service)
   // Labels only — skip category (already shown via color) and unreadable values
   const labelChips = [
@@ -155,7 +164,7 @@ export function ServiceCard({
       }}
     >
       <Link
-        to={`/services/${service.serviceId}`}
+        to={`/services/${service.id}`}
         className="relative flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-[#E8EAEC] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.2),0_6px_20px_rgba(0,0,0,0.08)] hover:ring-[#015AEB]"
       >
         {/* Category band — semantic color (Backend=blue, Frontend=green, etc.) */}
@@ -332,10 +341,7 @@ export function ServiceCard({
             description: service.description || '',
           })}
           onSubmit={async (data) => {
-            await updateService({
-              ...data,
-              organizationId: service.organizationId!,
-            })
+            await updateService(data)
             toast.success('Service updated')
             setIsUpdateModalOpen(false)
           }}

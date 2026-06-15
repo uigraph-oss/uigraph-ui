@@ -8,6 +8,8 @@ export const DIAGRAM_V2 = graphql(`
       folderId
       teamId
       name
+      previewAssetId
+      previewContentHash
       createdAt
       updatedAt
     }

@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
@@ -10,14 +11,16 @@ import {
   DashboardSectionHeader,
 } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  CREATE_SERVICE_DIAGRAM_MUTATION,
-  GET_SERVICE_DIAGRAMS_WITH_META_QUERY,
-} from '../../api/service-diagram'
+  CREATE_SERVICE_DIAGRAM_V2,
+  SERVICE_DIAGRAMS_V2,
+  serviceDiagramToLegacyWithMeta,
+} from '../../api/service-diagram-v2'
 import { useServiceContext } from '../../contexts/service-context'
 import { FlowDiagramCard } from './flow-diagram-card'
 
@@ -41,29 +44,35 @@ function getPageWindow(current: number, total: number): (number | '...')[] {
 }
 
 export function DashboardServiceDiagrams() {
-  const { serviceId } = useServiceContext()
+  const { serviceId, service } = useServiceContext()
+  const orgId = useCurrentOrganization().id
   const [page, setPage] = useState(0)
 
+  const listVars = { orgId: orgId!, serviceId }
+
   const { data, loading: isLoadingServiceDiagrams } = useQuery(
-    GET_SERVICE_DIAGRAMS_WITH_META_QUERY,
+    SERVICE_DIAGRAMS_V2,
     {
+      client: clientV2,
       errorPolicy: 'ignore',
       fetchPolicy: 'cache-first',
-      variables: { serviceId },
+      variables: listVars,
+      skip: !orgId || !serviceId,
     }
   )
 
   const [createServiceDiagram, { loading: isCreatingServiceDiagram }] =
-    useMutation(CREATE_SERVICE_DIAGRAM_MUTATION, {
+    useMutation(CREATE_SERVICE_DIAGRAM_V2, {
+      client: clientV2,
       awaitRefetchQueries: true,
-      refetchQueries: [GET_SERVICE_DIAGRAMS_WITH_META_QUERY],
+      refetchQueries: [{ query: SERVICE_DIAGRAMS_V2, variables: listVars }],
     })
 
   const serviceDiagramsWithMeta = useMemo(() => {
-    return arrayNonNullable(data?.v1GetServiceDiagramsWithMeta).filter(
-      (s) => s.diagram?.diagramId
-    )
-  }, [data])
+    return arrayNonNullable(data?.serviceDiagrams)
+      .map(serviceDiagramToLegacyWithMeta)
+      .filter((s) => s.diagram?.diagramId)
+  }, [data?.serviceDiagrams])
 
   const totalPages = Math.ceil(serviceDiagramsWithMeta.length / PAGE_SIZE)
   const pageItems = serviceDiagramsWithMeta.slice(
@@ -74,10 +83,18 @@ export function DashboardServiceDiagrams() {
   async function handleCreateServiceDiagram() {
     try {
       const { data } = await createServiceDiagram({
-        variables: { input: { serviceId } },
+        variables: {
+          orgId: orgId!,
+          serviceId,
+          input: {
+            name: service?.name ? `${service.name} Diagram` : 'Untitled Diagram',
+            content: '{}',
+            ...(service?.teamId ? { teamId: service.teamId } : {}),
+          },
+        },
       })
 
-      const diagramId = data?.v1CreateServiceDiagram?.serviceDiagramDiagramId
+      const diagramId = data?.createServiceDiagram?.diagramId
       if (!diagramId) throw new Error()
 
       window.open(`/diagram/${diagramId}`, '_blank')

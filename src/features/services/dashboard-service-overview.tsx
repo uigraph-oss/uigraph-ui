@@ -6,6 +6,8 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { toUpdateServiceInput } from '@/features/services/api/services-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { objectOmitNull } from 'daily-code'
 import { useState } from 'react'
 import { GoGear } from 'react-icons/go'
@@ -21,6 +23,7 @@ interface DashboardServiceOverviewProps {
 export function DashboardServiceOverview({
   serviceId,
 }: DashboardServiceOverviewProps) {
+  const orgId = useCurrentOrganization().id
   const { updateService, service } = useServiceContext()
   const [isUpdateServiceModalOpen, setIsUpdateServiceModalOpen] =
     useState(false)
@@ -58,8 +61,9 @@ export function DashboardServiceOverview({
           onSubmit={async (data) => {
             await updateService({
               variables: {
-                serviceId,
-                input: { ...data, organizationId: service.organizationId! },
+                orgId,
+                id: serviceId,
+                input: toUpdateServiceInput(data),
               },
             })
 

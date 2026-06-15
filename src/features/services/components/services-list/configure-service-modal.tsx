@@ -10,9 +10,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { useOrganizationContext } from '@/contexts'
+import { clientV2 } from '@/api-v2/client'
 import { TagInput } from '@/features/component-meta'
-import { GET_TEAM } from '@/features/dashboard-settings/api'
+import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -63,9 +64,13 @@ export function ConfigureServiceModal({
   defaultValues,
   onSubmit,
 }: ConfigureServiceModalProps) {
-  const { organizationId } = useOrganizationContext()
-  const teamRes = useQuery(GET_TEAM, { variables: { organizationId } })
-  const teams = arrayNonNullable(teamRes.data?.GetTeam)
+  const orgId = useCurrentOrganization().id
+  const teamRes = useQuery(TEAMS_V2, {
+    client: clientV2,
+    variables: { orgId: orgId! },
+    skip: !orgId,
+  })
+  const teams = arrayNonNullable(teamRes.data?.teams ?? [])
 
   const form = useForm({
     resolver: zodResolver(configureServiceSchema),
@@ -411,13 +416,8 @@ export function ConfigureServiceModal({
                   </SelectItem>
 
                   {teams.map((team) => (
-                    <SelectItem key={team.teamId} value={team.teamId ?? ''}>
-                      <div className="flex w-full items-center justify-between">
-                        <span>{team.teamName}</span>
-                        <span className="ml-2 text-xs text-gray-500">
-                          ({team.memberCount} members)
-                        </span>
-                      </div>
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

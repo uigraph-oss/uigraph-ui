@@ -1,28 +1,33 @@
+import { clientV2 } from '@/api-v2/client'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
-import { GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY } from '../api/api-endpoints'
+import { API_ENDPOINTS_V2 } from '../api/api-endpoints-v2'
+import { endpointsToLegacyWithMeta } from '../api/api-v2-adapters'
 
 export function useVersionEndpoints(
+  serviceId: string,
   serviceApiGroupId: string | null,
-  versionNumber?: number | null
+  _versionNumber?: number | null
 ) {
-  const { data, loading } = useQuery(
-    GET_SERVICE_API_ENDPOINTS_WITH_META_QUERY,
-    {
-      variables: {
-        serviceApiGroupId: serviceApiGroupId!,
-        versionNumber: versionNumber ?? null,
-      },
-      skip: !serviceApiGroupId,
-      fetchPolicy: 'cache-first',
-    }
-  )
+  const orgId = useCurrentOrganization().id
 
-  const allEndpoints = useMemo(
-    () => arrayNonNullable(data?.v1GetAPIEndpointsWithMeta),
-    [data?.v1GetAPIEndpointsWithMeta]
-  )
+  const { data, loading } = useQuery(API_ENDPOINTS_V2, {
+    client: clientV2,
+    variables: {
+      orgId: orgId!,
+      serviceId,
+      apiGroupId: serviceApiGroupId!,
+    },
+    skip: !orgId || !serviceApiGroupId,
+    fetchPolicy: 'cache-first',
+  })
+
+  const allEndpoints = useMemo(() => {
+    const raw = arrayNonNullable(data?.apiEndpoints)
+    return endpointsToLegacyWithMeta(raw, orgId!)
+  }, [data?.apiEndpoints, orgId])
 
   return { allEndpoints, loading }
 }

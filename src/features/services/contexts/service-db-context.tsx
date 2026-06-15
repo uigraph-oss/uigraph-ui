@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -8,64 +9,156 @@ import {
   DashboardSectionHeader,
 } from '@/features/dashboard'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { ArrowLeft } from 'lucide-react'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
-  CREATE_SERVICE_DB_VERSION_MUTATION,
-  GET_SERVICE_AND_DB_VERSIONS_QUERY,
-  RESTORE_SERVICE_DB_VERSION_MUTATION,
-} from '../api/service-db-version'
+  SERVICE_DB_V2,
+  serviceDBToLegacy,
+} from '../api/service-db-v2'
+import {
+  CREATE_SERVICE_DB_VERSION_V2,
+  RESTORE_SERVICE_DB_VERSION_V2,
+  SERVICE_DB_VERSIONS_V2,
+  serviceDBVersionToLegacyWithDb,
+  toCreateServiceDBVersionInput,
+} from '../api/service-db-version-v2'
 import { useServiceContext } from './service-context'
+
+type CreateServiceDbVersionInput = Parameters<
+  typeof toCreateServiceDBVersionInput
+>[0]
 
 export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
   () => {
     const { serviceId } = useServiceContext()
+    const orgId = useCurrentOrganization().id
     const { dbId } = useParams() as { dbId: string }
 
     const { selectedDbVersionId, setSelectedDbVersionId } = useDBVersionQuery()
 
-    const { data, loading } = useQuery(GET_SERVICE_AND_DB_VERSIONS_QUERY, {
+    const dbVars = {
+      orgId: orgId!,
+      serviceId,
+      id: dbId,
+    }
+
+    const versionVars = {
+      orgId: orgId!,
+      serviceId,
+      serviceDbId: dbId,
+    }
+
+    const { data, loading } = useQuery(SERVICE_DB_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: {
-        serviceId: serviceId,
-        serviceDBId: dbId,
-      },
+      variables: dbVars,
+      skip: !orgId || !serviceId || !dbId,
     })
 
-    const { serviceDb, dbVersions } = useMemo(() => {
-      return {
-        serviceDb: data?.v1GetServiceDB?.[0] ?? null,
-        dbVersions: arrayNonNullable(data?.v1GetServiceDBVersions),
-      }
-    }, [data])
-
-    const [restoreServiceDbVersion] = useMutation(
-      RESTORE_SERVICE_DB_VERSION_MUTATION,
+    const { data: versionsData, loading: versionsLoading } = useQuery(
+      SERVICE_DB_VERSIONS_V2,
       {
-        awaitRefetchQueries: true,
-        refetchQueries: [GET_SERVICE_AND_DB_VERSIONS_QUERY],
+        client: clientV2,
+        fetchPolicy: 'cache-first',
+        variables: versionVars,
+        skip: !orgId || !serviceId || !dbId,
       }
     )
 
-    const [createServiceDbVersion] = useMutation(
-      CREATE_SERVICE_DB_VERSION_MUTATION,
+    const liveServiceDb = useMemo(() => {
+      return data?.serviceDB ? serviceDBToLegacy(data.serviceDB) : null
+    }, [data?.serviceDB])
+
+    const dbVersions = useMemo(() => {
+      const dbMeta = liveServiceDb
+        ? {
+            dbName: liveServiceDb.dbName,
+            dbType: liveServiceDb.dbType,
+            dialect: liveServiceDb.dialect,
+          }
+        : undefined
+
+      return arrayNonNullable(versionsData?.serviceDBVersions).map((version) =>
+        serviceDBVersionToLegacyWithDb(version, serviceId, dbMeta)
+      )
+    }, [liveServiceDb, serviceId, versionsData?.serviceDBVersions])
+
+    const refetchQueries = [
+      { query: SERVICE_DB_V2, variables: dbVars },
+      { query: SERVICE_DB_VERSIONS_V2, variables: versionVars },
+    ]
+
+    const [restoreServiceDbVersionMutation] = useMutation(
+      RESTORE_SERVICE_DB_VERSION_V2,
       {
+        client: clientV2,
         awaitRefetchQueries: true,
-        refetchQueries: [GET_SERVICE_AND_DB_VERSIONS_QUERY],
+        refetchQueries,
       }
+    )
+
+    const [createServiceDbVersionMutation] = useMutation(
+      CREATE_SERVICE_DB_VERSION_V2,
+      {
+        client: clientV2,
+        awaitRefetchQueries: true,
+        refetchQueries,
+      }
+    )
+
+    const restoreServiceDbVersion = useCallback(
+      async ({
+        versionId,
+      }: {
+        versionId: string
+      }) => {
+        await restoreServiceDbVersionMutation({
+          variables: {
+            orgId: orgId!,
+            serviceId,
+            serviceDbId: dbId,
+            versionId,
+          },
+        })
+      },
+      [restoreServiceDbVersionMutation, orgId, serviceId, dbId]
+    )
+
+    const createServiceDbVersion = useCallback(
+      async ({ input }: { input: CreateServiceDbVersionInput }) => {
+        await createServiceDbVersionMutation({
+          variables: {
+            orgId: orgId!,
+            serviceId,
+            serviceDbId: dbId,
+            input: toCreateServiceDBVersionInput(input),
+          },
+        })
+      },
+      [createServiceDbVersionMutation, orgId, serviceId, dbId]
     )
 
     const currentDbVersion = useMemo(() => {
-      const versionDb = selectedDbVersionId
-        ? dbVersions.find((v) => v.versionId === selectedDbVersionId)?.serviceDB
-        : dbVersions.at(0)?.serviceDB
+      if (selectedDbVersionId) {
+        return (
+          dbVersions.find((v) => v.versionId === selectedDbVersionId)
+            ?.serviceDB ??
+          liveServiceDb ??
+          null
+        )
+      }
 
-      return versionDb ?? serviceDb ?? null
-    }, [dbVersions, selectedDbVersionId, serviceDb])
+      // Latest view uses the live service DB record (schema_json on service_dbs).
+      return liveServiceDb ?? dbVersions.at(0)?.serviceDB ?? null
+    }, [dbVersions, selectedDbVersionId, liveServiceDb])
+
+    const isServiceDbLoading =
+      (loading || versionsLoading) && !data?.serviceDB
 
     return {
       dbId,
@@ -73,7 +166,7 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
 
       serviceDb: currentDbVersion!,
       dbVersions,
-      isServiceDbLoading: loading && !data?.v1GetServiceDB,
+      isServiceDbLoading,
 
       selectedDbVersionId,
       setSelectedDbVersionId,

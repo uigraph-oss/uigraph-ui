@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase, TestRunResult } from '@/api-v2/.gql/graphql'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
@@ -34,8 +34,8 @@ function toDelta(v: string | null | undefined): Delta | string {
 }
 
 type RunStepResultRowProps = {
-  testCase: GT.TestCase
-  result: GT.TestRunResult | null
+  testCase: TestCase
+  result: TestRunResult | null
   expanded: boolean
   onToggleExpand: () => void
   onImageClick: (url: string) => void
@@ -177,7 +177,7 @@ function EvidenceSection({
   result,
   onImageClick,
 }: {
-  result: GT.TestRunResult
+  result: TestRunResult
   onImageClick: (url: string) => void
 }) {
   if (!result.screenshotUrls?.length) return null
@@ -224,8 +224,8 @@ function ResultTabContent({
   onImageClick,
   getStatusCodeBadge,
 }: {
-  testCase: GT.TestCase
-  result: GT.TestRunResult
+  testCase: TestCase
+  result: TestRunResult
   onImageClick: (url: string) => void
   getStatusCodeBadge: (statusCode: number) => {
     label: string
@@ -456,8 +456,8 @@ function ResultTabContent({
 }
 
 function expandedPanelContent(
-  testCase: GT.TestCase,
-  result: GT.TestRunResult | null,
+  testCase: TestCase,
+  result: TestRunResult | null,
   expandedTab: 'result' | 'details',
   setExpandedTab: (t: 'result' | 'details') => void,
   onImageClick: (url: string) => void
@@ -520,8 +520,8 @@ export function RunStepResultExpandedContent({
   result,
   onImageClick,
 }: {
-  testCase: GT.TestCase
-  result: GT.TestRunResult | null
+  testCase: TestCase
+  result: TestRunResult | null
   onImageClick: (url: string) => void
 }) {
   const [expandedTab, setExpandedTab] = useState<'result' | 'details'>('result')
@@ -540,8 +540,8 @@ export function RunStepResultTableRowCells({
   result,
   expanded,
 }: {
-  testCase: GT.TestCase
-  result: GT.TestRunResult | null
+  testCase: TestCase
+  result: TestRunResult | null
   expanded: boolean
 }) {
   const rawStatus = (result?.status ?? '').trim().toLowerCase()

@@ -1,11 +1,11 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { CrossButton } from '@/components/cross-button'
 import { Badge } from '@/components/ui/badge'
 
 type TestInspectorHeaderProps = {
-  testCase: GT.TestCase
+  testCase: TestCase
   onClose: () => void
 }
 

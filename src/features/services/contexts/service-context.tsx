@@ -1,41 +1,42 @@
 'use client'
 
-import { privateClient } from '@/api'
-import { useOrganizationContext } from '@/contexts'
+import { clientV2 } from '@/api-v2/client'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
-import { GET_SERVICES_QUERY } from '../api/services'
+import { SERVICES_V2 } from '../api/services-v2'
 import { useDashboardServicesList } from '../hooks/use-dashboard-services'
 
 export const [ServiceContextProvider, useServiceContext] = createContext(
   ({ serviceId }: { serviceId: string }) => {
-    const { organizationId } = useOrganizationContext()
+    const organization = useCurrentOrganization()
+    const orgId = organization.id
     const services = useDashboardServicesList(serviceId)
 
     const service = useMemo(() => {
       const fetchedService = services.services.find(
-        (service) => service.serviceId === serviceId
+        (service) => service.id === serviceId
       )
 
       if (!fetchedService) {
-        const cachedServices = privateClient.readQuery({
-          query: GET_SERVICES_QUERY,
-          variables: { organizationId },
+        const cachedServices = clientV2.readQuery({
+          query: SERVICES_V2,
+          variables: { orgId },
         })
 
-        const cachedService = cachedServices?.v1GetServices?.find(
-          (service) => service?.serviceId === serviceId
+        const cachedService = cachedServices?.services?.find(
+          (service) => service?.id === serviceId
         )
 
         return cachedService
       }
 
       return fetchedService
-    }, [services.services, serviceId, organizationId])
+    }, [services.services, serviceId, orgId])
 
     return {
       service: service!,
-      serviceId: service?.serviceId as string,
+      serviceId: service?.id as string,
 
       isServiceLoading: services.isServicesLoading && !service,
 

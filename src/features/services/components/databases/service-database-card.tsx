@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -12,8 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { GET_DIAGRAM_QUERY } from '@/features/diagram-portal/api'
+import { DIAGRAM_V2 } from '@/features/diagram-portal/api/diagram-v2'
+import { assetUrl } from '@/helpers/asset-url'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { formatDistanceToNow } from 'date-fns'
@@ -22,38 +24,54 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DB_MUTATION,
-  GET_SERVICE_DB_QUERY,
-} from '../../api/service-db'
+  DELETE_SERVICE_DB_V2,
+  SERVICE_DBS_V2,
+  serviceDBToLegacy,
+} from '../../api/service-db-v2'
 import { useServiceContext } from '../../contexts/service-context'
 
 type ServiceDatabaseCardProps = {
-  db: GT.ServiceDb
+  db: ReturnType<typeof serviceDBToLegacy>
 }
 
 export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
   const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  const { data: diagramData } = useQuery(GET_DIAGRAM_QUERY, {
-    skip: !db.dbDiagramId,
+  const listVars = { orgId: orgId!, serviceId }
+
+  const { data: diagramData } = useQuery(DIAGRAM_V2, {
+    client: clientV2,
+    skip: !db.dbDiagramId || !orgId,
     fetchPolicy: 'cache-first',
     variables: {
-      diagramId: db.dbDiagramId!,
+      orgId: orgId!,
+      id: db.dbDiagramId!,
     },
   })
 
-  const [deleteServiceDb] = useMutation(DELETE_SERVICE_DB_MUTATION, {
+  const previewSrc = assetUrl(
+    diagramData?.diagram?.previewAssetId,
+    diagramData?.diagram?.previewContentHash
+  )
+
+  const [deleteServiceDb] = useMutation(DELETE_SERVICE_DB_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_SERVICE_DB_QUERY],
+    refetchQueries: [{ query: SERVICE_DBS_V2, variables: listVars }],
   })
 
   async function handleDelete() {
     if (!db.serviceDBId) return
     try {
       await deleteServiceDb({
-        variables: { serviceDBId: db.serviceDBId },
+        variables: {
+          orgId: orgId!,
+          serviceId,
+          id: db.serviceDBId,
+        },
       })
       toast.success('Database deleted successfully')
       setDeleteOpen(false)
@@ -112,7 +130,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
         >
           <AvatarImage
             alt={db.dbName ?? ''}
-            src={diagramData?.v1GetDiagram?.previewImageFileId ?? ''}
+            src={previewSrc ?? ''}
             className="object-contain"
           />
           <AvatarFallback className="bg-background/60 rounded-none">

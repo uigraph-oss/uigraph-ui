@@ -1,71 +1,80 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useOrganizationContext } from '@/contexts'
 import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import {
+  API_GROUPS_V2,
+  CREATE_API_GROUP_V2,
+  DELETE_API_GROUP_V2,
+  SYNC_API_GROUP_V2,
+  UPDATE_API_GROUP_V2,
+  protocolToV2,
+  readSpecFile,
+} from '@/features/services/api/api-endpoints-v2'
+import { apiGroupToLegacy } from '@/features/services/api/api-v2-adapters'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import {
-  CREATE_SERVICE_API_GROUP_MUTATION,
-  DELETE_SERVICE_API_GROUP_MUTATION,
-  GET_SERVICE_API_GROUPS_QUERY,
-  UPDATE_SERVICE_API_GROUP_MUTATION,
-} from '../../api/api-endpoints'
 import { useServiceContext } from '../../contexts/service-context'
 import { ConfigureApiGroupModal } from './modals/configure-api-group-modal'
 import { ServiceApiEndpointGroupCard } from './service-api-group-card'
 
 export function DashboardServiceApis() {
   const { serviceId } = useServiceContext()
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
   const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeProtocol, setActiveProtocol] = useState<string | null>(null)
 
-  const { data, loading } = useQuery(GET_SERVICE_API_GROUPS_QUERY, {
+  const listVars = { orgId: orgId!, serviceId }
+
+  const { data, loading } = useQuery(API_GROUPS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { serviceId },
+    skip: !orgId,
+    variables: listVars,
   })
 
-  const [createServiceApiGroup] = useMutation(
-    CREATE_SERVICE_API_GROUP_MUTATION,
-    {
-      awaitRefetchQueries: true,
-      refetchQueries: [GET_SERVICE_API_GROUPS_QUERY],
-    }
-  )
+  const [createServiceApiGroup] = useMutation(CREATE_API_GROUP_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+  })
 
-  const [updateServiceApiGroup] = useMutation(
-    UPDATE_SERVICE_API_GROUP_MUTATION,
-    {
-      awaitRefetchQueries: true,
-      refetchQueries: [GET_SERVICE_API_GROUPS_QUERY],
-    }
-  )
+  const [updateServiceApiGroup] = useMutation(UPDATE_API_GROUP_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+  })
 
-  const [deleteServiceApiGroup] = useMutation(
-    DELETE_SERVICE_API_GROUP_MUTATION,
-    {
-      awaitRefetchQueries: true,
-      refetchQueries: [GET_SERVICE_API_GROUPS_QUERY],
-    }
-  )
+  const [syncAPIGroup] = useMutation(SYNC_API_GROUP_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+  })
 
-  const isServiceApiGroupsLoading = loading && !data?.v1GetServiceAPIGroups
+  const [deleteServiceApiGroup] = useMutation(DELETE_API_GROUP_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+  })
+
+  const isServiceApiGroupsLoading = loading && !data?.apiGroups
   const serviceApiGroups = useMemo(
-    () => arrayNonNullable(data?.v1GetServiceAPIGroups),
-    [data?.v1GetServiceAPIGroups]
+    () => arrayNonNullable(data?.apiGroups).map(apiGroupToLegacy),
+    [data?.apiGroups]
   )
 
   const protocols = useMemo(() => {
@@ -108,18 +117,32 @@ export function DashboardServiceApis() {
           <ConfigureApiGroupModal
             mode="create"
             onSubmit={async (data) => {
-              await createServiceApiGroup({
-                variables: {
-                  input: {
+              const protocol = protocolToV2(data.importSource ?? 'openapi')
+              if (data.specFile) {
+                const spec = await readSpecFile(data.specFile)
+                await syncAPIGroup({
+                  variables: {
+                    orgId: orgId!,
                     serviceId,
-                    name: data.name,
-                    openApiSpecFileId: data.openApiSpecFileId ?? undefined,
-                    swaggerSpecFileId: data.swaggerSpecFileId ?? undefined,
-                    graphqlSpecFileIds: data.graphqlSpecFileIds ?? undefined,
-                    grpcSpecFileIds: data.grpcSpecFileIds ?? undefined,
+                    input: {
+                      name: data.name,
+                      protocol,
+                      spec,
+                    },
                   },
-                },
-              })
+                })
+              } else {
+                await createServiceApiGroup({
+                  variables: {
+                    orgId: orgId!,
+                    serviceId,
+                    input: {
+                      name: data.name,
+                      protocol,
+                    },
+                  },
+                })
+              }
 
               toast.success('API Group created successfully')
               setIsAddGroupModalOpen(false)
@@ -135,7 +158,6 @@ export function DashboardServiceApis() {
           <SectionNotFound plain label="No API groups found" />
         ) : (
           <>
-            {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-3 border-b border-[#F1F5F9] px-6 py-3">
               <Input
                 value={searchQuery}
@@ -188,19 +210,42 @@ export function DashboardServiceApis() {
                     deleteGroup={() =>
                       deleteServiceApiGroup({
                         variables: {
-                          organizationId: organizationId,
-                          serviceApiGroupId: group.serviceApiGroupId ?? '',
+                          orgId: orgId!,
+                          serviceId,
+                          id: group.serviceApiGroupId ?? '',
                         },
                       })
                     }
-                    updateGroup={(input) =>
-                      updateServiceApiGroup({
-                        variables: {
-                          serviceApiGroupId: group.serviceApiGroupId ?? '',
-                          input,
-                        },
-                      })
-                    }
+                    updateGroup={async (input) => {
+                      if (input.specFile) {
+                        const spec = await readSpecFile(input.specFile)
+                        await syncAPIGroup({
+                          variables: {
+                            orgId: orgId!,
+                            serviceId,
+                            input: {
+                              apiGroupId: group.serviceApiGroupId,
+                              name: input.name ?? group.name ?? '',
+                              protocol: protocolToV2(
+                                input.importSource ?? 'openapi'
+                              ),
+                              spec,
+                            },
+                          },
+                        })
+                      } else {
+                        await updateServiceApiGroup({
+                          variables: {
+                            orgId: orgId!,
+                            serviceId,
+                            id: group.serviceApiGroupId ?? '',
+                            input: {
+                              name: input.name,
+                            },
+                          },
+                        })
+                      }
+                    }}
                   />
                 ))
               )}

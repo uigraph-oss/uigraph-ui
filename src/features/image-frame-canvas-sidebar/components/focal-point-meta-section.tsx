@@ -1,4 +1,5 @@
 import { GT, privateClient } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
   Accordion,
@@ -13,7 +14,10 @@ import {
   COMPONENT_TEST_SUITE_ID,
 } from '@/constants/component-meta'
 import { CREATE_DIAGRAM_MUTATION } from '@/features/diagram-portal/api'
-import { GET_SERVICE_DOC_QUERY } from '@/features/services/api/service-doc'
+import {
+  SERVICE_DOCS_V2,
+  serviceDocToLegacy,
+} from '@/features/services/api/service-doc-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { arrayNonNullable } from 'daily-code'
@@ -140,14 +144,18 @@ export function FocalPointMetaSection({
   }
 
   async function startServiceDoc(meta: PointMeta) {
-    const [, serviceDocId] = (meta.componentLinkId ?? '').split(':')
-    if (!serviceDocId)
+    const [serviceId, serviceDocId] = (meta.componentLinkId ?? '').split(':')
+    if (!serviceId || !serviceDocId)
       return toast.error('Invalid document link. Please try again.')
-    const { data } = await privateClient.query({
-      query: GET_SERVICE_DOC_QUERY,
-      variables: { serviceDocId },
+    const { data } = await clientV2.query({
+      query: SERVICE_DOCS_V2,
+      variables: { orgId: organizationId!, serviceId },
+      fetchPolicy: 'cache-first',
     })
-    const fileURL = arrayNonNullable(data?.v1GetServiceDoc)[0]?.fileURL
+    const doc = arrayNonNullable(data?.serviceDocs)
+      .map(serviceDocToLegacy)
+      .find((item) => item.serviceDocId === serviceDocId)
+    const fileURL = doc?.fileURL
     if (!fileURL)
       return toast.error('Unable to open document. Please try again.')
     window.open(fileURL)

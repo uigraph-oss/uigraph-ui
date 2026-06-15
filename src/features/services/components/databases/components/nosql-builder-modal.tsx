@@ -1,15 +1,17 @@
 'use client'
 
-import { useOrganizationContext } from '@/contexts'
-import { CREATE_DIAGRAM_MUTATION } from '@/features/dashboard-diagrams/api/diagrams'
+import { clientV2 } from '@/api-v2/client'
+import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
 import { NosqlEditorModal } from '@/features/diagram-portal/components/nosql-editor/nosql-editor-modal'
 import { convertDiagramServerDataToString } from '@/features/diagram-portal/helpers/diagram-data'
 import { DataSource } from '@/features/diagram-portal/types/db-flow'
 import {
-  CREATE_SERVICE_DB_MUTATION,
-  GET_SERVICE_DB_QUERY,
-} from '@/features/services/api/service-db'
+  CREATE_SERVICE_DB_V2,
+  SERVICE_DBS_V2,
+  toCreateServiceDBInput,
+} from '@/features/services/api/service-db-v2'
 import { useServiceContext } from '@/features/services/contexts/service-context'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { AstToUiConverter } from '@uigraph/sdk'
 import { toast } from 'sonner'
@@ -21,13 +23,16 @@ export function NosqlBuilderModal({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { organizationId } = useOrganizationContext()
+  const orgId = useCurrentOrganization().id
   const { serviceId } = useServiceContext()
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM_MUTATION)
-  const [createServiceDb] = useMutation(CREATE_SERVICE_DB_MUTATION, {
+  const listVars = { orgId: orgId!, serviceId }
+
+  const [createDiagram] = useMutation(CREATE_DIAGRAM_V2, { client: clientV2 })
+  const [createServiceDb] = useMutation(CREATE_SERVICE_DB_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_SERVICE_DB_QUERY],
+    refetchQueries: [{ query: SERVICE_DBS_V2, variables: listVars }],
   })
 
   async function handleSchemaSubmit(dataSource: DataSource) {
@@ -39,32 +44,29 @@ export function NosqlBuilderModal({
 
       const diagramResult = await createDiagram({
         variables: {
+          orgId: orgId!,
           input: {
-            organizationId,
-            componentFlowDiagramName: `${dataSource.name} Schema Diagram`,
-            componentFlowDiagram: convertDiagramServerDataToString({
+            name: `${dataSource.name} Schema Diagram`,
+            content: convertDiagramServerDataToString({
               nodes,
               edges,
               components: [],
-              dataSources: [
-                {
-                  ...dataSource,
-                },
-              ],
+              dataSources: [dataSource],
             }),
           },
         },
       })
 
-      const diagramId = diagramResult.data?.v1CreateDiagram?.diagramId
+      const diagramId = diagramResult.data?.createDiagram?.id
       if (!diagramId) {
         throw new Error('Failed to create diagram')
       }
 
       await createServiceDb({
         variables: {
-          input: {
-            serviceId,
+          orgId: orgId!,
+          serviceId,
+          input: toCreateServiceDBInput({
             dbName: dataSource.name,
             dbType: dataSource.dialect,
             dialect: dataSource.dialect,
@@ -74,13 +76,12 @@ export function NosqlBuilderModal({
                 dataSource.sourceContent?.dialect === 'mongodb'
                   ? { collections: dataSource.sourceContent?.collections ?? [] }
                   : undefined,
-
               dynamo:
                 dataSource.sourceContent?.dialect === 'dynamodb'
                   ? { table: dataSource.sourceContent }
                   : undefined,
             },
-          },
+          }),
         },
       })
 

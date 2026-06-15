@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -9,40 +10,44 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  CREATE_SERVICE_DOC_MUTATION,
-  GET_SERVICE_DOC_QUERY,
-} from './api/service-doc'
+  CREATE_SERVICE_DOC_V2,
+  SERVICE_DOCS_V2,
+  serviceDocToLegacy,
+} from './api/service-doc-v2'
 import { ConfigureServiceDocModal } from './components/docs/configure-service-doc-modal'
 import { ServiceDocCard } from './components/docs/service-doc-card'
 import { useServiceContext } from './contexts/service-context'
 
 export function DashboardServiceDocs() {
   const { serviceId } = useServiceContext()
+  const orgId = useCurrentOrganization().id
   const [isAddDocModalOpen, setIsAddDocModalOpen] = useState(false)
 
-  const { data, loading: isLoadingServiceDocs } = useQuery(
-    GET_SERVICE_DOC_QUERY,
-    {
-      errorPolicy: 'ignore',
-      fetchPolicy: 'cache-first',
-      variables: { serviceId },
-      skip: !serviceId,
-    }
-  )
+  const listVars = { orgId: orgId!, serviceId }
 
-  const [createServiceDoc] = useMutation(CREATE_SERVICE_DOC_MUTATION, {
+  const { data, loading: isLoadingServiceDocs } = useQuery(SERVICE_DOCS_V2, {
+    client: clientV2,
+    errorPolicy: 'ignore',
+    fetchPolicy: 'cache-first',
+    variables: listVars,
+    skip: !orgId || !serviceId,
+  })
+
+  const [createServiceDoc] = useMutation(CREATE_SERVICE_DOC_V2, {
+    client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [GET_SERVICE_DOC_QUERY],
+    refetchQueries: [{ query: SERVICE_DOCS_V2, variables: listVars }],
   })
 
   const serviceDocs = useMemo(() => {
-    return arrayNonNullable(data?.v1GetServiceDoc)
-  }, [data])
+    return arrayNonNullable(data?.serviceDocs).map(serviceDocToLegacy)
+  }, [data?.serviceDocs])
 
   return (
     <div className="flex h-full flex-col">
@@ -65,12 +70,13 @@ export function DashboardServiceDocs() {
               try {
                 await createServiceDoc({
                   variables: {
+                    orgId: orgId!,
+                    serviceId,
                     input: {
-                      serviceId: serviceId,
-                      fileId: formData.fileId,
-                      fileName: formData.fileName,
-                      fileType: formData.fileType,
-                      description: formData.description,
+                      fileName: formData.fileName ?? '',
+                      fileType: formData.fileType ?? '',
+                      description: formData.description ?? '',
+                      contentBase64: formData.contentBase64 ?? '',
                     },
                   },
                 })

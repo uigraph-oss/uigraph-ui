@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import type { TestCase } from '@/api-v2/.gql/graphql'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +24,7 @@ import { TestRunHistoryTable } from './test-run-history-table'
 type TestPackWorkspacePanelProps = {
   onAddTestCase?: () => void
   onRunPack?: () => void
-  onViewTestCase?: (testCase: GT.TestCase) => void
+  onViewTestCase?: (testCase: TestCase) => void
 }
 
 export function TestPackWorkspacePanel({
@@ -36,6 +36,8 @@ export function TestPackWorkspacePanel({
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
   const {
+    orgId,
+    serviceId,
     selectedPackId,
     selectedPack,
     testPacks,
@@ -110,6 +112,8 @@ export function TestPackWorkspacePanel({
           onSubmit={async (data) => {
             await createTestCaseMutation({
               variables: {
+                orgId: orgId!,
+                serviceId,
                 input: {
                   order: 0,
                   testPackId: selectedPackId!,

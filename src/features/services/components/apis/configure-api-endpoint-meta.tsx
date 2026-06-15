@@ -156,8 +156,6 @@ export function ConfigureApiEndpointMeta({
       variables: {
         componentMetaId: componentMeta.componentMetaId!,
         input: {
-          organizationId,
-          componentId: componentMeta.componentId!,
           componentModalFields: data,
         },
       },
