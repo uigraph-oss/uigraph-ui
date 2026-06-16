@@ -1,8 +1,4 @@
-import {
-  SettingsIcon,
-  UserIcon,
-  UserListIcon,
-} from '@/assets/svgs'
+import { SettingsIcon, UserIcon, UserListIcon } from '@/assets/svgs'
 import { env } from '@/env'
 import { generateNavItems } from '@/utils/nav-items'
 import { RoboticIcon } from '@hugeicons/core-free-icons'
@@ -16,7 +12,7 @@ import {
   GoProjectTemplate,
   GoStack,
 } from 'react-icons/go'
-import { LuFingerprint, LuKey } from 'react-icons/lu'
+import { LuBot, LuFingerprint, LuKey } from 'react-icons/lu'
 
 type NavLinkMeta = {
   icon: ReactNode
@@ -91,6 +87,12 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings/tokens',
     label: 'API Tokens',
     icon: <LuKey />,
+    adminOnly: true,
+  },
+  {
+    id: '/settings/service-accounts',
+    label: 'Service Accounts',
+    icon: <LuBot />,
     adminOnly: true,
   },
   {
