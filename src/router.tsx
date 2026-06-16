@@ -21,6 +21,7 @@ import {
   ProfileSettings,
   SecuritySettings,
 } from '@/features/dashboard-settings'
+import { ServiceAccountsPage } from '@/features/dashboard-settings/service-accounts/service-accounts-page'
 import { SSOSettingsPage } from '@/features/dashboard-settings/sso-settings/sso-settings-page'
 import { TokensManagementPage } from '@/features/dashboard-settings/tokens-management/tokens-management-page'
 import { TeamManagementPage } from '@/features/dashboard-settings/users-team-management/team-management-page'
@@ -53,7 +54,8 @@ import { ComponentType, PropsWithChildren, Suspense } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
 // Feature layouts receive `children`; React Router layout routes render <Outlet/>.
-function withOutlet(Layout: ComponentType<PropsWithChildren>) {
+function withOutlet(layout: ComponentType<PropsWithChildren>) {
+  const Layout = layout
   return function LayoutRoute() {
     return (
       <Layout>
@@ -172,6 +174,7 @@ export function AppRoutes() {
             <Route path="teams" element={<TeamManagementPage />} />
             <Route path="users" element={<UsersManagementPage />} />
             <Route path="tokens" element={<TokensManagementPage />} />
+            <Route path="service-accounts" element={<ServiceAccountsPage />} />
             <Route path="security" element={<SecuritySettings />} />
             <Route path="sso" element={<SSOSettingsPage />} />
           </Route>
