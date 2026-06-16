@@ -8,7 +8,7 @@ function titleCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-// Groups flat scope strings ("diagrams:view") by their resource prefix so they
+// Groups flat scope strings ("diagrams:read") by their resource prefix so they
 // can be rendered as labelled sections of checkboxes.
 function groupByResource(scopes: string[]) {
   const groups = new Map<string, string[]>()
