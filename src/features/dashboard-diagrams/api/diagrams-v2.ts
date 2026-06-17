@@ -25,6 +25,12 @@ export const DIAGRAMS_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        type
+        name
+        email
+      }
     }
   }
 `)
