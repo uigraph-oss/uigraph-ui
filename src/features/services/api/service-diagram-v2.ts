@@ -15,6 +15,7 @@ export const SERVICE_DIAGRAMS_V2 = graphql(`
         orgId
         name
         previewAssetId
+        previewImageUrl
         previewContentHash
         createdAt
         updatedAt
@@ -62,6 +63,7 @@ export function serviceDiagramToLegacyWithMeta(item: {
     orgId: string
     name?: string | null
     previewAssetId?: string | null
+    previewImageUrl?: string | null
     previewContentHash?: string | null
     createdAt?: string | null
     updatedAt?: string | null
@@ -84,6 +86,7 @@ export function serviceDiagramToLegacyWithMeta(item: {
           organizationId: d.orgId,
           componentFlowDiagramName: d.name,
           previewImageFileId: d.previewAssetId,
+          previewImageUrl: d.previewImageUrl,
           previewContentHash: d.previewContentHash,
           createdAt: d.createdAt,
           updatedAt: d.updatedAt,

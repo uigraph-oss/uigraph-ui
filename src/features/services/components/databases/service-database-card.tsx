@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DIAGRAM_V2 } from '@/features/diagram-portal/api/diagram-v2'
-import { assetUrl } from '@/helpers/asset-url'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -52,10 +51,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
     },
   })
 
-  const previewSrc = assetUrl(
-    diagramData?.diagram?.previewAssetId,
-    diagramData?.diagram?.previewContentHash
-  )
+  const previewSrc = diagramData?.diagram?.previewImageUrl ?? undefined
 
   const [deleteServiceDb] = useMutation(DELETE_SERVICE_DB_V2, {
     client: clientV2,

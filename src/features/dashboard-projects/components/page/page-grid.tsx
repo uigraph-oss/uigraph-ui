@@ -15,7 +15,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { assetUrl } from '@/helpers/asset-url'
 import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -56,10 +55,7 @@ function PageCard({ page }: { page: DashboardFrame }) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const screenshotSrc = assetUrl(
-    page.screenshotAssetId,
-    page.screenshotContentHash
-  )
+  const screenshotSrc = page.screenshotImageUrl ?? undefined
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget

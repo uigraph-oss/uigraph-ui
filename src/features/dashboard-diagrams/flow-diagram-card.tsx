@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useOrganizationContext } from '@/contexts'
-import { assetUrl } from '@/helpers/asset-url'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Calendar } from 'lucide-react'
@@ -43,10 +42,7 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const previewSrc = assetUrl(
-    diagram.previewAssetId,
-    diagram.previewContentHash
-  )
+  const previewSrc = diagram.previewImageUrl ?? undefined
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget

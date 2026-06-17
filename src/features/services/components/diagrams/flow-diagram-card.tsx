@@ -1,5 +1,5 @@
-import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
+import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { assetUrl } from '@/helpers/asset-url'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
@@ -50,11 +49,10 @@ export function FlowDiagramCard({
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const previewContentHash =
-    'previewContentHash' in diagram
-      ? (diagram.previewContentHash as string | null | undefined)
+  const previewSrc =
+    'previewImageUrl' in diagram
+      ? ((diagram.previewImageUrl as string | null | undefined) ?? undefined)
       : undefined
-  const previewSrc = assetUrl(diagram.previewImageFileId, previewContentHash)
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
