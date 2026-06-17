@@ -1,16 +1,18 @@
 'use client'
 
-import { uploadGlobalFile } from '@/api/upload-global-file'
+import { clientV2 } from '@/api-v2/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useOrganizationContext } from '@/contexts'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
+import axios from 'axios'
 import { Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { UPDATE_ACCOUNT } from './api/account'
+import { ME_V2 } from './api/me-v2'
 import { SettingsHeader } from './components/settings-header'
 
 interface EditProfileProps {
@@ -53,25 +55,22 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
     }
   }, [account])
 
+  const { data: meData, refetch: refetchMe } = useQuery(ME_V2, {
+    client: clientV2,
+  })
+
   async function handleImageUpload(file: File) {
     setIsUploadingImage(true)
     try {
-      const imageFileId = await uploadGlobalFile(file, {
-        description: 'Profile image',
+      const form = new FormData()
+      form.append('file', file)
+
+      await axios.put('/api/v1/users/me/avatar', form, {
+        withCredentials: true,
       })
 
-      if (!accountId) {
-        toast.error('Account ID not found')
-        return
-      }
-
-      await updateAccount({
-        variables: {
-          input: {
-            image: imageFileId,
-          },
-        },
-      })
+      await refetchMe()
+      toast.success('Avatar updated')
     } catch (error) {
       console.error('Failed to upload image:', error)
       toast.error('Failed to upload image')
@@ -100,7 +99,8 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
     profileData.lastName?.[0] || ''
   }`.toUpperCase()
 
-  const currentImage = account?.imageUrl || account?.image || ''
+  const currentImage =
+    meData?.me?.avatarUrl || account?.imageUrl || account?.image || ''
 
   return (
     <>

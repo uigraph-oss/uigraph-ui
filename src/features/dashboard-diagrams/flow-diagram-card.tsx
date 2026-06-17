@@ -1,4 +1,5 @@
 import { MoreVerticalIcon } from '@/assets/svgs'
+import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -132,6 +133,11 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
             ) : (
               <span />
             )}
+
+            <ActorAvatar
+              actor={diagram.updatedByActor ?? diagram.createdByActor}
+              className="shrink-0"
+            />
           </div>
         </div>
       </Link>

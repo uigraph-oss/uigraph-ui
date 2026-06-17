@@ -1,6 +1,7 @@
 'use client'
 
 import { SimpleModalBase } from '@/components'
+import { ActorAvatar } from '@/components/actor-avatar'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -131,6 +132,11 @@ function PageCard({ page }: { page: DashboardFrame }) {
                   : 'N/A'}
               </span>
             </div>
+
+            <ActorAvatar
+              actor={page.updatedByActor ?? page.createdByActor}
+              className="shrink-0"
+            />
           </div>
         </div>
       </Link>

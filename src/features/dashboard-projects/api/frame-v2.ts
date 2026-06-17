@@ -1,5 +1,11 @@
 import { graphql } from '@/api-v2'
 
+export type DashboardActor = {
+  id?: string | null
+  name?: string | null
+  avatarUrl?: string | null
+}
+
 export type DashboardFrame = {
   id: string
   mapId?: string | null
@@ -18,6 +24,8 @@ export type DashboardFrame = {
   updatedBy?: string | null
   createdAt?: string | null
   updatedAt?: string | null
+  createdByActor?: DashboardActor | null
+  updatedByActor?: DashboardActor | null
 }
 
 export const FRAMES_V2 = graphql(`
@@ -40,6 +48,16 @@ export const FRAMES_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -64,6 +82,16 @@ export const FRAME_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -88,6 +116,16 @@ export const FRAME_BY_ID_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)

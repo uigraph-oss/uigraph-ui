@@ -2,6 +2,7 @@
 
 import { clientV2 } from '@/api-v2/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
+import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -162,7 +163,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
           </div>
 
           <div className="flex items-center justify-between">
-            {updatedDate && (
+            {updatedDate ? (
               <div className="flex items-center space-x-1 text-[#939395]">
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm">
@@ -170,7 +171,14 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
                   {formatDistanceToNow(updatedDate, { addSuffix: true })}
                 </span>
               </div>
+            ) : (
+              <span />
             )}
+
+            <ActorAvatar
+              actor={db.updatedByActor ?? db.createdByActor}
+              className="shrink-0"
+            />
           </div>
         </div>
       </Link>

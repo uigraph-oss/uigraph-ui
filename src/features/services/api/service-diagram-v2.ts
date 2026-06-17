@@ -19,6 +19,16 @@ export const SERVICE_DIAGRAMS_V2 = graphql(`
         previewContentHash
         createdAt
         updatedAt
+        createdByActor {
+          id
+          name
+          avatarUrl
+        }
+        updatedByActor {
+          id
+          name
+          avatarUrl
+        }
       }
     }
   }
@@ -67,6 +77,16 @@ export function serviceDiagramToLegacyWithMeta(item: {
     previewContentHash?: string | null
     createdAt?: string | null
     updatedAt?: string | null
+    createdByActor?: {
+      id?: string | null
+      name?: string | null
+      avatarUrl?: string | null
+    } | null
+    updatedByActor?: {
+      id?: string | null
+      name?: string | null
+      avatarUrl?: string | null
+    } | null
   } | null
 }) {
   const d = item.diagram
@@ -90,6 +110,8 @@ export function serviceDiagramToLegacyWithMeta(item: {
           previewContentHash: d.previewContentHash,
           createdAt: d.createdAt,
           updatedAt: d.updatedAt,
+          createdByActor: d.createdByActor,
+          updatedByActor: d.updatedByActor,
         }
       : null,
   }

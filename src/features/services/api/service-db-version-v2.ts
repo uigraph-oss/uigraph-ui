@@ -2,11 +2,7 @@ import { graphql } from '@/api-v2'
 import { serviceDBToLegacy } from './service-db-v2'
 
 export const SERVICE_DB_VERSIONS_V2 = graphql(`
-  query ServiceDBVersionsV2(
-    $orgId: ID!
-    $serviceId: ID!
-    $serviceDbId: ID!
-  ) {
+  query ServiceDBVersionsV2($orgId: ID!, $serviceId: ID!, $serviceDbId: ID!) {
     serviceDBVersions(
       orgId: $orgId
       serviceId: $serviceId
@@ -22,6 +18,11 @@ export const SERVICE_DB_VERSIONS_V2 = graphql(`
       isAutoVersion
       createdBy
       createdAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -100,6 +101,11 @@ export function serviceDBVersionToLegacyWithDb(
     isAutoVersion: boolean
     createdBy: string
     createdAt: string
+    createdByActor?: {
+      id?: string | null
+      name?: string | null
+      avatarUrl?: string | null
+    } | null
   },
   serviceId: string,
   dbMeta?: { dbName?: string; dbType?: string; dialect?: string }
@@ -129,6 +135,11 @@ export function serviceDBVersionToLegacy(v: {
   isAutoVersion: boolean
   createdBy: string
   createdAt: string
+  createdByActor?: {
+    id?: string | null
+    name?: string | null
+    avatarUrl?: string | null
+  } | null
 }) {
   return {
     versionId: v.id,
@@ -139,5 +150,6 @@ export function serviceDBVersionToLegacy(v: {
     isAutoVersion: v.isAutoVersion,
     createdBy: v.createdBy,
     createdAt: v.createdAt,
+    createdByActor: v.createdByActor ?? null,
   }
 }
