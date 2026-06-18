@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Input } from '@/components/ui/input'
@@ -10,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { clientV2 } from '@/api-v2/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -134,9 +134,7 @@ export function UsersList({ teamId }: { teamId?: string }) {
       <div className="mt-4 flex items-center justify-between px-6">
         <div className="text-muted-foreground text-sm">
           Total{' '}
-          <span className="font-medium text-gray-700">
-            {allMembers.length}
-          </span>{' '}
+          <span className="font-medium text-gray-700">{allMembers.length}</span>{' '}
           users
         </div>
 

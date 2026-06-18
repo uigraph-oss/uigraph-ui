@@ -1,4 +1,3 @@
-import type { DashboardTeam } from '@/features/dashboard-diagrams/api/teams-v2'
 import {
   Select,
   SelectContent,
@@ -7,6 +6,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FILTER_OPTIONS } from '@/constants'
+import type { DashboardTeam } from '@/features/dashboard-diagrams/api/teams-v2'
 
 interface BasicFilterInputProps {
   teams?: DashboardTeam[]

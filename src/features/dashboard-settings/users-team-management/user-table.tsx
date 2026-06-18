@@ -1,6 +1,5 @@
 'use client'
 
-import type { OrgMemberRow } from '../api/members-v2'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -20,6 +19,7 @@ import {
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import type { OrgMemberRow } from '../api/members-v2'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamMemberModal } from './configure-team-member-modal'
 

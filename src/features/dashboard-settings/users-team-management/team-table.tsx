@@ -1,6 +1,5 @@
 'use client'
 
-import type { SettingsTeam } from '../api/teams-v2'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -13,6 +12,7 @@ import {
 import { useState } from 'react'
 import { FiChevronRight, FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import type { SettingsTeam } from '../api/teams-v2'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamModal } from './configure-team-modal'
 
