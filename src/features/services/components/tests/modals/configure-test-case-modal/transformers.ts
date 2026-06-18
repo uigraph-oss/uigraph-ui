@@ -1,6 +1,6 @@
 import { GT } from '@/api'
-import { TestCasePriority } from '@/api/.gql/graphql'
 import type { TestCase as V2TestCase } from '@/api-v2/.gql/graphql'
+import { TestCasePriority } from '@/api/.gql/graphql'
 import z from 'zod'
 import { configureTestCaseSchema } from './schema'
 

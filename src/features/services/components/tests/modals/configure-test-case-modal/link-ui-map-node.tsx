@@ -10,11 +10,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useOrganizationContext } from '@/contexts'
 import { GET_FOCAL_POINT } from '@/features/dashboard-pages/api'
 import { GET_PAGE } from '@/features/dashboard-projects/api/page'
 import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import {
@@ -164,7 +164,7 @@ export function LinkUiMapNodeSelect({
 }) {
   const [mapId = '', screenId = '', focalPointId = ''] = value.split(':')
 
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const [open, setOpen] = useState(false)
 
   const { data: projectsData, loading: isProjectsLoading } = useQuery(

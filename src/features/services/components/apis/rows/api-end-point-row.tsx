@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ export function ApiEndPointRow({
   componentMeta: GT.ComponentMeta
   readonly?: boolean
 }) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { deleteServiceApiEndpoint } = useServiceApiEndpointsContext()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)

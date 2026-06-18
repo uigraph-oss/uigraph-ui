@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useOrganizationContext } from '@/contexts'
 import { env } from '@/env'
 import {
   BooleanToggleInput,
@@ -41,6 +40,7 @@ import {
 import { GET_COMPONENT_META } from '@/features/component-meta/api/meta'
 import { SaveIcon } from '@/features/component-meta/assets'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
@@ -78,7 +78,7 @@ function FocalPointMetaModalContent({
     values: flattenedMemoizedData,
   })
 
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)

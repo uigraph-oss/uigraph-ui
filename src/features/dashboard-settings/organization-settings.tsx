@@ -4,7 +4,7 @@ import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { ExternalLink, Globe, Receipt, SquarePen, Upload } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -13,7 +13,7 @@ import { GET_ORGANIZATION, UPDATE_ORGANIZATION } from './api/organization'
 import { SettingsHeader } from './components/settings-header'
 
 export function OrganizationSettings() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data, loading, refetch } = useQuery(GET_ORGANIZATION, {

@@ -15,22 +15,25 @@ import '@/styles/theme.scss'
 
 import { GoogleAnalyticsWrapper } from '@/components/google-analytics-wrapper'
 import { GlobalLoader } from '@/components/loader/global-loader'
-import { ApolloClientProvider, AuthContextProvider } from '@/contexts'
+import { ApolloClientProvider } from '@/contexts'
 import { AppRoutes } from '@/router'
+import { bootstrapSession } from '@/store/auth-store'
 import { Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'sonner'
 
+bootstrapSession().catch((error) => {
+  console.error('Error bootstrapping session on mount:', error)
+})
+
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
-    <AuthContextProvider>
-      <ApolloClientProvider>
-        <Suspense fallback={<GlobalLoader />}>
-          <AppRoutes />
-        </Suspense>
-      </ApolloClientProvider>
-    </AuthContextProvider>
+    <ApolloClientProvider>
+      <Suspense fallback={<GlobalLoader />}>
+        <AppRoutes />
+      </Suspense>
+    </ApolloClientProvider>
 
     <GoogleAnalyticsWrapper />
 

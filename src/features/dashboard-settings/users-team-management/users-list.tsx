@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import Fuse from 'fuse.js'
@@ -31,7 +31,7 @@ export interface UserRow {
 }
 
 export function UsersList({ teamId }: { teamId?: string }) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const organizationUsers = useQuery(GET_ORGANIZATION_USERS, {
     fetchPolicy: 'cache-first',

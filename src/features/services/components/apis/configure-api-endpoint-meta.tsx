@@ -6,7 +6,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useOrganizationContext } from '@/contexts'
 import { env } from '@/env'
 import {
   BooleanToggleInput,
@@ -33,6 +32,7 @@ import {
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { buildDynamicZodSchema } from '@uigraph/sdk/browser'
@@ -89,7 +89,7 @@ export function ConfigureApiEndpointMeta({
   })
   const { isDirty, errors, isSubmitting } = useFormState({ control })
 
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const [isUploading, setIsUploading] = useState(false)
   const lockedFieldSet = useMemo(

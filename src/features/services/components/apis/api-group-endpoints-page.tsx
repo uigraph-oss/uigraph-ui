@@ -265,7 +265,10 @@ function ApiGroupEndpointsPageContent() {
   const provenance = useMemo(() => {
     const repoUrl = service?.gitRepoUrl?.trim() || null
     const repoName = repoUrl
-      ? repoUrl.replace(/\.git$/, '').split('/').pop() || null
+      ? repoUrl
+          .replace(/\.git$/, '')
+          .split('/')
+          .pop() || null
       : null
     const commitFull = service?.lastCommitSha?.trim() || null
     const commitShort = commitFull?.slice(0, 7) || null

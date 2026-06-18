@@ -79,7 +79,11 @@ export const API_GROUP_V2 = graphql(`
 
 export const API_ENDPOINTS_V2 = graphql(`
   query APIEndpointsV2($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {
-    apiEndpoints(orgId: $orgId, serviceId: $serviceId, apiGroupId: $apiGroupId) {
+    apiEndpoints(
+      orgId: $orgId
+      serviceId: $serviceId
+      apiGroupId: $apiGroupId
+    ) {
       id
       apiGroupId
       serviceId

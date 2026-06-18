@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FormEvent, useRef, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
@@ -43,7 +43,7 @@ const suggestions = [
 
 export function AiChatIndexPage() {
   const navigate = useNavigate()
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const formRef = useRef<HTMLFormElement | null>(null)
   const [draft, setDraft] = useState('')
   const [isSending, setIsSending] = useState(false)
@@ -62,7 +62,7 @@ export function AiChatIndexPage() {
         `ai-chat-initial-message:${session.sessionId}`,
         JSON.stringify({ message })
       )
-      navigate(`/dashboard/ai/${session.sessionId}`)
+      void navigate(`/dashboard/ai/${session.sessionId}`)
     } catch {
       toast.error('Could not start a new chat')
     } finally {

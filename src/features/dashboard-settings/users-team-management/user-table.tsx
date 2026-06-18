@@ -10,7 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useOrganizationContext } from '@/contexts'
+import { useAuthStore } from '@/store/auth-store'
 import {
   createColumnHelper,
   flexRender,
@@ -30,7 +30,7 @@ function getInitials(email: string | null | undefined): string {
 }
 
 function UserRowActions({ user }: { user: GT.UserInfo }) {
-  const { account } = useOrganizationContext()
+  const currentUser = useAuthStore((state) => state.user)
   const { updateTeamMember, deleteTeamMember } = useTeamContext()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -38,14 +38,14 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
   const actionsTrigger = (
     <div className="flex items-center gap-[10px]">
       <button
-        disabled={user.email === account?.email}
+        disabled={user.email === currentUser?.email}
         className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-400"
         onClick={() => setIsEditModalOpen(true)}
       >
         Edit
       </button>
       <button
-        disabled={user.email === account?.email}
+        disabled={user.email === currentUser?.email}
         className="flex size-8 items-center justify-center rounded-md border border-red-200 text-red-600 transition-colors hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:bg-transparent"
         onClick={() => setIsDeleteModalOpen(true)}
       >
@@ -56,7 +56,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
 
   return (
     <>
-      {user.email === account?.email ? (
+      {user.email === currentUser?.email ? (
         <Tooltip>
           <TooltipTrigger asChild>{actionsTrigger}</TooltipTrigger>
           <TooltipContent>You cannot edit your own details</TooltipContent>

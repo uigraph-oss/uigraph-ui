@@ -11,6 +11,7 @@ export const GET_ME_AND_ORG_V2 = graphql(`
       kind
       role
       authProvider
+      avatarUrl
     }
     myOrgs {
       id

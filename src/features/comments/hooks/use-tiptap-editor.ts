@@ -1,5 +1,6 @@
 import { GET_ORGANIZATION_USERS } from '@/features/dashboard-settings/api/users'
-import { useOrganizationContext } from '@/contexts/organization-context'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import Mention, {
   MentionNodeAttrs,
   MentionOptions,
@@ -7,7 +8,6 @@ import Mention, {
 import Placeholder from '@tiptap/extension-placeholder'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useEffect, useMemo } from 'react'
 
@@ -36,7 +36,7 @@ export function useTiptapEditor({
   setValue,
   editable = true,
 }: UseTiptapEditorProps) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const { data } = useQuery(GET_ORGANIZATION_USERS, {
     fetchPolicy: 'cache-first',
@@ -45,9 +45,7 @@ export function useTiptapEditor({
   })
 
   const users = useMemo(() => {
-    const organizationUsers = arrayNonNullable(
-      data?.GetOrganizationUsers
-    )
+    const organizationUsers = arrayNonNullable(data?.GetOrganizationUsers)
     return organizationUsers.map((user) => ({
       id: user.email,
       label: user.email, // TODO: Use user name instead of email

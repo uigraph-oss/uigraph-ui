@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { Check, Copy, Plus } from 'lucide-react'
 import { useState } from 'react'
@@ -23,7 +23,7 @@ import { CreateTokenModal } from './create-token-modal'
 import { TokensList } from './tokens-list'
 
 export function TokensManagementPage() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [newToken, setNewToken] = useState<{
     tokenId: string

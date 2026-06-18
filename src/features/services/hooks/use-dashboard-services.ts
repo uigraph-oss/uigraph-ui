@@ -11,7 +11,10 @@ import {
   SERVICES_V2,
   UPDATE_SERVICE_V2,
 } from '@/features/services/api/services-v2'
-import { useCurrentOrganization, useAuthenticatedUser } from '@/store/auth-store'
+import {
+  useAuthenticatedUser,
+  useCurrentOrganization,
+} from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
@@ -30,13 +33,16 @@ export function useDashboardServicesList(serviceId?: string) {
     skip: !orgId,
   })
 
-  const { data: statsData, loading: statsLoading } = useQuery(SERVICE_STATS_V2, {
-    client: clientV2,
-    variables: { orgId: orgId!, serviceId },
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId,
-    errorPolicy: 'ignore',
-  })
+  const { data: statsData, loading: statsLoading } = useQuery(
+    SERVICE_STATS_V2,
+    {
+      client: clientV2,
+      variables: { orgId: orgId!, serviceId },
+      fetchPolicy: 'cache-and-network',
+      skip: !orgId,
+      errorPolicy: 'ignore',
+    }
+  )
 
   const statsByServiceId = useMemo(() => {
     const m = new Map<string, ServiceStatsRow>()

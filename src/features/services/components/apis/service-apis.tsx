@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody } from '@/components/ui/table'
-import { useOrganizationContext } from '@/contexts'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { normalizePath } from '@/utils/api/display'
 import { createOpenApiRuntime } from '@/utils/api/openapi-runtime'
 import { flattenMetaData } from '@uigraph/sdk'
@@ -89,7 +89,7 @@ export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
     selectedVersionId,
     deleteServiceApiEndpoint,
   } = useServiceApiEndpointsContext()
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const [queryParams, setQueryParams] = useSearchParamsState(
     'endpointId',
     'env'

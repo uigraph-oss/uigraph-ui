@@ -1,10 +1,9 @@
-import { useOrganizationContext } from '@/contexts'
-import { useAuth } from '@/contexts/auth-context-provider'
 import {
   CommentsContextProvider,
   useCommentsContext,
 } from '@/features/comments/contexts/comments-context'
 import { cn } from '@/lib/utils'
+import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -29,8 +28,15 @@ export function CommentNode({ ...props }: NodeProps<TCommentNode>) {
 function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
   const { id, data, selected, dragging } = props
   const { updateNodeData, setNodes } = useReactFlow()
-  const { user } = useAuth()
-  const { organizationId } = useOrganizationContext()
+  const storeUser = useAuthStore((state) => state.user)
+  const user = storeUser
+    ? {
+        userId: storeUser.userId,
+        name: storeUser.name,
+        pic: storeUser.avatarUrl ?? undefined,
+      }
+    : null
+  const organizationId = useCurrentOrganization()?.id
   const { comments, resourceId, createComment, updateComment, deleteComment } =
     useCommentsContext()
 

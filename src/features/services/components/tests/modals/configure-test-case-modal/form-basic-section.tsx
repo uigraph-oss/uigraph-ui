@@ -9,11 +9,11 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { useOrganizationContext } from '@/contexts/organization-context'
 import { TagInput } from '@/features/component-meta'
 import { GET_ORGANIZATION_USERS } from '@/features/dashboard-settings/api/users'
 import { GET_PUBLIC_ACCOUNT_INFO } from '@/features/image-frame-canvas-sidebar/api/account'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useApolloClient, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useEffect, useMemo, useState } from 'react'
@@ -194,7 +194,7 @@ function TestOwnerSelect({
 
 export function FormBasicSection({ form }: { form: FormType }) {
   const client = useApolloClient()
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { data } = useQuery(GET_ORGANIZATION_USERS, {
     fetchPolicy: 'cache-first',
     variables: { organizationId: organizationId! },

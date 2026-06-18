@@ -1,7 +1,7 @@
 'use client'
 
 import { GT } from '@/api'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
@@ -21,7 +21,7 @@ import {
 } from '../api/users'
 
 export const [TeamContextProvider, useTeamContext] = createContext(() => {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const teamsData = useQuery(GET_TEAM, {
     variables: { organizationId },

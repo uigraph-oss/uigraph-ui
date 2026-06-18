@@ -2,10 +2,10 @@
 
 import { GT } from '@/api'
 import type { TestCase } from '@/api-v2/.gql/graphql'
+import { clientV2 } from '@/api-v2/client'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
-import { clientV2 } from '@/api-v2/client'
 import { API_ENDPOINTS_V2 } from '@/features/services/api/api-endpoints-v2'
 import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import {

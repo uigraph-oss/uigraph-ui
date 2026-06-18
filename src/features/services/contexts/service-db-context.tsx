@@ -16,10 +16,7 @@ import { createContext } from 'daily-code/react'
 import { ArrowLeft } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import {
-  SERVICE_DB_V2,
-  serviceDBToLegacy,
-} from '../api/service-db-v2'
+import { SERVICE_DB_V2, serviceDBToLegacy } from '../api/service-db-v2'
 import {
   CREATE_SERVICE_DB_VERSION_V2,
   RESTORE_SERVICE_DB_VERSION_V2,
@@ -112,11 +109,7 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     )
 
     const restoreServiceDbVersion = useCallback(
-      async ({
-        versionId,
-      }: {
-        versionId: string
-      }) => {
+      async ({ versionId }: { versionId: string }) => {
         await restoreServiceDbVersionMutation({
           variables: {
             orgId: orgId!,
@@ -157,8 +150,7 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
       return liveServiceDb ?? dbVersions.at(0)?.serviceDB ?? null
     }, [dbVersions, selectedDbVersionId, liveServiceDb])
 
-    const isServiceDbLoading =
-      (loading || versionsLoading) && !data?.serviceDB
+    const isServiceDbLoading = (loading || versionsLoading) && !data?.serviceDB
 
     return {
       dbId,

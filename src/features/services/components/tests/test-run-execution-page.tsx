@@ -733,10 +733,7 @@ export function TestRunExecutionPage() {
                   </p>
                   <div className="text-foreground flex items-center gap-2 text-sm font-medium">
                     <Avatar className="size-5">
-                      <AvatarImage
-                        src=""
-                        className="object-cover"
-                      />
+                      <AvatarImage src="" className="object-cover" />
                       <AvatarFallback className="text-[10px]">
                         {testRun.executedBy.charAt(0).toUpperCase()}
                       </AvatarFallback>

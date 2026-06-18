@@ -1,7 +1,7 @@
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
-import { useOrganizationContext } from '@/contexts'
 import { GET_DIAGRAMS_BY_ORG_ID } from '@/features/dashboard-diagrams/api/diagrams'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useState } from 'react'
@@ -13,7 +13,7 @@ type DiagramSelectionModalProps = {
 export function DiagramSelectionModal({
   onSelect,
 }: DiagramSelectionModalProps) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const [isLoading, setIsLoading] = useState(false)
   const [selectedDiagramId, setSelectedDiagramId] = useState<string>('')

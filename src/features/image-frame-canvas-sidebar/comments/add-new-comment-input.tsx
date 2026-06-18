@@ -1,14 +1,14 @@
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
-import { useOrganizationContext } from '@/contexts'
 import { InputEditor } from '@/features/comments/components/input-editor'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { Send } from 'lucide-react'
 import { useState } from 'react'
 import { useCommentsContext } from '../../comments/contexts/comments-context'
 import { usePublicAccount } from '../hooks/use-public-account'
 
 export function AddNewCommentInput() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const {
     comments,
     resourceId,

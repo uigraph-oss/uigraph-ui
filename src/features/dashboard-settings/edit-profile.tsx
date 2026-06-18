@@ -5,59 +5,46 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useOrganizationContext } from '@/contexts'
-import { useMutation, useQuery } from '@apollo/client'
+import { bootstrapSession, useAuthenticatedUser } from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
 import axios from 'axios'
 import { Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { UPDATE_ACCOUNT } from './api/account'
-import { ME_V2 } from './api/me-v2'
+import { UPDATE_USER_V2 } from './api/update-user-v2'
 import { SettingsHeader } from './components/settings-header'
 
 interface EditProfileProps {
   onCancel: () => void
   initialData: {
-    firstName?: string
-    lastName?: string
+    name?: string
     email?: string
     image?: string
   }
 }
 
 export function EditProfile({ onCancel, initialData }: EditProfileProps) {
-  const { account, accountId } = useOrganizationContext()
+  const user = useAuthenticatedUser()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [updateAccount, { loading: isUpdating }] = useMutation(UPDATE_ACCOUNT, {
-    onCompleted: () => {
+  const [updateUser, { loading: isUpdating }] = useMutation(UPDATE_USER_V2, {
+    client: clientV2,
+    onCompleted: async () => {
+      await bootstrapSession()
       toast.success('Profile updated successfully')
       onCancel()
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to update profile')
     },
-    refetchQueries: ['GetInitialOrganizationsByRoleAndUser'],
   })
 
   const [isUploadingImage, setIsUploadingImage] = useState(false)
-  const [profileData, setProfileData] = useState({
-    firstName: account?.firstName || initialData.firstName || '',
-    lastName: account?.lastName || initialData.lastName || '',
-  })
+  const [name, setName] = useState(user.name || initialData.name || '')
 
   useEffect(() => {
-    if (account) {
-      setProfileData({
-        firstName: account.firstName || '',
-        lastName: account.lastName || '',
-      })
-    }
-  }, [account])
-
-  const { data: meData, refetch: refetchMe } = useQuery(ME_V2, {
-    client: clientV2,
-  })
+    setName(user.name || '')
+  }, [user.name])
 
   async function handleImageUpload(file: File) {
     setIsUploadingImage(true)
@@ -69,7 +56,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
         withCredentials: true,
       })
 
-      await refetchMe()
+      await bootstrapSession()
       toast.success('Avatar updated')
     } catch (error) {
       console.error('Failed to upload image:', error)
@@ -80,27 +67,23 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
   }
 
   async function handleUpdateProfile() {
-    if (!accountId) {
-      toast.error('Account ID not found')
-      return
-    }
-
-    await updateAccount({
+    await updateUser({
       variables: {
-        input: {
-          firstName: profileData.firstName || null,
-          lastName: profileData.lastName || null,
-        },
+        id: user.userId,
+        input: { name: name || null },
       },
     })
   }
 
-  const initials = `${profileData.firstName?.[0] || ''}${
-    profileData.lastName?.[0] || ''
-  }`.toUpperCase()
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
 
-  const currentImage =
-    meData?.me?.avatarUrl || account?.imageUrl || account?.image || ''
+  const currentImage = user.avatarUrl || initialData.image || ''
 
   return (
     <>
@@ -173,35 +156,17 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
         </div>
 
         <form className="flex-1 space-y-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-textPrimary">
-                First Name
-              </Label>
-              <Input
-                id="firstName"
-                value={profileData.firstName}
-                onChange={(e) =>
-                  setProfileData({ ...profileData, firstName: e.target.value })
-                }
-                className="h-14 rounded-[12px] border border-[#E5E7E9]"
-                disabled={isUpdating}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-textPrimary">
-                Last Name
-              </Label>
-              <Input
-                id="lastName"
-                value={profileData.lastName}
-                onChange={(e) =>
-                  setProfileData({ ...profileData, lastName: e.target.value })
-                }
-                className="h-14 rounded-[12px] border border-[#E5E7E9]"
-                disabled={isUpdating}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-textPrimary">
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-14 rounded-[12px] border border-[#E5E7E9]"
+              disabled={isUpdating}
+            />
           </div>
 
           <div className="space-y-2">
@@ -210,7 +175,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
             </Label>
             <Input
               id="email"
-              defaultValue={account?.email || initialData.email}
+              defaultValue={user.email || initialData.email}
               className="h-14 rounded-[12px] border border-[#E5E7E9] bg-gray-50"
               disabled
             />

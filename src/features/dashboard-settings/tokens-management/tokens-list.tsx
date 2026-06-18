@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import Fuse from 'fuse.js'
@@ -26,7 +26,7 @@ export function TokensList({
   onRevoke: (tokenId: string) => Promise<void>
   onRotate: (tokenId: string) => Promise<{ plaintext: string } | null>
 }) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const tokensQuery = useQuery(LIST_TOKENS, {
     fetchPolicy: 'cache-first',

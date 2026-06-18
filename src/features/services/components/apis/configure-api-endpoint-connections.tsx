@@ -4,10 +4,10 @@ import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
 import { GT, privateClient } from '@/api'
-import { useOrganizationContext } from '@/contexts'
 import { GET_PAGE } from '@/features/dashboard-projects/api/page'
 import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
 import { GET_FOCAL_POINT_META_BY_COMPONENT_META_ID } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
+import { useCurrentOrganization } from '@/store/auth-store'
 
 import { SectionLoader } from '@/components/section-loader'
 import { arrayNonNullable } from 'daily-code'
@@ -84,7 +84,7 @@ export function ConfigureApiEndpointConnections({
   endpoint,
   readonly = false,
 }: ConfigureApiEndpointConnectionsProps) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const componentMetaId = endpoint.componentMetaId
 
   // Connections tab is lazy-rendered, so this is effectively lazy-loaded

@@ -1,3 +1,4 @@
+import { clientV2 } from '@/api-v2/client'
 import {
   Accordion,
   AccordionContent,
@@ -10,7 +11,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { clientV2 } from '@/api-v2/client'
 import { API_GROUPS_V2 } from '@/features/services/api/api-endpoints-v2'
 import { SERVICES_V2 } from '@/features/services/api/services-v2'
 import { useServiceContext } from '@/features/services/contexts/service-context'
