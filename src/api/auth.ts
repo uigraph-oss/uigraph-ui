@@ -21,21 +21,6 @@ export const VERIFY_ORG_DOMAIN = graphql(`
   }
 `)
 
-export const GET_ORGANIZATIONS_BY_ROLE = graphql(`
-  query GetOrganizationsByRole($role: String) {
-    GetOrganizations(role: $role) {
-      name
-      organizationId
-      logoImgId
-      owner
-      domain
-      domainSlug
-      isActive
-      allowDomainJoin
-    }
-  }
-`)
-
 export const GET_ORGANIZATION_BY_SUBDOMAIN = graphql(`
   query GetOrganizationBySubdomain($subdomain: String!) {
     GetOrganizationBySubdomain(subdomain: $subdomain) {

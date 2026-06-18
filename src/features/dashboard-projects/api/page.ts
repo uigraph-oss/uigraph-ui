@@ -28,27 +28,3 @@ export const GET_PAGE = graphql(`
     }
   }
 `)
-
-export const CREATE_PAGE = graphql(`
-  mutation V1CreatePage($input: CreatePageInput!) {
-    v1CreatePage(input: $input) {
-      pageId
-      description
-    }
-  }
-`)
-
-export const UPDATE_PAGE = graphql(`
-  mutation V1UpdatePage($pageId: String!, $input: UpdatePageInput!) {
-    v1UpdatePage(pageId: $pageId, input: $input) {
-      pageId
-      description
-    }
-  }
-`)
-
-export const DELETE_PAGE = graphql(`
-  mutation V1DeletePage($pageId: String!) {
-    v1DeletePage(pageId: $pageId)
-  }
-`)
