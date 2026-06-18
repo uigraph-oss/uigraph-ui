@@ -11,9 +11,7 @@ export const TEAMS_V2 = graphql(`
   query TeamsV2($orgId: ID!) {
     teams(orgId: $orgId) {
       id
-      orgId
       name
-      email
     }
   }
 `)
