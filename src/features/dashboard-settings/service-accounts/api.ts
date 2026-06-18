@@ -90,6 +90,23 @@ export function deleteServiceAccount(orgId: string, saId: string) {
   return request<void>('DELETE', `${base(orgId)}/${saId}`)
 }
 
+export async function setServiceAccountAvatar(
+  orgId: string,
+  saId: string,
+  file: File
+) {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${base(orgId)}/${saId}/avatar`, {
+    method: 'PUT',
+    credentials: 'include',
+    body: form,
+  })
+  if (!res.ok) {
+    throw new Error(`upload avatar failed (${res.status})`)
+  }
+}
+
 export function listTokens(orgId: string, saId: string) {
   return request<{ tokens: ServiceAccountToken[] | null }>(
     'GET',

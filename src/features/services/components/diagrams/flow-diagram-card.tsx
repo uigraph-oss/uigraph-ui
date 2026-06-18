@@ -1,8 +1,8 @@
-import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
+import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
 import { MoreVerticalIcon } from '@/assets/svgs'
+import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { assetUrl } from '@/helpers/asset-url'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
@@ -50,11 +49,10 @@ export function FlowDiagramCard({
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const previewContentHash =
-    'previewContentHash' in diagram
-      ? (diagram.previewContentHash as string | null | undefined)
+  const previewSrc =
+    'previewImageUrl' in diagram
+      ? ((diagram.previewImageUrl as string | null | undefined) ?? undefined)
       : undefined
-  const previewSrc = assetUrl(diagram.previewImageFileId, previewContentHash)
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
@@ -67,8 +65,19 @@ export function FlowDiagramCard({
     ? new Date(serviceDiagram.updatedAt)
     : null
 
-  const creatorUrl = diagram.createdByProfileImgUrl?.trim()
-  const actorProfileImageUrls = creatorUrl ? [creatorUrl] : []
+  const actor =
+    ('updatedByActor' in diagram
+      ? (diagram.updatedByActor as
+          | { name?: string | null; avatarUrl?: string | null }
+          | null
+          | undefined)
+      : undefined) ??
+    ('createdByActor' in diagram
+      ? (diagram.createdByActor as
+          | { name?: string | null; avatarUrl?: string | null }
+          | null
+          | undefined)
+      : undefined)
 
   return (
     <div className="group relative">
@@ -141,22 +150,7 @@ export function FlowDiagramCard({
               <span />
             )}
 
-            {actorProfileImageUrls.length > 0 && (
-              <div className="flex shrink-0 items-center">
-                {actorProfileImageUrls.map((url, i) => (
-                  <Avatar
-                    key={url}
-                    className={cn(
-                      'pointer-events-none size-7 border-2 border-white bg-[#F0F0F2] shadow-sm',
-                      i > 0 && '-ml-2'
-                    )}
-                  >
-                    <AvatarImage src={url} alt="" className="object-cover" />
-                    <AvatarFallback className="text-[9px] font-medium text-[#A0A0A2]" />
-                  </Avatar>
-                ))}
-              </div>
-            )}
+            <ActorAvatar actor={actor} className="shrink-0" />
           </div>
         </div>
       </Link>

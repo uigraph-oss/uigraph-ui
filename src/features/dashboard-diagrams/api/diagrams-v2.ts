@@ -1,14 +1,23 @@
 import { graphql } from '@/api-v2'
 
+export type DashboardActor = {
+  id?: string | null
+  name?: string | null
+  avatarUrl?: string | null
+}
+
 export type DashboardDiagram = {
   id: string
   name?: string | null
   folderId?: string | null
   teamId?: string | null
   previewAssetId?: string | null
+  previewImageUrl?: string | null
   previewContentHash?: string | null
   createdAt?: string | null
   updatedAt?: string | null
+  createdByActor?: DashboardActor | null
+  updatedByActor?: DashboardActor | null
 }
 
 export const DIAGRAMS_V2 = graphql(`
@@ -20,6 +29,7 @@ export const DIAGRAMS_V2 = graphql(`
       teamId
       name
       previewAssetId
+      previewImageUrl
       previewContentHash
       createdBy
       updatedBy
@@ -30,6 +40,14 @@ export const DIAGRAMS_V2 = graphql(`
         type
         name
         email
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        type
+        name
+        email
+        avatarUrl
       }
     }
   }

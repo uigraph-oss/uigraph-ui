@@ -10,16 +10,17 @@ export const DIAGRAM_VERSIONS_V2 = graphql(`
       isAutoVersion
       createdBy
       createdAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
 
 export const DIAGRAM_VERSION_CONTENT_V2 = graphql(`
-  query DiagramVersionContentV2(
-    $orgId: ID!
-    $diagramId: ID!
-    $versionId: ID!
-  ) {
+  query DiagramVersionContentV2($orgId: ID!, $diagramId: ID!, $versionId: ID!) {
     diagramVersionContent(
       orgId: $orgId
       diagramId: $diagramId

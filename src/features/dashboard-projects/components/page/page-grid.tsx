@@ -1,6 +1,7 @@
 'use client'
 
 import { SimpleModalBase } from '@/components'
+import { ActorAvatar } from '@/components/actor-avatar'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { assetUrl } from '@/helpers/asset-url'
 import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -56,10 +56,7 @@ function PageCard({ page }: { page: DashboardFrame }) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const screenshotSrc = assetUrl(
-    page.screenshotAssetId,
-    page.screenshotContentHash
-  )
+  const screenshotSrc = page.screenshotImageUrl ?? undefined
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
@@ -135,6 +132,11 @@ function PageCard({ page }: { page: DashboardFrame }) {
                   : 'N/A'}
               </span>
             </div>
+
+            <ActorAvatar
+              actor={page.updatedByActor ?? page.createdByActor}
+              className="shrink-0"
+            />
           </div>
         </div>
       </Link>

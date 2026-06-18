@@ -1,5 +1,6 @@
 'use client'
 
+import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -139,6 +140,10 @@ function ServiceDatabasePageContent() {
                     key={version.versionId}
                     value={i === 0 ? 'latest' : version.versionId!}
                   >
+                    <ActorAvatar
+                      actor={version.createdByActor}
+                      className="size-4 border-0 shadow-none"
+                    />
                     Version {version.versionNumber}
                     {i === 0 && (
                       <span className="text-paragraph text-xs">(Latest)</span>

@@ -15,9 +15,20 @@ export const SERVICE_DIAGRAMS_V2 = graphql(`
         orgId
         name
         previewAssetId
+        previewImageUrl
         previewContentHash
         createdAt
         updatedAt
+        createdByActor {
+          id
+          name
+          avatarUrl
+        }
+        updatedByActor {
+          id
+          name
+          avatarUrl
+        }
       }
     }
   }
@@ -62,9 +73,20 @@ export function serviceDiagramToLegacyWithMeta(item: {
     orgId: string
     name?: string | null
     previewAssetId?: string | null
+    previewImageUrl?: string | null
     previewContentHash?: string | null
     createdAt?: string | null
     updatedAt?: string | null
+    createdByActor?: {
+      id?: string | null
+      name?: string | null
+      avatarUrl?: string | null
+    } | null
+    updatedByActor?: {
+      id?: string | null
+      name?: string | null
+      avatarUrl?: string | null
+    } | null
   } | null
 }) {
   const d = item.diagram
@@ -84,9 +106,12 @@ export function serviceDiagramToLegacyWithMeta(item: {
           organizationId: d.orgId,
           componentFlowDiagramName: d.name,
           previewImageFileId: d.previewAssetId,
+          previewImageUrl: d.previewImageUrl,
           previewContentHash: d.previewContentHash,
           createdAt: d.createdAt,
           updatedAt: d.updatedAt,
+          createdByActor: d.createdByActor,
+          updatedByActor: d.updatedByActor,
         }
       : null,
   }

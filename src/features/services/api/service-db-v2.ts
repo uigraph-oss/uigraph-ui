@@ -1,12 +1,20 @@
 import { GT } from '@/api'
 import { graphql } from '@/api-v2'
 
+export type ServiceDbActor = {
+  id?: string | null
+  name?: string | null
+  avatarUrl?: string | null
+}
+
 export type LegacyServiceDb = GT.ServiceDb & {
   serviceDBId: string
   serviceId: string
   dbName: string
   dbType: string
   dialect: string
+  createdByActor?: ServiceDbActor | null
+  updatedByActor?: ServiceDbActor | null
 }
 
 export const SERVICE_DBS_V2 = graphql(`
@@ -25,6 +33,16 @@ export const SERVICE_DBS_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -45,6 +63,16 @@ export const SERVICE_DB_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -69,7 +97,12 @@ export const UPDATE_SERVICE_DB_V2 = graphql(`
     $id: ID!
     $input: UpdateServiceDBInput!
   ) {
-    updateServiceDB(orgId: $orgId, serviceId: $serviceId, id: $id, input: $input) {
+    updateServiceDB(
+      orgId: $orgId
+      serviceId: $serviceId
+      id: $id
+      input: $input
+    ) {
       id
       dbName
     }
@@ -126,6 +159,8 @@ export function serviceDBToLegacy(db: {
   updatedBy?: string | null
   createdAt: string
   updatedAt: string
+  createdByActor?: ServiceDbActor | null
+  updatedByActor?: ServiceDbActor | null
 }): LegacyServiceDb {
   const parsed = parseSchemaJson(db.schemaJson)
   return {
@@ -142,6 +177,8 @@ export function serviceDBToLegacy(db: {
     updatedBy: db.updatedBy,
     createdAt: db.createdAt,
     updatedAt: db.updatedAt,
+    createdByActor: db.createdByActor,
+    updatedByActor: db.updatedByActor,
   }
 }
 

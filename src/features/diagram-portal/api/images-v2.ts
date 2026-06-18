@@ -6,6 +6,7 @@ export const DIAGRAM_IMAGES_V2 = graphql(`
       diagramImageId
       diagramId
       assetId
+      imageUrl
       fileName
       order
       createdAt

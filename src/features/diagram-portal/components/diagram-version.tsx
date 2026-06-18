@@ -1,3 +1,5 @@
+import { clientV2 } from '@/api-v2/client'
+import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -9,7 +11,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import { clientV2 } from '@/api-v2/client'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { formatDistanceToNow } from 'date-fns'
@@ -66,7 +67,10 @@ export function DiagramVersion() {
   }
 
   const [isCreatingVersion, setIsCreatingVersion] = useState(false)
-  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION_V2, versionsRefetch)
+  const [createVersion] = useMutation(
+    CREATE_DIAGRAM_VERSION_V2,
+    versionsRefetch
+  )
 
   const [restoreVersion, { loading: isRestoringVersion }] = useMutation(
     RESTORE_DIAGRAM_VERSION_V2,
@@ -74,9 +78,13 @@ export function DiagramVersion() {
   )
 
   const versions = useMemo(() => {
-    return arrayNonNullable(versionsQuery.data?.diagramVersions).sort((a, b) => {
-      return new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-    })
+    return arrayNonNullable(versionsQuery.data?.diagramVersions).sort(
+      (a, b) => {
+        return (
+          new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+        )
+      }
+    )
   }, [versionsQuery.data])
 
   return (
@@ -190,9 +198,7 @@ export function DiagramVersion() {
 
             setTempDiagramState({
               versionId: version.id,
-              ...convertDiagramServerData(
-                data?.diagramVersionContent?.content
-              ),
+              ...convertDiagramServerData(data?.diagramVersionContent?.content),
             })
           } catch {
             toast.error('Failed to load version')
@@ -213,6 +219,10 @@ export function DiagramVersion() {
           <SelectItem value="current">Current</SelectItem>
           {versions.slice(0, showVersionCount).map((option) => (
             <SelectItem key={option.id} value={option.id ?? 'none'}>
+              <ActorAvatar
+                actor={option.createdByActor}
+                className="size-4 border-0 shadow-none"
+              />
               <span>Version {option.versionNumber}</span>
 
               {option.createdAt && (

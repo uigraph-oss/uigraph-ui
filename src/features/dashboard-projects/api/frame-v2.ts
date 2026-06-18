@@ -1,5 +1,11 @@
 import { graphql } from '@/api-v2'
 
+export type DashboardActor = {
+  id?: string | null
+  name?: string | null
+  avatarUrl?: string | null
+}
+
 export type DashboardFrame = {
   id: string
   mapId?: string | null
@@ -9,6 +15,7 @@ export type DashboardFrame = {
   description?: string | null
   templateType?: string | null
   screenshotAssetId?: string | null
+  screenshotImageUrl?: string | null
   screenshotContentHash?: string | null
   status?: string | null
   order?: number | null
@@ -17,6 +24,8 @@ export type DashboardFrame = {
   updatedBy?: string | null
   createdAt?: string | null
   updatedAt?: string | null
+  createdByActor?: DashboardActor | null
+  updatedByActor?: DashboardActor | null
 }
 
 export const FRAMES_V2 = graphql(`
@@ -30,6 +39,7 @@ export const FRAMES_V2 = graphql(`
       description
       templateType
       screenshotAssetId
+      screenshotImageUrl
       screenshotContentHash
       status
       order
@@ -38,6 +48,16 @@ export const FRAMES_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -53,6 +73,7 @@ export const FRAME_V2 = graphql(`
       description
       templateType
       screenshotAssetId
+      screenshotImageUrl
       screenshotContentHash
       status
       order
@@ -61,6 +82,16 @@ export const FRAME_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
@@ -76,6 +107,7 @@ export const FRAME_BY_ID_V2 = graphql(`
       description
       templateType
       screenshotAssetId
+      screenshotImageUrl
       screenshotContentHash
       status
       order
@@ -84,6 +116,16 @@ export const FRAME_BY_ID_V2 = graphql(`
       updatedBy
       createdAt
       updatedAt
+      createdByActor {
+        id
+        name
+        avatarUrl
+      }
+      updatedByActor {
+        id
+        name
+        avatarUrl
+      }
     }
   }
 `)
