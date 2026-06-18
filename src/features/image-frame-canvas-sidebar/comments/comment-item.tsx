@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { UIComment } from '@/features/comments/api/comments-v2'
 import {
   InputEditor,
   InputRenderer,
@@ -23,14 +23,14 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useCommentsContext } from '../../comments/contexts/comments-context'
-import { usePublicAccount } from '../hooks/use-public-account'
 
 type CommentItemProps = {
-  comment: GT.Comment
+  comment: UIComment
 }
 
 export function CommentItem({ comment }: CommentItemProps) {
-  const { name, avatarSrc } = usePublicAccount(comment.createdBy)
+  const avatarSrc = comment.authorAvatarUrl ?? ''
+  const name = comment.authorName || 'User'
 
   const { comments, setReplyToCommentId, updateComment, deleteComment } =
     useCommentsContext()
@@ -38,7 +38,7 @@ export function CommentItem({ comment }: CommentItemProps) {
   const parentComment = comments.find(
     (c) => c.commentId && c.commentId === comment.parentCommentId
   )
-  const { name: parentName } = usePublicAccount(parentComment?.createdBy)
+  const parentName = parentComment?.authorName
 
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(comment.text ?? '')
@@ -141,12 +141,7 @@ export function CommentItem({ comment }: CommentItemProps) {
                       if (!comment.commentId) return
                       const normalized = editText.trim()
                       if (!normalized) return
-                      await updateComment({
-                        variables: {
-                          commentId: comment.commentId,
-                          input: { text: normalized },
-                        },
-                      })
+                      await updateComment(comment.commentId, normalized)
                       setIsEditing(false)
                     }}
                   >
@@ -175,9 +170,7 @@ export function CommentItem({ comment }: CommentItemProps) {
         description="This action cannot be undone."
         onConfirm={async () => {
           if (!comment.commentId) return
-          await deleteComment({
-            variables: { commentId: comment.commentId },
-          })
+          await deleteComment(comment.commentId)
         }}
       />
     </>

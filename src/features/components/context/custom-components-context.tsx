@@ -6,11 +6,23 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import {
-  CREATE_CUSTOM_COMPONENT,
-  DELETE_CUSTOM_COMPONENT,
-  UPDATE_CUSTOM_COMPONENT,
-} from '../api'
-import { GET_COMPONENTS_V2 } from '../api/components-v2'
+  CREATE_CUSTOM_COMPONENT_V2,
+  DELETE_CUSTOM_COMPONENT_V2,
+  GET_COMPONENTS_V2,
+  UPDATE_CUSTOM_COMPONENT_V2,
+} from '../api/components-v2'
+
+function mapComponentFields(fields: GT.ComponentField[]) {
+  return fields.map((field, i) => ({
+    componentFieldId: field.componentFieldId ?? undefined,
+    label: field.label ?? '',
+    type: field.type ?? '',
+    required: field.required ?? false,
+    readonly: field.isReadonly ?? undefined,
+    options: arrayNonNullable(field.options),
+    order: field.order ?? i + 1,
+  }))
+}
 
 export const [CustomComponentsContextProvider, useCustomComponentsContext] =
   createContext(() => {
@@ -22,34 +34,26 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       skip: !organizationId,
     })
 
-    const [createCustomComponent] = useMutation(CREATE_CUSTOM_COMPONENT, {
+    const refetchQueries = [
+      { query: GET_COMPONENTS_V2, variables: { orgId: organizationId } },
+    ]
+
+    const [createCustomComponent] = useMutation(CREATE_CUSTOM_COMPONENT_V2, {
+      client: clientV2,
       awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: GET_COMPONENTS_V2,
-          variables: { orgId: organizationId },
-        },
-      ],
+      refetchQueries,
     })
 
-    const [updateCustomComponent] = useMutation(UPDATE_CUSTOM_COMPONENT, {
+    const [updateCustomComponent] = useMutation(UPDATE_CUSTOM_COMPONENT_V2, {
+      client: clientV2,
       awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: GET_COMPONENTS_V2,
-          variables: { orgId: organizationId },
-        },
-      ],
+      refetchQueries,
     })
 
-    const [deleteCustomComponent] = useMutation(DELETE_CUSTOM_COMPONENT, {
+    const [deleteCustomComponent] = useMutation(DELETE_CUSTOM_COMPONENT_V2, {
+      client: clientV2,
       awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: GET_COMPONENTS_V2,
-          variables: { orgId: organizationId },
-        },
-      ],
+      refetchQueries,
     })
 
     return {
@@ -66,26 +70,12 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       ) {
         return createCustomComponent({
           variables: {
+            orgId: organizationId!,
             input: {
-              organizationId,
-
               name,
               category,
               description,
-
-              type: 'custom',
-              previewImageJpg: 'https://placehold.co/64x64',
-
-              componentFields: fields.map((field) => ({
-                ...field,
-
-                componentFieldId: field.componentFieldId!,
-                required: field.required ?? false,
-
-                order: field.order!,
-                label: field.label!,
-                type: field.type!,
-              })),
+              componentFields: mapComponentFields(fields),
             },
           },
         })
@@ -100,26 +90,14 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       ) {
         return updateCustomComponent({
           variables: {
-            componentId: component.componentId!,
+            orgId: organizationId!,
+            id: component.componentId!,
             input: {
-              type: component.type ?? 'custom',
-
-              status: component.isActive === false ? 'inactive' : 'active',
               name,
               category,
               description,
-              organizationId,
-
-              componentFields: fields.map((field, i) => ({
-                ...field,
-
-                componentFieldId: field.componentFieldId ?? crypto.randomUUID(),
-                required: field.required ?? false,
-                order: field.order ?? i + 1,
-
-                label: field.label ?? '',
-                type: field.type ?? '',
-              })),
+              isActive: component.isActive ?? true,
+              componentFields: mapComponentFields(fields),
             },
           },
         })
@@ -127,7 +105,7 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
 
       deleteCustomComponent(componentId: string) {
         return deleteCustomComponent({
-          variables: { componentId, organizationId },
+          variables: { orgId: organizationId!, id: componentId },
         })
       },
     }

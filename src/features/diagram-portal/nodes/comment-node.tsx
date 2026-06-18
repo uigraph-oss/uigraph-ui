@@ -37,7 +37,7 @@ function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
       }
     : null
   const organizationId = useCurrentOrganization()?.id
-  const { comments, resourceId, createComment, updateComment, deleteComment } =
+  const { comments, createComment, updateComment, deleteComment } =
     useCommentsContext()
 
   const [isResolved, setIsResolved] = useState(data?.isResolved || false)
@@ -65,14 +65,8 @@ function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
     if (!normalized || !user?.userId || !organizationId) return
 
     await createComment({
-      variables: {
-        input: {
-          resourceId,
-          organizationId,
-          text: normalized,
-          ...(replyToCommentId ? { parentCommentId: replyToCommentId } : {}),
-        },
-      },
+      text: normalized,
+      parentCommentId: replyToCommentId ?? undefined,
     })
 
     setReplyText('')
@@ -82,19 +76,14 @@ function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
     const normalized = newContent.trim()
     if (!normalized) return
 
-    await updateComment({
-      variables: {
-        commentId,
-        input: { text: normalized },
-      },
-    })
+    await updateComment(commentId, normalized)
 
     setEditingCommentId(null)
     setEditText('')
   }
 
   async function deleteCommentById(commentId: string) {
-    await deleteComment({ variables: { commentId } })
+    await deleteComment(commentId)
   }
 
   function toggleResolved() {

@@ -10,66 +10,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { clientV2 } from '@/api-v2/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import Fuse from 'fuse.js'
 import { Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { GET_ORGANIZATION_USERS, GET_USERS_BY_TEAM } from '../api/users'
+import { MEMBERS_V2, type OrgMemberRow } from '../api/members-v2'
 import { UserTable } from './user-table'
-
-export interface UserRow {
-  id: string
-  name: string
-  email: string
-  teamName: string
-  teamId?: string
-  role: string
-  status: string
-  avatar: string
-}
 
 export function UsersList({ teamId }: { teamId?: string }) {
   const organizationId = useCurrentOrganization()?.id
 
-  const organizationUsers = useQuery(GET_ORGANIZATION_USERS, {
+  const membersQuery = useQuery(MEMBERS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId },
-    skip: Boolean(teamId),
-  })
-
-  const teamUsers = useQuery(GET_USERS_BY_TEAM, {
-    fetchPolicy: 'cache-first',
-    variables: { organizationId, teamId: teamId ?? '' },
-    skip: !teamId,
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
   })
 
   const [searchTerm, setSearchTerm] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(20)
   const [currentPage, setCurrentPage] = useState(1)
 
-  const isTeamMembersLoading = teamId
-    ? teamUsers.loading && !teamUsers.data
-    : organizationUsers.loading && !organizationUsers.data
+  const isTeamMembersLoading = membersQuery.loading && !membersQuery.data
+
+  const allMembers = useMemo<OrgMemberRow[]>(() => {
+    return arrayNonNullable(membersQuery.data?.members).map((m) => ({
+      userId: m.userId,
+      email: m.email,
+      name: m.name,
+      role: m.role,
+      status: 'Active',
+      teamId: m.teamId,
+      teamName: m.teamName,
+    }))
+  }, [membersQuery.data?.members])
 
   const usersFuse = useMemo(() => {
-    const users = arrayNonNullable(
-      teamId
-        ? teamUsers.data?.GetUsersByTeam
-        : organizationUsers.data?.GetOrganizationUsers
-    )
+    const users = teamId
+      ? allMembers.filter((m) => m.teamId === teamId)
+      : allMembers
 
     const fuse = new Fuse(users, {
       keys: ['email', 'teamName', 'teamId'],
     })
 
     return { users, fuse }
-  }, [
-    teamId,
-    teamUsers.data?.GetUsersByTeam,
-    organizationUsers.data?.GetOrganizationUsers,
-  ])
+  }, [teamId, allMembers])
 
   const filteredUsers = useMemo(() => {
     if (!searchTerm.trim()) return usersFuse.users
@@ -146,7 +135,7 @@ export function UsersList({ teamId }: { teamId?: string }) {
         <div className="text-muted-foreground text-sm">
           Total{' '}
           <span className="font-medium text-gray-700">
-            {organizationUsers.data?.GetOrganizationUsers?.length ?? 0}
+            {allMembers.length}
           </span>{' '}
           users
         </div>

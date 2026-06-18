@@ -1,6 +1,5 @@
 'use client'
 
-import { uploadProjectFile } from '@/api'
 import type { TestCase } from '@/api-v2/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
@@ -8,7 +7,7 @@ import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { env } from '@/env'
+import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -531,11 +530,8 @@ export function TestRunExecutionPage() {
     const urls: string[] = []
     for (const file of files) {
       try {
-        const fileId = await uploadProjectFile(file, {
-          orgId,
-          projectId: serviceId,
-        })
-        const url = `${env.assetsOrigin}/${fileId}`
+        const assetId = await uploadFileV2(orgId, file)
+        const url = assetUrlV2(assetId)
         urls.push(url)
       } catch (error) {
         console.error('Failed to upload file:', error)
@@ -578,7 +574,7 @@ export function TestRunExecutionPage() {
       })
 
       toast.success('Test run completed')
-      navigate(`/services/${serviceId}/tests/runs/${testRunId!}`)
+      void navigate(`/services/${serviceId}/tests/runs/${testRunId!}`)
     } catch (error: unknown) {
       console.error('Failed to complete test run:', error)
       const message =

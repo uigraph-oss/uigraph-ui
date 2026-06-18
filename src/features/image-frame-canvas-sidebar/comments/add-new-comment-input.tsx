@@ -1,21 +1,13 @@
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { InputEditor } from '@/features/comments/components/input-editor'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { Send } from 'lucide-react'
 import { useState } from 'react'
 import { useCommentsContext } from '../../comments/contexts/comments-context'
-import { usePublicAccount } from '../hooks/use-public-account'
 
 export function AddNewCommentInput() {
-  const organizationId = useCurrentOrganization()?.id
-  const {
-    comments,
-    resourceId,
-    createComment,
-    replyToCommentId,
-    setReplyToCommentId,
-  } = useCommentsContext()
+  const { comments, createComment, replyToCommentId, setReplyToCommentId } =
+    useCommentsContext()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [commentValue, setCommentValue] = useState('')
@@ -25,7 +17,7 @@ export function AddNewCommentInput() {
   const replyToComment = comments.find(
     (c) => c.commentId && c.commentId === replyToCommentId
   )
-  const { name: replyToName } = usePublicAccount(replyToComment?.createdBy)
+  const replyToName = replyToComment?.authorName
 
   async function handleFormSubmit() {
     const normalizedComment = commentValue.trim()
@@ -34,14 +26,8 @@ export function AddNewCommentInput() {
     setIsSubmitting(true)
     try {
       await createComment({
-        variables: {
-          input: {
-            resourceId,
-            organizationId,
-            text: normalizedComment,
-            ...(replyToCommentId ? { parentCommentId: replyToCommentId } : {}),
-          },
-        },
+        text: normalizedComment,
+        parentCommentId: replyToCommentId ?? undefined,
       })
 
       setCommentValue('')

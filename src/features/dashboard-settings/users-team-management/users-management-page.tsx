@@ -49,15 +49,14 @@ function UsersManagementContent() {
           onSubmit={async (values) => {
             try {
               await createTeamMember({
-                teamId: values.teamId,
                 email: values.email,
                 role: values.role,
               })
 
               setIsUserModalOpen(false)
-              toast.success('User created successfully')
+              toast.success('User invited successfully')
             } catch {
-              toast.error('Failed to create user')
+              toast.error('Failed to invite user')
             }
           }}
         />

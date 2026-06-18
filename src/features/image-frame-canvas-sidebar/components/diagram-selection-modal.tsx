@@ -1,6 +1,7 @@
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
-import { GET_DIAGRAMS_BY_ORG_ID } from '@/features/dashboard-diagrams/api/diagrams'
+import { DIAGRAMS_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -19,14 +20,16 @@ export function DiagramSelectionModal({
   const [selectedDiagramId, setSelectedDiagramId] = useState<string>('')
 
   const { data: diagramsData, loading: diagramsLoading } = useQuery(
-    GET_DIAGRAMS_BY_ORG_ID,
+    DIAGRAMS_V2,
     {
-      variables: { organizationId },
+      client: clientV2,
+      variables: { orgId: organizationId! },
+      skip: !organizationId,
       fetchPolicy: 'cache-first',
     }
   )
 
-  const diagrams = arrayNonNullable(diagramsData?.v1GetDiagramsByOrgId)
+  const diagrams = arrayNonNullable(diagramsData?.diagrams)
 
   async function handleSelect() {
     if (!selectedDiagramId) return
@@ -59,25 +62,25 @@ export function DiagramSelectionModal({
           <div className="grid grid-cols-2 gap-4">
             {diagrams.map((diagram) => (
               <div
-                key={diagram.diagramId}
+                key={diagram.id}
                 className={`relative cursor-pointer rounded-lg border-2 p-3 transition-all ${
-                  selectedDiagramId === diagram.diagramId
+                  selectedDiagramId === diagram.id
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
-                onClick={() => setSelectedDiagramId(diagram.diagramId ?? '')}
+                onClick={() => setSelectedDiagramId(diagram.id ?? '')}
               >
                 <img
-                  alt={diagram.componentFlowDiagramName ?? 'Blank Diagram'}
-                  src={diagram.previewImageFileId ?? '/placeholder.svg'}
+                  alt={diagram.name ?? 'Blank Diagram'}
+                  src={diagram.previewImageUrl ?? '/placeholder.svg'}
                   className="aspect-square w-full rounded-md object-cover object-top"
                 />
                 <div className="mt-2">
                   <h4 className="line-clamp-1 text-sm font-medium text-[#161616]">
-                    {diagram.componentFlowDiagramName ?? 'Blank Diagram'}
+                    {diagram.name ?? 'Blank Diagram'}
                   </h4>
                 </div>
-                {selectedDiagramId === diagram.diagramId && (
+                {selectedDiagramId === diagram.id && (
                   <div className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500">
                     <div className="h-2 w-2 rounded-full bg-white"></div>
                   </div>

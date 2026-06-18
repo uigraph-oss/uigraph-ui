@@ -1,4 +1,4 @@
-import { GT, uploadProjectFile } from '@/api'
+import { GT } from '@/api'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import {
@@ -6,7 +6,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -31,6 +30,7 @@ import {
   URLInput,
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
+import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -140,12 +140,9 @@ export function ConfigureApiEndpointMeta({
       for (const file in metaDataFiles) {
         const fileData = metaDataFiles[file]
 
-        const fileId = await uploadProjectFile(fileData, {
-          orgId: organizationId,
-          projectId: endpoint.serviceApiGroupId!,
-        })
+        const assetId = await uploadFileV2(organizationId!, fileData)
 
-        duplicatedMetaData[file] = `${env.assetsOrigin}/${fileId}`
+        duplicatedMetaData[file] = assetUrlV2(assetId)
       }
 
       setIsUploading(false)

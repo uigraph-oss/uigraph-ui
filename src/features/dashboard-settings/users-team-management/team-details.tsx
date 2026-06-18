@@ -2,7 +2,7 @@
 
 'use client'
 
-import type { GT } from '@/api'
+import type { SettingsTeam } from '../api/teams-v2'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamModal } from './configure-team-modal'
 
-export function TeamDetails({ team }: { team: GT.TeamInfo }) {
+export function TeamDetails({ team }: { team: SettingsTeam }) {
   const { deleteTeam, updateTeam } = useTeamContext()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
@@ -71,7 +71,7 @@ export function TeamDetails({ team }: { team: GT.TeamInfo }) {
             description: team.description ?? '',
           }}
           onSubmit={async (values) => {
-            await updateTeam(team.teamId!, {
+            await updateTeam(team.teamId, {
               teamName: values.teamName,
               description: values.description ?? '',
             })
@@ -84,7 +84,7 @@ export function TeamDetails({ team }: { team: GT.TeamInfo }) {
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
         onConfirm={async () => {
-          await deleteTeam(team.teamId!)
+          await deleteTeam(team.teamId)
         }}
         title="Do you want to delete this team?"
         description="Deleting a team removes all associated users and data permanently."

@@ -1,6 +1,6 @@
 'use client'
 
-import type { GT } from '@/api'
+import type { SettingsTeam } from '../api/teams-v2'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -51,7 +51,7 @@ export function ConfigureTeamMemberModal({
   })
 
   const selectableTeams = teams.filter(
-    (team): team is GT.TeamInfo & { teamId: string } => Boolean(team.teamId)
+    (team): team is SettingsTeam => Boolean(team.teamId)
   )
 
   return (

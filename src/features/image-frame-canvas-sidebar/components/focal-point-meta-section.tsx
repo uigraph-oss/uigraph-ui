@@ -1,4 +1,4 @@
-import { GT, privateClient } from '@/api'
+import { GT } from '@/api'
 import { clientV2 } from '@/api-v2/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
@@ -13,7 +13,7 @@ import {
   COMPONENT_SUPPORT_KB_ID,
   COMPONENT_TEST_SUITE_ID,
 } from '@/constants/component-meta'
-import { CREATE_DIAGRAM_MUTATION } from '@/features/diagram-portal/api'
+import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
 import {
   SERVICE_DOCS_V2,
   serviceDocToLegacy,
@@ -110,17 +110,18 @@ export function FocalPointMetaSection({
     }
 
     try {
-      const { data: createDiagramData } = await privateClient.mutate({
-        mutation: CREATE_DIAGRAM_MUTATION,
+      const { data: createDiagramData } = await clientV2.mutate({
+        mutation: CREATE_DIAGRAM_V2,
         variables: {
+          orgId: organizationId!,
           input: {
-            organizationId: organizationId,
-            componentFlowDiagram: COMPONENT_FLOW_DIAGRAM_ID,
+            name: component.name ?? 'Flow Diagram',
+            content: JSON.stringify({ nodes: [], edges: [] }),
           },
         },
       })
 
-      const diagramId = createDiagramData?.v1CreateDiagram?.diagramId
+      const diagramId = createDiagramData?.createDiagram?.id
       if (!diagramId) {
         return toast.error('Failed to create diagram. Please try again.')
       }

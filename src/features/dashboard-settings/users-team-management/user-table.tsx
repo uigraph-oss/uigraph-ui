@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import type { OrgMemberRow } from '../api/members-v2'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -29,7 +29,7 @@ function getInitials(email: string | null | undefined): string {
   return firstLetter
 }
 
-function UserRowActions({ user }: { user: GT.UserInfo }) {
+function UserRowActions({ user }: { user: OrgMemberRow }) {
   const currentUser = useAuthStore((state) => state.user)
   const { updateTeamMember, deleteTeamMember } = useTeamContext()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -83,10 +83,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
           }}
           onSubmit={async (values) => {
             try {
-              await updateTeamMember(user.userId!, {
-                email: values.email,
-                status: values.status,
-                teamId: values.teamId,
+              await updateTeamMember(user.userId, {
                 role: values.role,
               })
 
@@ -103,7 +100,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
         open={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
         onConfirm={async () => {
-          await deleteTeamMember(user.userId!)
+          await deleteTeamMember(user.userId)
           setIsDeleteModalOpen(false)
         }}
         title="Do you want to delete this user?"
@@ -115,7 +112,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
   )
 }
 
-const columnHelper = createColumnHelper<GT.UserInfo>()
+const columnHelper = createColumnHelper<OrgMemberRow>()
 
 const userColumns = [
   columnHelper.accessor('email', {
@@ -192,7 +189,7 @@ const userColumns = [
   }),
 ]
 
-export function UserTable({ users }: { users: GT.UserInfo[] }) {
+export function UserTable({ users }: { users: OrgMemberRow[] }) {
   const table = useReactTable({
     data: users,
     columns: userColumns,
