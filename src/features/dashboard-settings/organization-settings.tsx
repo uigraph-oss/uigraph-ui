@@ -1,5 +1,5 @@
 'use client'
-import { uploadGlobalFile } from '@/api/upload-global-file'
+import { uploadFileV2 } from '@/features/uploads/api/uploads-v2'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -70,14 +70,12 @@ export function OrganizationSettings() {
   async function handleLogoUpload(file: File) {
     setIsUploadingLogo(true)
     try {
-      const logoFileId = await uploadGlobalFile(file, {
-        description: 'Organization logo',
-      })
-
       if (!orgData?.organizationId) {
         toast.error('Organization ID not found')
         return
       }
+
+      const logoFileId = await uploadFileV2(orgData.organizationId, file)
 
       await updateOrganization({
         variables: {
