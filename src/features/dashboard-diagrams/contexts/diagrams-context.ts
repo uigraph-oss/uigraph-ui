@@ -18,7 +18,7 @@ import {
   FOLDERS_V2,
   UPDATE_FOLDER_V2,
 } from '../api/folders-v2'
-import { GET_DIAGRAM_ORG_USERS } from '../api/teams'
+import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { TEAMS_V2 } from '../api/teams-v2'
 
 export const [DiagramsContextProvider, useDiagramsContext] = createContext(
@@ -79,9 +79,10 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       skip: !orgId,
     })
 
-    const orgUsersData = useQuery(GET_DIAGRAM_ORG_USERS, {
+    const orgUsersData = useQuery(MEMBERS_V2, {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { organizationId: orgId },
+      variables: { orgId: orgId! },
       skip: !orgId,
     })
 
@@ -91,8 +92,8 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     )
 
     const orgUsers = useMemo(
-      () => arrayNonNullable(orgUsersData.data?.GetOrganizationUsers ?? []),
-      [orgUsersData.data?.GetOrganizationUsers]
+      () => arrayNonNullable(orgUsersData.data?.members ?? []),
+      [orgUsersData.data?.members]
     )
 
     const folderListVariables = { orgId: orgId!, type: 'diagram' as const }

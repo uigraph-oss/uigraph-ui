@@ -12,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { GET_TEAM } from '@/features/dashboard-settings/api'
+import { clientV2 } from '@/api-v2/client'
+import { SETTINGS_TEAMS_V2 } from '@/features/dashboard-settings/api/teams-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -49,11 +50,12 @@ export function ConfigureProjectModal({
   const [errorMessage, setErrorMessage] = useState('')
 
   const organizationId = useCurrentOrganization()?.id
-  const teamRes = useQuery(GET_TEAM, {
-    variables: { organizationId: organizationId! },
+  const teamRes = useQuery(SETTINGS_TEAMS_V2, {
+    client: clientV2,
+    variables: { orgId: organizationId! },
     skip: !organizationId,
   })
-  const teams = arrayNonNullable(teamRes.data?.GetTeam)
+  const teams = arrayNonNullable(teamRes.data?.teams)
 
   const {
     control,
@@ -160,9 +162,9 @@ export function ConfigureProjectModal({
                 </SelectTrigger>
                 <SelectContent>
                   {teams.map((team) => (
-                    <SelectItem key={team.teamId} value={team.teamId ?? 'none'}>
+                    <SelectItem key={team.id} value={team.id ?? 'none'}>
                       <div className="flex w-full items-center justify-between">
-                        <span>{team.teamName}</span>
+                        <span>{team.name}</span>
                         <span className="ml-2 text-sm text-gray-500">
                           ({team.memberCount} members)
                         </span>

@@ -1,4 +1,5 @@
-import { GET_ORGANIZATION_USERS } from '@/features/dashboard-settings/api/users'
+import { clientV2 } from '@/api-v2/client'
+import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import Mention, {
@@ -38,19 +39,20 @@ export function useTiptapEditor({
 }: UseTiptapEditorProps) {
   const organizationId = useCurrentOrganization()?.id
 
-  const { data } = useQuery(GET_ORGANIZATION_USERS, {
+  const { data } = useQuery(MEMBERS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
+    variables: { orgId: organizationId! },
     skip: !organizationId,
   })
 
   const users = useMemo(() => {
-    const organizationUsers = arrayNonNullable(data?.GetOrganizationUsers)
+    const organizationUsers = arrayNonNullable(data?.members)
     return organizationUsers.map((user) => ({
       id: user.email,
       label: user.email, // TODO: Use user name instead of email
     })) as MentionItem[]
-  }, [data?.GetOrganizationUsers])
+  }, [data?.members])
 
   const editor = useEditor({
     editable,

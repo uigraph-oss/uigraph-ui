@@ -1,6 +1,6 @@
 import { clientV2 } from '@/api-v2/client'
-import { GET_DIAGRAM_ORG_USERS } from '@/features/dashboard-diagrams/api/teams'
 import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
+import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import {
   SERVICE_STATS_V2,
   type ServiceStatsRow,
@@ -61,9 +61,10 @@ export function useDashboardServicesList(serviceId?: string) {
     skip: !orgId,
   })
 
-  const orgUsersData = useQuery(GET_DIAGRAM_ORG_USERS, {
+  const orgUsersData = useQuery(MEMBERS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: orgId },
+    variables: { orgId: orgId! },
     skip: !orgId,
   })
 
@@ -73,8 +74,8 @@ export function useDashboardServicesList(serviceId?: string) {
   )
 
   const orgUsers = useMemo(
-    () => arrayNonNullable(orgUsersData.data?.GetOrganizationUsers ?? []),
-    [orgUsersData.data?.GetOrganizationUsers]
+    () => arrayNonNullable(orgUsersData.data?.members ?? []),
+    [orgUsersData.data?.members]
   )
 
   const currentUserTeamId = useMemo(() => {

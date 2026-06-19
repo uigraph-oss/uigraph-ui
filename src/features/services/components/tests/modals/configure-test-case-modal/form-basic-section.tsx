@@ -10,7 +10,8 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TagInput } from '@/features/component-meta'
-import { GET_ORGANIZATION_USERS } from '@/features/dashboard-settings/api/users'
+import { clientV2 } from '@/api-v2/client'
+import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { GET_PUBLIC_ACCOUNT_INFO } from '@/features/image-frame-canvas-sidebar/api/account'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -195,14 +196,15 @@ function TestOwnerSelect({
 export function FormBasicSection({ form }: { form: FormType }) {
   const client = useApolloClient()
   const organizationId = useCurrentOrganization()?.id
-  const { data } = useQuery(GET_ORGANIZATION_USERS, {
+  const { data } = useQuery(MEMBERS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
+    variables: { orgId: organizationId! },
     skip: !organizationId,
   })
   const organizationUsers = useMemo(
-    () => arrayNonNullable(data?.GetOrganizationUsers),
-    [data?.GetOrganizationUsers]
+    () => arrayNonNullable(data?.members),
+    [data?.members]
   )
   const [ownerProfiles, setOwnerProfiles] = useState<
     Record<string, { name: string; avatarSrc: string | null }>

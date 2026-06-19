@@ -1,5 +1,3 @@
-export * from './focal-point'
-
 export enum FocalPointVisibility {
   ProjectWide = 'project-wide',
   OrganizationWide = 'organization-wide',
