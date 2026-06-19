@@ -46,6 +46,10 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
     setName(user.name || '')
   }, [user.name])
 
+  const { data: meData, refetch: refetchMe } = useQuery(ME_V2, {
+    client: clientV2,
+  })
+
   async function handleImageUpload(file: File) {
     setIsUploadingImage(true)
     try {
