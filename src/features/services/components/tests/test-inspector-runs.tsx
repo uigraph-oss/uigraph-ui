@@ -1,10 +1,10 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import type { TestCase } from '@/api-v2/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -50,11 +50,11 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   )
 
   const runsWithResults = useMemo(() => {
-    return testRuns.filter((run: GT.TestRun) => run.testRunId)
+    return testRuns.filter((run: V2.TestRun) => run.testRunId)
   }, [testRuns])
 
   const sortedRuns = useMemo(() => {
-    return [...runsWithResults].sort((a: GT.TestRun, b: GT.TestRun) => {
+    return [...runsWithResults].sort((a: V2.TestRun, b: V2.TestRun) => {
       const dateA = a.executedAt ? new Date(a.executedAt).getTime() : 0
       const dateB = b.executedAt ? new Date(b.executedAt).getTime() : 0
       return dateB - dateA
@@ -113,7 +113,7 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   return (
     <div className="px-6 py-4 transition-opacity duration-150">
       <div className="space-y-0">
-        {sortedRuns.map((run: GT.TestRun) => (
+        {sortedRuns.map((run: V2.TestRun) => (
           <TestRunRow
             key={run.testRunId}
             run={run}
@@ -130,7 +130,7 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
 }
 
 type TestRunRowProps = {
-  run: GT.TestRun
+  run: V2.TestRun
   orgId: string
   serviceId: string
   testCaseId?: string | null
@@ -164,8 +164,8 @@ function TestRunRow({
 
   const testCaseResult = useMemo(() => {
     return results.find(
-      (r: GT.TestRunResult) => r.testCaseId === testCaseId
-    ) as GT.TestRunResult | undefined
+      (r: V2.TestRunResult) => r.testCaseId === testCaseId
+    ) as V2.TestRunResult | undefined
   }, [results, testCaseId])
 
   const status = testCaseResult?.status ?? null
@@ -214,10 +214,6 @@ function TestRunRow({
                   <span>By:</span>
                   <div className="flex items-center gap-1">
                     <Avatar className="size-3">
-                      <AvatarImage
-                        src={run.executedByProfileImgUrl || ''}
-                        className="object-cover"
-                      />
                       <AvatarFallback className="text-[8px]">
                         {run.executedBy.charAt(0).toUpperCase()}
                       </AvatarFallback>

@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import type { TestCase } from '@/api-v2/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -424,7 +424,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
               input: {
                 testPackId: testCase.testPackId,
                 ...transformToCreateTestCase(
-                  transformTestCaseToSchema(testCase as GT.TestCase)
+                  transformTestCaseToSchema(testCase as V2.TestCase)
                 ),
                 title: `${testCase.title || 'Untitled'} (Copy)`,
                 order: newOrder,

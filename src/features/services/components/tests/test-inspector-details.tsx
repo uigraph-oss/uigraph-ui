@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import type { TestCase } from '@/api-v2/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
 import { Badge } from '@/components/ui/badge'
@@ -185,7 +185,7 @@ function Overview({
   testPack,
 }: {
   testCase: TestCase
-  testPack: GT.TestPack | null
+  testPack: V2.TestPack | null
 }) {
   const reservedTags = new Set([
     (testCase.type ?? '').toLowerCase(),
@@ -657,7 +657,7 @@ function ManualDetails({ testCase }: { testCase: TestCase }) {
 
 type TestInspectorDetailsProps = {
   testCase: TestCase
-  testPack: GT.TestPack | null
+  testPack: V2.TestPack | null
 }
 
 export function TestInspectorDetails({

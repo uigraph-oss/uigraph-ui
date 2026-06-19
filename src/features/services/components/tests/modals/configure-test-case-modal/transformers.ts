@@ -1,12 +1,11 @@
-import { GT } from '@/api'
-import type { TestCase as V2TestCase } from '@/api-v2/.gql/graphql'
+import { V2 } from '@/api-v2'
 import { TestCasePriority } from '@/api/.gql/graphql'
 import z from 'zod'
 import { configureTestCaseSchema } from './schema'
 
 export function transformToCreateTestCase(
   data: z.infer<typeof configureTestCaseSchema>
-): Omit<GT.CreateTestCaseInput, 'testPackId' | 'order'> {
+): Omit<V2.CreateTestCaseInput, 'testPackId' | 'order'> {
   return {
     title: data.title,
     description: data.description,
@@ -121,7 +120,7 @@ export function transformToCreateTestCase(
 
 export function transformToUpdateTestCase(
   data: z.infer<typeof configureTestCaseSchema>
-): Omit<GT.UpdateTestCaseInput, 'testCaseId' | 'testPackId' | 'order'> {
+): Omit<V2.UpdateTestCaseInput, 'testCaseId' | 'testPackId' | 'order'> {
   return {
     title: data.title,
     description: data.description,
@@ -249,7 +248,7 @@ function priorityToSchemaValue(
 }
 
 export function transformTestCaseToSchema(
-  testCase: GT.TestCase | V2TestCase
+  testCase: V2.TestCase
 ): z.infer<typeof configureTestCaseSchema> {
   return {
     title: testCase.title!,
