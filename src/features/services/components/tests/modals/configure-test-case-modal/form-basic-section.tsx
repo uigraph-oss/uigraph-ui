@@ -1,3 +1,4 @@
+import { clientV2 } from '@/api-v2/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +11,6 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TagInput } from '@/features/component-meta'
-import { clientV2 } from '@/api-v2/client'
 import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { GET_PUBLIC_ACCOUNT_INFO } from '@/features/image-frame-canvas-sidebar/api/account'
 import { cn } from '@/lib/utils'

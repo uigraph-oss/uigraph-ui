@@ -1,6 +1,6 @@
-import { graphql } from '@/api'
+import { v1Graphql } from '@/api'
 
-export const GET_FOCAL_POINT_META_BY_COMPONENT_META_ID = graphql(`
+export const GET_FOCAL_POINT_META_BY_COMPONENT_META_ID = v1Graphql(`
   query V1GetFocalPointMetaByComponentMetaId($componentMetaId: String!) {
     v1GetFocalPointMeta(componentMetaId: $componentMetaId) {
       focalPointId

@@ -1,4 +1,5 @@
 import { clientV2 } from '@/api-v2/client'
+import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -18,7 +19,6 @@ import {
   FOLDERS_V2,
   UPDATE_FOLDER_V2,
 } from '../api/folders-v2'
-import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { TEAMS_V2 } from '../api/teams-v2'
 
 export const [DiagramsContextProvider, useDiagramsContext] = createContext(

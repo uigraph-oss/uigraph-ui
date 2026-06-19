@@ -1,6 +1,6 @@
-import { graphql } from '@/api'
+import { v1Graphql } from '@/api'
 
-export const GET_PAGE = graphql(`
+export const GET_PAGE = v1Graphql(`
   query V1GetPage($pageId: String, $projectId: String) {
     v1GetPage(pageId: $pageId, projectId: $projectId) {
       organizationId

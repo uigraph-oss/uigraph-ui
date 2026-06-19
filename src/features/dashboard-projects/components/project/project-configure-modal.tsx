@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api-v2/client'
 import { SuperCircleLoader } from '@/components/loader'
 import { SimpleModal } from '@/components/simple-modal'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { clientV2 } from '@/api-v2/client'
 import { SETTINGS_TEAMS_V2 } from '@/features/dashboard-settings/api/teams-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'

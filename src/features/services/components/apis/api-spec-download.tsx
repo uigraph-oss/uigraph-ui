@@ -1,6 +1,6 @@
 'use client'
 
-import { graphql, privateClient } from '@/api'
+import { privateClient, v1Graphql } from '@/api'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import { Download, FileJson, FileText } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-const GET_FILE_BY_ID_DOWNLOAD = graphql(`
+const GET_FILE_BY_ID_DOWNLOAD = v1Graphql(`
   query GetFileByID_SpecDownload($fileId: String!) {
     GetFileByID(fileId: $fileId, download: true) {
       fileId

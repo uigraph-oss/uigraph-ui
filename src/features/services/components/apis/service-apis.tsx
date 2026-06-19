@@ -1,6 +1,6 @@
 'use client'
 
-import { GT, graphql, privateClient } from '@/api'
+import { GT, privateClient, v1Graphql } from '@/api'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'
@@ -44,7 +44,7 @@ import {
 } from './rows/graphql-operation-row'
 import { GrpcMethodItem, GrpcMethodRow } from './rows/grpc-method-row'
 
-const GET_FILE_BY_ID_QUERY = graphql(`
+const GET_FILE_BY_ID_QUERY = v1Graphql(`
   query GetFileByID_ServiceApis($fileId: String!) {
     GetFileByID(fileId: $fileId, download: true) {
       fileId

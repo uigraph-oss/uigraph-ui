@@ -116,7 +116,9 @@ export function OrganizationSettings() {
                 {orgData.name?.substring(0, 2).toUpperCase() || 'OR'}
               </div>
               <div className="flex-1 space-y-1">
-                <label className="text-sm font-medium text-gray-500">Name</label>
+                <label className="text-sm font-medium text-gray-500">
+                  Name
+                </label>
                 {isEditingName ? (
                   <Input
                     value={name}
