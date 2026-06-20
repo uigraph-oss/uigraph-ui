@@ -2,13 +2,17 @@
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
-import { Badge } from '@/components/ui/badge'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { KeyRound, Pencil, Trash2 } from 'lucide-react'
+import { ChevronDown, KeyRound, Pencil, Trash2 } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -22,48 +26,57 @@ import {
 } from './service-account-modal'
 import { ServiceAccountTokensModal } from './service-account-tokens-modal'
 
-const COLLAPSED_SCOPE_COUNT = 8
+function groupScopesByResource(scopes: string[]) {
+  const groups = new Map<string, string[]>()
+  for (const scope of scopes) {
+    const resource = scope.split(':')[0]
+    const actions = groups.get(resource) ?? []
+    actions.push(scope.split(':')[1] ?? scope)
+    groups.set(resource, actions)
+  }
+  return [...groups.entries()]
+}
 
 function ScopesCell({ scopes }: { scopes: string[] }) {
-  const [expanded, setExpanded] = useState(false)
-
   if (scopes.length === 0) {
     return <span className="text-xs text-gray-400">No permissions</span>
   }
 
-  const visibleScopes = expanded
-    ? scopes
-    : scopes.slice(0, COLLAPSED_SCOPE_COUNT)
-  const hiddenCount = scopes.length - visibleScopes.length
+  const groups = groupScopesByResource(scopes)
 
   return (
-    <div className="flex max-w-2xl flex-wrap items-center gap-1">
-      {visibleScopes.map((scope) => (
-        <Badge
-          key={scope}
-          variant="secondary"
-          className="h-6 rounded-md border border-gray-200 bg-gray-50 px-2 font-mono text-xs font-medium text-gray-600"
-        >
-          {scope}
-        </Badge>
-      ))}
-      {hiddenCount > 0 && (
-        <button
-          onClick={() => setExpanded(true)}
-          className="h-6 rounded-md border border-blue-200 bg-blue-50 px-2 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
-        >
-          +{hiddenCount} more
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="inline-flex h-6 items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 text-xs font-medium whitespace-nowrap text-gray-600 transition-colors hover:bg-gray-100">
+          {scopes.length} {scopes.length === 1 ? 'permission' : 'permissions'}
+          <ChevronDown className="size-3.5 shrink-0 text-gray-400" />
         </button>
-      )}
-      {expanded && scopes.length > COLLAPSED_SCOPE_COUNT && (
-        <button
-          onClick={() => setExpanded(false)}
-          className="h-6 rounded-md px-2 text-xs font-medium text-gray-500 transition-colors hover:text-gray-700"
-        >
-          Show less
-        </button>
-      )}
-    </div>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-72 p-0">
+        <div className="border-b border-gray-100 px-3 py-2 text-xs font-semibold text-gray-700">
+          {scopes.length} permissions
+        </div>
+        <div className="max-h-72 space-y-3 overflow-y-auto p-3">
+          {groups.map(([resource, actions]) => (
+            <div key={resource} className="space-y-1.5">
+              <p className="text-[0.6875rem] font-semibold tracking-wide text-gray-400 uppercase">
+                {resource}
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {actions.map((action) => (
+                  <span
+                    key={action}
+                    className="rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-600"
+                  >
+                    {action}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
 
@@ -110,33 +123,25 @@ export function ServiceAccountRow({
   return (
     <Fragment>
       <tr className="group border-b border-gray-100 transition-colors hover:bg-gray-50">
-        <td className="w-56 px-6 py-4 align-top">
+        <td className="w-48 px-6 py-4 align-top">
           <div className="font-medium break-words text-gray-700">
             {account.name}
           </div>
-          {account.description && (
-            <div className="mt-0.5 text-xs leading-snug text-gray-500">
+        </td>
+        <td className="px-6 py-4 align-top">
+          {account.description ? (
+            <span className="text-sm leading-snug text-gray-500">
               {account.description}
-            </div>
+            </span>
+          ) : (
+            <span className="text-sm text-gray-300">—</span>
           )}
         </td>
-        <td className="px-6 py-4 align-top">
+        <td className="w-40 px-6 py-4 align-top">
           <ScopesCell scopes={account.scopes} />
         </td>
-        <td className="px-6 py-4 align-top">
-          <Badge
-            variant="secondary"
-            className={
-              account.disabled
-                ? 'h-6 rounded-md border border-red-200 bg-red-50 px-2.5 text-xs font-medium text-red-700'
-                : 'h-6 rounded-md border border-green-200 bg-green-50 px-2.5 text-xs font-medium text-green-700'
-            }
-          >
-            {account.disabled ? 'Disabled' : 'Active'}
-          </Badge>
-        </td>
         <td className="w-32 px-6 py-4 align-top">
-          <div className="flex items-center gap-[10px]">
+          <div className="flex items-center justify-end gap-[10px]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <button

@@ -18,18 +18,16 @@ export function ServiceAccountTable({
     <table className="w-full">
       <thead>
         <tr className="border-stock bg-background/50 border-b">
-          <th className="w-56 px-6 py-4 text-left text-xs font-medium text-gray-500">
+          <th className="w-48 px-6 py-4 text-left text-xs font-medium text-gray-500">
             Name
           </th>
           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500">
+            Description
+          </th>
+          <th className="w-40 px-6 py-4 text-left text-xs font-medium text-gray-500">
             Permissions
           </th>
-          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500">
-            Status
-          </th>
-          <th className="w-32 px-6 py-4 text-left text-xs font-medium text-gray-500">
-            Actions
-          </th>
+          <th className="w-32 px-6 py-4" />
         </tr>
       </thead>
       <tbody>
