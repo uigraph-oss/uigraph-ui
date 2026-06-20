@@ -1,6 +1,5 @@
 'use client'
 
-import googleIcon from '@/assets/icons/google-icon.svg'
 import lockIcon from '@/assets/icons/lock.svg'
 import backgroundImg from '@/assets/images/auth/background.png'
 import signinImg from '@/assets/images/auth/signup.png'
@@ -280,9 +279,6 @@ export function SignInForm() {
                     }}
                     className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
                   >
-                    {provider.name === 'google' && (
-                      <img src={googleIcon.src} alt="google-icon" />
-                    )}
                     Continue with {provider.displayName}
                   </Button>
                 ))}
