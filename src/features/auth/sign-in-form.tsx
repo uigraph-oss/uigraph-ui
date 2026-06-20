@@ -1,6 +1,5 @@
 'use client'
 
-import { GET_MY_ACCOUNT, privateClient } from '@/api'
 import googleIcon from '@/assets/icons/google-icon.svg'
 import lockIcon from '@/assets/icons/lock.svg'
 import backgroundImg from '@/assets/images/auth/background.png'
@@ -11,8 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Paths } from '@/constants'
-import { useAuth } from '@/contexts'
 import { trackGTag } from '@/helpers/track'
+import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeIcon, EyeOff, Mail } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -34,17 +33,8 @@ export function SignInForm() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  const {
-    checkUserSession,
-    signIn,
-    continueWithFakeGoogle,
-    forgetPassword,
-    resendConfirmationCode,
-    setEmail,
-    setPassword,
-    isAuthLoaded,
-    user,
-  } = useAuth()
+  const status = useAuthStore((state) => state.status)
+  const user = useAuthStore((state) => state.user)
 
   const methods = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -55,12 +45,11 @@ export function SignInForm() {
   })
 
   useEffect(() => {
-    if (!isAuthLoaded && !user) checkUserSession().catch(console.error)
-
-    if (isAuthLoaded && user) {
-      navigate(Paths.dashboard.root)
+    if (status === 'authenticated' && user) {
+      void navigate(Paths.dashboard.root)
       return
     }
+
     const { search } = window.location
     const query = new URLSearchParams(search)
 
@@ -72,84 +61,55 @@ export function SignInForm() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthLoaded])
+  }, [status])
 
   async function onLogin(values: SignInFormValues) {
     try {
       setLoading(true)
       setError('')
 
-      const { nextStep: signInNextStep } = await signIn(
-        values.email,
-        values.password
-      )
+      await signIn(values.email, values.password)
 
-      if (signInNextStep.signInStep === 'CONFIRM_SIGN_UP') {
-        setLoading(false)
-        await resendConfirmationCode(values.email)
-
-        setEmail(values.email)
-        setPassword(values.password)
-
-        window.location.replace(
-          `${location.host + Paths.auth.emailConfirm}?email=${encodeURIComponent(values.email)}`
-        )
-      } else {
-        try {
-          const { data } = await privateClient.query({
-            query: GET_MY_ACCOUNT,
-            fetchPolicy: 'no-cache',
-          })
-
-          const accountId = data?.GetMyAccount?.accountId
-
-          trackGTag('login', {
-            method: 'email',
-            email_domain: values.email.split('@')[1],
-          })
-
-          if (accountId) {
-            navigate(`${Paths.dashboard.root}?accountId=${accountId}`)
-          } else {
-            window.location.replace(location.host + Paths.auth.signup)
-          }
-        } catch {
-          window.location.replace(location.host + Paths.auth.signup)
-        }
-        setLoading(false)
-      }
-    } catch (e) {
-      setError((e as Error).message)
-      setLoading(false)
-      if ((e as Error).name === 'UserNotConfirmedException') {
-        window.location.replace(
-          `${location.host + Paths.auth.emailConfirm}?email=${encodeURIComponent(values.email)}`
-        )
-      } else {
-        setError((e as Error).message || 'An error occurred. Please try again.')
-      }
-    }
-  }
-  async function handleForgotPassword() {
-    try {
-      toast.success('Please check your email for the reset password link.')
-      setError('')
-      const email = methods.watch('email')
-      if (!email) {
-        toast.error('Please type the email!')
-      }
-      await forgetPassword(email)
-
-      trackGTag('forgot_password', {
-        email_domain: email.split('@')[1],
+      trackGTag('login', {
+        method: 'email',
+        email_domain: values.email.split('@')[1],
       })
 
-      window.location.replace(
-        `${location.host + Paths.auth.forgotPassword}?email=${encodeURIComponent(email)}`
-      )
+      void navigate(Paths.dashboard.root)
     } catch (e) {
-      setError((e as Error).message)
+      setError((e as Error).message || 'An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
     }
+  }
+
+  async function continueWithFakeGoogle() {
+    try {
+      setLoading(true)
+      setError('')
+      await signIn('google@mock.dev', 'mock')
+      void navigate(Paths.dashboard.root)
+    } catch (e) {
+      setError((e as Error).message || 'An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function handleForgotPassword() {
+    const email = methods.watch('email')
+    if (!email) {
+      toast.error('Please type the email!')
+      return
+    }
+
+    trackGTag('forgot_password', {
+      email_domain: email.split('@')[1],
+    })
+
+    window.location.replace(
+      `${location.host + Paths.auth.forgotPassword}?email=${encodeURIComponent(email)}`
+    )
   }
 
   return (
@@ -324,7 +284,7 @@ export function SignInForm() {
                   trackGTag('login', {
                     method: 'google',
                   })
-                  continueWithFakeGoogle()
+                  void continueWithFakeGoogle()
                 }}
                 className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
               >

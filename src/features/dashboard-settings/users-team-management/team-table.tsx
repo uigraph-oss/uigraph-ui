@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -13,12 +12,13 @@ import {
 import { useState } from 'react'
 import { FiChevronRight, FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import type { SettingsTeam } from '../api/teams-v2'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamModal } from './configure-team-modal'
 
-const columnHelper = createColumnHelper<GT.TeamInfo>()
+const columnHelper = createColumnHelper<SettingsTeam>()
 
-function TeamRowActions({ team }: { team: GT.TeamInfo }) {
+function TeamRowActions({ team }: { team: SettingsTeam }) {
   const navigate = useNavigate()
   const { deleteTeam, updateTeam } = useTeamContext()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -65,7 +65,7 @@ function TeamRowActions({ team }: { team: GT.TeamInfo }) {
             description: team.description ?? '',
           }}
           onSubmit={async (values) => {
-            await updateTeam(team.teamId!, {
+            await updateTeam(team.teamId, {
               teamName: values.teamName,
               description: values.description ?? '',
             })
@@ -77,7 +77,7 @@ function TeamRowActions({ team }: { team: GT.TeamInfo }) {
         open={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
         onConfirm={async () => {
-          await deleteTeam(team.teamId!)
+          await deleteTeam(team.teamId)
         }}
         title="Do you want to delete this team?"
         description="Deleting a team removes all associated users and data permanently."
@@ -130,7 +130,7 @@ const teamColumns = [
   }),
 ]
 
-export function TeamTable({ teams }: { teams: GT.TeamInfo[] }) {
+export function TeamTable({ teams }: { teams: SettingsTeam[] }) {
   const table = useReactTable({
     data: teams,
     columns: teamColumns,

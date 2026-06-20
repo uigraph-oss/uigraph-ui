@@ -1,6 +1,6 @@
-import { graphql } from '@/api'
+import { v1Graphql } from '@/api'
 
-export const GET_PUBLIC_ACCOUNT_INFO = graphql(`
+export const GET_PUBLIC_ACCOUNT_INFO = v1Graphql(`
   query GetPubAccountByID($accountId: String!) {
     GetPubAccountByID(accountId: $accountId) {
       accountId

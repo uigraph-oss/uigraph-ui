@@ -1,10 +1,10 @@
 import { clientV2 } from '@/api-v2/client'
-import { useOrganizationContext } from '@/contexts'
 import {
   DIAGRAM_CONTENT_V2,
   DIAGRAM_V2,
 } from '@/features/diagram-portal/api/diagram-v2'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { lazy, Suspense, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
@@ -16,7 +16,7 @@ const FlowDiagramPreview = lazy(() =>
 )
 
 export function DiagramPreviewPage() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { diagramId } = useParams<{ diagramId: string }>()
 
   const skip = !diagramId || !organizationId

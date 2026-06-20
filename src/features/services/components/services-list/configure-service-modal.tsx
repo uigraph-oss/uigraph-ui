@@ -1,3 +1,4 @@
+import { clientV2 } from '@/api-v2/client'
 import { GitIcon, JiraIcon, SlackIcon } from '@/assets/svgs'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
@@ -10,11 +11,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { clientV2 } from '@/api-v2/client'
 import { TagInput } from '@/features/component-meta'
 import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { arrayNonNullable } from 'daily-code'

@@ -1,7 +1,7 @@
 'use client'
 
-import { useOrganizationContext } from '@/contexts'
 import { DashboardPageLayout } from '@/features/dashboard'
+import { useCurrentOrganization } from '@/store/auth-store'
 import {
   PropsWithChildren,
   useCallback,
@@ -22,7 +22,7 @@ import {
 export function AiChatLayout({ children }: PropsWithChildren) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const [sessions, setSessions] = useState<ChatSidebarSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreatingSession, setIsCreatingSession] = useState(false)

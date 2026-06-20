@@ -1,4 +1,4 @@
-import { GT, uploadProjectFile } from '@/api'
+import { GT } from '@/api'
 import { SettingsIcon } from '@/assets/svgs'
 import { CrossButton } from '@/components/cross-button'
 import { SuperCircleLoader } from '@/components/loader'
@@ -13,8 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useOrganizationContext } from '@/contexts'
-import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -40,7 +38,9 @@ import {
 } from '@/features/component-meta'
 import { GET_COMPONENT_META } from '@/features/component-meta/api/meta'
 import { SaveIcon } from '@/features/component-meta/assets'
+import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
@@ -78,7 +78,7 @@ function FocalPointMetaModalContent({
     values: flattenedMemoizedData,
   })
 
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
 
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -97,12 +97,9 @@ function FocalPointMetaModalContent({
       for (const file in metaDataFiles) {
         const fileData = metaDataFiles[file]
 
-        const fileId = await uploadProjectFile(fileData, {
-          orgId: organizationId,
-          projectId: '123',
-        })
+        const assetId = await uploadFileV2(organizationId!, fileData)
 
-        duplicatedMetaData[file] = `${env.assetsOrigin}/${fileId}`
+        duplicatedMetaData[file] = assetUrlV2(assetId)
       }
 
       setIsUploading(false)

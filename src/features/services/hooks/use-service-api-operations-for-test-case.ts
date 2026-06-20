@@ -5,10 +5,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
-import {
-  API_ENDPOINTS_V2,
-  API_GROUPS_V2,
-} from '../api/api-endpoints-v2'
+import { API_ENDPOINTS_V2, API_GROUPS_V2 } from '../api/api-endpoints-v2'
 import { endpointsToLegacyWithMeta } from '../api/api-v2-adapters'
 import {
   deriveApiOperations,
@@ -28,15 +25,12 @@ export function useServiceApiOperationsForTestCase(serviceId: string | null) {
     null
   )
 
-  const { data: groupsData, loading: groupsLoading } = useQuery(
-    API_GROUPS_V2,
-    {
-      client: clientV2,
-      variables: { orgId: orgId!, serviceId: serviceId! },
-      skip: !orgId || !serviceId,
-      fetchPolicy: 'cache-first',
-    }
-  )
+  const { data: groupsData, loading: groupsLoading } = useQuery(API_GROUPS_V2, {
+    client: clientV2,
+    variables: { orgId: orgId!, serviceId: serviceId! },
+    skip: !orgId || !serviceId,
+    fetchPolicy: 'cache-first',
+  })
 
   const apiGroups = useMemo((): ApiGroupForTestCase[] => {
     const raw = arrayNonNullable(groupsData?.apiGroups)

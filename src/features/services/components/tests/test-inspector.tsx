@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import type { TestCase } from '@/api-v2/.gql/graphql'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { motion } from 'framer-motion'
@@ -13,7 +13,7 @@ import { TestInspectorTabs } from './test-inspector-tabs'
 
 type TestInspectorProps = {
   testCase: TestCase | null
-  testPack: GT.TestPack | null
+  testPack: V2.TestPack | null
   open: boolean
   onClose: () => void
   onEdit?: (testCase: TestCase) => void

@@ -1,9 +1,4 @@
-import {
-  CloudflareWorkerIcon,
-  MoreVerticalIcon,
-  OpenApiIcon,
-  SwaggerIcon,
-} from '@/assets/svgs'
+import { MoreVerticalIcon, OpenApiIcon, SwaggerIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'

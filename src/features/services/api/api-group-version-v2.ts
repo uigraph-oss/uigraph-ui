@@ -13,11 +13,7 @@ export type DashboardAPIGroupVersion = {
 }
 
 export const API_GROUP_AND_VERSIONS_V2 = graphql(`
-  query APIGroupAndVersionsV2(
-    $orgId: ID!
-    $serviceId: ID!
-    $apiGroupId: ID!
-  ) {
+  query APIGroupAndVersionsV2($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {
     apiGroups(orgId: $orgId, serviceId: $serviceId) {
       id
       serviceId
@@ -52,11 +48,7 @@ export const API_GROUP_AND_VERSIONS_V2 = graphql(`
 `)
 
 export const API_GROUP_VERSIONS_V2 = graphql(`
-  query APIGroupVersionsV2(
-    $orgId: ID!
-    $serviceId: ID!
-    $apiGroupId: ID!
-  ) {
+  query APIGroupVersionsV2($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {
     apiGroupVersions(
       orgId: $orgId
       serviceId: $serviceId

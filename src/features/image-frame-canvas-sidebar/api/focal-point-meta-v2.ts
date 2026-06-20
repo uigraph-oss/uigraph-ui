@@ -80,6 +80,30 @@ export const FOCAL_POINT_META_V2 = graphql(`
   }
 `)
 
+export const FOCAL_POINT_META_BY_COMPONENT_LINK_V2 = graphql(`
+  query FocalPointMetaByComponentLinkV2(
+    $orgId: ID!
+    $componentLinkId: ID!
+  ) {
+    focalPointMetaByComponentLink(
+      orgId: $orgId
+      componentLinkId: $componentLinkId
+    ) {
+      id
+      focalPointId
+      orgId
+      frameId
+      componentId
+      componentLinkId
+      componentImages
+      componentFlowDiagram
+      componentModalFields
+      createdAt
+      updatedAt
+    }
+  }
+`)
+
 export const CREATE_FOCAL_POINT_META_V2 = graphql(`
   mutation CreateFocalPointMetaV2(
     $orgId: ID!

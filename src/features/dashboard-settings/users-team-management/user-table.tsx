@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -10,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useOrganizationContext } from '@/contexts'
+import { useAuthStore } from '@/store/auth-store'
 import {
   createColumnHelper,
   flexRender,
@@ -20,6 +19,7 @@ import {
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import type { OrgMemberRow } from '../api/members-v2'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamMemberModal } from './configure-team-member-modal'
 
@@ -29,8 +29,8 @@ function getInitials(email: string | null | undefined): string {
   return firstLetter
 }
 
-function UserRowActions({ user }: { user: GT.UserInfo }) {
-  const { account } = useOrganizationContext()
+function UserRowActions({ user }: { user: OrgMemberRow }) {
+  const currentUser = useAuthStore((state) => state.user)
   const { updateTeamMember, deleteTeamMember } = useTeamContext()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -38,14 +38,14 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
   const actionsTrigger = (
     <div className="flex items-center gap-[10px]">
       <button
-        disabled={user.email === account?.email}
+        disabled={user.email === currentUser?.email}
         className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-400"
         onClick={() => setIsEditModalOpen(true)}
       >
         Edit
       </button>
       <button
-        disabled={user.email === account?.email}
+        disabled={user.email === currentUser?.email}
         className="flex size-8 items-center justify-center rounded-md border border-red-200 text-red-600 transition-colors hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:bg-transparent"
         onClick={() => setIsDeleteModalOpen(true)}
       >
@@ -56,7 +56,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
 
   return (
     <>
-      {user.email === account?.email ? (
+      {user.email === currentUser?.email ? (
         <Tooltip>
           <TooltipTrigger asChild>{actionsTrigger}</TooltipTrigger>
           <TooltipContent>You cannot edit your own details</TooltipContent>
@@ -83,10 +83,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
           }}
           onSubmit={async (values) => {
             try {
-              await updateTeamMember(user.userId!, {
-                email: values.email,
-                status: values.status,
-                teamId: values.teamId,
+              await updateTeamMember(user.userId, {
                 role: values.role,
               })
 
@@ -103,7 +100,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
         open={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
         onConfirm={async () => {
-          await deleteTeamMember(user.userId!)
+          await deleteTeamMember(user.userId)
           setIsDeleteModalOpen(false)
         }}
         title="Do you want to delete this user?"
@@ -115,7 +112,7 @@ function UserRowActions({ user }: { user: GT.UserInfo }) {
   )
 }
 
-const columnHelper = createColumnHelper<GT.UserInfo>()
+const columnHelper = createColumnHelper<OrgMemberRow>()
 
 const userColumns = [
   columnHelper.accessor('email', {
@@ -192,7 +189,7 @@ const userColumns = [
   }),
 ]
 
-export function UserTable({ users }: { users: GT.UserInfo[] }) {
+export function UserTable({ users }: { users: OrgMemberRow[] }) {
   const table = useReactTable({
     data: users,
     columns: userColumns,

@@ -1,3 +1,4 @@
+import { clientV2 } from '@/api-v2/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,7 +10,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { CodeMirrorWrapped } from '@/features/component-meta'
-import { clientV2 } from '@/api-v2/client'
 import { API_ENDPOINTS_V2 } from '@/features/services/api/api-endpoints-v2'
 import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'

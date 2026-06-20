@@ -1,10 +1,9 @@
-import { useOrganizationContext } from '@/contexts'
-import { useAuth } from '@/contexts/auth-context-provider'
 import {
   CommentsContextProvider,
   useCommentsContext,
 } from '@/features/comments/contexts/comments-context'
 import { cn } from '@/lib/utils'
+import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -29,9 +28,16 @@ export function CommentNode({ ...props }: NodeProps<TCommentNode>) {
 function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
   const { id, data, selected, dragging } = props
   const { updateNodeData, setNodes } = useReactFlow()
-  const { user } = useAuth()
-  const { organizationId } = useOrganizationContext()
-  const { comments, resourceId, createComment, updateComment, deleteComment } =
+  const storeUser = useAuthStore((state) => state.user)
+  const user = storeUser
+    ? {
+        userId: storeUser.userId,
+        name: storeUser.name,
+        pic: storeUser.avatarUrl ?? undefined,
+      }
+    : null
+  const organizationId = useCurrentOrganization()?.id
+  const { comments, createComment, updateComment, deleteComment } =
     useCommentsContext()
 
   const [isResolved, setIsResolved] = useState(data?.isResolved || false)
@@ -59,14 +65,8 @@ function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
     if (!normalized || !user?.userId || !organizationId) return
 
     await createComment({
-      variables: {
-        input: {
-          resourceId,
-          organizationId,
-          text: normalized,
-          ...(replyToCommentId ? { parentCommentId: replyToCommentId } : {}),
-        },
-      },
+      text: normalized,
+      parentCommentId: replyToCommentId ?? undefined,
     })
 
     setReplyText('')
@@ -76,19 +76,14 @@ function CommentNodeContent({ ...props }: NodeProps<TCommentNode>) {
     const normalized = newContent.trim()
     if (!normalized) return
 
-    await updateComment({
-      variables: {
-        commentId,
-        input: { text: normalized },
-      },
-    })
+    await updateComment(commentId, normalized)
 
     setEditingCommentId(null)
     setEditText('')
   }
 
   async function deleteCommentById(commentId: string) {
-    await deleteComment({ variables: { commentId } })
+    await deleteComment(commentId)
   }
 
   function toggleResolved() {

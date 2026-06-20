@@ -1,8 +1,8 @@
 import { GT } from '@/api'
 import { ComponentInputType } from '@uigraph/sdk'
 import type {
-  DashboardAPIGroup,
   DashboardAPIEndpoint,
+  DashboardAPIGroup,
 } from './api-endpoints-v2'
 import type { DashboardAPIGroupVersion } from './api-group-version-v2'
 
@@ -92,7 +92,8 @@ export function apiGroupToLegacy(group: DashboardAPIGroup): LegacyAPIGroupView {
     protocol: group.protocol,
     openApiSpecFileId: protocol === 'rest' ? specRef : undefined,
     swaggerSpecFileId: undefined,
-    graphqlSpecFileIds: protocol === 'graphql' && specRef ? [specRef] : undefined,
+    graphqlSpecFileIds:
+      protocol === 'graphql' && specRef ? [specRef] : undefined,
     grpcSpecFileIds: protocol === 'grpc' && specRef ? [specRef] : undefined,
     createdBy: group.createdBy,
     createdAt: group.createdAt,

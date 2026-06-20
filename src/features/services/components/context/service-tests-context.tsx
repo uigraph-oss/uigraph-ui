@@ -1,8 +1,8 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api-v2'
 import type { TestCase } from '@/api-v2/.gql/graphql'
-import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -111,7 +111,11 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         return arrayNonNullable(packRunsData?.testRuns)
       }
       return arrayNonNullable(summaryRunsData?.testRunsSummary)
-    }, [packRunsData?.testRuns, selectedPackId, summaryRunsData?.testRunsSummary])
+    }, [
+      packRunsData?.testRuns,
+      selectedPackId,
+      summaryRunsData?.testRunsSummary,
+    ])
 
     const selectedPack = useMemo(() => {
       return (
@@ -420,7 +424,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
               input: {
                 testPackId: testCase.testPackId,
                 ...transformToCreateTestCase(
-                  transformTestCaseToSchema(testCase as GT.TestCase)
+                  transformTestCaseToSchema(testCase as V2.TestCase)
                 ),
                 title: `${testCase.title || 'Untitled'} (Copy)`,
                 order: newOrder,

@@ -1,12 +1,11 @@
-import { GT } from '@/api'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import type { UIComment } from '@/features/comments/api/comments-v2'
 import { InputRenderer } from '@/features/comments/components/input-editor'
-import { usePublicAccount } from '@/features/image-frame-canvas-sidebar/hooks/use-public-account'
 import { motion } from 'framer-motion'
 import { formatTimeAgo } from '../helpers/comment-helpers'
 
 type CommentPreviewProps = {
-  comments: GT.Comment[]
+  comments: UIComment[]
   totalComments: number
   onMouseEnter: () => void
   onMouseLeave: () => void
@@ -48,11 +47,11 @@ function CommentContent({
   comments,
   totalComments,
 }: {
-  comments: GT.Comment[]
+  comments: UIComment[]
   totalComments: number
 }) {
-  const { name, avatarSrc } = usePublicAccount(comments[0]?.createdBy)
-  const displayName = name || 'Anonymous'
+  const avatarSrc = comments[0]?.authorAvatarUrl ?? ''
+  const displayName = comments[0]?.authorName || 'Anonymous'
 
   return (
     <div className="w-64 space-y-2">

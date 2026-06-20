@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
@@ -27,7 +27,7 @@ type RunStats = {
 }
 
 type RunDetailsHeaderProps = {
-  testRun: GT.TestRun
+  testRun: V2.TestRun
   displayRunStatus?: DisplayRunStatus
   stats?: RunStats | null
   onReRunFailed?: () => void

@@ -91,11 +91,7 @@ export const CREATE_SERVICE_V2 = graphql(`
 `)
 
 export const UPDATE_SERVICE_V2 = graphql(`
-  mutation UpdateServiceV2(
-    $orgId: ID!
-    $id: ID!
-    $input: UpdateServiceInput!
-  ) {
+  mutation UpdateServiceV2($orgId: ID!, $id: ID!, $input: UpdateServiceInput!) {
     updateService(orgId: $orgId, id: $id, input: $input) {
       id
       name
@@ -109,18 +105,16 @@ export const DELETE_SERVICE_V2 = graphql(`
   }
 `)
 
-export function toCreateServiceInput(
-  data: {
-    name: string
-    category: string
-    description: string
-    teamId?: string
-    labels?: string[]
-    gitRepoUrl?: string
-    jiraProjectUrl?: string
-    slackChannelUrl?: string
-  }
-) {
+export function toCreateServiceInput(data: {
+  name: string
+  category: string
+  description: string
+  teamId?: string
+  labels?: string[]
+  gitRepoUrl?: string
+  jiraProjectUrl?: string
+  slackChannelUrl?: string
+}) {
   return {
     name: data.name,
     description: data.description,
@@ -136,18 +130,16 @@ export function toCreateServiceInput(
   }
 }
 
-export function toUpdateServiceInput(
-  data: {
-    name: string
-    category: string
-    description: string
-    teamId?: string
-    labels?: string[]
-    gitRepoUrl?: string
-    jiraProjectUrl?: string
-    slackChannelUrl?: string
-  }
-) {
+export function toUpdateServiceInput(data: {
+  name: string
+  category: string
+  description: string
+  teamId?: string
+  labels?: string[]
+  gitRepoUrl?: string
+  jiraProjectUrl?: string
+  slackChannelUrl?: string
+}) {
   return {
     name: data.name,
     description: data.description,

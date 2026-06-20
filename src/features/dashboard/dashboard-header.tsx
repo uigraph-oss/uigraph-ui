@@ -17,8 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useAuth, useOrganizationContext } from '@/contexts'
 import { trackGTag } from '@/helpers/track'
+import { signOut, useAuthStore } from '@/store/auth-store'
 import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { LogoutIcon } from './assets/icons'
@@ -86,21 +86,27 @@ export function DashboardHeader({ crumbs, enableLogo }: DashboardHeaderProps) {
 }
 
 export function UserDropdownMenu() {
-  const { signout } = useAuth()
-  const { account } = useOrganizationContext()
+  const user = useAuthStore((state) => state.user)
+
+  const initials = (user?.name || '')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="h-10 w-10 cursor-pointer">
           <AvatarImage
-            src={account?.imageUrl || account?.image || ''}
+            src={user?.avatarUrl || ''}
             alt="Profile"
             className="object-cover"
           />
           <AvatarFallback className="bg-paragraph/30 text-foreground/70 gap-1 font-bold">
-            {account?.firstName?.charAt(0)}
-            {account?.lastName?.charAt(0)}
+            {initials}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -111,10 +117,8 @@ export function UserDropdownMenu() {
       >
         <div className="border-stock border-b px-4">
           <DropdownMenuLabel className="flex flex-col justify-center gap-2 px-0 py-3 leading-[1.33]">
-            <h4 className={'font-semibold'}>
-              {account.firstName} {account.lastName}
-            </h4>
-            <p className={'text-sm'}>{account?.email}</p>
+            <h4 className={'font-semibold'}>{user?.name}</h4>
+            <p className={'text-sm'}>{user?.email}</p>
           </DropdownMenuLabel>
         </div>
 
@@ -157,7 +161,8 @@ export function UserDropdownMenu() {
           <DropdownMenuItem
             onClick={async () => {
               trackGTag('logout')
-              await signout()
+              await signOut()
+              window.location.href = '/sign-in'
             }}
             className="hover:text-destructive! h-[2.4375rem] cursor-pointer transition-all hover:bg-red-100!"
           >

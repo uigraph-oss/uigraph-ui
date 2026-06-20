@@ -1,3 +1,4 @@
+import { clientV2 } from '@/api-v2/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,11 +10,11 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { useOrganizationContext } from '@/contexts/organization-context'
 import { TagInput } from '@/features/component-meta'
-import { GET_ORGANIZATION_USERS } from '@/features/dashboard-settings/api/users'
+import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { GET_PUBLIC_ACCOUNT_INFO } from '@/features/image-frame-canvas-sidebar/api/account'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useApolloClient, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useEffect, useMemo, useState } from 'react'
@@ -194,15 +195,16 @@ function TestOwnerSelect({
 
 export function FormBasicSection({ form }: { form: FormType }) {
   const client = useApolloClient()
-  const { organizationId } = useOrganizationContext()
-  const { data } = useQuery(GET_ORGANIZATION_USERS, {
+  const organizationId = useCurrentOrganization()?.id
+  const { data } = useQuery(MEMBERS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
+    variables: { orgId: organizationId! },
     skip: !organizationId,
   })
   const organizationUsers = useMemo(
-    () => arrayNonNullable(data?.GetOrganizationUsers),
-    [data?.GetOrganizationUsers]
+    () => arrayNonNullable(data?.members),
+    [data?.members]
   )
   const [ownerProfiles, setOwnerProfiles] = useState<
     Record<string, { name: string; avatarSrc: string | null }>

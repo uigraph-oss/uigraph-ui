@@ -3,11 +3,15 @@
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
-import { GT, privateClient } from '@/api'
-import { useOrganizationContext } from '@/contexts'
-import { GET_PAGE } from '@/features/dashboard-projects/api/page'
-import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
-import { GET_FOCAL_POINT_META_BY_COMPONENT_META_ID } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
+import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
+import { FRAME_BY_ID_V2 } from '@/features/dashboard-projects/api/frame-v2'
+import { MAP_V2 } from '@/features/dashboard-projects/api/map-v2'
+import {
+  FOCAL_POINT_META_BY_COMPONENT_LINK_V2,
+  toPointMeta,
+} from '@/features/image-frame-canvas-sidebar/api/focal-point-meta-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 
 import { SectionLoader } from '@/components/section-loader'
 import { arrayNonNullable } from 'daily-code'
@@ -32,12 +36,12 @@ function uniq<T>(arr: T[]) {
   return Array.from(new Set(arr))
 }
 
-async function fetchPages(pageIds: string[]) {
+async function fetchPages(pageIds: string[], organizationId: string) {
   const results = await Promise.all(
     pageIds.map((pageId) =>
-      privateClient.query({
-        query: GET_PAGE,
-        variables: { pageId },
+      clientV2.query({
+        query: FRAME_BY_ID_V2,
+        variables: { orgId: organizationId, id: pageId },
         fetchPolicy: 'cache-first',
       })
     )
@@ -46,13 +50,13 @@ async function fetchPages(pageIds: string[]) {
   const map = new Map<string, PageMeta>()
   results.forEach((result, idx) => {
     const pageId = pageIds[idx]
-    const page = result.data?.v1GetPage?.[0]
+    const page = result.data?.frameById
     if (!pageId || !page) return
 
     map.set(pageId, {
-      pageName: page.pageName || '',
-      imageUrl: page.screenShotFileUrl || undefined,
-      projectId: page.projectId || undefined,
+      pageName: page.name || '',
+      imageUrl: page.screenshotImageUrl || undefined,
+      projectId: page.mapId || undefined,
     })
   })
 
@@ -62,9 +66,9 @@ async function fetchPages(pageIds: string[]) {
 async function fetchProjects(projectIds: string[], organizationId: string) {
   const results = await Promise.all(
     projectIds.map((projectId) =>
-      privateClient.query({
-        query: GET_PROJECT,
-        variables: { projectId, organizationId },
+      clientV2.query({
+        query: MAP_V2,
+        variables: { orgId: organizationId, id: projectId },
         fetchPolicy: 'cache-first',
       })
     )
@@ -73,7 +77,7 @@ async function fetchProjects(projectIds: string[], organizationId: string) {
   const map = new Map<string, string>()
   results.forEach((result, idx) => {
     const projectId = projectIds[idx]
-    const project = result.data?.v1GetProject?.[0]
+    const project = result.data?.map
     if (projectId && project?.name) map.set(projectId, project.name)
   })
 
@@ -84,8 +88,8 @@ export function ConfigureApiEndpointConnections({
   endpoint,
   readonly = false,
 }: ConfigureApiEndpointConnectionsProps) {
-  const { organizationId } = useOrganizationContext()
-  const componentMetaId = endpoint.componentMetaId
+  const organizationId = useCurrentOrganization()?.id
+  const componentLinkId = endpoint.apiEndpointId
 
   // Connections tab is lazy-rendered, so this is effectively lazy-loaded
   const {
@@ -93,14 +97,21 @@ export function ConfigureApiEndpointConnections({
     loading: focalPointsLoading,
     error: focalPointsError,
     refetch,
-  } = useQuery(GET_FOCAL_POINT_META_BY_COMPONENT_META_ID, {
-    variables: { componentMetaId: componentMetaId! },
-    skip: !componentMetaId,
+  } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK_V2, {
+    client: clientV2,
+    variables: {
+      orgId: organizationId!,
+      componentLinkId: componentLinkId!,
+    },
+    skip: !componentLinkId || !organizationId,
     fetchPolicy: 'cache-and-network',
   })
 
   const focalPoints = useMemo(
-    () => arrayNonNullable(focalPointsData?.v1GetFocalPointMeta || []),
+    () =>
+      arrayNonNullable(
+        focalPointsData?.focalPointMetaByComponentLink || []
+      ).map(toPointMeta),
     [focalPointsData]
   )
 
@@ -123,14 +134,14 @@ export function ConfigureApiEndpointConnections({
     let cancelled = false
 
     async function run() {
-      if (pageIds.length === 0) {
+      if (pageIds.length === 0 || !organizationId) {
         // Clear only if there is something to clear (prevents re-renders)
         setPageDataMap((prev) => (prev.size ? new Map() : prev))
         setProjectNameMap((prev) => (prev.size ? new Map() : prev))
         return
       }
 
-      const pages = await fetchPages(pageIds)
+      const pages = await fetchPages(pageIds, organizationId)
       if (cancelled) return
       setPageDataMap(pages)
 

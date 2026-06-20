@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { SuperCircleLoader } from '@/components/loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -9,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { UIComment } from '@/features/comments/api/comments-v2'
 import {
   InputEditor,
   InputRenderer,
 } from '@/features/comments/components/input-editor'
-import { usePublicAccount } from '@/features/image-frame-canvas-sidebar/hooks/use-public-account'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import {
@@ -26,8 +25,8 @@ import { useState } from 'react'
 import { formatTimeAgo } from '../helpers/comment-helpers'
 
 type CommentItemProps = {
-  comment: GT.Comment
-  allComments: GT.Comment[]
+  comment: UIComment
+  allComments: UIComment[]
   editingCommentId: string | null
   editText: string
   user: {
@@ -62,12 +61,12 @@ export function CommentItem({
 }: CommentItemProps) {
   const isEditing = editingCommentId === comment.commentId
   const isAuthor = user?.userId === comment.createdBy
-  const { name, avatarSrc } = usePublicAccount(comment.createdBy)
-  const displayName = name || 'User'
+  const avatarSrc = comment.authorAvatarUrl ?? ''
+  const displayName = comment.authorName || 'User'
   const parentComment = allComments.find(
     (c) => c.commentId && c.commentId === comment.parentCommentId
   )
-  const { name: parentName } = usePublicAccount(parentComment?.createdBy)
+  const parentName = parentComment?.authorName
   const isUpdating =
     !!comment.commentId && updatingCommentId === comment.commentId
   const isDeleting =

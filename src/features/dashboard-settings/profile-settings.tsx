@@ -3,30 +3,33 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { useOrganizationContext } from '@/contexts'
+import { useAuthenticatedUser } from '@/store/auth-store'
 import { SquarePen } from 'lucide-react'
 import { useState } from 'react'
 import { SettingsHeader } from './components/settings-header'
 import { EditProfile } from './edit-profile'
 
 export function ProfileSettings() {
-  const { account } = useOrganizationContext()
+  const user = useAuthenticatedUser()
 
   const [isEditMode, setIsEditMode] = useState(false)
 
-  const initials = `${account?.firstName?.[0] || ''}${
-    account?.lastName?.[0] || ''
-  }`.toUpperCase()
+  const initials = (user.name || '')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
 
   if (isEditMode) {
     return (
       <EditProfile
         onCancel={() => setIsEditMode(false)}
         initialData={{
-          firstName: account?.firstName || '',
-          lastName: account?.lastName || '',
-          email: account?.email || '',
-          image: account?.imageUrl || account?.image || '',
+          name: user.name || '',
+          email: user.email || '',
+          image: user.avatarUrl || '',
         }}
       />
     )
@@ -53,7 +56,7 @@ export function ProfileSettings() {
             <div className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage
-                  src={account?.imageUrl || account?.image || ''}
+                  src={user.avatarUrl || ''}
                   alt="Profile"
                   className="object-cover"
                 />
@@ -63,7 +66,7 @@ export function ProfileSettings() {
               </Avatar>
               <div className="space-y-2">
                 <h2 className="text-lg font-semibold text-[#111110]">
-                  {account?.firstName} {account?.lastName}
+                  {user.name}
                 </h2>
               </div>
             </div>
@@ -93,19 +96,10 @@ export function ProfileSettings() {
           <div className="grid max-w-[40rem] grid-cols-2 gap-x-[64px] gap-y-6">
             <div>
               <Label className="text-sm leading-[1.33] font-normal text-[#6B7480]">
-                First Name
+                Name
               </Label>
               <p className="text-[1rem] leading-[1.33] font-normal text-[#111110]">
-                {account?.firstName}
-              </p>
-            </div>
-
-            <div>
-              <Label className="text-sm leading-[1.33] font-normal text-[#6B7480]">
-                Last Name
-              </Label>
-              <p className="text-[1rem] leading-[1.33] font-normal text-[#111110]">
-                {account?.lastName}
+                {user.name}
               </p>
             </div>
 
@@ -114,7 +108,7 @@ export function ProfileSettings() {
                 Email address
               </Label>
               <p className="text-[1rem] leading-[1.33] font-normal text-[#111110]">
-                {account?.email}
+                {user.email}
               </p>
             </div>
           </div>
