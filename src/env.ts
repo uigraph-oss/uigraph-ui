@@ -4,7 +4,6 @@ const baseEnvSchema = z.object({
   deployEnv: z.enum(['local', 'development', 'production']),
   clientOrigin: z.url().min(1),
   assetsOrigin: z.url().min(1),
-  googleAnalyticsId: z.string().optional(),
   bypassDomainCheck: z.boolean().optional(),
 })
 
@@ -14,8 +13,6 @@ export const env = {
       | 'local'
       | 'development'
       | 'production',
-
-    googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID ?? undefined,
 
     bypassDomainCheck: process.env.NEXT_PUBLIC_BYPASS_DOMAIN_CHECK === 'true',
 

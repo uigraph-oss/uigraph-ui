@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Paths } from '@/constants'
-import { trackGTag } from '@/helpers/track'
 import { useOAuthProviders } from '@/hooks/use-oauth-providers'
 import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -71,11 +70,6 @@ export function SignInForm() {
 
       await signIn(values.email, values.password)
 
-      trackGTag('login', {
-        method: 'email',
-        email_domain: values.email.split('@')[1],
-      })
-
       void navigate(Paths.dashboard.root)
     } catch (e) {
       setError((e as Error).message || 'An error occurred. Please try again.')
@@ -90,10 +84,6 @@ export function SignInForm() {
       toast.error('Please type the email!')
       return
     }
-
-    trackGTag('forgot_password', {
-      email_domain: email.split('@')[1],
-    })
 
     window.location.replace(
       `${location.host + Paths.auth.forgotPassword}?email=${encodeURIComponent(email)}`
@@ -272,9 +262,6 @@ export function SignInForm() {
                     key={provider.name}
                     variant="outline"
                     onClick={() => {
-                      trackGTag('login', {
-                        method: provider.name,
-                      })
                       window.location.href = provider.loginUrl
                     }}
                     className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"

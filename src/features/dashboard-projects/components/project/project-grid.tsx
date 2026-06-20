@@ -16,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -167,10 +166,6 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
             },
           })
 
-          trackGTag('update_project', {
-            project_id: project.id,
-          })
-
           setEditProject(false)
         }}
       />
@@ -202,10 +197,6 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
             className={'h-11'}
             disabled={isProjectDeleting}
             onClick={async () => {
-              trackGTag('delete_project', {
-                project_id: project.id,
-              })
-
               await deleteProject({
                 variables: { orgId: organizationId!, id: project.id },
               })

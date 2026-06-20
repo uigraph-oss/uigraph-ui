@@ -42,11 +42,3 @@ declare module '*.css'
 declare module '*.scss'
 declare module '*.sass'
 declare module '*.less'
-
-interface Window {
-  dataLayer: unknown[]
-  gtag?: (...args: unknown[]) => void
-  fbq?: (...args: unknown[]) => void
-  twq?: (...args: unknown[]) => void
-  clarity?: (...args: unknown[]) => void
-}

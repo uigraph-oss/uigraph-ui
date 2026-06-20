@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { fileToDataUrl } from '@/helpers/file-to-data-url'
-import { trackGTag } from '@/helpers/track'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { ChevronDown, CirclePlus } from 'lucide-react'
@@ -85,9 +84,6 @@ function DashboardProjectContent() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  trackGTag('figma_import_initiated', {
-                    project_id: map.id,
-                  })
                   setIsFigmaImportModalOpen(true)
                 }}
               >
@@ -150,12 +146,6 @@ function DashboardProjectContent() {
                 screenshot,
               },
             },
-          })
-
-          trackGTag('create_page', {
-            page_name: data.name,
-            template_type: data.profileId,
-            project_id: map.id,
           })
 
           setIsCreateModalOpen(false)

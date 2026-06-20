@@ -13,7 +13,6 @@ import '@/styles/index.css'
 import '@/styles/initial.scss'
 import '@/styles/theme.scss'
 
-import { GoogleAnalyticsWrapper } from '@/components/google-analytics-wrapper'
 import { GlobalLoader } from '@/components/loader/global-loader'
 import { ApolloClientProvider } from '@/contexts'
 import { AppRoutes } from '@/router'
@@ -34,8 +33,6 @@ createRoot(document.getElementById('root')!).render(
         <AppRoutes />
       </Suspense>
     </ApolloClientProvider>
-
-    <GoogleAnalyticsWrapper />
 
     <Toaster
       richColors

@@ -16,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
@@ -188,10 +187,6 @@ function PageCard({ page }: { page: DashboardFrame }) {
             },
           })
 
-          trackGTag('update_page', {
-            page_id: page.id,
-          })
-
           setEditPage(false)
         }}
         initialValues={{
@@ -227,10 +222,6 @@ function PageCard({ page }: { page: DashboardFrame }) {
             className={'h-11'}
             disabled={isFrameDeleting}
             onClick={async () => {
-              trackGTag('delete_page', {
-                page_id: page.id,
-              })
-
               await deleteFrame({
                 variables: { orgId: organizationId!, mapId, id: page.id },
               })

@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { trackGTag } from '@/helpers/track'
 import { arrayNonNullable } from 'daily-code'
 import { Trash2 } from 'lucide-react'
 import { getFlowDiagramComponentIcon } from '../constants/flow-diagram-node'
@@ -38,11 +37,6 @@ export function SidebarCustomComponents() {
               variant="destructive"
               className="bg-destructive/60 absolute top-1/2 right-2 size-6 -translate-y-1/2 opacity-0 transition-all group-hover:opacity-100"
               onClick={() => {
-                trackGTag('remove_flow_component', {
-                  component_id: type.componentId,
-                  component_name: type.name,
-                })
-
                 setFlowComponents((prev) =>
                   prev.filter((o) => o.componentId !== type.componentId)
                 )

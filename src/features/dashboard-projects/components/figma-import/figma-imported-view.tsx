@@ -3,7 +3,6 @@ import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { fileToDataUrl } from '@/helpers/file-to-data-url'
 import { convertImageUrlToServerBuffer } from '@/helpers/image-url-to-buffer'
-import { trackGTag } from '@/helpers/track'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { FileText } from 'lucide-react'
 import { useState } from 'react'
@@ -52,11 +51,6 @@ export function FigmaImportedView({
             screenshot,
           },
         },
-      })
-
-      trackGTag('figma_import_completed', {
-        project_id: mapId,
-        page_name: importedInfo.name,
       })
 
       exitFigmaImport()

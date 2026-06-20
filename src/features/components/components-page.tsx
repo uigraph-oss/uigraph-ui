@@ -2,7 +2,6 @@
 
 import { CirclePlusIcon } from '@/assets/svgs'
 import { Button } from '@/components/ui/button'
-import { trackGTag } from '@/helpers/track'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { DashboardPageSectionLayout } from '../dashboard'
@@ -61,12 +60,6 @@ function ComponentsPageInner() {
                 fields
               )
 
-              trackGTag('update_component', {
-                component_name: name,
-                component_category: category,
-                field_count: fields.length,
-              })
-
               void navigate('/dashboard/components')
               toast.success('Component updated successfully!')
             } catch {
@@ -75,12 +68,6 @@ function ComponentsPageInner() {
           } else {
             try {
               await createCustomComponent(name, category, description, fields)
-
-              trackGTag('create_component', {
-                component_name: name,
-                component_category: category,
-                field_count: fields.length,
-              })
 
               void navigate('/dashboard/components')
               toast.success('Component created successfully!')
