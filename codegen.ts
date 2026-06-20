@@ -24,7 +24,7 @@ export default {
     },
 
     './src/api-v2/.gql/': {
-      schema: '../uigraph-graphql/graph/schema/*.graphqls',
+      schema: '../uigraph-graphql/internal/graph/schema/*.graphqls',
       documents: ['./src/**/*-v2.{ts,tsx}'],
 
       preset: 'client',
