@@ -31,11 +31,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Play } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  TEST_CASES,
-  TEST_RUN_RESULTS,
-  TEST_RUN,
-} from '../../api/tests'
+import { TEST_CASES, TEST_RUN, TEST_RUN_RESULTS } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 import { normalizeTestCaseIdForMatch } from '../../utils/normalize-test-case-id'
 import type { StatusFilter } from './run-details-header'

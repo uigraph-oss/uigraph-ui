@@ -67,10 +67,7 @@ export function DiagramVersion() {
   }
 
   const [isCreatingVersion, setIsCreatingVersion] = useState(false)
-  const [createVersion] = useMutation(
-    CREATE_DIAGRAM_VERSION,
-    versionsRefetch
-  )
+  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION, versionsRefetch)
 
   const [restoreVersion, { loading: isRestoringVersion }] = useMutation(
     RESTORE_DIAGRAM_VERSION,

@@ -1,10 +1,7 @@
 import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import {
-  DIAGRAM_CONTENT,
-  DIAGRAM,
-} from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useCurrentOrganization } from '@/store/auth-store'

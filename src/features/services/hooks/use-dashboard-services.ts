@@ -33,16 +33,13 @@ export function useDashboardServicesList(serviceId?: string) {
     skip: !orgId,
   })
 
-  const { data: statsData, loading: statsLoading } = useQuery(
-    SERVICE_STATS,
-    {
-      client: clientV2,
-      variables: { orgId: orgId!, serviceId },
-      fetchPolicy: 'cache-and-network',
-      skip: !orgId,
-      errorPolicy: 'ignore',
-    }
-  )
+  const { data: statsData, loading: statsLoading } = useQuery(SERVICE_STATS, {
+    client: clientV2,
+    variables: { orgId: orgId!, serviceId },
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    errorPolicy: 'ignore',
+  })
 
   const statsByServiceId = useMemo(() => {
     const m = new Map<string, ServiceStatsRow>()

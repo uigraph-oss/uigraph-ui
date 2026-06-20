@@ -1,9 +1,6 @@
 import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
-import {
-  CANVAS,
-  UPSERT_CANVAS,
-} from '@/features/dashboard-pages/api/canvas'
+import { CANVAS, UPSERT_CANVAS } from '@/features/dashboard-pages/api/canvas'
 import {
   DELETE_FOCAL_POINT,
   FOCAL_POINTS,
@@ -16,10 +13,7 @@ import {
   FrameGroupV2,
   UPDATE_FRAME_GROUP,
 } from '@/features/dashboard-pages/api/frame-group'
-import {
-  FRAME_LINKS,
-  FrameLinkV2,
-} from '@/features/dashboard-pages/api/links'
+import { FRAME_LINKS, FrameLinkV2 } from '@/features/dashboard-pages/api/links'
 import { DashboardFrame, DashboardMap } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'

@@ -19,15 +19,12 @@ export function DiagramSelectionModal({
   const [isLoading, setIsLoading] = useState(false)
   const [selectedDiagramId, setSelectedDiagramId] = useState<string>('')
 
-  const { data: diagramsData, loading: diagramsLoading } = useQuery(
-    DIAGRAMS,
-    {
-      client: clientV2,
-      variables: { orgId: organizationId! },
-      skip: !organizationId,
-      fetchPolicy: 'cache-first',
-    }
-  )
+  const { data: diagramsData, loading: diagramsLoading } = useQuery(DIAGRAMS, {
+    client: clientV2,
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
+    fetchPolicy: 'cache-first',
+  })
 
   const diagrams = arrayNonNullable(diagramsData?.diagrams)
 

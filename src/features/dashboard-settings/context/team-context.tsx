@@ -30,9 +30,7 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
     fetchPolicy: 'cache-first',
   })
 
-  const teamRefetch = [
-    { query: SETTINGS_TEAMS, variables: { orgId: orgId! } },
-  ]
+  const teamRefetch = [{ query: SETTINGS_TEAMS, variables: { orgId: orgId! } }]
   const memberRefetch = [MEMBERS]
 
   const [createTeam] = useMutation(CREATE_TEAM, {

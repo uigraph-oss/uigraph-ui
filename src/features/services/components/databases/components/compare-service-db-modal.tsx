@@ -2,10 +2,7 @@ import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { VersionLayout } from '@/components/version-layout'
-import {
-  DIAGRAM_CONTENT,
-  DIAGRAM,
-} from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { ServerDiagramData } from '@/features/diagram-portal/types/diagram'

@@ -37,15 +37,12 @@ export function TestSuiteSelectionModal({
 
   const selectedServiceId = form.watch('serviceId')
 
-  const { data: servicesData, loading: servicesLoading } = useQuery(
-    SERVICES,
-    {
-      client: clientV2,
-      variables: { orgId: orgId! },
-      fetchPolicy: 'cache-first',
-      skip: !orgId,
-    }
-  )
+  const { data: servicesData, loading: servicesLoading } = useQuery(SERVICES, {
+    client: clientV2,
+    variables: { orgId: orgId! },
+    fetchPolicy: 'cache-first',
+    skip: !orgId,
+  })
 
   const { data: testPacksData, loading: testPacksLoading } = useQuery(
     TEST_PACKS,

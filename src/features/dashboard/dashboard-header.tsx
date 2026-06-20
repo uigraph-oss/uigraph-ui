@@ -17,8 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
 import { trackGTag } from '@/helpers/track'
+import { cn } from '@/lib/utils'
 import {
   changeOrganization,
   signOut,
@@ -160,7 +160,7 @@ export function UserDropdownMenu() {
                     onClick={() => {
                       if (!isActive) {
                         changeOrganization(organization.id)
-                        navigate('/dashboard')
+                        void navigate('/dashboard')
                       }
                     }}
                   >

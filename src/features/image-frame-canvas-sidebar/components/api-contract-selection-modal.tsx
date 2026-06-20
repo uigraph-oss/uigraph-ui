@@ -48,15 +48,12 @@ export function ApiContractSelectionModal({
   const selectedServiceId = form.watch('serviceId')
   const selectedApiGroupId = form.watch('apiGroupId')
 
-  const { data: servicesData, loading: servicesLoading } = useQuery(
-    SERVICES,
-    {
-      client: clientV2,
-      variables: { orgId: orgId! },
-      fetchPolicy: 'cache-first',
-      skip: !orgId,
-    }
-  )
+  const { data: servicesData, loading: servicesLoading } = useQuery(SERVICES, {
+    client: clientV2,
+    variables: { orgId: orgId! },
+    fetchPolicy: 'cache-first',
+    skip: !orgId,
+  })
 
   const { data: apiGroupsData, loading: apiGroupsLoading } = useQuery(
     API_GROUPS,

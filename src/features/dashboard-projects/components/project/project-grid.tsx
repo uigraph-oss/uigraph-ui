@@ -52,9 +52,7 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
   const [isDeleteOpen, setDeleteProject] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  const refetchMaps = [
-    { query: MAPS, variables: { orgId: organizationId! } },
-  ]
+  const refetchMaps = [{ query: MAPS, variables: { orgId: organizationId! } }]
 
   const [updateProject] = useMutation(UPDATE_MAP, {
     client: clientV2,

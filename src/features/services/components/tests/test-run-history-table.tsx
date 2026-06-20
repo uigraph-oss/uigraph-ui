@@ -69,19 +69,16 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  const { data: runsData, loading: runsLoading } = useQuery(
-    TEST_RUNS_SUMMARY,
-    {
-      client: clientV2,
-      fetchPolicy: 'cache-first',
-      variables: {
-        orgId: orgId!,
-        serviceId,
-        testPackId: testPackId!,
-      },
-      skip: !orgId || !serviceId || !testPackId,
-    }
-  )
+  const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS_SUMMARY, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: {
+      orgId: orgId!,
+      serviceId,
+      testPackId: testPackId!,
+    },
+    skip: !orgId || !serviceId || !testPackId,
+  })
 
   const testRuns = useMemo(
     () => arrayNonNullable(runsData?.testRunsSummary),

@@ -10,13 +10,7 @@ import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import {
-  CREATE_FRAME,
-  DELETE_FRAME,
-  FRAMES,
-  MAP,
-  UPDATE_FRAME,
-} from '../api'
+import { CREATE_FRAME, DELETE_FRAME, FRAMES, MAP, UPDATE_FRAME } from '../api'
 
 export const [SingleProjectProvider, useSingleProject] = createContext(
   () => {

@@ -1,9 +1,6 @@
 import { V2 } from '@/api'
 import { ComponentInputType } from '@uigraph/sdk'
-import type {
-  DashboardAPIEndpoint,
-  DashboardAPIGroup,
-} from './api-endpoints'
+import type { DashboardAPIEndpoint, DashboardAPIGroup } from './api-endpoints'
 import type { DashboardAPIGroupVersion } from './api-group-version'
 
 export type LegacyApiEndpoint = {

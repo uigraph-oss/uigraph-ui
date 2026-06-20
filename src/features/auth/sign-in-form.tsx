@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Paths } from '@/constants'
 import { trackGTag } from '@/helpers/track'
+import { useOAuthProviders } from '@/hooks/use-oauth-providers'
 import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeIcon, EyeOff, Mail } from 'lucide-react'
@@ -35,6 +36,7 @@ export function SignInForm() {
 
   const status = useAuthStore((state) => state.status)
   const user = useAuthStore((state) => state.user)
+  const { oAuthProviders } = useOAuthProviders()
 
   const methods = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -75,19 +77,6 @@ export function SignInForm() {
         email_domain: values.email.split('@')[1],
       })
 
-      void navigate(Paths.dashboard.root)
-    } catch (e) {
-      setError((e as Error).message || 'An error occurred. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function continueWithFakeGoogle() {
-    try {
-      setLoading(true)
-      setError('')
-      await signIn('google@mock.dev', 'mock')
       void navigate(Paths.dashboard.root)
     } catch (e) {
       setError((e as Error).message || 'An error occurred. Please try again.')
