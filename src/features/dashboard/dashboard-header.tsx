@@ -17,11 +17,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 import { trackGTag } from '@/helpers/track'
-import { signOut, useAuthStore } from '@/store/auth-store'
-import { Shield } from 'lucide-react'
+import {
+  changeOrganization,
+  signOut,
+  useAuthStore,
+  useCurrentOrganization,
+} from '@/store/auth-store'
+import { Check, Shield } from 'lucide-react'
 import { Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { LogoutIcon } from './assets/icons'
 
 export type DashboardHeaderProps = {
@@ -87,7 +93,10 @@ export function DashboardHeader({ crumbs, enableLogo }: DashboardHeaderProps) {
 }
 
 export function UserDropdownMenu() {
+  const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
+  const organizations = useAuthStore((state) => state.organizations)
+  const currentOrganization = useCurrentOrganization()
 
   const initials = (user?.name || '')
     .split(' ')
@@ -123,40 +132,60 @@ export function UserDropdownMenu() {
           </DropdownMenuLabel>
         </div>
 
-        {/* <div className="border-stock space-y-2 border-b px-4 py-2">
-          <DropdownMenuItem
-            asChild
-            className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
-            onClick={() => console.log('Profile')}
-          >
-            <Link href="/settings/profile">
-              <UserIcon className="text-base" />
-              Profile
-            </Link>
-          </DropdownMenuItem>
+        {organizations.length > 0 && (
+          <div className="border-stock border-b px-2.5 py-2">
+            <DropdownMenuLabel className="text-paragraph px-1.5 pt-1 pb-2 text-xs font-semibold tracking-wide uppercase">
+              Organization
+            </DropdownMenuLabel>
 
-          <DropdownMenuItem
-            asChild
-            className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
-            onClick={() => console.log('Profile')}
-          >
-            <Link href="/settings/team">
-              <UsersIcon className="text-base" />
-              Team management
-            </Link>
-          </DropdownMenuItem>
+            <div className="max-h-[12.5rem] space-y-1 overflow-y-auto">
+              {organizations.map((organization) => {
+                const isActive = organization.id === currentOrganization?.id
 
-          <DropdownMenuItem
-            asChild
-            className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
-            onClick={() => console.log('Profile')}
-          >
-            <Link href="/settings/account">
-              <SettingsIcon className="text-base" />
-              Settings
-            </Link>
-          </DropdownMenuItem>
-        </div> */}
+                const orgInitials = organization.name
+                  .split(' ')
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join('')
+                  .toUpperCase()
+
+                return (
+                  <DropdownMenuItem
+                    key={organization.id}
+                    className={cn(
+                      'h-[2.75rem] cursor-pointer gap-3 transition-all hover:bg-[#f5f5f5]',
+                      isActive && 'bg-[#f5f5f5]'
+                    )}
+                    onClick={() => {
+                      if (!isActive) {
+                        changeOrganization(organization.id)
+                        navigate('/dashboard')
+                      }
+                    }}
+                  >
+                    <span className="bg-paragraph/15 text-foreground/70 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold">
+                      {orgInitials}
+                    </span>
+
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate font-medium">
+                        {organization.name}
+                      </span>
+                      <span className="text-paragraph truncate text-xs capitalize">
+                        {organization.role.toLowerCase()}
+                      </span>
+                    </span>
+
+                    {isActive && (
+                      <Check className="text-foreground ml-auto size-4 shrink-0" />
+                    )}
+                  </DropdownMenuItem>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {user?.isServerAdmin && (
           <div className="border-stock space-y-2 border-b px-2.5 py-2">
@@ -166,7 +195,7 @@ export function UserDropdownMenu() {
             >
               <Link to="/server">
                 <Shield className="text-base" />
-                Server Admin
+                Manage Server
               </Link>
             </DropdownMenuItem>
           </div>
