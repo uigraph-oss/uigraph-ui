@@ -51,7 +51,7 @@ function UsersManagementContent() {
               await createTeamMember({
                 name: values.name,
                 email: values.email,
-                password: values.password,
+                password: values.password ?? '',
                 role: values.role,
               })
 

@@ -18,6 +18,7 @@ import Fuse from 'fuse.js'
 import { Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { MEMBERS, type OrgMemberRow } from '../api/members'
+import { SETTINGS_TEAMS } from '../api/teams'
 import { UserTable } from './user-table'
 
 export function UsersList({ teamId }: { teamId?: string }) {
@@ -30,11 +31,26 @@ export function UsersList({ teamId }: { teamId?: string }) {
     skip: !organizationId,
   })
 
+  const teamsQuery = useQuery(SETTINGS_TEAMS, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
+  })
+
   const [searchTerm, setSearchTerm] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(20)
   const [currentPage, setCurrentPage] = useState(1)
 
   const isTeamMembersLoading = membersQuery.loading && !membersQuery.data
+
+  const teamNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    arrayNonNullable(teamsQuery.data?.teams).forEach((t) =>
+      map.set(t.id, t.name)
+    )
+    return map
+  }, [teamsQuery.data?.teams])
 
   const allMembers = useMemo<OrgMemberRow[]>(() => {
     return arrayNonNullable(membersQuery.data?.members).map((m) => ({
@@ -44,9 +60,9 @@ export function UsersList({ teamId }: { teamId?: string }) {
       role: m.role,
       status: 'Active',
       teamId: m.teamId,
-      teamName: m.teamName,
+      teamName: m.teamId ? (teamNameById.get(m.teamId) ?? null) : null,
     }))
-  }, [membersQuery.data?.members])
+  }, [membersQuery.data?.members, teamNameById])
 
   const usersFuse = useMemo(() => {
     const users = teamId

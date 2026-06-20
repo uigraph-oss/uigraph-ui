@@ -10,7 +10,7 @@ import {
   ADD_MEMBER,
   MEMBERS,
   REMOVE_MEMBER,
-  UPDATE_MEMBER_ROLE,
+  UPDATE_MEMBER,
 } from '../api/members'
 import {
   CREATE_TEAM,
@@ -57,7 +57,7 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
     awaitRefetchQueries: true,
   })
 
-  const [updateMemberRole] = useMutation(UPDATE_MEMBER_ROLE, {
+  const [updateMember] = useMutation(UPDATE_MEMBER, {
     client: clientV2,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
@@ -124,9 +124,26 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
       })
     },
 
-    updateTeamMember(userId: string, userInput: { role?: string }) {
-      return updateMemberRole({
-        variables: { orgId: orgId!, userId, role: userInput.role ?? '' },
+    updateTeamMember(
+      userId: string,
+      userInput: {
+        name: string
+        email: string
+        role: string
+        teamId?: string | null
+      }
+    ) {
+      return updateMember({
+        variables: {
+          orgId: orgId!,
+          userId,
+          input: {
+            name: userInput.name,
+            email: userInput.email,
+            role: userInput.role,
+            teamId: userInput.teamId || null,
+          },
+        },
       })
     },
 

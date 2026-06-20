@@ -20,13 +20,14 @@ import { useTeamContext } from '../context/team-context'
 const teamMemberSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.email('Enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().optional(),
   role: z.string().min(1, 'Role is required'),
 
   teamId: z.string().optional(),
-  status: z.enum(['Active', 'Pending', 'Deactivated'], {
-    error: 'Status is required',
-  }),
+})
+
+const createMemberSchema = teamMemberSchema.extend({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 type ConfigureTeamMemberModalProps = {
@@ -42,14 +43,15 @@ export function ConfigureTeamMemberModal({
 }: ConfigureTeamMemberModalProps) {
   const { teams } = useTeamContext()
   const form = useForm({
-    resolver: zodResolver(teamMemberSchema),
+    resolver: zodResolver(
+      mode === 'create' ? createMemberSchema : teamMemberSchema
+    ),
     defaultValues: {
       name: '',
       email: '',
       password: '',
       role: '',
       teamId: '',
-      status: mode === 'create' ? 'Active' : ('' as 'Active'),
       ...defaultValues,
     },
   })
@@ -191,42 +193,6 @@ export function ConfigureTeamMemberModal({
             </div>
           )}
         />
-
-        {mode === 'edit' && (
-          <Controller
-            name="status"
-            control={form.control}
-            render={({ field }) => (
-              <div className="space-y-2">
-                <Label
-                  htmlFor="team-member-status"
-                  className="text-sm font-medium text-[#111110]"
-                >
-                  Status
-                </Label>
-                <Select
-                  {...field}
-                  value={field.value ?? ''}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="!h-[56px] !w-full rounded-[16px] border border-[#E5E7E9] bg-white px-4">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Deactivated">Deactivated</SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.status && (
-                  <p className="text-destructive text-sm">
-                    {form.formState.errors.status.message}
-                  </p>
-                )}
-              </div>
-            )}
-          />
-        )}
 
         <Controller
           name="teamId"

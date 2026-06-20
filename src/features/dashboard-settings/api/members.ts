@@ -18,7 +18,6 @@ export const MEMBERS = graphql(`
       name
       role
       teamId
-      teamName
     }
   }
 `)
@@ -31,9 +30,13 @@ export const ADD_MEMBER = graphql(`
   }
 `)
 
-export const UPDATE_MEMBER_ROLE = graphql(`
-  mutation UpdateMemberRoleV2($orgId: ID!, $userId: ID!, $role: String!) {
-    updateMemberRole(orgId: $orgId, userId: $userId, role: $role) {
+export const UPDATE_MEMBER = graphql(`
+  mutation UpdateMemberV2(
+    $orgId: ID!
+    $userId: ID!
+    $input: UpdateMemberInput!
+  ) {
+    updateMember(orgId: $orgId, userId: $userId, input: $input) {
       userId
     }
   }

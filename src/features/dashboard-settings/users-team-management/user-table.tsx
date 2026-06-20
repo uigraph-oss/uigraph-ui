@@ -23,9 +23,9 @@ import type { OrgMemberRow } from '../api/members'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamMemberModal } from './configure-team-member-modal'
 
-function getInitials(email: string | null | undefined): string {
-  if (!email) return 'U'
-  const firstLetter = email.charAt(0).toUpperCase()
+function getInitials(value: string | null | undefined): string {
+  if (!value) return 'U'
+  const firstLetter = value.charAt(0).toUpperCase()
   return firstLetter
 }
 
@@ -72,19 +72,18 @@ function UserRowActions({ user }: { user: OrgMemberRow }) {
         <ConfigureTeamMemberModal
           mode="edit"
           defaultValues={{
+            name: user.name ?? '',
             email: user.email ?? '',
             role: user.role ?? '',
             teamId: user.teamId ?? '',
-            status: user.status as
-              | 'Active'
-              | 'Pending'
-              | 'Deactivated'
-              | undefined,
           }}
           onSubmit={async (values) => {
             try {
               await updateTeamMember(user.userId, {
+                name: values.name,
+                email: values.email,
                 role: values.role,
+                teamId: values.teamId,
               })
 
               setIsEditModalOpen(false)
@@ -116,17 +115,22 @@ const columnHelper = createColumnHelper<OrgMemberRow>()
 
 const userColumns = [
   columnHelper.accessor('email', {
-    header: 'Email',
-    cell: ({ getValue }) => {
-      const email = getValue()
+    header: 'User',
+    cell: ({ row }) => {
+      const { name, email } = row.original
       return (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
             <AvatarFallback className="bg-blue-100 text-xs font-medium text-blue-700">
-              {getInitials(email)}
+              {getInitials(name || email)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-gray-700">{email}</span>
+          <div className="flex flex-col">
+            {name && (
+              <span className="text-sm font-medium text-gray-900">{name}</span>
+            )}
+            <span className="text-sm text-gray-500">{email}</span>
+          </div>
         </div>
       )
     },
