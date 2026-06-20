@@ -182,7 +182,9 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       (newPackId: string) => {
         const currentParams = new URLSearchParams(searchParams.toString())
         currentParams.set('packId', newPackId)
-        navigate(`${pathname}?${currentParams.toString()}`, { replace: true })
+        void navigate(`${pathname}?${currentParams.toString()}`, {
+          replace: true,
+        })
       },
       [pathname, navigate, searchParams]
     )
@@ -190,7 +192,9 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     const clearSelectedPack = useCallback(() => {
       const currentParams = new URLSearchParams(searchParams.toString())
       currentParams.delete('packId')
-      navigate(`${pathname}?${currentParams.toString()}`, { replace: true })
+      void navigate(`${pathname}?${currentParams.toString()}`, {
+        replace: true,
+      })
     }, [pathname, navigate, searchParams])
 
     const createPack = useCallback(
@@ -439,7 +443,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
           console.error(error)
         }
       },
-      [clientV2, createTestCaseMutation, orgId, serviceId]
+      [createTestCaseMutation, orgId, serviceId]
     )
 
     const reorderTestCase = useCallback(
@@ -518,7 +522,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
 
           const testRunId = result.data?.createTestRun?.testRunId
           if (testRunId) {
-            navigate(`/services/${serviceId}/tests/run/${testRunId}`)
+            void navigate(`/services/${serviceId}/tests/run/${testRunId}`)
             toast.success('Test run created successfully')
           } else {
             toast.error('Failed to create test run')

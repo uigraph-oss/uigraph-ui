@@ -61,7 +61,6 @@ type ConfigureApiEndpointMetaProps = {
 }
 
 export function ConfigureApiEndpointMeta({
-  endpoint,
   componentMeta,
   readonly = false,
   className = '',

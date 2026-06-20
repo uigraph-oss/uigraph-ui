@@ -71,7 +71,7 @@ export function AiChatLayout({ children }: PropsWithChildren) {
       await deleteChatSession(session.sessionId)
 
       if (pathname === `/dashboard/ai/${session.sessionId}`) {
-        navigate('/dashboard/ai')
+        void navigate('/dashboard/ai')
       }
 
       await fetchSessions(false)
@@ -88,7 +88,7 @@ export function AiChatLayout({ children }: PropsWithChildren) {
     try {
       const session = await createChatSession(organizationId)
       await fetchSessions(false)
-      navigate(`/dashboard/ai/${session.sessionId}`)
+      void navigate(`/dashboard/ai/${session.sessionId}`)
     } catch {
       toast.error('Could not create a new session')
     } finally {
@@ -119,7 +119,7 @@ export function AiChatLayout({ children }: PropsWithChildren) {
           mutatingSessionId={mutatingSessionId}
           isCreatingSession={isCreatingSession}
           onOpenSession={(sessionId) => {
-            navigate(`/dashboard/ai/${sessionId}`)
+            void navigate(`/dashboard/ai/${sessionId}`)
           }}
           onPatchSession={patchSession}
           onDeleteSession={handleDeleteSession}

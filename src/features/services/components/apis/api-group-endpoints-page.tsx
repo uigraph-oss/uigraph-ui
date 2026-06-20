@@ -294,7 +294,7 @@ function ApiGroupEndpointsPageContent() {
     (groupId: string) => {
       if (groupId === activeGroupId) return
       const query = searchParams.toString()
-      navigate(
+      void navigate(
         `/services/${serviceId}/apis/${groupId}${query ? `?${query}` : ''}`
       )
     },

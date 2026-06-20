@@ -199,7 +199,7 @@ export const [
         }
       }) => {
         const { apiEndpointId, input } = opts.variables
-        const serializeSamples = (value?: string | string[] | null) => {
+        function serializeSamples(value?: string | string[] | null) {
           if (value == null) return undefined
           return Array.isArray(value) ? JSON.stringify(value) : value
         }

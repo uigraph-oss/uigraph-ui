@@ -68,7 +68,7 @@ export function TestPackWorkspacePanel({
     const nextUrl = params.toString()
       ? `${pathname}?${params.toString()}`
       : pathname
-    navigate(nextUrl, { replace: true })
+    void navigate(nextUrl, { replace: true })
   }
 
   const control = {

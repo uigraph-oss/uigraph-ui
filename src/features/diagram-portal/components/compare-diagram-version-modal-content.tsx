@@ -41,7 +41,7 @@ function CompareSide({ versions, selectedVersionId }: CompareSideProps) {
     let cancelled = false
     setLoading(true)
 
-    clientV2
+    void clientV2
       .query({
         query: DIAGRAM_VERSION_CONTENT_V2,
         variables: {

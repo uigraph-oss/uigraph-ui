@@ -147,9 +147,9 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
     if (!testRun.testRunId || !serviceId) return
     const isRunning = (testRun.status ?? '').toLowerCase() === 'running'
     if (isRunning) {
-      navigate(`/services/${serviceId}/tests/run/${testRun.testRunId}`)
+      void navigate(`/services/${serviceId}/tests/run/${testRun.testRunId}`)
     } else {
-      navigate(`/services/${serviceId}/tests/runs/${testRun.testRunId}`)
+      void navigate(`/services/${serviceId}/tests/runs/${testRun.testRunId}`)
     }
   }
 

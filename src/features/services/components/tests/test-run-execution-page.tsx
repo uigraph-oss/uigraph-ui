@@ -204,6 +204,7 @@ export function TestRunExecutionPage() {
         ? [{ query: TEST_RUNS_SUMMARY_V2, variables: summaryVars }]
         : []),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [testRunId, testPackId, orgId, serviceId]
   )
 

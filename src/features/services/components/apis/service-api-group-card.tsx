@@ -110,7 +110,7 @@ export function ServiceApiEndpointGroupCard({
   }, [group])
 
   function handleCardClick() {
-    navigate(`/services/${serviceId}/apis/${group.serviceApiGroupId}`)
+    void navigate(`/services/${serviceId}/apis/${group.serviceApiGroupId}`)
   }
 
   const colors = getProtocolColor(protocol)
