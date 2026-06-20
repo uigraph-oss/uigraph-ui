@@ -18,7 +18,9 @@ import { TEAM_MEMBER_ROLES } from '../constants/team'
 import { useTeamContext } from '../context/team-context'
 
 const teamMemberSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
   email: z.email('Enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z.string().min(1, 'Role is required'),
 
   teamId: z.string().optional(),
@@ -42,7 +44,9 @@ export function ConfigureTeamMemberModal({
   const form = useForm({
     resolver: zodResolver(teamMemberSchema),
     defaultValues: {
+      name: '',
       email: '',
+      password: '',
       role: '',
       teamId: '',
       status: mode === 'create' ? 'Active' : ('' as 'Active'),
@@ -69,6 +73,33 @@ export function ConfigureTeamMemberModal({
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Controller
+          name="name"
+          control={form.control}
+          render={({ field }) => (
+            <div className="space-y-2">
+              <Label
+                htmlFor="team-member-name"
+                className="text-sm font-medium text-[#111110]"
+              >
+                Name
+              </Label>
+              <Input
+                id="team-member-name"
+                {...field}
+                placeholder="Enter full name"
+                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                autoComplete="off"
+              />
+              {form.formState.errors.name && (
+                <p className="text-destructive text-sm">
+                  {form.formState.errors.name.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+
+        <Controller
           name="email"
           control={form.control}
           render={({ field }) => (
@@ -94,6 +125,36 @@ export function ConfigureTeamMemberModal({
             </div>
           )}
         />
+
+        {mode === 'create' && (
+          <Controller
+            name="password"
+            control={form.control}
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="team-member-password"
+                  className="text-sm font-medium text-[#111110]"
+                >
+                  Password
+                </Label>
+                <Input
+                  id="team-member-password"
+                  {...field}
+                  type="password"
+                  placeholder="Enter a password"
+                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  autoComplete="new-password"
+                />
+                {form.formState.errors.password && (
+                  <p className="text-destructive text-sm">
+                    {form.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        )}
 
         <Controller
           name="role"

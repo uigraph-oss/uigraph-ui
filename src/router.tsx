@@ -38,7 +38,6 @@ import { DashboardServiceDiagrams } from '@/features/services/components/diagram
 import { DashboardServices } from '@/features/services/components/services-list/dashboard-services'
 import { ServiceTestsPage } from '@/features/services/components/tests/service-tests-page'
 import { DashboardServiceDocs } from '@/features/services/dashboard-service-docs'
-import { UserInvitePage } from '@/features/user-invite/user-invite-page'
 import { DiagramPreviewPage } from '@/routes/diagram-preview-page'
 import {
   ApiGroupEndpointsPage,
@@ -106,7 +105,6 @@ export function AppRoutes() {
           </AuthenticatedGuard>
         }
       />
-      <Route path="/invitation/:orgId" element={<UserInvitePage />} />
       <Route
         path="/diagram-preview/:diagramId"
         element={<DiagramPreviewPage />}

@@ -44,11 +44,3 @@ export const REMOVE_MEMBER = graphql(`
     removeMember(orgId: $orgId, userId: $userId)
   }
 `)
-
-export const CREATE_INVITATION = graphql(`
-  mutation CreateInvitationV2($orgId: ID!, $input: CreateInvitationInput!) {
-    createInvitation(orgId: $orgId, input: $input) {
-      id
-    }
-  }
-`)

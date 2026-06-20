@@ -7,7 +7,7 @@ import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import {
-  CREATE_INVITATION,
+  ADD_MEMBER,
   MEMBERS,
   REMOVE_MEMBER,
   UPDATE_MEMBER_ROLE,
@@ -51,7 +51,7 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
     awaitRefetchQueries: true,
   })
 
-  const [createInvitation] = useMutation(CREATE_INVITATION, {
+  const [addMember] = useMutation(ADD_MEMBER, {
     client: clientV2,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
@@ -105,11 +105,21 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
       return deleteTeam({ variables: { orgId: orgId!, teamId } })
     },
 
-    createTeamMember(userInput: { email: string; role: string }) {
-      return createInvitation({
+    createTeamMember(userInput: {
+      name: string
+      email: string
+      password: string
+      role: string
+    }) {
+      return addMember({
         variables: {
           orgId: orgId!,
-          input: { email: userInput.email, role: userInput.role },
+          input: {
+            name: userInput.name,
+            email: userInput.email,
+            password: userInput.password,
+            role: userInput.role,
+          },
         },
       })
     },
