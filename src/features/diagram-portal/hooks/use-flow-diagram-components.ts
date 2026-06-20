@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'

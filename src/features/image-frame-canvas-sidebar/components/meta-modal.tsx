@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SettingsIcon } from '@/assets/svgs'
 import { CrossButton } from '@/components/cross-button'
 import { SuperCircleLoader } from '@/components/loader'

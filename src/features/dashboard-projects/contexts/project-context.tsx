@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { DashboardPageLayout } from '@/features/dashboard/dashboard-layout'
 import { DashboardSectionHeader } from '@/features/dashboard/dashboard-section'

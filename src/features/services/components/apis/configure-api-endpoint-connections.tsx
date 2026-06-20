@@ -3,7 +3,7 @@
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FRAME_BY_ID_V2 } from '@/features/dashboard-projects/api/frame-v2'
 import { MAP_V2 } from '@/features/dashboard-projects/api/map-v2'
 import {

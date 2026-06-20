@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'

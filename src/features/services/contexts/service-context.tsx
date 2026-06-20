@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'

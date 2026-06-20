@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'

@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'

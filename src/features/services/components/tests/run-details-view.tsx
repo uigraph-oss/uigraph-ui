@@ -1,7 +1,7 @@
 'use client'
 
-import type { TestCase, TestRunResult } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import type { TestCase, TestRunResult } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { CrossButton } from '@/components/cross-button'

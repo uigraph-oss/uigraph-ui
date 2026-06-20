@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FRAME_BY_ID_V2, MAP_V2 } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'

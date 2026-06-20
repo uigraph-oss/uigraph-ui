@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

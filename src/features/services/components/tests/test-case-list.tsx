@@ -1,6 +1,6 @@
 'use client'
 
-import type { TestCase } from '@/api-v2/.gql/graphql'
+import type { TestCase } from '@/api/.gql/graphql'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'

@@ -1,7 +1,7 @@
 'use client'
 
-import type { TestCase, TestRun, TestRunResult } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import type { TestCase, TestRun, TestRunResult } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import {
   BetterDialogCloseButton,
   BetterDialogContent,

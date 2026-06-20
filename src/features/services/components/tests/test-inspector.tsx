@@ -1,7 +1,7 @@
 'use client'
 
-import { V2 } from '@/api-v2'
-import type { TestCase } from '@/api-v2/.gql/graphql'
+import { V2 } from '@/api'
+import type { TestCase } from '@/api/.gql/graphql'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'

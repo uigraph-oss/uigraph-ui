@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const SERVICE_DOCS_V2 = graphql(`
   query ServiceDocsV2($orgId: ID!, $serviceId: ID!) {

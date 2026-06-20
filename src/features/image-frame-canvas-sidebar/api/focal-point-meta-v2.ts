@@ -1,4 +1,4 @@
-import { graphql, V2 } from '@/api-v2'
+import { graphql, V2 } from '@/api'
 
 export type ComponentFieldInput = V2.ComponentModalFieldInput
 

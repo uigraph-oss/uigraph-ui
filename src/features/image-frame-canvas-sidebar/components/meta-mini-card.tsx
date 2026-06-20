@@ -1,4 +1,4 @@
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { Button } from '@/components/ui/button'
 import { COMPONENT_FLOW_DIAGRAM_ID } from '@/constants/component-meta'

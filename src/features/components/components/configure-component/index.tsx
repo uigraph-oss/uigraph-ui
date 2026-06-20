@@ -1,4 +1,4 @@
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { CrossButton } from '@/components/cross-button'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'

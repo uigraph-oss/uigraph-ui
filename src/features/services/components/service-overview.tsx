@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { cn } from '@/lib/utils'

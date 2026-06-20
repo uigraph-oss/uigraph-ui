@@ -1,7 +1,7 @@
 'use client'
 
-import type { TestCase } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import type { TestCase } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

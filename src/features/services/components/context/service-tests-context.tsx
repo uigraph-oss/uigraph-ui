@@ -1,8 +1,8 @@
 'use client'
 
-import { V2 } from '@/api-v2'
-import type { TestCase } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api'
+import type { TestCase } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'

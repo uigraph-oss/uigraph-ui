@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { ApolloProvider } from '@apollo/client'
 import { PropsWithChildren } from 'react'
 

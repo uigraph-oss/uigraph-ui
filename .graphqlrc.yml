@@ -1,3 +1,2 @@
-schema: '../uigraph-graphql/graph/schema/*.graphqls'
-documents:
-  - './src/**/*-v2.{graphql,js,ts,jsx,tsx}'
+schema: ../uigraph-graphql/graph/schema/*.graphqls
+documents: ./src/**/*.{graphql,js,ts,jsx,tsx}

@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export type DashboardActor = {
   id?: string | null

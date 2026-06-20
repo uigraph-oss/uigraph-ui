@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const PREPARE_DIAGRAM_THUMBNAIL_UPLOAD = graphql(`
   mutation PrepareDiagramThumbnailUpload($orgId: ID!, $diagramId: ID!) {

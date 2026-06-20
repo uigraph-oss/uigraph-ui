@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { useMutation } from '@apollo/client'
 import { Edge, Node } from '@xyflow/react'

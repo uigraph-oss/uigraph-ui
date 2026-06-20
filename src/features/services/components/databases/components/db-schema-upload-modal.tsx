@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
 import {
   CREATE_SERVICE_DB_V2,

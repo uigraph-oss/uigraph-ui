@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
 import { NosqlEditorModal } from '@/features/diagram-portal/components/nosql-editor/nosql-editor-modal'
 import { convertDiagramServerDataToString } from '@/features/diagram-portal/helpers/diagram-data'

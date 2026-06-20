@@ -1,4 +1,4 @@
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'

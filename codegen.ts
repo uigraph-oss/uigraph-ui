@@ -2,9 +2,9 @@ import { CodegenConfig } from '@graphql-codegen/cli'
 
 export default {
   generates: {
-    './src/api-v2/.gql/': {
+    './src/api/.gql/': {
       schema: '../uigraph-graphql/internal/graph/schema/*.graphqls',
-      documents: ['./src/**/*-v2.{ts,tsx}'],
+      documents: ['./src/**/*.{ts,tsx}'],
 
       preset: 'client',
 

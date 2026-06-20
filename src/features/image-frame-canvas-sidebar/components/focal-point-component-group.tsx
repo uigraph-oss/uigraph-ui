@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { SuperLogoLoader } from '@/components/loader'
 import {
   Accordion,

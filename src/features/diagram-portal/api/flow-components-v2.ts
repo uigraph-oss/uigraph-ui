@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const FLOW_DIAGRAM_COMPONENTS_V2 = graphql(`
   query FlowDiagramComponentsV2($orgId: ID!) {

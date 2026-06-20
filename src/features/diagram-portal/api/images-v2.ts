@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const DIAGRAM_IMAGES_V2 = graphql(`
   query DiagramImagesV2($orgId: ID!, $diagramId: ID!) {

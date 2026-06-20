@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
 import { useServiceDbContext } from '@/features/services/contexts/service-db-context'
 import { useCurrentOrganization } from '@/store/auth-store'

@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FOCAL_POINTS_V2 } from '@/features/dashboard-pages/api/focal-point-v2'
 import { FRAME_BY_ID_V2 } from '@/features/dashboard-projects/api'
 import { useCurrentOrganization } from '@/store/auth-store'

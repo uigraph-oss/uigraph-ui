@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const TEST_PACKS_V2 = graphql(`
   query TestPacksV2($orgId: ID!, $serviceId: ID!) {

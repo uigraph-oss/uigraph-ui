@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const API_GROUP_SPEC_V2 = graphql(`
   query ApiGroupSpecV2($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {

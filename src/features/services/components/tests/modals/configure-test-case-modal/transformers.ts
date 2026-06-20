@@ -1,4 +1,4 @@
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import z from 'zod'
 import { configureTestCaseSchema } from './schema'
 

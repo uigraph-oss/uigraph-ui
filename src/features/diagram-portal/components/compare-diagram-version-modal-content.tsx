@@ -1,5 +1,5 @@
-import type { V2 } from '@/api-v2'
-import { clientV2 } from '@/api-v2/client'
+import type { V2 } from '@/api'
+import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { VersionLayout } from '@/components/version-layout'
 import { useEffect, useMemo, useState } from 'react'

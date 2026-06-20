@@ -1,5 +1,5 @@
-import { V2 } from '@/api-v2'
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api'
+import { clientV2 } from '@/api/client'
 import { GET_COMPONENTS_V2 } from '@/features/components/api/components-v2'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'

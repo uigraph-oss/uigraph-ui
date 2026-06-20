@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SuperCircleLoader } from '@/components/loader'
 import { SimpleModal } from '@/components/simple-modal'
 import { Button } from '@/components/ui/button'

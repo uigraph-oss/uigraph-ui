@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'

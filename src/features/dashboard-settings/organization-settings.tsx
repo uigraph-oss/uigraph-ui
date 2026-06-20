@@ -1,5 +1,5 @@
 'use client'
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'

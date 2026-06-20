@@ -2,7 +2,7 @@
 
 import './global.scss'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { GlobalLoader } from '@/components/loader/global-loader'
 import { useCurrentOrganization } from '@/store/auth-store/use-auth-store'
 import { useQuery } from '@apollo/client'

@@ -1,4 +1,4 @@
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { create } from 'zustand'
 
 type AuthenticatedUser = V2.MeAndOrgQuery['me']

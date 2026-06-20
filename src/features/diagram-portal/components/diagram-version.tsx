@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'

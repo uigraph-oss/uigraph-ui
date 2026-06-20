@@ -1,5 +1,5 @@
-import { graphql } from '@/api-v2'
-import { clientV2 } from '@/api-v2/client'
+import { graphql } from '@/api'
+import { clientV2 } from '@/api/client'
 import { env } from '@/env'
 import axios from 'axios'
 

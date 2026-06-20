@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const CANVAS_V2 = graphql(`
   query CanvasV2($orgId: ID!, $mapId: ID!) {

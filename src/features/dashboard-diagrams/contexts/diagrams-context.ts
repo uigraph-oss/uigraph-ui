@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'

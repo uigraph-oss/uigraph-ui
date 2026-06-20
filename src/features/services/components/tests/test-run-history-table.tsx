@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

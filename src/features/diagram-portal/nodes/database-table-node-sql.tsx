@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import {
   SERVICE_DB_V2,
   serviceDBToLegacy,

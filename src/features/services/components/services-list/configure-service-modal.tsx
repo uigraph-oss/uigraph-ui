@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { GitIcon, JiraIcon, SlackIcon } from '@/assets/svgs'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'

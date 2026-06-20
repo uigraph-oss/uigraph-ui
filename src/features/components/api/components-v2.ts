@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const GET_COMPONENTS_V2 = graphql(`
   query ComponentsV2($orgId: ID!) {

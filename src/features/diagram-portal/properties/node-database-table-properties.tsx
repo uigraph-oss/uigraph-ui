@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SuperLogoLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

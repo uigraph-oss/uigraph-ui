@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 
 export const ACTOR_V2 = graphql(`
   query ActorV2($orgId: ID!, $id: ID!) {

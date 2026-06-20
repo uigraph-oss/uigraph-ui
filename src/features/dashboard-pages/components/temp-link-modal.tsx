@@ -12,7 +12,7 @@ import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { PlusIcon } from '../../../assets/svgs/component-icons'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { Input } from '@/components/ui/input'
 import {
   Select,

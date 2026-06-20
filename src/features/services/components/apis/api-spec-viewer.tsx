@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
 import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'

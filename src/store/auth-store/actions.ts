@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { GET_ME_AND_ORG_V2 } from './gql-v2'
 import { useAuthStore } from './use-auth-store'
 

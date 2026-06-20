@@ -1,8 +1,8 @@
 'use client'
 
-import { V2 } from '@/api-v2'
-import type { TestCase } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api'
+import type { TestCase } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'

@@ -1,4 +1,4 @@
-import { graphql } from '@/api-v2'
+import { graphql } from '@/api'
 import { DbTable, serviceDBToLegacy } from './service-db-v2'
 
 export const SERVICE_DB_VERSIONS_V2 = graphql(`

@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'

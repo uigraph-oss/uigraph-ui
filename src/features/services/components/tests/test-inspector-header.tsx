@@ -1,6 +1,6 @@
 'use client'
 
-import type { TestCase } from '@/api-v2/.gql/graphql'
+import type { TestCase } from '@/api/.gql/graphql'
 import { CrossButton } from '@/components/cross-button'
 import { Badge } from '@/components/ui/badge'
 

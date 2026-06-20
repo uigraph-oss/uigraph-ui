@@ -1,6 +1,6 @@
 'use client'
 
-import type { TestCase } from '@/api-v2/.gql/graphql'
+import type { TestCase } from '@/api/.gql/graphql'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
 import { Delta } from 'quill'

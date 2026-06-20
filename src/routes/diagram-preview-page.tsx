@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import {
   DIAGRAM_CONTENT_V2,
   DIAGRAM_V2,

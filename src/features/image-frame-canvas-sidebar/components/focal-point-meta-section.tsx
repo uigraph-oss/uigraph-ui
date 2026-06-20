@@ -1,5 +1,5 @@
-import { V2 } from '@/api-v2'
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api'
+import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
   Accordion,

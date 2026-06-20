@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { VersionLayout } from '@/components/version-layout'
