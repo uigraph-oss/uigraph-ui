@@ -1320,52 +1320,28 @@ export function PanelDataSourcesUnified() {
             {selectedServiceId && servicesDb.length > 0 && (
               <div>
                 {servicesDb.map((serviceDb) => {
-                  const isNoSQL =
-                    serviceDb.dialect === 'dynamodb' ||
-                    serviceDb.dialect === 'mongodb'
+                  const dynamoTable = serviceDb.noSQLSchema?.dynamo?.table
+                  const mongoCollections =
+                    serviceDb.noSQLSchema?.mongo?.collections
 
                   type NoSQLEntry = { name: string; colCount: number }
                   let noSQLEntries: NoSQLEntry[] = []
 
-                  if (isNoSQL && serviceDb.noSQLSchema) {
-                    try {
-                      const parsed =
-                        typeof serviceDb.noSQLSchema === 'string'
-                          ? JSON.parse(serviceDb.noSQLSchema)
-                          : serviceDb.noSQLSchema
-
-                      if (serviceDb.dialect === 'dynamodb') {
-                        const table = parsed?.dynamo?.table
-                        if (table?.name) {
-                          noSQLEntries = [
-                            {
-                              name: table.name,
-                              colCount: Array.isArray(table.attributes)
-                                ? table.attributes.length
-                                : 0,
-                            },
-                          ]
-                        }
-                      } else if (serviceDb.dialect === 'mongodb') {
-                        const schema = parsed?.mongo?.collections
-                        // schema may be the full MongoDB object or an array
-                        const collections = Array.isArray(schema?.collections)
-                          ? schema.collections
-                          : Array.isArray(schema)
-                            ? schema
-                            : []
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        noSQLEntries = collections.map((c: any) => ({
-                          name: c.name,
-                          colCount: Array.isArray(c.fields)
-                            ? c.fields.length
-                            : 0,
-                        }))
-                      }
-                    } catch {
-                      // ignore parse errors
-                    }
+                  if (dynamoTable?.name) {
+                    noSQLEntries = [
+                      {
+                        name: dynamoTable.name,
+                        colCount: dynamoTable.attributes?.length ?? 0,
+                      },
+                    ]
+                  } else if (mongoCollections) {
+                    noSQLEntries = mongoCollections.map((collection) => ({
+                      name: collection.name,
+                      colCount: collection.fields?.length ?? 0,
+                    }))
                   }
+
+                  const isNoSQL = noSQLEntries.length > 0
 
                   const tableCount = isNoSQL
                     ? noSQLEntries.length
