@@ -254,34 +254,41 @@ export function SignInForm() {
             </Button>
           </form>
 
-          <div className="pt-4 md:pt-[3.84375rem]">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full bg-[#E5E7E9]" />
+          {oAuthProviders.length > 0 && (
+            <div className="pt-4 md:pt-[3.84375rem]">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full bg-[#E5E7E9]" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="text-project-gray1 bg-gray-50 px-2 text-lg font-medium">
+                    OR
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="text-project-gray1 bg-gray-50 px-2 text-lg font-medium">
-                  OR
-                </span>
-              </div>
-            </div>
 
-            <div className="pt-4 md:pt-[2.34375rem]">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  trackGTag('login', {
-                    method: 'google',
-                  })
-                  void continueWithFakeGoogle()
-                }}
-                className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
-              >
-                <img src={googleIcon.src} alt="google-icon" />
-                Continue with Google
-              </Button>
+              <div className="space-y-3 pt-4 md:pt-[2.34375rem]">
+                {oAuthProviders.map((provider) => (
+                  <Button
+                    key={provider.name}
+                    variant="outline"
+                    onClick={() => {
+                      trackGTag('login', {
+                        method: provider.name,
+                      })
+                      window.location.href = provider.loginUrl
+                    }}
+                    className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
+                  >
+                    {provider.name === 'google' && (
+                      <img src={googleIcon.src} alt="google-icon" />
+                    )}
+                    Continue with {provider.displayName}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
