@@ -123,22 +123,34 @@ export function UserDropdownMenu() {
 
       <DropdownMenuContent
         align="end"
-        className="border-stock bg-shading min-w-[14.375rem] p-0"
+        className="border-stock bg-shading min-w-[16rem] overflow-hidden p-0"
       >
-        <div className="border-stock border-b px-4">
-          <DropdownMenuLabel className="flex flex-col justify-center gap-2 px-0 py-3 leading-[1.33]">
-            <h4 className={'font-semibold'}>{user?.name}</h4>
-            <p className={'text-sm'}>{user?.email}</p>
-          </DropdownMenuLabel>
+        <div className="flex items-center gap-3 px-4 py-3.5">
+          <Avatar className="size-9 shrink-0">
+            <AvatarImage
+              src={user?.avatarUrl || ''}
+              alt="Profile"
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-paragraph/20 text-foreground/70 text-xs font-bold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate font-semibold">{user?.name}</span>
+            <span className="text-paragraph truncate text-sm">
+              {user?.email}
+            </span>
+          </div>
         </div>
 
         {organizations.length > 0 && (
-          <div className="border-stock border-b px-2.5 py-2">
-            <DropdownMenuLabel className="text-paragraph px-1.5 pt-1 pb-2 text-xs font-semibold tracking-wide uppercase">
-              Organization
+          <div className="border-stock border-t px-2 py-2">
+            <DropdownMenuLabel className="text-paragraph px-2 pt-1 pb-1.5 text-[0.6875rem] font-semibold tracking-wider uppercase">
+              Organizations
             </DropdownMenuLabel>
 
-            <div className="max-h-[12.5rem] space-y-1 overflow-y-auto">
+            <div className="max-h-[15rem] space-y-0.5 overflow-y-auto">
               {organizations.map((organization) => {
                 const isActive = organization.id === currentOrganization?.id
 
@@ -154,8 +166,8 @@ export function UserDropdownMenu() {
                   <DropdownMenuItem
                     key={organization.id}
                     className={cn(
-                      'h-[2.75rem] cursor-pointer gap-3 transition-all hover:bg-[#f5f5f5]',
-                      isActive && 'bg-[#f5f5f5]'
+                      'h-[2.75rem] cursor-pointer gap-3 rounded-lg px-2 transition-colors hover:bg-black/[0.04]',
+                      isActive && 'bg-black/[0.04]'
                     )}
                     onClick={() => {
                       if (!isActive) {
@@ -164,9 +176,21 @@ export function UserDropdownMenu() {
                       }
                     }}
                   >
-                    <span className="bg-paragraph/15 text-foreground/70 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold">
-                      {orgInitials}
-                    </span>
+                    <Avatar
+                      className={cn(
+                        'size-8 shrink-0 rounded-md',
+                        isActive && 'ring-primary/40 ring-2 ring-offset-1'
+                      )}
+                    >
+                      <AvatarImage
+                        src={organization.logoUrl || ''}
+                        alt={organization.name}
+                        className="rounded-md object-cover"
+                      />
+                      <AvatarFallback className="bg-paragraph/15 text-foreground/70 rounded-md text-xs font-bold">
+                        {orgInitials}
+                      </AvatarFallback>
+                    </Avatar>
 
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate font-medium">
@@ -178,7 +202,7 @@ export function UserDropdownMenu() {
                     </span>
 
                     {isActive && (
-                      <Check className="text-foreground ml-auto size-4 shrink-0" />
+                      <Check className="text-primary ml-auto size-4 shrink-0" />
                     )}
                   </DropdownMenuItem>
                 )
@@ -187,30 +211,28 @@ export function UserDropdownMenu() {
           </div>
         )}
 
-        {user?.isServerAdmin && (
-          <div className="border-stock space-y-2 border-b px-2.5 py-2">
+        <div className="border-stock space-y-0.5 border-t px-2 py-2">
+          {user?.isServerAdmin && (
             <DropdownMenuItem
               asChild
-              className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
+              className="h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-black/[0.04]"
             >
               <Link to="/server">
-                <Shield className="text-base" />
+                <Shield className="size-4" />
                 Manage Server
               </Link>
             </DropdownMenuItem>
-          </div>
-        )}
+          )}
 
-        <div className="px-2.5 py-2">
           <DropdownMenuItem
             onClick={async () => {
               trackGTag('logout')
               await signOut()
               window.location.href = '/sign-in'
             }}
-            className="hover:text-destructive! h-[2.4375rem] cursor-pointer transition-all hover:bg-red-100!"
+            className="text-destructive focus:text-destructive hover:text-destructive h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-red-50 focus:bg-red-50"
           >
-            <LogoutIcon className="text-base" />
+            <LogoutIcon className="size-4" />
             Logout
           </DropdownMenuItem>
         </div>
