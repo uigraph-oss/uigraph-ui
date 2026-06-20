@@ -2,8 +2,8 @@ import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
-import { SERVICES_V2 } from '@/features/services/api/services-v2'
-import { TEST_PACKS_V2 } from '@/features/services/api/tests-v2'
+import { SERVICES } from '@/features/services/api/services'
+import { TEST_PACKS } from '@/features/services/api/tests'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -38,7 +38,7 @@ export function TestSuiteSelectionModal({
   const selectedServiceId = form.watch('serviceId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(
-    SERVICES_V2,
+    SERVICES,
     {
       client: clientV2,
       variables: { orgId: orgId! },
@@ -48,7 +48,7 @@ export function TestSuiteSelectionModal({
   )
 
   const { data: testPacksData, loading: testPacksLoading } = useQuery(
-    TEST_PACKS_V2,
+    TEST_PACKS,
     {
       client: clientV2,
       variables: { orgId: orgId!, serviceId: selectedServiceId },

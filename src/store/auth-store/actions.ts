@@ -1,10 +1,10 @@
 import { clientV2 } from '@/api/client'
-import { GET_ME_AND_ORG_V2 } from './gql-v2'
+import { GET_ME_AND_ORG } from './gql'
 import { useAuthStore } from './use-auth-store'
 
 export async function bootstrapSession() {
   try {
-    const { data } = await clientV2.query({ query: GET_ME_AND_ORG_V2 })
+    const { data } = await clientV2.query({ query: GET_ME_AND_ORG })
 
     useAuthStore.setState({
       status: 'authenticated',

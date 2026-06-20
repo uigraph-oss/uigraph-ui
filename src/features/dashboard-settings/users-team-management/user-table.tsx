@@ -19,7 +19,7 @@ import {
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import type { OrgMemberRow } from '../api/members-v2'
+import type { OrgMemberRow } from '../api/members'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamMemberModal } from './configure-team-member-modal'
 

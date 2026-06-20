@@ -7,11 +7,11 @@ import { useEffectExceptOnMount, useEffectState } from 'daily-code/react'
 import ms from 'ms'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { UPDATE_DIAGRAM_V2 } from '../api/diagram-v2'
+import { UPDATE_DIAGRAM } from '../api/diagram'
 import {
   CONFIRM_DIAGRAM_THUMBNAIL_UPLOAD,
   PREPARE_DIAGRAM_THUMBNAIL_UPLOAD,
-} from '../api/thumbnail-v2'
+} from '../api/thumbnail'
 import { convertDiagramServerDataToString } from '../helpers/diagram-data'
 import { generateDiagramThumbnailFile } from '../helpers/download-image'
 import { DataSource } from '../types/db-flow'
@@ -45,7 +45,7 @@ export function useDiagramPortalMutation({
   initialLastUpdatedAt,
 }: TUseDiagramPortalMutationProps) {
   const [loading, setLoading] = useState(false)
-  const [updateDiagram] = useMutation(UPDATE_DIAGRAM_V2, { client: clientV2 })
+  const [updateDiagram] = useMutation(UPDATE_DIAGRAM, { client: clientV2 })
 
   const serverLastUpdatedAt = useMemo(() => {
     return initialLastUpdatedAt ? new Date(initialLastUpdatedAt).getTime() : 0

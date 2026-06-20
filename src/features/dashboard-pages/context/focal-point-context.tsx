@@ -1,5 +1,5 @@
 import { clientV2 } from '@/api/client'
-import { FRAME_BY_ID_V2, MAP_V2 } from '@/features/dashboard-projects/api'
+import { FRAME_BY_ID, MAP } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
 import { useLocalStorage } from '@/hooks/use-localstorage'
@@ -10,23 +10,23 @@ import { createContext } from 'daily-code/react'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
-  CREATE_FOCAL_POINT_V2,
-  DELETE_FOCAL_POINT_V2,
-  FOCAL_POINTS_V2,
-  UPDATE_FOCAL_POINT_V2,
-} from '../api/focal-point-v2'
+  CREATE_FOCAL_POINT,
+  DELETE_FOCAL_POINT,
+  FOCAL_POINTS,
+  UPDATE_FOCAL_POINT,
+} from '../api/focal-point'
 import {
-  CREATE_FRAME_GROUP_V2,
-  DELETE_FRAME_GROUP_V2,
-  FRAME_GROUPS_V2,
-  UPDATE_FRAME_GROUP_V2,
-} from '../api/frame-group-v2'
+  CREATE_FRAME_GROUP,
+  DELETE_FRAME_GROUP,
+  FRAME_GROUPS,
+  UPDATE_FRAME_GROUP,
+} from '../api/frame-group'
 import {
-  CREATE_FRAME_LINK_V2,
-  DELETE_FRAME_LINK_V2,
-  FRAME_LINKS_V2,
-  UPDATE_FRAME_LINK_V2,
-} from '../api/links-v2'
+  CREATE_FRAME_LINK,
+  DELETE_FRAME_LINK,
+  FRAME_LINKS,
+  UPDATE_FRAME_LINK,
+} from '../api/links'
 import { FocalPointPreset } from '../types'
 
 export const [FocalPointContextProvider, useFocalPointContext] = createContext(
@@ -37,7 +37,7 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
 
     const orgId = useCurrentOrganization()?.id
 
-    const frameQuery = useQuery(FRAME_BY_ID_V2, {
+    const frameQuery = useQuery(FRAME_BY_ID, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: frameId },
@@ -47,7 +47,7 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
     const frame = frameQuery.data?.frameById ?? null
     const mapId = frame?.mapId ?? ''
 
-    const mapQuery = useQuery(MAP_V2, {
+    const mapQuery = useQuery(MAP, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: mapId },
@@ -59,21 +59,21 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
     const listVars = { orgId: orgId!, mapId, frameId }
     const listSkip = { skip: !orgId || !mapId }
 
-    const focalPointsQuery = useQuery(FOCAL_POINTS_V2, {
+    const focalPointsQuery = useQuery(FOCAL_POINTS, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
       variables: listVars,
       ...listSkip,
     })
 
-    const groupsQuery = useQuery(FRAME_GROUPS_V2, {
+    const groupsQuery = useQuery(FRAME_GROUPS, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
       variables: listVars,
       ...listSkip,
     })
 
-    const linksQuery = useQuery(FRAME_LINKS_V2, {
+    const linksQuery = useQuery(FRAME_LINKS, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
       variables: listVars,
@@ -98,47 +98,47 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
       position: { x: number; y: number; width: number; height: number } | null
     } | null>(null)
 
-    const refetchFocalPoints = [{ query: FOCAL_POINTS_V2, variables: listVars }]
-    const refetchGroups = [{ query: FRAME_GROUPS_V2, variables: listVars }]
-    const refetchLinks = [{ query: FRAME_LINKS_V2, variables: listVars }]
+    const refetchFocalPoints = [{ query: FOCAL_POINTS, variables: listVars }]
+    const refetchGroups = [{ query: FRAME_GROUPS, variables: listVars }]
+    const refetchLinks = [{ query: FRAME_LINKS, variables: listVars }]
 
     const mutationBase = { client: clientV2, awaitRefetchQueries: true }
 
-    const [createFocalPointMutation] = useMutation(CREATE_FOCAL_POINT_V2, {
+    const [createFocalPointMutation] = useMutation(CREATE_FOCAL_POINT, {
       ...mutationBase,
       refetchQueries: refetchFocalPoints,
     })
-    const [updateFocalPointMutation] = useMutation(UPDATE_FOCAL_POINT_V2, {
+    const [updateFocalPointMutation] = useMutation(UPDATE_FOCAL_POINT, {
       ...mutationBase,
       refetchQueries: refetchFocalPoints,
     })
-    const [deleteFocalPointMutation] = useMutation(DELETE_FOCAL_POINT_V2, {
+    const [deleteFocalPointMutation] = useMutation(DELETE_FOCAL_POINT, {
       ...mutationBase,
       refetchQueries: refetchFocalPoints,
     })
 
-    const [createFrameGroupMutation] = useMutation(CREATE_FRAME_GROUP_V2, {
+    const [createFrameGroupMutation] = useMutation(CREATE_FRAME_GROUP, {
       ...mutationBase,
       refetchQueries: refetchGroups,
     })
-    const [updateFrameGroupMutation] = useMutation(UPDATE_FRAME_GROUP_V2, {
+    const [updateFrameGroupMutation] = useMutation(UPDATE_FRAME_GROUP, {
       ...mutationBase,
       refetchQueries: refetchGroups,
     })
-    const [deleteFrameGroupMutation] = useMutation(DELETE_FRAME_GROUP_V2, {
+    const [deleteFrameGroupMutation] = useMutation(DELETE_FRAME_GROUP, {
       ...mutationBase,
       refetchQueries: refetchGroups,
     })
 
-    const [createFrameLinkMutation] = useMutation(CREATE_FRAME_LINK_V2, {
+    const [createFrameLinkMutation] = useMutation(CREATE_FRAME_LINK, {
       ...mutationBase,
       refetchQueries: refetchLinks,
     })
-    const [updateFrameLinkMutation] = useMutation(UPDATE_FRAME_LINK_V2, {
+    const [updateFrameLinkMutation] = useMutation(UPDATE_FRAME_LINK, {
       ...mutationBase,
       refetchQueries: refetchLinks,
     })
-    const [deleteFrameLinkMutation] = useMutation(DELETE_FRAME_LINK_V2, {
+    const [deleteFrameLinkMutation] = useMutation(DELETE_FRAME_LINK, {
       ...mutationBase,
       refetchQueries: refetchLinks,
     })

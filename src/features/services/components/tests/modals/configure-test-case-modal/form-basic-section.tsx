@@ -11,8 +11,8 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TagInput } from '@/features/component-meta'
-import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
-import { ACTOR_V2 } from '@/features/services/api/actor-v2'
+import { MEMBERS } from '@/features/dashboard-settings/api/members'
+import { ACTOR } from '@/features/services/api/actor'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -195,7 +195,7 @@ function TestOwnerSelect({
 
 export function FormBasicSection({ form }: { form: FormType }) {
   const organizationId = useCurrentOrganization()?.id
-  const { data } = useQuery(MEMBERS_V2, {
+  const { data } = useQuery(MEMBERS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
@@ -224,7 +224,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
     void Promise.allSettled(
       userIds.map(async (userId) => {
         const { data } = await clientV2.query({
-          query: ACTOR_V2,
+          query: ACTOR,
           variables: { orgId: organizationId!, id: userId },
           fetchPolicy: 'cache-first',
         })

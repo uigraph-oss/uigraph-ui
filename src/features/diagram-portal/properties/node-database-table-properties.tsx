@@ -5,9 +5,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import {
-  SERVICE_DB_V2,
+  SERVICE_DB,
   serviceDBToLegacy,
-} from '@/features/services/api/service-db-v2'
+} from '@/features/services/api/service-db'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -318,7 +318,7 @@ function NodeDatabaseTablePropertiesRemoteSource() {
   const serviceTable = data?.serviceTable
   const orgId = useCurrentOrganization().id
   const [isCodeMode, setIsCodeMode] = useState(false)
-  const { data: serviceDbData, loading } = useQuery(SERVICE_DB_V2, {
+  const { data: serviceDbData, loading } = useQuery(SERVICE_DB, {
     client: clientV2,
     variables: {
       orgId: orgId!,

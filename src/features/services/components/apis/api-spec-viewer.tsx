@@ -3,7 +3,7 @@
 import { clientV2 } from '@/api/client'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
-import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import {
@@ -1611,7 +1611,7 @@ export function RestApiSpecViewer({
       setIsLoading(true)
       setError(null)
       const { data } = await clientV2.query({
-        query: API_GROUP_SPEC_V2,
+        query: API_GROUP_SPEC,
         variables: { orgId: orgId!, serviceId, apiGroupId },
         fetchPolicy: 'network-only',
       })

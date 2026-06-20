@@ -25,7 +25,7 @@ import { Calendar, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
-import { DashboardMap, DELETE_MAP_V2, MAPS_V2, UPDATE_MAP_V2 } from '../../api'
+import { DashboardMap, DELETE_MAP, MAPS, UPDATE_MAP } from '../../api'
 import { ConfigureProjectModal } from './project-configure-modal'
 
 export function ProjectGrid({ projects }: { projects: DashboardMap[] }) {
@@ -53,17 +53,17 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const refetchMaps = [
-    { query: MAPS_V2, variables: { orgId: organizationId! } },
+    { query: MAPS, variables: { orgId: organizationId! } },
   ]
 
-  const [updateProject] = useMutation(UPDATE_MAP_V2, {
+  const [updateProject] = useMutation(UPDATE_MAP, {
     client: clientV2,
     refetchQueries: refetchMaps,
     awaitRefetchQueries: true,
   })
 
   const [deleteProject, { loading: isProjectDeleting }] = useMutation(
-    DELETE_MAP_V2,
+    DELETE_MAP,
     {
       client: clientV2,
       refetchQueries: refetchMaps,

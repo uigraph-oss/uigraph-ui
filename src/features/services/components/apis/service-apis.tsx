@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody } from '@/components/ui/table'
-import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
@@ -126,7 +126,7 @@ export function ServiceApiEndpoints() {
     async function run() {
       try {
         const { data } = await clientV2.query({
-          query: API_GROUP_SPEC_V2,
+          query: API_GROUP_SPEC,
           variables: { orgId: organizationId!, serviceId, apiGroupId },
           fetchPolicy: 'cache-first',
         })

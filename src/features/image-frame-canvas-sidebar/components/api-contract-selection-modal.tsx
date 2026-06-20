@@ -3,14 +3,14 @@ import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
 import {
-  API_ENDPOINTS_V2,
-  API_GROUPS_V2,
-} from '@/features/services/api/api-endpoints-v2'
+  API_ENDPOINTS,
+  API_GROUPS,
+} from '@/features/services/api/api-endpoints'
 import {
   apiGroupToLegacy,
   endpointToLegacyWithMeta,
 } from '@/features/services/api/api-v2-adapters'
-import { SERVICES_V2 } from '@/features/services/api/services-v2'
+import { SERVICES } from '@/features/services/api/services'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -49,7 +49,7 @@ export function ApiContractSelectionModal({
   const selectedApiGroupId = form.watch('apiGroupId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(
-    SERVICES_V2,
+    SERVICES,
     {
       client: clientV2,
       variables: { orgId: orgId! },
@@ -59,7 +59,7 @@ export function ApiContractSelectionModal({
   )
 
   const { data: apiGroupsData, loading: apiGroupsLoading } = useQuery(
-    API_GROUPS_V2,
+    API_GROUPS,
     {
       client: clientV2,
       variables: { orgId: orgId!, serviceId: selectedServiceId },
@@ -69,7 +69,7 @@ export function ApiContractSelectionModal({
   )
 
   const { data: apiEndpointsData, loading: apiEndpointsLoading } = useQuery(
-    API_ENDPOINTS_V2,
+    API_ENDPOINTS,
     {
       client: clientV2,
       variables: {

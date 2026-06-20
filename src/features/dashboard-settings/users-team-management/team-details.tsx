@@ -6,7 +6,7 @@ import { BetterDeleteConfirmationModal } from '@/components/better-delete-confir
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import type { SettingsTeam } from '../api/teams-v2'
+import type { SettingsTeam } from '../api/teams'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamModal } from './configure-team-modal'
 

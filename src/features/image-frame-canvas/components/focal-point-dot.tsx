@@ -1,4 +1,4 @@
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
 import { cn } from '@/lib/utils'
 import { getViewPointPositionStyle } from '../helpers'
 import { SvgDot } from './svg-dot'

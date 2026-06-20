@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 import { Fragment } from 'react'
 import { toast } from 'sonner'
-import { SERVICES_V2 } from '../../api/services-v2'
+import { SERVICES } from '../../api/services'
 import {
   getTestTypeConfig,
   normalizeTestTypeKey,
@@ -947,7 +947,7 @@ export function TestRunReportDialog({
   stats,
 }: TestRunReportDialogProps) {
   const orgId = useCurrentOrganization().id
-  const { data: serviceData } = useQuery(SERVICES_V2, {
+  const { data: serviceData } = useQuery(SERVICES, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },

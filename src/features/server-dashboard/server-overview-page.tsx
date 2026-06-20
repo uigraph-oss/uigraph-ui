@@ -5,11 +5,11 @@ import { SectionLoader } from '@/components/section-loader'
 import { useQuery } from '@apollo/client'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
-import { SERVER_OVERVIEW_V2 } from './api/server-overview-v2'
+import { SERVER_OVERVIEW } from './api/server-overview'
 import { ServerSectionHeader } from './server-section-header'
 
 export function ServerOverviewPage() {
-  const { data, loading, error } = useQuery(SERVER_OVERVIEW_V2, {
+  const { data, loading, error } = useQuery(SERVER_OVERVIEW, {
     client: clientV2,
   })
 

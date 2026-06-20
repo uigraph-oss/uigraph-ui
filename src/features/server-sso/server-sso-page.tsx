@@ -12,34 +12,34 @@ import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  DELETE_OAUTH_PROVIDER_V2,
-  LDAP_STATUS_V2,
-  OAUTH_PROVIDERS_V2,
-  SAML_STATUS_V2,
-  UPSERT_OAUTH_PROVIDER_V2,
+  DELETE_OAUTH_PROVIDER,
+  LDAP_STATUS,
+  OAUTH_PROVIDERS,
+  SAML_STATUS,
+  UPSERT_OAUTH_PROVIDER,
   getScimStatus,
   type OAuthProvider,
   type ProviderStatus,
-} from './api/server-sso-v2'
+} from './api/server-sso'
 import {
   ConfigureOAuthProviderModal,
   type OAuthProviderFormValues,
 } from './configure-oauth-provider-modal'
 
 export function ServerSSOPage() {
-  const providersQuery = useQuery(OAUTH_PROVIDERS_V2, { client: clientV2 })
-  const ldapQuery = useQuery(LDAP_STATUS_V2, { client: clientV2 })
-  const samlQuery = useQuery(SAML_STATUS_V2, { client: clientV2 })
+  const providersQuery = useQuery(OAUTH_PROVIDERS, { client: clientV2 })
+  const ldapQuery = useQuery(LDAP_STATUS, { client: clientV2 })
+  const samlQuery = useQuery(SAML_STATUS, { client: clientV2 })
 
   const [scimStatus, setScimStatus] = useState<ProviderStatus | null>(null)
 
-  const refetchQueries = [{ query: OAUTH_PROVIDERS_V2 }]
-  const [upsertProvider] = useMutation(UPSERT_OAUTH_PROVIDER_V2, {
+  const refetchQueries = [{ query: OAUTH_PROVIDERS }]
+  const [upsertProvider] = useMutation(UPSERT_OAUTH_PROVIDER, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })
-  const [deleteProvider] = useMutation(DELETE_OAUTH_PROVIDER_V2, {
+  const [deleteProvider] = useMutation(DELETE_OAUTH_PROVIDER, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,

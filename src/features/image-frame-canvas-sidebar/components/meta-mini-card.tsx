@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react'
 import { HiOutlineTrash } from 'react-icons/hi2'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
-import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta-v2'
+import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta'
 import { FocalPointName } from './focal-point-name'
 import { FocalPointMetaModal } from './meta-modal'
 

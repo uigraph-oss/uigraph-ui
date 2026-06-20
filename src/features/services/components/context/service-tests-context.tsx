@@ -11,18 +11,18 @@ import { useCallback, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  CREATE_TEST_CASE_V2,
-  CREATE_TEST_PACK_V2,
-  CREATE_TEST_RUN_V2,
-  DELETE_TEST_CASE_V2,
-  DELETE_TEST_PACK_V2,
-  TEST_CASES_V2,
-  TEST_PACKS_V2,
-  TEST_RUNS_SUMMARY_V2,
-  TEST_RUNS_V2,
-  UPDATE_TEST_CASE_V2,
-  UPDATE_TEST_PACK_V2,
-} from '../../api/tests-v2'
+  CREATE_TEST_CASE,
+  CREATE_TEST_PACK,
+  CREATE_TEST_RUN,
+  DELETE_TEST_CASE,
+  DELETE_TEST_PACK,
+  TEST_CASES,
+  TEST_PACKS,
+  TEST_RUNS_SUMMARY,
+  TEST_RUNS,
+  UPDATE_TEST_CASE,
+  UPDATE_TEST_PACK,
+} from '../../api/tests'
 import {
   transformTestCaseToSchema,
   transformToCreateTestCase,
@@ -60,28 +60,28 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       testPackId: selectedPackId ?? '',
     }
 
-    const { data: packsData, loading: packsLoading } = useQuery(TEST_PACKS_V2, {
+    const { data: packsData, loading: packsLoading } = useQuery(TEST_PACKS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: packsVars,
       skip: !orgId || !serviceId,
     })
 
-    const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES_V2, {
+    const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: casesVars,
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
-    const { data: packRunsData } = useQuery(TEST_RUNS_V2, {
+    const { data: packRunsData } = useQuery(TEST_RUNS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: packRunsVars,
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
-    const { data: summaryRunsData } = useQuery(TEST_RUNS_SUMMARY_V2, {
+    const { data: summaryRunsData } = useQuery(TEST_RUNS_SUMMARY, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: runsVars,
@@ -127,54 +127,54 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     const isTestCasesLoading = casesLoading && !casesData?.testCases
 
     const packRefetchQueries = [
-      { query: TEST_PACKS_V2, variables: packsVars },
+      { query: TEST_PACKS, variables: packsVars },
       selectedPackId
-        ? { query: TEST_RUNS_V2, variables: packRunsVars }
-        : { query: TEST_RUNS_SUMMARY_V2, variables: runsVars },
+        ? { query: TEST_RUNS, variables: packRunsVars }
+        : { query: TEST_RUNS_SUMMARY, variables: runsVars },
     ]
 
     const caseRefetchQueries = [
-      { query: TEST_CASES_V2, variables: casesVars },
+      { query: TEST_CASES, variables: casesVars },
       selectedPackId
-        ? { query: TEST_RUNS_V2, variables: packRunsVars }
-        : { query: TEST_RUNS_SUMMARY_V2, variables: runsVars },
+        ? { query: TEST_RUNS, variables: packRunsVars }
+        : { query: TEST_RUNS_SUMMARY, variables: runsVars },
     ]
 
-    const [createTestPack] = useMutation(CREATE_TEST_PACK_V2, {
+    const [createTestPack] = useMutation(CREATE_TEST_PACK, {
       client: clientV2,
       refetchQueries: packRefetchQueries,
     })
 
-    const [updateTestPack] = useMutation(UPDATE_TEST_PACK_V2, {
+    const [updateTestPack] = useMutation(UPDATE_TEST_PACK, {
       client: clientV2,
       refetchQueries: packRefetchQueries,
     })
 
-    const [deleteTestPack] = useMutation(DELETE_TEST_PACK_V2, {
+    const [deleteTestPack] = useMutation(DELETE_TEST_PACK, {
       client: clientV2,
       refetchQueries: packRefetchQueries,
     })
 
-    const [createTestCaseMutation] = useMutation(CREATE_TEST_CASE_V2, {
+    const [createTestCaseMutation] = useMutation(CREATE_TEST_CASE, {
       client: clientV2,
       refetchQueries: caseRefetchQueries,
     })
 
-    const [updateTestCaseMutation] = useMutation(UPDATE_TEST_CASE_V2, {
+    const [updateTestCaseMutation] = useMutation(UPDATE_TEST_CASE, {
       client: clientV2,
       refetchQueries: caseRefetchQueries,
     })
 
-    const [deleteTestCaseMutation] = useMutation(DELETE_TEST_CASE_V2, {
+    const [deleteTestCaseMutation] = useMutation(DELETE_TEST_CASE, {
       client: clientV2,
-      refetchQueries: [{ query: TEST_CASES_V2, variables: casesVars }],
+      refetchQueries: [{ query: TEST_CASES, variables: casesVars }],
     })
 
-    const [createTestRun] = useMutation(CREATE_TEST_RUN_V2, {
+    const [createTestRun] = useMutation(CREATE_TEST_RUN, {
       client: clientV2,
       refetchQueries: [
-        { query: TEST_RUNS_V2, variables: packRunsVars },
-        { query: TEST_RUNS_SUMMARY_V2, variables: runsVars },
+        { query: TEST_RUNS, variables: packRunsVars },
+        { query: TEST_RUNS_SUMMARY, variables: runsVars },
       ],
     })
 
@@ -406,7 +406,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
 
         try {
           const { data: freshCasesData } = await clientV2.query({
-            query: TEST_CASES_V2,
+            query: TEST_CASES,
             variables: {
               orgId: orgId!,
               serviceId,

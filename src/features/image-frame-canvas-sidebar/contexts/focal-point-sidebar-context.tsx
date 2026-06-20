@@ -1,17 +1,17 @@
 import { clientV2 } from '@/api/client'
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import {
   ComponentFieldInput,
-  CREATE_FOCAL_POINT_META_V2,
-  DELETE_FOCAL_POINT_META_V2,
-  FOCAL_POINT_META_V2,
+  CREATE_FOCAL_POINT_META,
+  DELETE_FOCAL_POINT_META,
+  FOCAL_POINT_META,
   toPointMeta,
-  UPDATE_FOCAL_POINT_META_V2,
-} from '../api/focal-point-meta-v2'
+  UPDATE_FOCAL_POINT_META,
+} from '../api/focal-point-meta'
 
 type PointMetaInput = {
   componentModalFields?: ComponentFieldInput[]
@@ -29,22 +29,22 @@ export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
       const vars = { orgId: orgId!, mapId, frameId, focalPointId }
       const skip = !orgId || !mapId || !frameId
 
-      const metaRes = useQuery(FOCAL_POINT_META_V2, {
+      const metaRes = useQuery(FOCAL_POINT_META, {
         client: clientV2,
         variables: vars,
         skip,
       })
 
-      const refetch = [{ query: FOCAL_POINT_META_V2, variables: vars }]
+      const refetch = [{ query: FOCAL_POINT_META, variables: vars }]
       const mutationBase = {
         client: clientV2,
         awaitRefetchQueries: true,
         refetchQueries: refetch,
       }
 
-      const [createMeta] = useMutation(CREATE_FOCAL_POINT_META_V2, mutationBase)
-      const [updateMeta] = useMutation(UPDATE_FOCAL_POINT_META_V2, mutationBase)
-      const [deleteMeta] = useMutation(DELETE_FOCAL_POINT_META_V2, mutationBase)
+      const [createMeta] = useMutation(CREATE_FOCAL_POINT_META, mutationBase)
+      const [updateMeta] = useMutation(UPDATE_FOCAL_POINT_META, mutationBase)
+      const [deleteMeta] = useMutation(DELETE_FOCAL_POINT_META, mutationBase)
 
       const pointMeta = useMemo(
         () => (metaRes.data?.focalPointMeta ?? []).map(toPointMeta),

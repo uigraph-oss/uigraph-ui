@@ -24,7 +24,7 @@ import { ArrowLeft, FileCode2, List } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LuCloudUpload, LuColumns2 } from 'react-icons/lu'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { API_GROUP_SPEC_V2 } from '../../api/api-spec-v2'
+import { API_GROUP_SPEC } from '../../api/api-spec'
 import {
   ServiceApiEndpointsContextProvider,
   useServiceApiEndpointsContext,
@@ -124,7 +124,7 @@ function ApiGroupEndpointsPageContent() {
     async function run() {
       try {
         const { data } = await clientV2.query({
-          query: API_GROUP_SPEC_V2,
+          query: API_GROUP_SPEC,
           variables: {
             orgId: orgId!,
             serviceId,

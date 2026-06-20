@@ -3,8 +3,8 @@ import { ComponentInputType } from '@uigraph/sdk'
 import type {
   DashboardAPIEndpoint,
   DashboardAPIGroup,
-} from './api-endpoints-v2'
-import type { DashboardAPIGroupVersion } from './api-group-version-v2'
+} from './api-endpoints'
+import type { DashboardAPIGroupVersion } from './api-group-version'
 
 export type LegacyApiEndpoint = {
   apiEndpointId?: string | null

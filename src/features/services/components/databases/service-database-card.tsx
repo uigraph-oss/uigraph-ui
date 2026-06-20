@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { DIAGRAM_V2 } from '@/features/diagram-portal/api/diagram-v2'
+import { DIAGRAM } from '@/features/diagram-portal/api/diagram'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -24,10 +24,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DB_V2,
-  SERVICE_DBS_V2,
+  DELETE_SERVICE_DB,
+  SERVICE_DBS,
   serviceDBToLegacy,
-} from '../../api/service-db-v2'
+} from '../../api/service-db'
 import { useServiceContext } from '../../contexts/service-context'
 
 type ServiceDatabaseCardProps = {
@@ -42,7 +42,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const { data: diagramData } = useQuery(DIAGRAM_V2, {
+  const { data: diagramData } = useQuery(DIAGRAM, {
     client: clientV2,
     skip: !db.dbDiagramId || !orgId,
     fetchPolicy: 'cache-first',
@@ -54,10 +54,10 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
 
   const previewSrc = diagramData?.diagram?.previewImageUrl ?? undefined
 
-  const [deleteServiceDb] = useMutation(DELETE_SERVICE_DB_V2, {
+  const [deleteServiceDb] = useMutation(DELETE_SERVICE_DB, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: SERVICE_DBS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DBS, variables: listVars }],
   })
 
   async function handleDelete() {

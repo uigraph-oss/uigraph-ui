@@ -1,8 +1,8 @@
 import { clientV2 } from '@/api/client'
 import {
-  SERVICE_DB_V2,
+  SERVICE_DB,
   serviceDBToLegacy,
-} from '@/features/services/api/service-db-v2'
+} from '@/features/services/api/service-db'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Node, NodeProps, NodeResizeControl } from '@xyflow/react'
@@ -184,7 +184,7 @@ function DatabaseTableNodeRemoteSource({
   const { serviceId, serviceDbId, tableName } = data.serviceTable!
   const orgId = useCurrentOrganization().id
 
-  const { data: serviceDbData, loading } = useQuery(SERVICE_DB_V2, {
+  const { data: serviceDbData, loading } = useQuery(SERVICE_DB, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     skip: !orgId || !serviceId || !serviceDbId,

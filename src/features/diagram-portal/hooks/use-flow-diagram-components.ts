@@ -3,7 +3,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
-import { FLOW_DIAGRAM_COMPONENTS_V2 } from '../api/flow-components-v2'
+import { FLOW_DIAGRAM_COMPONENTS } from '../api/flow-components'
 
 export type FlowDiagramComponentField = {
   data?: (unknown | null)[] | null
@@ -39,7 +39,7 @@ export type FlowDiagramComponentsGroup = {
 
 export function useFlowDiagramComponents() {
   const organizationId = useCurrentOrganization()?.id
-  const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS_V2, {
+  const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS, {
     client: clientV2,
     variables: { orgId: organizationId! },
     skip: !organizationId,

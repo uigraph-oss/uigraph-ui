@@ -7,7 +7,7 @@ import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
+import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -25,14 +25,14 @@ import { IoPause, IoPlaySkipForwardOutline } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  CREATE_TEST_RUN_RESULT_V2,
-  TEST_CASES_V2,
-  TEST_RUN_RESULTS_V2,
-  TEST_RUN_V2,
-  TEST_RUNS_SUMMARY_V2,
-  UPDATE_TEST_RUN_RESULT_V2,
-  UPDATE_TEST_RUN_V2,
-} from '../../api/tests-v2'
+  CREATE_TEST_RUN_RESULT,
+  TEST_CASES,
+  TEST_RUN_RESULTS,
+  TEST_RUN,
+  TEST_RUNS_SUMMARY,
+  UPDATE_TEST_RUN_RESULT,
+  UPDATE_TEST_RUN,
+} from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 import { normalizeTestCaseIdForMatch } from '../../utils/normalize-test-case-id'
 import {
@@ -154,7 +154,7 @@ export function TestRunExecutionPage() {
 
   const runVars = { orgId: orgId!, serviceId, id: testRunId }
 
-  const { data: runData, loading: runLoading } = useQuery(TEST_RUN_V2, {
+  const { data: runData, loading: runLoading } = useQuery(TEST_RUN, {
     client: clientV2,
     variables: runVars,
     skip: !orgId || !serviceId || !testRunId,
@@ -181,7 +181,7 @@ export function TestRunExecutionPage() {
     testPackId: testPackId ?? undefined,
   }
 
-  const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES_V2, {
+  const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
     client: clientV2,
     variables: casesVars,
     skip: !orgId || !serviceId || !testPackId,
@@ -191,7 +191,7 @@ export function TestRunExecutionPage() {
     data: resultsData,
     loading: resultsLoading,
     refetch: refetchResults,
-  } = useQuery(TEST_RUN_RESULTS_V2, {
+  } = useQuery(TEST_RUN_RESULTS, {
     client: clientV2,
     variables: resultsVars,
     skip: !orgId || !serviceId || !testRunId,
@@ -199,27 +199,27 @@ export function TestRunExecutionPage() {
 
   const refetchQueries = useMemo(
     () => [
-      ...(testRunId ? [{ query: TEST_RUN_V2, variables: runVars }] : []),
+      ...(testRunId ? [{ query: TEST_RUN, variables: runVars }] : []),
       ...(testPackId
-        ? [{ query: TEST_RUNS_SUMMARY_V2, variables: summaryVars }]
+        ? [{ query: TEST_RUNS_SUMMARY, variables: summaryVars }]
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [testRunId, testPackId, orgId, serviceId]
   )
 
-  const [createTestRunResult] = useMutation(CREATE_TEST_RUN_RESULT_V2, {
+  const [createTestRunResult] = useMutation(CREATE_TEST_RUN_RESULT, {
     client: clientV2,
     refetchQueries,
   })
 
-  const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_V2, {
+  const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT, {
     client: clientV2,
     refetchQueries,
   })
 
   const [updateTestRun, { loading: isCompleting }] = useMutation(
-    UPDATE_TEST_RUN_V2,
+    UPDATE_TEST_RUN,
     { client: clientV2, refetchQueries }
   )
 

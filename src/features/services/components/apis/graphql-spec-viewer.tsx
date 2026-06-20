@@ -5,7 +5,7 @@ import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useCurrentOrganization } from '@/store/auth-store'
 import {
@@ -470,7 +470,7 @@ export function GraphqlSpecViewer({
       setError(null)
 
       const { data } = await clientV2.query({
-        query: API_GROUP_SPEC_V2,
+        query: API_GROUP_SPEC,
         variables: { orgId: orgId!, serviceId, apiGroupId },
         fetchPolicy: 'network-only',
       })

@@ -4,12 +4,12 @@ import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
 import { clientV2 } from '@/api/client'
-import { FRAME_BY_ID_V2 } from '@/features/dashboard-projects/api/frame-v2'
-import { MAP_V2 } from '@/features/dashboard-projects/api/map-v2'
+import { FRAME_BY_ID } from '@/features/dashboard-projects/api/frame'
+import { MAP } from '@/features/dashboard-projects/api/map'
 import {
-  FOCAL_POINT_META_BY_COMPONENT_LINK_V2,
+  FOCAL_POINT_META_BY_COMPONENT_LINK,
   toPointMeta,
-} from '@/features/image-frame-canvas-sidebar/api/focal-point-meta-v2'
+} from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
 import { LegacyApiEndpoint } from '@/features/services/api/api-v2-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 
@@ -40,7 +40,7 @@ async function fetchPages(pageIds: string[], organizationId: string) {
   const results = await Promise.all(
     pageIds.map((pageId) =>
       clientV2.query({
-        query: FRAME_BY_ID_V2,
+        query: FRAME_BY_ID,
         variables: { orgId: organizationId, id: pageId },
         fetchPolicy: 'cache-first',
       })
@@ -67,7 +67,7 @@ async function fetchProjects(projectIds: string[], organizationId: string) {
   const results = await Promise.all(
     projectIds.map((projectId) =>
       clientV2.query({
-        query: MAP_V2,
+        query: MAP,
         variables: { orgId: organizationId, id: projectId },
         fetchPolicy: 'cache-first',
       })
@@ -97,7 +97,7 @@ export function ConfigureApiEndpointConnections({
     loading: focalPointsLoading,
     error: focalPointsError,
     refetch,
-  } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK_V2, {
+  } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
     client: clientV2,
     variables: {
       orgId: organizationId!,

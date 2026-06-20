@@ -3,7 +3,7 @@ import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { VersionLayout } from '@/components/version-layout'
 import { useEffect, useMemo, useState } from 'react'
-import { DIAGRAM_VERSION_CONTENT_V2 } from '../api/versions-v2'
+import { DIAGRAM_VERSION_CONTENT } from '../api/versions'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { FlowDiagramPreview } from '../flow-diagram-preview'
 import { convertDiagramServerData } from '../helpers/diagram-data'
@@ -43,7 +43,7 @@ function CompareSide({ versions, selectedVersionId }: CompareSideProps) {
 
     void clientV2
       .query({
-        query: DIAGRAM_VERSION_CONTENT_V2,
+        query: DIAGRAM_VERSION_CONTENT,
         variables: {
           orgId: organizationId!,
           diagramId: diagramId!,

@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { SETTINGS_TEAMS_V2 } from '@/features/dashboard-settings/api/teams-v2'
+import { SETTINGS_TEAMS } from '@/features/dashboard-settings/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -50,7 +50,7 @@ export function ConfigureProjectModal({
   const [errorMessage, setErrorMessage] = useState('')
 
   const organizationId = useCurrentOrganization()?.id
-  const teamRes = useQuery(SETTINGS_TEAMS_V2, {
+  const teamRes = useQuery(SETTINGS_TEAMS, {
     client: clientV2,
     variables: { orgId: organizationId! },
     skip: !organizationId,

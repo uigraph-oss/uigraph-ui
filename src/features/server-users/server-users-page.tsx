@@ -21,33 +21,33 @@ import { Plus, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  CREATE_SERVER_USER_V2,
-  DISABLE_SERVER_USER_V2,
-  SERVER_USERS_V2,
-  UPDATE_SERVER_USER_V2,
+  CREATE_SERVER_USER,
+  DISABLE_SERVER_USER,
+  SERVER_USERS,
+  UPDATE_SERVER_USER,
   type ServerUser,
-} from './api/server-users-v2'
+} from './api/server-users'
 import { ConfigureServerUserModal } from './configure-server-user-modal'
 import { ServerUsersTable } from './server-users-table'
 
 export function ServerUsersPage() {
-  const { data, loading, error } = useQuery(SERVER_USERS_V2, {
+  const { data, loading, error } = useQuery(SERVER_USERS, {
     client: clientV2,
   })
 
-  const refetchQueries = [{ query: SERVER_USERS_V2 }]
+  const refetchQueries = [{ query: SERVER_USERS }]
 
-  const [createUser] = useMutation(CREATE_SERVER_USER_V2, {
+  const [createUser] = useMutation(CREATE_SERVER_USER, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })
-  const [updateUser] = useMutation(UPDATE_SERVER_USER_V2, {
+  const [updateUser] = useMutation(UPDATE_SERVER_USER, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })
-  const [disableUser] = useMutation(DISABLE_SERVER_USER_V2, {
+  const [disableUser] = useMutation(DISABLE_SERVER_USER, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,

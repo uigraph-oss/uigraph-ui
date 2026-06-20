@@ -33,7 +33,7 @@ import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
 } from '@/features/services/api/api-v2-adapters'
-import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
+import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'

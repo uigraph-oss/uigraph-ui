@@ -23,7 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { type ReactNode } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
-import { DashboardTeam } from './api/teams-v2'
+import { DashboardTeam } from './api/teams'
 
 const createFolderSchema = z.object({
   name: z.string().min(1, 'Name is required'),

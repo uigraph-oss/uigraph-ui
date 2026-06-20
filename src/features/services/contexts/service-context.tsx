@@ -4,7 +4,7 @@ import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
-import { SERVICES_V2 } from '../api/services-v2'
+import { SERVICES } from '../api/services'
 import { useDashboardServicesList } from '../hooks/use-dashboard-services'
 
 export const [ServiceContextProvider, useServiceContext] = createContext(
@@ -20,7 +20,7 @@ export const [ServiceContextProvider, useServiceContext] = createContext(
 
       if (!fetchedService) {
         const cachedServices = clientV2.readQuery({
-          query: SERVICES_V2,
+          query: SERVICES,
           variables: { orgId },
         })
 

@@ -11,8 +11,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { API_GROUPS_V2 } from '@/features/services/api/api-endpoints-v2'
-import { SERVICES_V2 } from '@/features/services/api/services-v2'
+import { API_GROUPS } from '@/features/services/api/api-endpoints'
+import { SERVICES } from '@/features/services/api/services'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -33,7 +33,7 @@ function ApiGroupsSection({
   value: string
   onChange: (value: string) => void
 }) {
-  const { data, loading } = useQuery(API_GROUPS_V2, {
+  const { data, loading } = useQuery(API_GROUPS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId, serviceId },
@@ -91,7 +91,7 @@ export function LinkApiSpecSelect({
   const { serviceId, apiGroupId } = parseApiSpecValue(value)
 
   const { data: servicesData, loading: isServicesLoading } = useQuery(
-    SERVICES_V2,
+    SERVICES,
     {
       client: clientV2,
       fetchPolicy: 'cache-first',
@@ -110,7 +110,7 @@ export function LinkApiSpecSelect({
   )
 
   const { data: selectedGroupsData, loading: isSelectedGroupsLoading } =
-    useQuery(API_GROUPS_V2, {
+    useQuery(API_GROUPS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, serviceId },

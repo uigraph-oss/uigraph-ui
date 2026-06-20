@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { serviceDiagramToLegacyWithMeta } from '@/features/services/api/service-diagram-v2'
+import { serviceDiagramToLegacyWithMeta } from '@/features/services/api/service-diagram'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -20,9 +20,9 @@ import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DIAGRAM_V2,
-  SERVICE_DIAGRAMS_V2,
-} from '../../api/service-diagram-v2'
+  DELETE_SERVICE_DIAGRAM,
+  SERVICE_DIAGRAMS,
+} from '../../api/service-diagram'
 import { useServiceContext } from '../../contexts/service-context'
 
 type ServiceDiagramWithMeta = ReturnType<typeof serviceDiagramToLegacyWithMeta>
@@ -39,9 +39,9 @@ export function FlowDiagramCard({
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM_V2, {
+  const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM, {
     client: clientV2,
-    refetchQueries: [{ query: SERVICE_DIAGRAMS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DIAGRAMS, variables: listVars }],
     awaitRefetchQueries: true,
   })
 

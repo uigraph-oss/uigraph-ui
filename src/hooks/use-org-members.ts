@@ -1,6 +1,6 @@
 import { clientV2 } from '@/api/client'
-import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
-import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable, objectPick } from 'daily-code'
@@ -9,13 +9,13 @@ import { useMemo } from 'react'
 export function useOrgMembers() {
   const org = useCurrentOrganization()
 
-  const membersQuery = useQuery(MEMBERS_V2, {
+  const membersQuery = useQuery(MEMBERS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: org.id },
   })
 
-  const teamsQuery = useQuery(TEAMS_V2, {
+  const teamsQuery = useQuery(TEAMS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: org.id },

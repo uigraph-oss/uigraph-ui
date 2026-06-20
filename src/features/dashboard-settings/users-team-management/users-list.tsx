@@ -17,13 +17,13 @@ import { arrayNonNullable } from 'daily-code'
 import Fuse from 'fuse.js'
 import { Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { MEMBERS_V2, type OrgMemberRow } from '../api/members-v2'
+import { MEMBERS, type OrgMemberRow } from '../api/members'
 import { UserTable } from './user-table'
 
 export function UsersList({ teamId }: { teamId?: string }) {
   const organizationId = useCurrentOrganization()?.id
 
-  const membersQuery = useQuery(MEMBERS_V2, {
+  const membersQuery = useQuery(MEMBERS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },

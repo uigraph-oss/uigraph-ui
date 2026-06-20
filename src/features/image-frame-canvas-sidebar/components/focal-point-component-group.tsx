@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/accordion'
 import { useComponents } from '@/features/dashboard-pages/hooks/use-components'
 import { useMemo } from 'react'
-import { PointMeta } from '../api/focal-point-meta-v2'
+import { PointMeta } from '../api/focal-point-meta'
 import {
   FocalPointMetaSection,
   FocalPointMetaSectionProps,

@@ -5,11 +5,11 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import {
-  CREATE_CUSTOM_COMPONENT_V2,
-  DELETE_CUSTOM_COMPONENT_V2,
-  GET_COMPONENTS_V2,
-  UPDATE_CUSTOM_COMPONENT_V2,
-} from '../api/components-v2'
+  CREATE_CUSTOM_COMPONENT,
+  DELETE_CUSTOM_COMPONENT,
+  GET_COMPONENTS,
+  UPDATE_CUSTOM_COMPONENT,
+} from '../api/components'
 import { ComponentField } from '../components/configure-component/component-field-list'
 
 function mapComponentFields(fields: ComponentField[]) {
@@ -28,29 +28,29 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
   createContext(() => {
     const organizationId = useCurrentOrganization()?.id
 
-    const { data, loading } = useQuery(GET_COMPONENTS_V2, {
+    const { data, loading } = useQuery(GET_COMPONENTS, {
       client: clientV2,
       variables: { orgId: organizationId! },
       skip: !organizationId,
     })
 
     const refetchQueries = [
-      { query: GET_COMPONENTS_V2, variables: { orgId: organizationId } },
+      { query: GET_COMPONENTS, variables: { orgId: organizationId } },
     ]
 
-    const [createCustomComponent] = useMutation(CREATE_CUSTOM_COMPONENT_V2, {
+    const [createCustomComponent] = useMutation(CREATE_CUSTOM_COMPONENT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
-    const [updateCustomComponent] = useMutation(UPDATE_CUSTOM_COMPONENT_V2, {
+    const [updateCustomComponent] = useMutation(UPDATE_CUSTOM_COMPONENT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
-    const [deleteCustomComponent] = useMutation(DELETE_CUSTOM_COMPONENT_V2, {
+    const [deleteCustomComponent] = useMutation(DELETE_CUSTOM_COMPONENT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries,

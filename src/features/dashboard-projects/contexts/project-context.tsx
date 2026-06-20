@@ -11,11 +11,11 @@ import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
-  CREATE_FRAME_V2,
-  DELETE_FRAME_V2,
-  FRAMES_V2,
-  MAP_V2,
-  UPDATE_FRAME_V2,
+  CREATE_FRAME,
+  DELETE_FRAME,
+  FRAMES,
+  MAP,
+  UPDATE_FRAME,
 } from '../api'
 
 export const [SingleProjectProvider, useSingleProject] = createContext(
@@ -23,14 +23,14 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     const organizationId = useCurrentOrganization()?.id
     const { mapId } = useParams() as { mapId: string }
 
-    const mapQuery = useQuery(MAP_V2, {
+    const mapQuery = useQuery(MAP, {
       client: clientV2,
       variables: { orgId: organizationId!, id: mapId },
       fetchPolicy: 'cache-and-network',
       skip: !organizationId,
     })
 
-    const framesQuery = useQuery(FRAMES_V2, {
+    const framesQuery = useQuery(FRAMES, {
       client: clientV2,
       variables: { orgId: organizationId!, mapId },
       fetchPolicy: 'cache-and-network',
@@ -38,11 +38,11 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     })
 
     const refetchFrames = [
-      { query: FRAMES_V2, variables: { orgId: organizationId!, mapId } },
+      { query: FRAMES, variables: { orgId: organizationId!, mapId } },
     ]
 
     const [createFrame, { loading: isCreatingFrame }] = useMutation(
-      CREATE_FRAME_V2,
+      CREATE_FRAME,
       {
         client: clientV2,
         awaitRefetchQueries: true,
@@ -51,7 +51,7 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     )
 
     const [deleteFrame, { loading: isFrameDeleting }] = useMutation(
-      DELETE_FRAME_V2,
+      DELETE_FRAME,
       {
         client: clientV2,
         awaitRefetchQueries: true,
@@ -60,7 +60,7 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     )
 
     const [updateFrame, { loading: isFrameUpdating }] = useMutation(
-      UPDATE_FRAME_V2,
+      UPDATE_FRAME,
       {
         client: clientV2,
         awaitRefetchQueries: true,

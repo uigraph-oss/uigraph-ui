@@ -13,11 +13,11 @@ import {
   COMPONENT_SUPPORT_KB_ID,
   COMPONENT_TEST_SUITE_ID,
 } from '@/constants/component-meta'
-import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
+import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import {
-  SERVICE_DOCS_V2,
+  SERVICE_DOCS,
   serviceDocToLegacy,
-} from '@/features/services/api/service-doc-v2'
+} from '@/features/services/api/service-doc'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { arrayNonNullable } from 'daily-code'
@@ -26,7 +26,7 @@ import { FiChevronDown } from 'react-icons/fi'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getFocalPointComponentIcon } from '../../../helpers/get-component-icon'
-import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta-v2'
+import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta'
 import { ApiContractSelectionModal } from './api-contract-selection-modal'
 import { DeletePointMetaConfirmationModal } from './delete-meta-confirm-modal'
 import { DiagramSelectionModal } from './diagram-selection-modal'
@@ -111,7 +111,7 @@ export function FocalPointMetaSection({
 
     try {
       const { data: createDiagramData } = await clientV2.mutate({
-        mutation: CREATE_DIAGRAM_V2,
+        mutation: CREATE_DIAGRAM,
         variables: {
           orgId: organizationId!,
           input: {
@@ -149,7 +149,7 @@ export function FocalPointMetaSection({
     if (!serviceId || !serviceDocId)
       return toast.error('Invalid document link. Please try again.')
     const { data } = await clientV2.query({
-      query: SERVICE_DOCS_V2,
+      query: SERVICE_DOCS,
       variables: { orgId: organizationId!, serviceId },
       fetchPolicy: 'cache-first',
     })

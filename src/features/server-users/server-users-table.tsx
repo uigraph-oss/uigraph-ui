@@ -15,7 +15,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
-import type { ServerUser } from './api/server-users-v2'
+import type { ServerUser } from './api/server-users'
 
 function getInitials(value: string | null | undefined): string {
   if (!value) return 'U'

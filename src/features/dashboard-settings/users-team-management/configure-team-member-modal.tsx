@@ -13,7 +13,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import type { SettingsTeam } from '../api/teams-v2'
+import type { SettingsTeam } from '../api/teams'
 import { TEAM_MEMBER_ROLES } from '../constants/team'
 import { useTeamContext } from '../context/team-context'
 

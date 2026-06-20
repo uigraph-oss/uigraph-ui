@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { arrayNonNullable } from 'daily-code'
-import { DbTable } from '../../../api/service-db-v2'
+import { DbTable } from '../../../api/service-db'
 
 export function RenderSQLTable({ tables }: { tables: DbTable[] }) {
   return (

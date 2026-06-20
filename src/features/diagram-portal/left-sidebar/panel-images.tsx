@@ -9,7 +9,7 @@ import { arrayNonNullable } from 'daily-code'
 import { openFileExplorer } from 'daily-code/browser'
 import { ImageIcon, Upload } from 'lucide-react'
 import { useMemo } from 'react'
-import { DIAGRAM_IMAGES_V2 } from '../api/images-v2'
+import { DIAGRAM_IMAGES } from '../api/images'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
@@ -17,7 +17,7 @@ import { SidebarLayout } from './sidebar-layout'
 export function SidebarImages() {
   const { diagramId, organizationId } = useFlowDiagramContext()
 
-  const { data, refetch } = useQuery(DIAGRAM_IMAGES_V2, {
+  const { data, refetch } = useQuery(DIAGRAM_IMAGES, {
     client: clientV2,
     variables: { orgId: organizationId!, diagramId: diagramId! },
     skip: !diagramId || !organizationId,

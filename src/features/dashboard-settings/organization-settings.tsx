@@ -9,20 +9,20 @@ import { useMutation, useQuery } from '@apollo/client'
 import { SquarePen } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { ORG_V2, UPDATE_ORG_V2 } from './api/organization-v2'
+import { ORG, UPDATE_ORG } from './api/organization'
 import { SettingsHeader } from './components/settings-header'
 
 export function OrganizationSettings() {
   const organizationId = useCurrentOrganization()?.id
 
-  const { data, loading, refetch } = useQuery(ORG_V2, {
+  const { data, loading, refetch } = useQuery(ORG, {
     client: clientV2,
     variables: { id: organizationId! },
     fetchPolicy: 'cache-first',
     skip: !organizationId,
   })
 
-  const [updateOrg, { loading: isUpdating }] = useMutation(UPDATE_ORG_V2, {
+  const [updateOrg, { loading: isUpdating }] = useMutation(UPDATE_ORG, {
     client: clientV2,
     onCompleted: () => {
       toast.success('Organization updated successfully')

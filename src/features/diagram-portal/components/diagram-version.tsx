@@ -23,11 +23,11 @@ import {
 } from 'react-icons/lu'
 import { toast } from 'sonner'
 import {
-  CREATE_DIAGRAM_VERSION_V2,
-  DIAGRAM_VERSION_CONTENT_V2,
-  DIAGRAM_VERSIONS_V2,
-  RESTORE_DIAGRAM_VERSION_V2,
-} from '../api/versions-v2'
+  CREATE_DIAGRAM_VERSION,
+  DIAGRAM_VERSION_CONTENT,
+  DIAGRAM_VERSIONS,
+  RESTORE_DIAGRAM_VERSION,
+} from '../api/versions'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { convertDiagramServerData } from '../helpers/diagram-data'
 import { CompareDiagramVersionModalContent } from './compare-diagram-version-modal-content'
@@ -49,7 +49,7 @@ export function DiagramVersion() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false)
   const [showVersionCount, setShowVersionCount] = useState(5)
 
-  const versionsQuery = useQuery(DIAGRAM_VERSIONS_V2, {
+  const versionsQuery = useQuery(DIAGRAM_VERSIONS, {
     client: clientV2,
     variables: { orgId: organizationId!, diagramId: diagramId! },
     skip: !diagramId || !organizationId,
@@ -60,7 +60,7 @@ export function DiagramVersion() {
     awaitRefetchQueries: true,
     refetchQueries: [
       {
-        query: DIAGRAM_VERSIONS_V2,
+        query: DIAGRAM_VERSIONS,
         variables: { orgId: organizationId!, diagramId: diagramId! },
       },
     ],
@@ -68,12 +68,12 @@ export function DiagramVersion() {
 
   const [isCreatingVersion, setIsCreatingVersion] = useState(false)
   const [createVersion] = useMutation(
-    CREATE_DIAGRAM_VERSION_V2,
+    CREATE_DIAGRAM_VERSION,
     versionsRefetch
   )
 
   const [restoreVersion, { loading: isRestoringVersion }] = useMutation(
-    RESTORE_DIAGRAM_VERSION_V2,
+    RESTORE_DIAGRAM_VERSION,
     versionsRefetch
   )
 
@@ -188,7 +188,7 @@ export function DiagramVersion() {
 
           try {
             const { data } = await clientV2.query({
-              query: DIAGRAM_VERSION_CONTENT_V2,
+              query: DIAGRAM_VERSION_CONTENT,
               variables: {
                 orgId: organizationId!,
                 diagramId: diagramId!,

@@ -1,7 +1,7 @@
 'use client'
 
 import { clientV2 } from '@/api/client'
-import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
+import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import { useServiceDbContext } from '@/features/services/contexts/service-db-context'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -16,7 +16,7 @@ export function DBVersionPublishModal({
   const { createServiceDbVersion } = useServiceDbContext()
   const orgId = useCurrentOrganization().id
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM_V2, { client: clientV2 })
+  const [createDiagram] = useMutation(CREATE_DIAGRAM, { client: clientV2 })
 
   return (
     <ConfigureDbSchemaModal

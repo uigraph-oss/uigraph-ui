@@ -3,10 +3,10 @@ import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
 import {
-  SERVICE_DOCS_V2,
+  SERVICE_DOCS,
   serviceDocToLegacy,
-} from '@/features/services/api/service-doc-v2'
-import { SERVICES_V2 } from '@/features/services/api/services-v2'
+} from '@/features/services/api/service-doc'
+import { SERVICES } from '@/features/services/api/services'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -41,7 +41,7 @@ export function ServiceDocSelectionModal({
   const selectedServiceId = form.watch('serviceId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(
-    SERVICES_V2,
+    SERVICES,
     {
       client: clientV2,
       variables: { orgId: orgId! },
@@ -51,7 +51,7 @@ export function ServiceDocSelectionModal({
   )
 
   const { data: serviceDocsData, loading: serviceDocsLoading } = useQuery(
-    SERVICE_DOCS_V2,
+    SERVICE_DOCS,
     {
       client: clientV2,
       variables: { orgId: orgId!, serviceId: selectedServiceId },

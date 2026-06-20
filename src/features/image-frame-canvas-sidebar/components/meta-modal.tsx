@@ -38,7 +38,7 @@ import {
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
 import { ComponentField } from '@/features/components/components/configure-component/component-field-list'
-import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
+import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -51,8 +51,8 @@ import { Controller, useForm } from 'react-hook-form'
 import { FiEdit } from 'react-icons/fi'
 import {
   ComponentFieldInput,
-  FOCAL_POINT_META_BY_COMPONENT_LINK_V2,
-} from '../api/focal-point-meta-v2'
+  FOCAL_POINT_META_BY_COMPONENT_LINK,
+} from '../api/focal-point-meta'
 import { FocalPointMetaLayoutModalContent } from './modal-customize'
 
 function FocalPointMetaModalContent({
@@ -419,7 +419,7 @@ function FocalPointMetaModalLoader({
   const organizationId = useCurrentOrganization()?.id
 
   const { data: componentMetaData, loading: isLoadingComponentMetaData } =
-    useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK_V2, {
+    useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
       client: clientV2,
       variables: { orgId: organizationId!, componentLinkId: componentMetaId! },
       skip: !componentMetaId || !organizationId,

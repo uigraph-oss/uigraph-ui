@@ -17,13 +17,13 @@ import { ArrowLeft } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  API_ENDPOINTS_V2,
-  CREATE_API_ENDPOINT_V2,
-  DELETE_API_ENDPOINT_V2,
-  SYNC_API_GROUP_V2,
-  UPDATE_API_ENDPOINT_V2,
-} from '../api/api-endpoints-v2'
-import { API_GROUP_AND_VERSIONS_V2 } from '../api/api-group-version-v2'
+  API_ENDPOINTS,
+  CREATE_API_ENDPOINT,
+  DELETE_API_ENDPOINT,
+  SYNC_API_GROUP,
+  UPDATE_API_ENDPOINT,
+} from '../api/api-endpoints'
+import { API_GROUP_AND_VERSIONS } from '../api/api-group-version'
 import {
   apiGroupToLegacy,
   apiGroupVersionToLegacy,
@@ -70,7 +70,7 @@ export const [
       apiGroupId,
     }
 
-    const groupsRes = useQuery(API_GROUP_AND_VERSIONS_V2, {
+    const groupsRes = useQuery(API_GROUP_AND_VERSIONS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       skip: !orgId,
@@ -106,7 +106,7 @@ export const [
       )
     }, [apiGroupVersions, selectedVersionId])
 
-    const endpointsRes = useQuery(API_ENDPOINTS_V2, {
+    const endpointsRes = useQuery(API_ENDPOINTS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       skip: !orgId,
@@ -122,34 +122,34 @@ export const [
     }, [groupsRes])
 
     const endpointListVars = {
-      query: API_ENDPOINTS_V2,
+      query: API_ENDPOINTS,
       variables: listVars,
     }
 
-    const [createServiceApiEndpointMut] = useMutation(CREATE_API_ENDPOINT_V2, {
+    const [createServiceApiEndpointMut] = useMutation(CREATE_API_ENDPOINT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries: [endpointListVars],
     })
 
-    const [updateServiceApiEndpointMut] = useMutation(UPDATE_API_ENDPOINT_V2, {
+    const [updateServiceApiEndpointMut] = useMutation(UPDATE_API_ENDPOINT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries: [endpointListVars],
     })
 
-    const [deleteServiceApiEndpointMut] = useMutation(DELETE_API_ENDPOINT_V2, {
+    const [deleteServiceApiEndpointMut] = useMutation(DELETE_API_ENDPOINT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries: [endpointListVars],
     })
 
-    const [syncAPIGroupMut] = useMutation(SYNC_API_GROUP_V2, {
+    const [syncAPIGroupMut] = useMutation(SYNC_API_GROUP, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries: [
         endpointListVars,
-        { query: API_GROUP_AND_VERSIONS_V2, variables: listVars },
+        { query: API_GROUP_AND_VERSIONS, variables: listVars },
       ],
     })
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { clientV2 } from '@/api/client'
-import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -73,7 +73,7 @@ export function ServiceOverview() {
   const { service } = useServiceContext()
   const orgId = useCurrentOrganization().id
 
-  const teamsRes = useQuery(TEAMS_V2, {
+  const teamsRes = useQuery(TEAMS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },

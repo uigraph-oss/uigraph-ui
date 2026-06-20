@@ -30,7 +30,7 @@ import { Filter, X } from 'lucide-react'
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TEST_RUNS_SUMMARY_V2 } from '../../api/tests-v2'
+import { TEST_RUNS_SUMMARY } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 
 type TestRunSummary = {
@@ -70,7 +70,7 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   const [pageSize, setPageSize] = useState(10)
 
   const { data: runsData, loading: runsLoading } = useQuery(
-    TEST_RUNS_SUMMARY_V2,
+    TEST_RUNS_SUMMARY,
     {
       client: clientV2,
       fetchPolicy: 'cache-first',

@@ -20,7 +20,7 @@ import { openFileExplorer } from 'daily-code/browser'
 import { FileText, TrashIcon } from 'lucide-react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
-import { readFileAsBase64 } from '../../api/service-doc-v2'
+import { readFileAsBase64 } from '../../api/service-doc'
 import {
   DOCUMENT_FILE_TYPES,
   getDocumentFileTypeKey,

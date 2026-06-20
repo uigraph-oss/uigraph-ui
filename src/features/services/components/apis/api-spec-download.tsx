@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { Download, FileJson, FileText } from 'lucide-react'
 import { useState } from 'react'
@@ -28,7 +28,7 @@ async function fetchSpecContent(
   fileName: string | null
 }> {
   const { data } = await clientV2.query({
-    query: API_GROUP_SPEC_V2,
+    query: API_GROUP_SPEC,
     variables: { orgId, serviceId, apiGroupId },
     fetchPolicy: 'network-only',
   })

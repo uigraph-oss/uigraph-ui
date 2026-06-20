@@ -13,7 +13,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { SERVER_USER_ROLES } from './api/server-users-v2'
+import { SERVER_USER_ROLES } from './api/server-users'
 
 const createSchema = z.object({
   name: z.string().min(1, 'Name is required'),

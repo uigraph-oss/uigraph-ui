@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { CodeMirrorWrapped } from '@/features/component-meta'
-import { API_ENDPOINTS_V2 } from '@/features/services/api/api-endpoints-v2'
+import { API_ENDPOINTS } from '@/features/services/api/api-endpoints'
 import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -87,7 +87,7 @@ export function FormApiSection({ form }: { form: FormType }) {
   const { serviceId, apiGroupId } = parseApiSpecValue(apiSpec)
 
   const { data: endpointsData, loading: isEndpointsLoading } = useQuery(
-    API_ENDPOINTS_V2,
+    API_ENDPOINTS,
     {
       client: clientV2,
       fetchPolicy: 'cache-first',

@@ -1,7 +1,7 @@
 import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
-import { DIAGRAMS_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
+import { DIAGRAMS } from '@/features/dashboard-diagrams/api/diagrams'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -20,7 +20,7 @@ export function DiagramSelectionModal({
   const [selectedDiagramId, setSelectedDiagramId] = useState<string>('')
 
   const { data: diagramsData, loading: diagramsLoading } = useQuery(
-    DIAGRAMS_V2,
+    DIAGRAMS,
     {
       client: clientV2,
       variables: { orgId: organizationId! },

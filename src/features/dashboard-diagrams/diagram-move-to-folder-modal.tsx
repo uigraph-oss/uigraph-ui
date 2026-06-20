@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { DashboardFolder } from './api/folders-v2'
+import { DashboardFolder } from './api/folders'
 import { useDiagramsContext } from './contexts/diagrams-context'
 
 type DiagramMoveToFolderModalProps = {

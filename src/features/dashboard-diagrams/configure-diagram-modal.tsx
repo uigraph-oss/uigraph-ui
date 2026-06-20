@@ -14,8 +14,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { DashboardFolder } from './api/folders-v2'
-import { DashboardTeam } from './api/teams-v2'
+import { DashboardFolder } from './api/folders'
+import { DashboardTeam } from './api/teams'
 
 const createDiagramSchema = z.object({
   name: z.string().min(1, 'Name is required'),

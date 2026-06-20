@@ -32,10 +32,10 @@ import { Play } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  TEST_CASES_V2,
-  TEST_RUN_RESULTS_V2,
-  TEST_RUN_V2,
-} from '../../api/tests-v2'
+  TEST_CASES,
+  TEST_RUN_RESULTS,
+  TEST_RUN,
+} from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 import { normalizeTestCaseIdForMatch } from '../../utils/normalize-test-case-id'
 import type { StatusFilter } from './run-details-header'
@@ -106,7 +106,7 @@ export function RunDetailsView({
     testPackId: testPackId ?? '',
   }
 
-  const { data: runData, loading: runLoading } = useQuery(TEST_RUN_V2, {
+  const { data: runData, loading: runLoading } = useQuery(TEST_RUN, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: runVars,
@@ -114,7 +114,7 @@ export function RunDetailsView({
   })
 
   const { data: resultsData, loading: resultsLoading } = useQuery(
-    TEST_RUN_RESULTS_V2,
+    TEST_RUN_RESULTS,
     {
       client: clientV2,
       fetchPolicy: 'cache-first',
@@ -123,7 +123,7 @@ export function RunDetailsView({
     }
   )
 
-  const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES_V2, {
+  const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: casesVars,
