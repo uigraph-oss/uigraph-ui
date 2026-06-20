@@ -5,6 +5,8 @@ import { AiChatIndexPage } from '@/features/ai-chat/ai-chat-index-page'
 import { AiChatLayout } from '@/features/ai-chat/ai-chat-layout'
 import {
   AuthenticatedGuard,
+  ProtectedDashboardLayout,
+  ProtectedServerAdminLayout,
   UnauthenticatedGuard,
 } from '@/features/auth/auth-guards'
 import { SignInForm } from '@/features/auth/sign-in-form'
@@ -25,6 +27,10 @@ import { ServiceAccountsPage } from '@/features/dashboard-settings/service-accou
 import { SSOSettingsPage } from '@/features/dashboard-settings/sso-settings/sso-settings-page'
 import { TeamManagementPage } from '@/features/dashboard-settings/users-team-management/team-management-page'
 import { UsersManagementPage } from '@/features/dashboard-settings/users-team-management/users-management-page'
+import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
+import { ServerOverviewPage } from '@/features/server-dashboard/server-overview-page'
+import { ServerSSOPage } from '@/features/server-sso/server-sso-page'
+import { ServerUsersPage } from '@/features/server-users/server-users-page'
 import { DashboardServiceApis } from '@/features/services/components/apis/dashboard-service-apis'
 import { ServiceDatabaseListPage } from '@/features/services/components/databases/service-database-list-page'
 import { ServiceDatabasePage } from '@/features/services/components/databases/service-database-page'
@@ -42,7 +48,6 @@ import {
 } from '@/routes/lazy-pages'
 import { NotFoundPage } from '@/routes/not-found-page'
 import { OnboardingPage } from '@/routes/onboarding-page'
-import { ProtectedLayout } from '@/routes/protected-layout'
 import { ServiceLayout } from '@/routes/service-layout'
 import {
   ServiceOperationsRoute,
@@ -69,6 +74,7 @@ const AiChatLayoutRoute = withOutlet(
   AiChatLayout as ComponentType<PropsWithChildren>
 )
 const SettingsLayoutRoute = withOutlet(DashboardSettingsLayout)
+const ServerAdminLayoutRoute = withOutlet(ServerAdminLayout)
 
 export function AppRoutes() {
   return (
@@ -106,7 +112,16 @@ export function AppRoutes() {
         element={<DiagramPreviewPage />}
       />
 
-      <Route element={<ProtectedLayout />}>
+      <Route element={<ProtectedServerAdminLayout />}>
+        <Route path="/server" element={<ServerAdminLayoutRoute />}>
+          <Route index element={<Navigate to="/server/overview" replace />} />
+          <Route path="overview" element={<ServerOverviewPage />} />
+          <Route path="users" element={<ServerUsersPage />} />
+          <Route path="sso" element={<ServerSSOPage />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedDashboardLayout />}>
         <Route path="/diagram/:diagramId" element={<DiagramPortalPage />} />
 
         <Route element={<DashboardLayoutRoute />}>

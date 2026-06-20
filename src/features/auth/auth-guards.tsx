@@ -6,7 +6,8 @@ import {
   useCurrentOrganization,
 } from '@/store/auth-store/use-auth-store'
 import { PropsWithChildren } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
+import { FigmaOAuthContextProvider } from '../dashboard-projects/components/figma-import/figma-oauth-context'
 
 export function AuthenticatedGuard({ children }: PropsWithChildren) {
   const status = useAuthStore((state) => state.status)
@@ -35,7 +36,29 @@ export function UnauthenticatedGuard({ children }: PropsWithChildren) {
   return children
 }
 
-export function MustHaveOrganizationGuard({ children }: PropsWithChildren) {
+export function ProtectedDashboardLayout() {
+  return (
+    <AuthenticatedGuard>
+      <MustHaveOrganizationGuard>
+        <FigmaOAuthContextProvider>
+          <Outlet />
+        </FigmaOAuthContextProvider>
+      </MustHaveOrganizationGuard>
+    </AuthenticatedGuard>
+  )
+}
+
+export function ProtectedServerAdminLayout() {
+  return (
+    <AuthenticatedGuard>
+      <MustBeServerAdminGuard>
+        <Outlet />
+      </MustBeServerAdminGuard>
+    </AuthenticatedGuard>
+  )
+}
+
+function MustHaveOrganizationGuard({ children }: PropsWithChildren) {
   const organizations = useAuthStore((state) => state.organizations)
   const resolvedOrganization = useCurrentOrganization()
 
@@ -50,8 +73,8 @@ export function MustHaveOrganizationGuard({ children }: PropsWithChildren) {
   return <>{children}</>
 }
 
-export function MustBeServerAdminGuard({ children }: PropsWithChildren) {
-  const isAdmin = useAuthStore((state) => state.user?.role === 'admin')
+function MustBeServerAdminGuard({ children }: PropsWithChildren) {
+  const isAdmin = useAuthStore((state) => state.user?.isServerAdmin)
   if (!isAdmin) {
     return <Navigate to="/" replace />
   }

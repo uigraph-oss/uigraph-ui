@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { trackGTag } from '@/helpers/track'
 import { signOut, useAuthStore } from '@/store/auth-store'
+import { Shield } from 'lucide-react'
 import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { LogoutIcon } from './assets/icons'
@@ -156,6 +157,20 @@ export function UserDropdownMenu() {
             </Link>
           </DropdownMenuItem>
         </div> */}
+
+        {user?.isServerAdmin && (
+          <div className="border-stock space-y-2 border-b px-2.5 py-2">
+            <DropdownMenuItem
+              asChild
+              className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
+            >
+              <Link to="/server">
+                <Shield className="text-base" />
+                Server Admin
+              </Link>
+            </DropdownMenuItem>
+          </div>
+        )}
 
         <div className="px-2.5 py-2">
           <DropdownMenuItem
