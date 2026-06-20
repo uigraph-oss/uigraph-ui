@@ -1,10 +1,6 @@
-import { MeAndOrgQuery } from '@/api-v2/.gql/graphql'
 import { clientV2 } from '@/api-v2/client'
 import { GET_ME_AND_ORG_V2 } from './gql-v2'
 import { useAuthStore } from './use-auth-store'
-
-export type AuthenticatedUser = MeAndOrgQuery['me']
-export type UserOrganization = MeAndOrgQuery['myOrgs'][number]
 
 export async function bootstrapSession() {
   try {
