@@ -1,4 +1,4 @@
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import { CrossButton } from '@/components/cross-button'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { ComponentField } from './component-field-list'
 import { StepOneComponent } from './step-one'
 import { StepThreeComponent } from './step-three'
 import { StepTwoComponent } from './step-two'
@@ -39,8 +40,8 @@ type StepOneFormData = z.infer<typeof stepOneSchema>
 
 type ConfigureComponentModalProps = {
   enableRequired?: boolean
-  nativeComponents?: GT.Component[]
-  selectedComponent: GT.CustomComponent | null
+  nativeComponents?: V2.Component[]
+  selectedComponent: V2.Component | null
   includeCategory?: boolean
   includeStepThree?: boolean
   includeReadonlyName?: boolean
@@ -51,7 +52,7 @@ type ConfigureComponentModalProps = {
     name: string,
     category: string,
     description: string,
-    fields: GT.ComponentField[]
+    fields: ComponentField[]
   ) => Promise<void>
 }
 
@@ -143,7 +144,7 @@ function ConfigureComponentContent({
 
   const [currentStep, setCurrentStep] = useState(1)
 
-  const memoizedComponentFields = useMemo(
+  const memoizedComponentFields = useMemo<ComponentField[]>(
     () =>
       selectedComponent
         ? arrayNonNullable(selectedComponent?.componentFields)

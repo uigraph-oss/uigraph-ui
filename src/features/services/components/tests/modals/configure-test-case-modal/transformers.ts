@@ -1,5 +1,4 @@
 import { V2 } from '@/api-v2'
-import { TestCasePriority } from '@/api/.gql/graphql'
 import z from 'zod'
 import { configureTestCaseSchema } from './schema'
 
@@ -11,10 +10,10 @@ export function transformToCreateTestCase(
     description: data.description,
     type: data.type,
     priority: {
-      p0: TestCasePriority.P0,
-      p1: TestCasePriority.P1,
-      p2: TestCasePriority.P2,
-      p3: TestCasePriority.P3,
+      p0: 'P0',
+      p1: 'P1',
+      p2: 'P2',
+      p3: 'P3',
     }[data.priority],
     labels: data.tags,
     linkedTicket: data.linkedTicket,
@@ -126,10 +125,10 @@ export function transformToUpdateTestCase(
     description: data.description,
     type: data.type,
     priority: {
-      p0: TestCasePriority.P0,
-      p1: TestCasePriority.P1,
-      p2: TestCasePriority.P2,
-      p3: TestCasePriority.P3,
+      p0: 'P0',
+      p1: 'P1',
+      p2: 'P2',
+      p3: 'P3',
     }[data.priority],
     labels: data.tags,
     linkedTicket: data.linkedTicket,
@@ -234,7 +233,7 @@ export function transformToUpdateTestCase(
 }
 
 function priorityToSchemaValue(
-  priority?: string | TestCasePriority | null
+  priority?: string | null
 ): 'p0' | 'p1' | 'p2' | 'p3' {
   if (!priority) return 'p2'
   const normalized = String(priority).toUpperCase()

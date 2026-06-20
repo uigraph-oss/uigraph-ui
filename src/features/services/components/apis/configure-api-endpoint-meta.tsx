@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,6 +29,10 @@ import {
   URLInput,
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -44,8 +47,8 @@ import { toast } from 'sonner'
 import { useServiceApiEndpointsContext } from '../../contexts/service-api-endpoints'
 
 type ConfigureApiEndpointMetaProps = {
-  endpoint: GT.ApiEndpoint
-  componentMeta: GT.ComponentMeta
+  endpoint: LegacyApiEndpoint
+  componentMeta: LegacyComponentMeta
   readonly?: boolean
   className?: string
   hideFooter?: boolean

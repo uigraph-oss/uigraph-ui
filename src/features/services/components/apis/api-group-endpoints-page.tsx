@@ -1,6 +1,6 @@
 'use client'
 
-import { privateClient, v1Graphql } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import {
   ApiContextOption,
   ApiContextToolbar,
@@ -13,6 +13,7 @@ import {
   DashboardSectionHeader,
 } from '@/features/dashboard'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useCurrentOrganization } from '@/store/auth-store'
 import {
   getDisplayGroup,
   getDisplayProtocol,
@@ -23,6 +24,7 @@ import { ArrowLeft, FileCode2, List } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LuCloudUpload, LuColumns2 } from 'react-icons/lu'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { API_GROUP_SPEC_V2 } from '../../api/api-spec-v2'
 import {
   ServiceApiEndpointsContextProvider,
   useServiceApiEndpointsContext,
@@ -35,15 +37,6 @@ import { GraphqlSpecViewer } from './graphql-spec-viewer'
 import { GrpcSpecViewer } from './grpc-spec-viewer'
 import { CreateApiGroupVersionModal } from './modals/create-api-group-version-modal'
 import { ServiceApiEndpoints } from './service-apis'
-
-const GET_FILE_BY_ID_QUERY = v1Graphql(`
-  query GetFileByID_ApiContextToolbar($fileId: String!) {
-    GetFileByID(fileId: $fileId, download: true) {
-      fileId
-      fileDownloadURL
-    }
-  }
-`)
 
 export function ApiGroupEndpointsPage() {
   const { serviceId } = useServiceContext()
@@ -84,6 +77,7 @@ function ApiGroupEndpointsPageContent() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { service } = useServiceContext()
+  const orgId = useCurrentOrganization()?.id
 
   const [isCreatingVersion, setIsCreatingVersion] = useState(false)
   const [isComparingVersions, setIsComparingVersions] = useState(false)
@@ -129,18 +123,17 @@ function ApiGroupEndpointsPageContent() {
     let cancelled = false
     async function run() {
       try {
-        const { data } = await privateClient.query({
-          query: GET_FILE_BY_ID_QUERY,
-          variables: { fileId: specFileId! },
+        const { data } = await clientV2.query({
+          query: API_GROUP_SPEC_V2,
+          variables: {
+            orgId: orgId!,
+            serviceId,
+            apiGroupId: apiGroup.serviceApiGroupId ?? '',
+          },
           fetchPolicy: 'cache-first',
         })
-        const downloadURL = data?.GetFileByID?.fileDownloadURL
-
-        if (!downloadURL) return
-
-        const response = await fetch(downloadURL)
-        if (!response.ok) return
-        const raw = await response.text()
+        const raw = data?.apiGroupSpec?.content
+        if (raw == null) return
 
         let parsed: unknown = null
         try {
@@ -162,7 +155,13 @@ function ApiGroupEndpointsPageContent() {
     return () => {
       cancelled = true
     }
-  }, [apiGroup.protocol, specFileId])
+  }, [
+    apiGroup.protocol,
+    apiGroup.serviceApiGroupId,
+    specFileId,
+    orgId,
+    serviceId,
+  ])
 
   const openApiRuntime = useMemo(
     () => createOpenApiRuntime(openApiSpec),
@@ -324,7 +323,12 @@ function ApiGroupEndpointsPageContent() {
             )}
 
             {/* Download Spec button */}
-            {hasSpec && <ApiSpecDownload specFileId={specFileId} />}
+            {hasSpec && (
+              <ApiSpecDownload
+                serviceId={serviceId}
+                apiGroupId={activeGroupId}
+              />
+            )}
 
             <Button preset="outline" onClick={() => setIsCreatingVersion(true)}>
               <LuCloudUpload />
@@ -391,19 +395,17 @@ function ApiGroupEndpointsPageContent() {
       <DashboardSectionContent noPadding>
         {viewMode === 'spec' && hasSpec ? (
           apiGroup.protocol === 'REST' ? (
-            <RestApiSpecViewer specFileId={specFileId} />
+            <RestApiSpecViewer
+              serviceId={serviceId}
+              apiGroupId={activeGroupId}
+            />
           ) : apiGroup.protocol === 'GraphQL' ? (
             <GraphqlSpecViewer
-              specFileIds={(apiGroup?.graphqlSpecFileIds ?? []).filter(
-                (value): value is string => Boolean(value)
-              )}
+              serviceId={serviceId}
+              apiGroupId={activeGroupId}
             />
           ) : apiGroup.protocol === 'gRPC' ? (
-            <GrpcSpecViewer
-              specFileIds={(apiGroup?.grpcSpecFileIds ?? []).filter(
-                (value): value is string => Boolean(value)
-              )}
-            />
+            <GrpcSpecViewer serviceId={serviceId} apiGroupId={activeGroupId} />
           ) : (
             <div className="flex size-full items-center justify-center">
               <div className="text-muted-foreground text-sm font-medium">
@@ -414,7 +416,7 @@ function ApiGroupEndpointsPageContent() {
         ) : isApiEndpointsLoading ? (
           <SectionLoader label="Loading API endpoints..." />
         ) : (
-          <ServiceApiEndpoints specFileId={specFileId ?? undefined} />
+          <ServiceApiEndpoints />
         )}
       </DashboardSectionContent>
 

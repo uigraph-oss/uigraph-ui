@@ -1,5 +1,4 @@
 import { clientV2 } from '@/api-v2/client'
-import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { serviceDiagramToLegacyWithMeta } from '@/features/services/api/service-diagram-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -25,12 +25,14 @@ import {
 } from '../../api/service-diagram-v2'
 import { useServiceContext } from '../../contexts/service-context'
 
+type ServiceDiagramWithMeta = ReturnType<typeof serviceDiagramToLegacyWithMeta>
+
 export function FlowDiagramCard({
   diagram,
   serviceDiagram,
 }: {
-  diagram: Diagram
-  serviceDiagram: ServiceDiagram
+  diagram: NonNullable<ServiceDiagramWithMeta['diagram']>
+  serviceDiagram: ServiceDiagramWithMeta['serviceDiagram']
 }) {
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id

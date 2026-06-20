@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import {
   BooleanToggleInput,
@@ -24,9 +23,10 @@ import { ComponentMetaField } from '@/features/component-meta/components/field'
 import { QuillRichTextEditor } from '@/features/component-meta/components/quill-rte/editor'
 import { arrayNonNullable } from 'daily-code'
 import { useRef } from 'react'
+import { ComponentField } from './component-field-list'
 
 type StepThreeComponentProps = {
-  componentFields: GT.ComponentField[]
+  componentFields: ComponentField[]
 }
 
 export function StepThreeComponent({

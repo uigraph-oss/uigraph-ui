@@ -23,6 +23,8 @@ export const GET_COMPONENTS_V2 = graphql(`
           options
           order
         }
+        createdAt
+        updatedAt
       }
       customComponents {
         componentId
@@ -44,6 +46,8 @@ export const GET_COMPONENTS_V2 = graphql(`
           options
           order
         }
+        createdAt
+        updatedAt
       }
     }
   }

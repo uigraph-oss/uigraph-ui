@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { clientV2 } from '@/api-v2/client'
 import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -6,6 +5,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import {
+  ComponentFieldInput,
   CREATE_FOCAL_POINT_META_V2,
   DELETE_FOCAL_POINT_META_V2,
   FOCAL_POINT_META_V2,
@@ -14,7 +14,7 @@ import {
 } from '../api/focal-point-meta-v2'
 
 type PointMetaInput = {
-  componentModalFields?: GT.ComponentFieldInput[]
+  componentModalFields?: ComponentFieldInput[]
   componentLinkId?: string
   componentFlowDiagram?: string
 }
@@ -56,9 +56,7 @@ export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
           componentId,
           componentLinkId: input.componentLinkId,
           componentFlowDiagram: input.componentFlowDiagram,
-          componentModalFields: input.componentModalFields
-            ? JSON.stringify(input.componentModalFields)
-            : undefined,
+          componentModalFields: input.componentModalFields,
         }
       }
 

@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
@@ -13,8 +12,13 @@ import { useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 import { TbExternalLink } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
+import { ServiceDbSchema } from '../../api/service-db-v2'
 
-export function SelectedDatabaseDiagramSection({ db }: { db: GT.ServiceDb }) {
+export function SelectedDatabaseDiagramSection({
+  db,
+}: {
+  db: ServiceDbSchema
+}) {
   const orgId = useCurrentOrganization().id
   const diagramId = db.dbDiagramId
   const skip = !diagramId || !orgId

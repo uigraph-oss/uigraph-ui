@@ -1,10 +1,40 @@
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import { ComponentInputType } from '@uigraph/sdk'
 import type {
   DashboardAPIEndpoint,
   DashboardAPIGroup,
 } from './api-endpoints-v2'
 import type { DashboardAPIGroupVersion } from './api-group-version-v2'
+
+export type LegacyApiEndpoint = {
+  apiEndpointId?: string | null
+  componentMetaId?: string | null
+  createdAt?: string | null
+  createdBy?: string | null
+  deletedAt?: string | null
+  deletedBy?: string | null
+  exampleRequests?: (string | null)[] | null
+  exampleResponses?: (string | null)[] | null
+  order?: number | null
+  serviceApiGroupId?: string | null
+  updatedAt?: string | null
+  updatedBy?: string | null
+}
+
+export type LegacyComponentMeta = {
+  componentFlowDiagram?: string | null
+  componentFlowDiagramName?: string | null
+  componentId?: string | null
+  componentMetaId?: string | null
+  componentModalFields?: (V2.ComponentModalField | null)[] | null
+  createdAt?: string | null
+  createdBy?: string | null
+  deletedAt?: string | null
+  deletedBy?: string | null
+  organizationId?: string | null
+  updatedAt?: string | null
+  updatedBy?: string | null
+}
 
 /** Legacy-shaped API group for components not yet fully migrated. */
 export type LegacyAPIGroupView = {
@@ -45,7 +75,7 @@ function metaField(
   value: string | null | undefined,
   order: number,
   type: string = ComponentInputType.TextInput
-): GT.ComponentField {
+): V2.ComponentModalField {
   const componentFieldId = `api-${label.toLowerCase().replace(/\s+/g, '-')}`
   const text = value ?? ''
   return {
@@ -59,15 +89,15 @@ function metaField(
 
 /** Legacy-shaped endpoint row used by service-apis and row components. */
 export type LegacyEndpointWithMeta = {
-  apiEndpoint: GT.ApiEndpoint & {
+  apiEndpoint: LegacyApiEndpoint & {
     apiEndpointId: string
     serviceApiGroupId: string
     componentMetaId: string
   }
-  componentMeta: GT.ComponentMeta & {
+  componentMeta: LegacyComponentMeta & {
     componentMetaId: string
     organizationId?: string | null
-    componentModalFields: GT.ComponentField[]
+    componentModalFields: V2.ComponentModalField[]
   }
 }
 
@@ -119,7 +149,7 @@ export function endpointToLegacyWithMeta(
   endpoint: DashboardAPIEndpoint,
   orgId: string
 ): LegacyEndpointWithMeta {
-  const fields: GT.ComponentField[] = [
+  const fields: V2.ComponentModalField[] = [
     metaField('Method', endpoint.method, 0),
     metaField('URL', endpoint.path, 1),
     metaField('Summary', endpoint.summary, 2),

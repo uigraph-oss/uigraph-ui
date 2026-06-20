@@ -1,18 +1,6 @@
-import { GT } from '@/api'
-import { graphql } from '@/api-v2'
+import { graphql, V2 } from '@/api-v2'
 
-export type FocalPointMetaV2 = {
-  id: string
-  focalPointId?: string | null
-  orgId?: string | null
-  frameId?: string | null
-  componentId?: string | null
-  componentLinkId?: string | null
-  componentImages?: string | null
-  componentFlowDiagram?: string | null
-  componentModalFields?: string | null
-  updatedAt?: string | null
-}
+export type ComponentFieldInput = V2.ComponentModalFieldInput
 
 export type PointMeta = {
   focalPointMetaId: string
@@ -22,21 +10,23 @@ export type PointMeta = {
   componentLinkId?: string | null
   componentFlowDiagram?: string | null
   componentImages: string[]
-  componentModalFields: GT.ComponentField[]
+  componentModalFields: V2.ComponentModalField[]
   updatedAt?: string | null
 }
 
-function parseJsonArray<T>(raw?: string | null): T[] {
-  if (!raw) return []
-  try {
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed as T[]) : []
-  } catch {
-    return []
-  }
+type FocalPointMetaResult = {
+  id: string
+  focalPointId?: string | null
+  frameId?: string | null
+  componentId?: string | null
+  componentLinkId?: string | null
+  componentFlowDiagram?: string | null
+  componentImages: string[]
+  componentModalFields: V2.ComponentModalField[]
+  updatedAt?: string | null
 }
 
-export function toPointMeta(m: FocalPointMetaV2): PointMeta {
+export function toPointMeta(m: FocalPointMetaResult): PointMeta {
   return {
     focalPointMetaId: m.id,
     focalPointId: m.focalPointId,
@@ -44,10 +34,8 @@ export function toPointMeta(m: FocalPointMetaV2): PointMeta {
     componentId: m.componentId,
     componentLinkId: m.componentLinkId,
     componentFlowDiagram: m.componentFlowDiagram,
-    componentImages: parseJsonArray<string>(m.componentImages),
-    componentModalFields: parseJsonArray<GT.ComponentField>(
-      m.componentModalFields
-    ),
+    componentImages: m.componentImages,
+    componentModalFields: m.componentModalFields,
     updatedAt: m.updatedAt,
   }
 }
@@ -73,7 +61,16 @@ export const FOCAL_POINT_META_V2 = graphql(`
       componentLinkId
       componentImages
       componentFlowDiagram
-      componentModalFields
+      componentModalFields {
+        componentFieldId
+        label
+        type
+        required
+        isReadonly
+        data
+        options
+        order
+      }
       createdAt
       updatedAt
     }
@@ -81,10 +78,7 @@ export const FOCAL_POINT_META_V2 = graphql(`
 `)
 
 export const FOCAL_POINT_META_BY_COMPONENT_LINK_V2 = graphql(`
-  query FocalPointMetaByComponentLinkV2(
-    $orgId: ID!
-    $componentLinkId: ID!
-  ) {
+  query FocalPointMetaByComponentLinkV2($orgId: ID!, $componentLinkId: ID!) {
     focalPointMetaByComponentLink(
       orgId: $orgId
       componentLinkId: $componentLinkId
@@ -97,7 +91,16 @@ export const FOCAL_POINT_META_BY_COMPONENT_LINK_V2 = graphql(`
       componentLinkId
       componentImages
       componentFlowDiagram
-      componentModalFields
+      componentModalFields {
+        componentFieldId
+        label
+        type
+        required
+        isReadonly
+        data
+        options
+        order
+      }
       createdAt
       updatedAt
     }

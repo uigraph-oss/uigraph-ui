@@ -114,9 +114,7 @@ export function ComponentsSection({
             id: pointMetaId,
             input: {
               componentId,
-              componentModalFields: input.componentModalFields
-                ? JSON.stringify(input.componentModalFields)
-                : undefined,
+              componentModalFields: input.componentModalFields,
             },
           },
         })

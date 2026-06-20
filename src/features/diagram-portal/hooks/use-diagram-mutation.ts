@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { clientV2 } from '@/api-v2/client'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { useMutation } from '@apollo/client'
@@ -16,7 +15,7 @@ import {
 import { convertDiagramServerDataToString } from '../helpers/diagram-data'
 import { generateDiagramThumbnailFile } from '../helpers/download-image'
 import { DataSource } from '../types/db-flow'
-import { ServerDiagramData } from '../types/diagram'
+import { DiagramCustomComponent, ServerDiagramData } from '../types/diagram'
 
 type TUseDiagramPortalMutationProps = ServerDiagramData & {
   diagramId: string | null
@@ -216,7 +215,7 @@ type GetThumbnailFileProps = {
   edges: Edge[]
   diagramId: string
   dataSources: DataSource[]
-  components: GT.CustomComponent[]
+  components: DiagramCustomComponent[]
 }
 
 async function getThumbnailFile({

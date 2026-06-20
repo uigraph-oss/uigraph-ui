@@ -1,4 +1,4 @@
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import { clientV2 } from '@/api-v2/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
@@ -26,7 +26,7 @@ import { FiChevronDown } from 'react-icons/fi'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getFocalPointComponentIcon } from '../../../helpers/get-component-icon'
-import { PointMeta } from '../api/focal-point-meta-v2'
+import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta-v2'
 import { ApiContractSelectionModal } from './api-contract-selection-modal'
 import { DeletePointMetaConfirmationModal } from './delete-meta-confirm-modal'
 import { DiagramSelectionModal } from './diagram-selection-modal'
@@ -39,7 +39,7 @@ import { ServiceDocSelectionModal } from './service-doc-selection-modal'
 import { TestSuiteSelectionModal } from './test-suite-selection-modal'
 
 export type FocalPointMetaSectionProps = {
-  component: GT.Component
+  component: V2.Component
   componentPointMeta: PointMeta[]
 
   showFocalPointName?: boolean
@@ -48,7 +48,7 @@ export type FocalPointMetaSectionProps = {
   createPointMeta: (
     componentId: string,
     input: {
-      componentModalFields?: GT.ComponentFieldInput[]
+      componentModalFields?: ComponentFieldInput[]
       componentLinkId?: string
       componentFlowDiagram?: string
     }
@@ -57,7 +57,7 @@ export type FocalPointMetaSectionProps = {
   updatePointMeta: (
     pointMetaId: string,
     componentId: string,
-    input: { componentModalFields?: GT.ComponentFieldInput[] }
+    input: { componentModalFields?: ComponentFieldInput[] }
   ) => Promise<void>
 
   deletePointMeta: (pointMetaId: string) => Promise<void>

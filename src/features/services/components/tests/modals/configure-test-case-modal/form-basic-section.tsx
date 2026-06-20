@@ -12,10 +12,10 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { TagInput } from '@/features/component-meta'
 import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
-import { GET_PUBLIC_ACCOUNT_INFO } from '@/features/image-frame-canvas-sidebar/api/account'
+import { ACTOR_V2 } from '@/features/services/api/actor-v2'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useApolloClient, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -194,7 +194,6 @@ function TestOwnerSelect({
 }
 
 export function FormBasicSection({ form }: { form: FormType }) {
-  const client = useApolloClient()
   const organizationId = useCurrentOrganization()?.id
   const { data } = useQuery(MEMBERS_V2, {
     client: clientV2,
@@ -224,25 +223,18 @@ export function FormBasicSection({ form }: { form: FormType }) {
 
     void Promise.allSettled(
       userIds.map(async (userId) => {
-        const { data } = await client.query({
-          query: GET_PUBLIC_ACCOUNT_INFO,
-          variables: { accountId: userId },
+        const { data } = await clientV2.query({
+          query: ACTOR_V2,
+          variables: { orgId: organizationId!, id: userId },
           fetchPolicy: 'cache-first',
         })
 
-        const accountInfo = data.GetPubAccountByID?.accountInfo
-        const name = [
-          accountInfo?.firstName?.trim(),
-          accountInfo?.lastName?.trim(),
-        ]
-          .filter(Boolean)
-          .join(' ')
-
+        const actor = data.actor
         return [
           userId,
           {
-            name,
-            avatarSrc: accountInfo?.imageUrl || accountInfo?.image || null,
+            name: actor?.name?.trim() ?? '',
+            avatarSrc: actor?.avatarUrl || null,
           },
         ] as const
       })
@@ -277,7 +269,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
     return () => {
       isDisposed = true
     }
-  }, [client, organizationUsers])
+  }, [organizationId, organizationUsers])
 
   const testOwnerOptions = useMemo(
     () =>

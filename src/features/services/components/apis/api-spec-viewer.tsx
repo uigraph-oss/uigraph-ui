@@ -1,9 +1,11 @@
 'use client'
 
-import { privateClient, v1Graphql } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
+import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import {
   ChevronDown,
   ChevronRight,
@@ -110,16 +112,6 @@ interface ParsedSpec {
 }
 
 // ─── GraphQL ──────────────────────────────────────────────────────────────────
-
-const GET_FILE_BY_ID_QUERY = v1Graphql(`
-  query GetFileByID_SpecViewer($fileId: String!) {
-    GetFileByID(fileId: $fileId, download: true) {
-      fileId
-      fileName
-      fileDownloadURL
-    }
-  }
-`)
 
 // ─── OpenAPI Parser ───────────────────────────────────────────────────────────
 
@@ -1589,10 +1581,15 @@ function SpecIntro({ spec }: { spec: ParsedSpec }) {
 // ─── Main Export ──────────────────────────────────────────────────────────────
 
 type ApiSpecViewerProps = {
-  specFileId: string
+  serviceId: string
+  apiGroupId: string
 }
 
-export function RestApiSpecViewer({ specFileId }: ApiSpecViewerProps) {
+export function RestApiSpecViewer({
+  serviceId,
+  apiGroupId,
+}: ApiSpecViewerProps) {
+  const orgId = useCurrentOrganization()?.id
   const [specContent, setSpecContent] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -1613,23 +1610,21 @@ export function RestApiSpecViewer({ specFileId }: ApiSpecViewerProps) {
     try {
       setIsLoading(true)
       setError(null)
-      const { data } = await privateClient.query({
-        query: GET_FILE_BY_ID_QUERY,
-        variables: { fileId: specFileId },
+      const { data } = await clientV2.query({
+        query: API_GROUP_SPEC_V2,
+        variables: { orgId: orgId!, serviceId, apiGroupId },
         fetchPolicy: 'network-only',
       })
-      const downloadURL = data?.GetFileByID?.fileDownloadURL
-      if (!downloadURL)
-        throw new Error('Could not get download URL for spec file')
-      const res = await fetch(downloadURL)
-      if (!res.ok) throw new Error(`Failed to download spec: ${res.statusText}`)
-      setSpecContent(await res.text())
+      const content = data?.apiGroupSpec?.content
+      if (content == null)
+        throw new Error('Could not load spec content for API group')
+      setSpecContent(content)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load spec')
     } finally {
       setIsLoading(false)
     }
-  }, [specFileId])
+  }, [orgId, serviceId, apiGroupId])
 
   useEffect(() => {
     void fetchSpec()

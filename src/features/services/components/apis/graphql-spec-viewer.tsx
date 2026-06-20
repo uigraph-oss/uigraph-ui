@@ -1,11 +1,13 @@
 'use client'
 
-import { privateClient, v1Graphql } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { API_GROUP_SPEC_V2 } from '@/features/services/api/api-spec-v2'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useCurrentOrganization } from '@/store/auth-store'
 import {
   buildSchema,
   GraphQLNamedType,
@@ -27,18 +29,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-const GET_FILE_BY_ID_QUERY = v1Graphql(`
-  query GetFileByID_SpecViewer($fileId: String!) {
-    GetFileByID(fileId: $fileId, download: true) {
-      fileId
-      fileName
-      fileDownloadURL
-    }
-  }
-`)
-
 type GraphqlSpecViewerProps = {
-  specFileIds: string[]
+  serviceId: string
+  apiGroupId: string
 }
 
 type GraphqlSpecFile = {
@@ -446,7 +439,11 @@ function renderTypeSummary(
   return null
 }
 
-export function GraphqlSpecViewer({ specFileIds }: GraphqlSpecViewerProps) {
+export function GraphqlSpecViewer({
+  serviceId,
+  apiGroupId,
+}: GraphqlSpecViewerProps) {
+  const orgId = useCurrentOrganization()?.id
   const [specFiles, setSpecFiles] = useState<GraphqlSpecFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -461,7 +458,7 @@ export function GraphqlSpecViewer({ specFileIds }: GraphqlSpecViewerProps) {
   )
 
   const fetchSpec = useCallback(async () => {
-    if (specFileIds.length === 0) {
+    if (!apiGroupId) {
       setSpecFiles([])
       setError(null)
       setIsLoading(false)
@@ -472,40 +469,31 @@ export function GraphqlSpecViewer({ specFileIds }: GraphqlSpecViewerProps) {
       setIsLoading(true)
       setError(null)
 
-      const files = await Promise.all(
-        specFileIds.map(async (fileId) => {
-          const { data } = await privateClient.query({
-            query: GET_FILE_BY_ID_QUERY,
-            variables: { fileId },
-            fetchPolicy: 'network-only',
-          })
+      const { data } = await clientV2.query({
+        query: API_GROUP_SPEC_V2,
+        variables: { orgId: orgId!, serviceId, apiGroupId },
+        fetchPolicy: 'network-only',
+      })
 
-          const downloadURL = data?.GetFileByID?.fileDownloadURL
-          if (!downloadURL) {
-            throw new Error('Could not get download URL for schema file')
-          }
+      const spec = data?.apiGroupSpec
+      if (spec?.content == null) {
+        throw new Error('Could not load schema content for API group')
+      }
 
-          const response = await fetch(downloadURL)
-          if (!response.ok) {
-            throw new Error(`Failed to download schema: ${response.statusText}`)
-          }
-
-          return {
-            fileId,
-            fileName: data?.GetFileByID?.fileName ?? `${fileId}.graphql`,
-            content: await response.text(),
-          }
-        })
-      )
-
-      setSpecFiles(files)
+      setSpecFiles([
+        {
+          fileId: spec.apiGroupId,
+          fileName: spec.fileName ?? `${spec.apiGroupId}.graphql`,
+          content: spec.content,
+        },
+      ])
     } catch (err) {
       setSpecFiles([])
       setError(err instanceof Error ? err.message : 'Failed to load schema')
     } finally {
       setIsLoading(false)
     }
-  }, [specFileIds])
+  }, [orgId, serviceId, apiGroupId])
 
   useEffect(() => {
     void fetchSpec()

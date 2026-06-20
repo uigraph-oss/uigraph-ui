@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { V2 } from '@/api-v2'
 import { clientV2 } from '@/api-v2/client'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -11,8 +10,9 @@ import {
   GET_COMPONENTS_V2,
   UPDATE_CUSTOM_COMPONENT_V2,
 } from '../api/components-v2'
+import { ComponentField } from '../components/configure-component/component-field-list'
 
-function mapComponentFields(fields: GT.ComponentField[]) {
+function mapComponentFields(fields: ComponentField[]) {
   return fields.map((field, i) => ({
     componentFieldId: field.componentFieldId ?? undefined,
     label: field.label ?? '',
@@ -66,7 +66,7 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
         name: string,
         category: string,
         description: string,
-        fields: GT.ComponentField[]
+        fields: ComponentField[]
       ) {
         return createCustomComponent({
           variables: {
@@ -86,7 +86,7 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
         name: string,
         category: string,
         description: string,
-        fields: GT.ComponentField[]
+        fields: ComponentField[]
       ) {
         return updateCustomComponent({
           variables: {

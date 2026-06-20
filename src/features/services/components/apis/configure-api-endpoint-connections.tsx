@@ -3,7 +3,6 @@
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
-import { GT } from '@/api'
 import { clientV2 } from '@/api-v2/client'
 import { FRAME_BY_ID_V2 } from '@/features/dashboard-projects/api/frame-v2'
 import { MAP_V2 } from '@/features/dashboard-projects/api/map-v2'
@@ -11,6 +10,7 @@ import {
   FOCAL_POINT_META_BY_COMPONENT_LINK_V2,
   toPointMeta,
 } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta-v2'
+import { LegacyApiEndpoint } from '@/features/services/api/api-v2-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 
 import { SectionLoader } from '@/components/section-loader'
@@ -22,7 +22,7 @@ import {
 } from './endpoint-connections-shared'
 
 type ConfigureApiEndpointConnectionsProps = {
-  endpoint: GT.ApiEndpoint
+  endpoint: LegacyApiEndpoint
   readonly?: boolean
 }
 

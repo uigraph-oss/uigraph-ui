@@ -1,5 +1,5 @@
 import { graphql } from '@/api-v2'
-import { serviceDBToLegacy } from './service-db-v2'
+import { DbTable, serviceDBToLegacy } from './service-db-v2'
 
 export const SERVICE_DB_VERSIONS_V2 = graphql(`
   query ServiceDBVersionsV2($orgId: ID!, $serviceId: ID!, $serviceDbId: ID!) {
@@ -13,6 +13,28 @@ export const SERVICE_DB_VERSIONS_V2 = graphql(`
       versionNumber
       label
       schemaJson
+      tables {
+        name
+        columns {
+          name
+          type
+          nullable
+          isPrimaryKey
+          unique
+          autoIncrement
+          defaultValue
+          foreignKey
+          description
+        }
+        indexes {
+          name
+          type
+          fields
+        }
+      }
+      noSQLSchema
+      dbDiagramId
+      pgDumpFileId
       source
       sourceTs
       isAutoVersion
@@ -98,6 +120,10 @@ export function serviceDBVersionToLegacyWithDb(
     versionNumber: number
     label?: string | null
     schemaJson: string
+    tables?: DbTable[] | null
+    noSQLSchema?: unknown
+    dbDiagramId?: string | null
+    pgDumpFileId?: string | null
     isAutoVersion: boolean
     createdBy: string
     createdAt: string
@@ -118,8 +144,10 @@ export function serviceDBVersionToLegacyWithDb(
       dbName: dbMeta?.dbName ?? '',
       dbType: dbMeta?.dbType ?? '',
       dialect: dbMeta?.dialect ?? '',
-      schemaJson: v.schemaJson,
-      createdBy: v.createdBy,
+      tables: v.tables,
+      noSQLSchema: v.noSQLSchema,
+      dbDiagramId: v.dbDiagramId,
+      pgDumpFileId: v.pgDumpFileId,
       createdAt: v.createdAt,
       updatedAt: v.createdAt,
     }),

@@ -1,8 +1,8 @@
 'use client'
 
-import { GT } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { LegacyComponentMeta } from '@/features/services/api/api-v2-adapters'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -15,7 +15,7 @@ export function GrpcMethodRowCore({
   additionalContent,
 }: {
   onViewOpen: () => void
-  componentMeta: GT.ComponentMeta
+  componentMeta: LegacyComponentMeta
   selected?: boolean
   actionsCell?: React.ReactNode
   additionalContent?: React.ReactNode

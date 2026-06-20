@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { arrayNonNullable } from 'daily-code'
@@ -6,11 +5,12 @@ import { formatDistanceToNow } from 'date-fns'
 import { Calendar, Database, Hash, Table2 } from 'lucide-react'
 import { BsCollection } from 'react-icons/bs'
 import { CiViewTable } from 'react-icons/ci'
+import { ServiceDbSchema } from '../../api/service-db-v2'
 import { RenderDynamoTable } from './components/render-dynamo-table'
 import { RenderMongoCollections } from './components/render-mongo-collections'
 import { RenderSQLTable } from './components/render-sql-table'
 
-export function SelectedDatabaseSchemaSection({ db }: { db: GT.ServiceDb }) {
+export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
   const tables = arrayNonNullable(db.tables)
   const totalColumns = tables.reduce(
     (sum, t) => sum + (t?.columns?.length ?? 0),
@@ -93,7 +93,9 @@ export function SelectedDatabaseSchemaSection({ db }: { db: GT.ServiceDb }) {
 
             <div className="mt-2 text-[1.15rem] font-semibold text-[#161616]">
               {dynamoTablesContent
-                ? (db.noSQLSchema?.dynamo?.table?.length ?? 0)
+                ? db.noSQLSchema?.dynamo?.table
+                  ? 1
+                  : 0
                 : mongoCollectionsContent
                   ? (db.noSQLSchema?.mongo?.collections?.length ?? 0)
                   : tables.length}

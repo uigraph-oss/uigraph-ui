@@ -1,4 +1,4 @@
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
@@ -32,7 +32,11 @@ export function ComponentsGrid() {
   )
 }
 
-function ComponentCard({ component }: { component: GT.CustomComponent }) {
+function ComponentCard({
+  component,
+}: {
+  component: V2.Component & { updatedAt?: string | null }
+}) {
   const createdAtFormatted = useTimeDistanceFromNow(component.updatedAt!, {
     addSuffix: true,
     includeSeconds: true,
