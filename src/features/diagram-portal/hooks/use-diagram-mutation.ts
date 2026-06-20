@@ -9,6 +9,10 @@ import ms from 'ms'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { UPDATE_DIAGRAM_V2 } from '../api/diagram-v2'
+import {
+  CONFIRM_DIAGRAM_THUMBNAIL_UPLOAD,
+  PREPARE_DIAGRAM_THUMBNAIL_UPLOAD,
+} from '../api/thumbnail-v2'
 import { convertDiagramServerDataToString } from '../helpers/diagram-data'
 import { generateDiagramThumbnailFile } from '../helpers/download-image'
 import { DataSource } from '../types/db-flow'
@@ -145,7 +149,8 @@ export function useDiagramPortalMutation({
           uploadThumbnailFile(
             organizationId,
             diagramId,
-            thumbnail.thumbnailFile
+            thumbnail.thumbnailFile,
+            thumbnail.updateHash
           )
             .then(() => {
               setLastUpdatedAt(Date.now())
@@ -244,14 +249,24 @@ async function getThumbnailFile({
 async function uploadThumbnailFile(
   orgId: string,
   diagramId: string,
-  file: File
+  file: File,
+  updateHash: string
 ) {
-  const form = new FormData()
-  form.append('file', file)
+  const { data: prepareData } = await clientV2.mutate({
+    mutation: PREPARE_DIAGRAM_THUMBNAIL_UPLOAD,
+    variables: { orgId, diagramId },
+  })
 
-  await axios.post(
-    `/api/v1/orgs/${orgId}/diagrams/${diagramId}/thumbnail`,
-    form,
-    { withCredentials: true }
-  )
+  const uploadUrl = prepareData?.prepareDiagramThumbnailUpload?.uploadUrl
+  if (!uploadUrl) throw new Error('Failed to get thumbnail upload URL')
+
+  await axios.put(uploadUrl, file, {
+    headers: { 'Content-Type': file.type },
+    withCredentials: false, // presigned URL — no cookies needed
+  })
+
+  await clientV2.mutate({
+    mutation: CONFIRM_DIAGRAM_THUMBNAIL_UPLOAD,
+    variables: { orgId, diagramId, contentHash: updateHash },
+  })
 }
