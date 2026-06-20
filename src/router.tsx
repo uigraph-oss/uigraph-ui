@@ -24,7 +24,6 @@ import {
   SecuritySettings,
 } from '@/features/dashboard-settings'
 import { ServiceAccountsPage } from '@/features/dashboard-settings/service-accounts/service-accounts-page'
-import { SSOSettingsPage } from '@/features/dashboard-settings/sso-settings/sso-settings-page'
 import { TeamManagementPage } from '@/features/dashboard-settings/users-team-management/team-management-page'
 import { UsersManagementPage } from '@/features/dashboard-settings/users-team-management/users-management-page'
 import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
@@ -187,7 +186,6 @@ export function AppRoutes() {
             <Route path="users" element={<UsersManagementPage />} />
             <Route path="service-accounts" element={<ServiceAccountsPage />} />
             <Route path="security" element={<SecuritySettings />} />
-            <Route path="sso" element={<SSOSettingsPage />} />
           </Route>
         </Route>
       </Route>

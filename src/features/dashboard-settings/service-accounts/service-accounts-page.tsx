@@ -1,6 +1,5 @@
 'use client'
 
-import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -10,10 +9,8 @@ import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
 import {
   createServiceAccount,
-  deleteServiceAccount,
   listScopes,
   listServiceAccounts,
-  updateServiceAccount,
   type ServiceAccount,
 } from './api'
 import {
@@ -21,7 +18,6 @@ import {
   type ServiceAccountFormValues,
 } from './service-account-modal'
 import { ServiceAccountTable } from './service-account-table'
-import { ServiceAccountTokensModal } from './service-account-tokens-modal'
 
 export function ServiceAccountsPage() {
   const organizationId = useCurrentOrganization()?.id as string
@@ -30,11 +26,6 @@ export function ServiceAccountsPage() {
   const [loading, setLoading] = useState(true)
 
   const [createOpen, setCreateOpen] = useState(false)
-  const [editing, setEditing] = useState<ServiceAccount | null>(null)
-  const [managingTokens, setManagingTokens] = useState<ServiceAccount | null>(
-    null
-  )
-  const [deleting, setDeleting] = useState<ServiceAccount | null>(null)
 
   const refresh = useCallback(async () => {
     if (!organizationId) return
@@ -67,33 +58,6 @@ export function ServiceAccountsPage() {
     }
   }
 
-  async function handleEdit(values: ServiceAccountFormValues) {
-    if (!editing) return
-    try {
-      await updateServiceAccount(organizationId, editing.id, {
-        ...values,
-        disabled: editing.disabled,
-      })
-      setEditing(null)
-      await refresh()
-      toast.success('Service account updated')
-    } catch (error) {
-      toast.error((error as Error).message)
-    }
-  }
-
-  async function handleDelete() {
-    if (!deleting) return
-    try {
-      await deleteServiceAccount(organizationId, deleting.id)
-      setDeleting(null)
-      await refresh()
-      toast.success('Service account deleted')
-    } catch (error) {
-      toast.error((error as Error).message)
-    }
-  }
-
   return (
     <>
       <SettingsHeader
@@ -119,9 +83,9 @@ export function ServiceAccountsPage() {
           ) : (
             <ServiceAccountTable
               accounts={accounts}
-              onManageTokens={setManagingTokens}
-              onEdit={setEditing}
-              onDelete={setDeleting}
+              orgId={organizationId}
+              availableScopes={scopes}
+              onChanged={refresh}
             />
           )}
         </div>
@@ -135,41 +99,6 @@ export function ServiceAccountsPage() {
           />
         )}
       </BetterDialogProvider>
-
-      <BetterDialogProvider
-        open={!!editing}
-        onOpenChange={(open) => !open && setEditing(null)}
-      >
-        {editing && (
-          <ServiceAccountModal
-            account={editing}
-            availableScopes={scopes}
-            onSubmit={handleEdit}
-          />
-        )}
-      </BetterDialogProvider>
-
-      <BetterDialogProvider
-        open={!!managingTokens}
-        onOpenChange={(open) => !open && setManagingTokens(null)}
-      >
-        {managingTokens && (
-          <ServiceAccountTokensModal
-            orgId={organizationId}
-            account={managingTokens}
-          />
-        )}
-      </BetterDialogProvider>
-
-      <BetterDeleteConfirmationModal
-        open={!!deleting}
-        onOpenChange={(open) => !open && setDeleting(null)}
-        onConfirm={handleDelete}
-        title="Delete Service Account?"
-        description="This permanently revokes all of its tokens. This action cannot be undone."
-        deleteButtonText="Delete"
-        cancelButtonText="Cancel"
-      />
     </>
   )
 }
