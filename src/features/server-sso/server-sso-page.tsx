@@ -1,70 +1,84 @@
 'use client'
 
+import { clientV2 } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ServerSectionHeader } from '@/features/server-dashboard/server-section-header'
+import { useMutation, useQuery } from '@apollo/client'
 import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  deleteOAuthProvider,
-  getLdapStatus,
-  getSamlStatus,
+  DELETE_OAUTH_PROVIDER_V2,
+  LDAP_STATUS_V2,
+  OAUTH_PROVIDERS_V2,
+  SAML_STATUS_V2,
+  UPSERT_OAUTH_PROVIDER_V2,
   getScimStatus,
-  listOAuthProviders,
-  upsertOAuthProvider,
   type OAuthProvider,
   type ProviderStatus,
-} from './api/server-sso'
+} from './api/server-sso-v2'
 import {
   ConfigureOAuthProviderModal,
   type OAuthProviderFormValues,
 } from './configure-oauth-provider-modal'
 
-type Statuses = {
-  ldap: ProviderStatus | null
-  saml: ProviderStatus | null
-  scim: ProviderStatus | null
-}
-
 export function ServerSSOPage() {
-  const [providers, setProviders] = useState<OAuthProvider[]>([])
-  const [statuses, setStatuses] = useState<Statuses>({
-    ldap: null,
-    saml: null,
-    scim: null,
+  const providersQuery = useQuery(OAUTH_PROVIDERS_V2, { client: clientV2 })
+  const ldapQuery = useQuery(LDAP_STATUS_V2, { client: clientV2 })
+  const samlQuery = useQuery(SAML_STATUS_V2, { client: clientV2 })
+
+  const [scimStatus, setScimStatus] = useState<ProviderStatus | null>(null)
+
+  const refetchQueries = [{ query: OAUTH_PROVIDERS_V2 }]
+  const [upsertProvider] = useMutation(UPSERT_OAUTH_PROVIDER_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries,
   })
-  const [isLoading, setIsLoading] = useState(true)
+  const [deleteProvider] = useMutation(DELETE_OAUTH_PROVIDER_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries,
+  })
 
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [editProvider, setEditProvider] = useState<OAuthProvider | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<OAuthProvider | null>(null)
 
-  async function refresh() {
-    setIsLoading(true)
-    try {
-      const [list, ldap, saml, scim] = await Promise.all([
-        listOAuthProviders(),
-        getLdapStatus(),
-        getSamlStatus(),
-        getScimStatus(),
-      ])
-      setProviders(list)
-      setStatuses({ ldap, saml, scim })
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to load SSO config'
-      )
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const providers = providersQuery.data?.oauthProviders ?? []
+  const statuses = {
+    ldap: ldapQuery.data?.ldap ? 'configured' : 'not-configured',
+    saml: samlQuery.data?.saml ? 'configured' : 'not-configured',
+    scim: scimStatus,
+  } as const
+
+  const error =
+    providersQuery.error ?? ldapQuery.error ?? samlQuery.error ?? null
+  const isLoading =
+    providersQuery.loading ||
+    ldapQuery.loading ||
+    samlQuery.loading ||
+    scimStatus === null
 
   useEffect(() => {
-    void refresh()
+    if (error) {
+      toast.error(error.message)
+    }
+  }, [error])
+
+  useEffect(() => {
+    getScimStatus()
+      .then(setScimStatus)
+      .catch((err: unknown) => {
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to load SCIM status'
+        )
+        setScimStatus('not-configured')
+      })
   }, [])
 
   return (
@@ -149,10 +163,14 @@ export function ServerSSOPage() {
           mode="create"
           onSubmit={async (values) => {
             try {
-              await upsertOAuthProvider(values.providerName, toInput(values))
+              await upsertProvider({
+                variables: {
+                  provider: values.providerName,
+                  input: toInput(values),
+                },
+              })
               setIsCreateOpen(false)
               toast.success('Provider added')
-              await refresh()
             } catch (error) {
               toast.error(
                 error instanceof Error
@@ -190,13 +208,14 @@ export function ServerSSOPage() {
             }}
             onSubmit={async (values) => {
               try {
-                await upsertOAuthProvider(
-                  editProvider.providerName,
-                  toInput(values)
-                )
+                await upsertProvider({
+                  variables: {
+                    provider: editProvider.providerName,
+                    input: toInput(values),
+                  },
+                })
                 setEditProvider(null)
                 toast.success('Provider updated')
-                await refresh()
               } catch (error) {
                 toast.error(
                   error instanceof Error
@@ -217,10 +236,11 @@ export function ServerSSOPage() {
         onConfirm={async () => {
           if (!deleteTarget) return
           try {
-            await deleteOAuthProvider(deleteTarget.providerName)
+            await deleteProvider({
+              variables: { provider: deleteTarget.providerName },
+            })
             setDeleteTarget(null)
             toast.success('Provider removed')
-            await refresh()
           } catch (error) {
             toast.error(
               error instanceof Error

@@ -1,5 +1,6 @@
 'use client'
 
+import { clientV2 } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
@@ -14,23 +15,45 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ServerSectionHeader } from '@/features/server-dashboard/server-section-header'
+import { useMutation, useQuery } from '@apollo/client'
 import Fuse from 'fuse.js'
 import { Plus, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  createServerUser,
-  disableServerUser,
-  listServerUsers,
-  updateServerUser,
+  CREATE_SERVER_USER_V2,
+  DISABLE_SERVER_USER_V2,
+  SERVER_USERS_V2,
+  UPDATE_SERVER_USER_V2,
   type ServerUser,
-} from './api/server-users'
+} from './api/server-users-v2'
 import { ConfigureServerUserModal } from './configure-server-user-modal'
 import { ServerUsersTable } from './server-users-table'
 
 export function ServerUsersPage() {
-  const [users, setUsers] = useState<ServerUser[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { data, loading, error } = useQuery(SERVER_USERS_V2, {
+    client: clientV2,
+  })
+
+  const refetchQueries = [{ query: SERVER_USERS_V2 }]
+
+  const [createUser] = useMutation(CREATE_SERVER_USER_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries,
+  })
+  const [updateUser] = useMutation(UPDATE_SERVER_USER_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries,
+  })
+  const [disableUser] = useMutation(DISABLE_SERVER_USER_V2, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries,
+  })
+
+  const users = useMemo<ServerUser[]>(() => data?.users ?? [], [data])
 
   const [searchTerm, setSearchTerm] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(20)
@@ -40,23 +63,11 @@ export function ServerUsersPage() {
   const [editUser, setEditUser] = useState<ServerUser | null>(null)
   const [deleteUser, setDeleteUser] = useState<ServerUser | null>(null)
 
-  async function refresh() {
-    setIsLoading(true)
-    try {
-      const data = await listServerUsers()
-      setUsers(data)
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to load users'
-      )
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   useEffect(() => {
-    void refresh()
-  }, [])
+    if (error) {
+      toast.error(error.message)
+    }
+  }, [error])
 
   const fuse = useMemo(
     () => new Fuse(users, { keys: ['name', 'email', 'role'] }),
@@ -136,7 +147,7 @@ export function ServerUsersPage() {
           </div>
 
           <div className="border-stock overflow-x-auto border-t">
-            {isLoading ? (
+            {loading ? (
               <SectionLoader label="Loading users..." />
             ) : (
               <ServerUsersTable
@@ -171,10 +182,9 @@ export function ServerUsersPage() {
           mode="create"
           onSubmit={async (values) => {
             try {
-              await createServerUser(values)
+              await createUser({ variables: { input: values } })
               setIsCreateOpen(false)
               toast.success('User created successfully')
-              await refresh()
             } catch (error) {
               toast.error(
                 error instanceof Error ? error.message : 'Failed to create user'
@@ -201,14 +211,18 @@ export function ServerUsersPage() {
             }}
             onSubmit={async (values) => {
               try {
-                await updateServerUser(editUser.id, {
-                  name: values.name,
-                  role: values.role,
-                  disabled: values.disabled,
+                await updateUser({
+                  variables: {
+                    id: editUser.id,
+                    input: {
+                      name: values.name,
+                      role: values.role,
+                      disabled: values.disabled,
+                    },
+                  },
                 })
                 setEditUser(null)
                 toast.success('User updated successfully')
-                await refresh()
               } catch (error) {
                 toast.error(
                   error instanceof Error
@@ -229,10 +243,9 @@ export function ServerUsersPage() {
         onConfirm={async () => {
           if (!deleteUser) return
           try {
-            await disableServerUser(deleteUser.id)
+            await disableUser({ variables: { id: deleteUser.id } })
             setDeleteUser(null)
             toast.success('User disabled')
-            await refresh()
           } catch (error) {
             toast.error(
               error instanceof Error ? error.message : 'Failed to disable user'

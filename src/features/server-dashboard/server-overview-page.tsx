@@ -1,46 +1,25 @@
 'use client'
 
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
-import { useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { SERVER_OVERVIEW_V2 } from './api/server-overview-v2'
 import { ServerSectionHeader } from './server-section-header'
 
-type ServerOverview = {
-  totalUsers: number
-  activeUsers: number
-  totalOrgs: number
-}
-
-async function fetchOverview(): Promise<ServerOverview> {
-  const res = await fetch('/api/v1/server/overview', { credentials: 'include' })
-  if (!res.ok) {
-    throw new Error(`Request failed (${res.status})`)
-  }
-  return (await res.json()) as ServerOverview
-}
-
 export function ServerOverviewPage() {
-  const [overview, setOverview] = useState<ServerOverview | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { data, loading, error } = useQuery(SERVER_OVERVIEW_V2, {
+    client: clientV2,
+  })
 
   useEffect(() => {
-    let active = true
-    fetchOverview()
-      .then((data) => {
-        if (active) setOverview(data)
-      })
-      .catch((error: unknown) => {
-        toast.error(
-          error instanceof Error ? error.message : 'Failed to load overview'
-        )
-      })
-      .finally(() => {
-        if (active) setIsLoading(false)
-      })
-    return () => {
-      active = false
+    if (error) {
+      toast.error(error.message)
     }
-  }, [])
+  }, [error])
+
+  const overview = data?.serverOverview
 
   return (
     <>
@@ -49,7 +28,7 @@ export function ServerOverviewPage() {
         description="Instance-wide statistics"
       />
 
-      {isLoading ? (
+      {loading ? (
         <SectionLoader label="Loading overview..." />
       ) : (
         <div className="grid grid-cols-3 gap-4 px-6 py-6">
