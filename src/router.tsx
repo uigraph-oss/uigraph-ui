@@ -23,7 +23,6 @@ import {
 } from '@/features/dashboard-settings'
 import { ServiceAccountsPage } from '@/features/dashboard-settings/service-accounts/service-accounts-page'
 import { SSOSettingsPage } from '@/features/dashboard-settings/sso-settings/sso-settings-page'
-import { TokensManagementPage } from '@/features/dashboard-settings/tokens-management/tokens-management-page'
 import { TeamManagementPage } from '@/features/dashboard-settings/users-team-management/team-management-page'
 import { UsersManagementPage } from '@/features/dashboard-settings/users-team-management/users-management-page'
 import { DashboardServiceApis } from '@/features/services/components/apis/dashboard-service-apis'
@@ -173,7 +172,6 @@ export function AppRoutes() {
             <Route path="organization" element={<OrganizationSettings />} />
             <Route path="teams" element={<TeamManagementPage />} />
             <Route path="users" element={<UsersManagementPage />} />
-            <Route path="tokens" element={<TokensManagementPage />} />
             <Route path="service-accounts" element={<ServiceAccountsPage />} />
             <Route path="security" element={<SecuritySettings />} />
             <Route path="sso" element={<SSOSettingsPage />} />

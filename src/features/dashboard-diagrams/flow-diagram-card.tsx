@@ -9,8 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useOrganizationContext } from '@/contexts'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
 import { Calendar } from 'lucide-react'
 import { useState } from 'react'
@@ -28,7 +28,7 @@ type FlowDiagramCardProps = {
 }
 
 export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { updateDiagram, deleteDiagram } = useDiagramsContext()
 
   const [moveToFolderOpen, setMoveToFolderOpen] = useState(false)

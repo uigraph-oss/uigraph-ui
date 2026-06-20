@@ -1,6 +1,6 @@
 'use client'
 
-import { graphql, privateClient } from '@/api'
+import { privateClient, v1Graphql } from '@/api'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-const GET_FILE_BY_ID_QUERY = graphql(`
+const GET_FILE_BY_ID_QUERY = v1Graphql(`
   query GetFileByID_SpecViewer($fileId: String!) {
     GetFileByID(fileId: $fileId, download: true) {
       fileId

@@ -1,12 +1,14 @@
+import { clientV2 } from '@/api-v2/client'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import type { Edge, Node } from '@xyflow/react'
 import { useState, type FormEvent } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { BsStars } from 'react-icons/bs'
 import { toast } from 'sonner'
-import { CREATE_DIAGRAM_VERSION_MUTATION } from '../api'
+import { CREATE_DIAGRAM_VERSION_V2 } from '../api/versions-v2'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { SidebarLayout } from './sidebar-layout'
 
@@ -21,9 +23,12 @@ export function SidebarGenerateWithAI() {
     diagramId,
     triggerMetaUpdate,
   } = useFlowDiagramContext()
+  const orgId = useCurrentOrganization()?.id
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION_MUTATION)
+  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION_V2, {
+    client: clientV2,
+  })
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
@@ -70,7 +75,7 @@ export function SidebarGenerateWithAI() {
       try {
         await triggerMetaUpdate(true)
         await createVersion({
-          variables: { diagramId },
+          variables: { orgId: orgId!, diagramId },
         })
       } catch {
         toast.error('Failed to publish version before applying diagram')

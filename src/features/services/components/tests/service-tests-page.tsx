@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api-v2'
 import type { TestCase } from '@/api-v2/.gql/graphql'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
@@ -59,8 +59,8 @@ function ServiceTestsPageContent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [packToEdit, setPackToEdit] = useState<GT.TestPack | null>(null)
-  const [packToDelete, setPackToDelete] = useState<GT.TestPack | null>(null)
+  const [packToEdit, setPackToEdit] = useState<V2.TestPack | null>(null)
+  const [packToDelete, setPackToDelete] = useState<V2.TestPack | null>(null)
 
   const [isCreateCaseModalOpen, setIsCreateCaseModalOpen] = useState(false)
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false)
@@ -74,12 +74,12 @@ function ServiceTestsPageContent() {
     setIsCreateModalOpen(true)
   }
 
-  function handleEditPack(pack: GT.TestPack) {
+  function handleEditPack(pack: V2.TestPack) {
     setPackToEdit(pack)
     setIsUpdateModalOpen(true)
   }
 
-  function handleDeletePack(pack: GT.TestPack) {
+  function handleDeletePack(pack: V2.TestPack) {
     setPackToDelete(pack)
     setIsDeleteModalOpen(true)
   }

@@ -1,6 +1,6 @@
-import { graphql } from '@/api'
+import { v1Graphql } from '@/api'
 
-export const GET_COMPONENT_META = graphql(`
+export const GET_COMPONENT_META = v1Graphql(`
   query V1GetComponentMeta($componentMetaId: String!) {
     v1GetComponentMeta(componentMetaId: $componentMetaId) {
       componentMetaId

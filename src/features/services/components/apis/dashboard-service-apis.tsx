@@ -20,8 +20,8 @@ import {
   readSpecFile,
 } from '@/features/services/api/api-endpoints-v2'
 import { apiGroupToLegacy } from '@/features/services/api/api-v2-adapters'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { CirclePlus } from 'lucide-react'

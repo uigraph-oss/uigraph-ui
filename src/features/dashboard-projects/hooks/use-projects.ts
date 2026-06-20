@@ -1,5 +1,5 @@
 import { clientV2 } from '@/api-v2/client'
-import { GET_DIAGRAM_TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -15,15 +15,16 @@ export function useProjects() {
     skip: !organizationId,
   })
 
-  const teamsData = useQuery(GET_DIAGRAM_TEAMS, {
+  const teamsData = useQuery(TEAMS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { organizationId: organizationId! },
+    variables: { orgId: organizationId! },
     skip: !organizationId,
   })
 
   const teams = useMemo(
-    () => arrayNonNullable(teamsData.data?.GetTeam ?? []),
-    [teamsData.data?.GetTeam]
+    () => arrayNonNullable(teamsData.data?.teams ?? []),
+    [teamsData.data?.teams]
   )
 
   const [createProject] = useMutation(CREATE_MAP_V2, {

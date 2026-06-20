@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import {
   Select,
   SelectContent,
@@ -7,9 +6,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FILTER_OPTIONS } from '@/constants'
+import type { DashboardTeam } from '@/features/dashboard-diagrams/api/teams-v2'
 
 interface BasicFilterInputProps {
-  teams?: GT.TeamInfo[]
+  teams?: DashboardTeam[]
   selectedTeamId?: string | null
   setSelectedTeamId?: (teamId: string | null) => void
 
@@ -38,8 +38,8 @@ export function BasicFilterInput({
           <SelectContent>
             <SelectItem value="__all__">All Teams</SelectItem>
             {teams.map((t) => (
-              <SelectItem key={t.teamId ?? ''} value={t.teamId ?? ''}>
-                {t.teamName}
+              <SelectItem key={t.id} value={t.id}>
+                {t.name}
               </SelectItem>
             ))}
           </SelectContent>

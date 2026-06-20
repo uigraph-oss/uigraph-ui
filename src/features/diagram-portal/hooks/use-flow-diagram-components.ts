@@ -1,6 +1,6 @@
 import { GT } from '@/api'
 import { clientV2 } from '@/api-v2/client'
-import { useOrganizationContext } from '@/contexts'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -12,7 +12,7 @@ export type FlowDiagramComponentsGroup = {
 }
 
 export function useFlowDiagramComponents() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS_V2, {
     client: clientV2,
     variables: { orgId: organizationId! },

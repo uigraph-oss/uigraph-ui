@@ -43,7 +43,12 @@ export const UPDATE_TEST_PACK_V2 = graphql(`
     $id: ID!
     $input: UpdateTestPackInput!
   ) {
-    updateTestPack(orgId: $orgId, serviceId: $serviceId, id: $id, input: $input) {
+    updateTestPack(
+      orgId: $orgId
+      serviceId: $serviceId
+      id: $id
+      input: $input
+    ) {
       testPackId
       serviceId
       orgId
@@ -230,7 +235,12 @@ export const UPDATE_TEST_CASE_V2 = graphql(`
     $id: ID!
     $input: UpdateTestCaseInput!
   ) {
-    updateTestCase(orgId: $orgId, serviceId: $serviceId, id: $id, input: $input) {
+    updateTestCase(
+      orgId: $orgId
+      serviceId: $serviceId
+      id: $id
+      input: $input
+    ) {
       testCaseId
       testPackId
       serviceId
@@ -401,7 +411,12 @@ export const UPDATE_TEST_RUN_V2 = graphql(`
     $id: ID!
     $input: UpdateTestRunInput!
   ) {
-    updateTestRun(orgId: $orgId, serviceId: $serviceId, id: $id, input: $input) {
+    updateTestRun(
+      orgId: $orgId
+      serviceId: $serviceId
+      id: $id
+      input: $input
+    ) {
       testRunId
       status
       overallStatus
@@ -411,7 +426,11 @@ export const UPDATE_TEST_RUN_V2 = graphql(`
 
 export const TEST_RUN_RESULTS_V2 = graphql(`
   query TestRunResultsV2($orgId: ID!, $serviceId: ID!, $testRunId: ID!) {
-    testRunResults(orgId: $orgId, serviceId: $serviceId, testRunId: $testRunId) {
+    testRunResults(
+      orgId: $orgId
+      serviceId: $serviceId
+      testRunId: $testRunId
+    ) {
       testRunResultId
       testRunId
       testCaseId

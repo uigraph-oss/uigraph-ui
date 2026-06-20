@@ -37,10 +37,7 @@ type DragState = {
   draggedItemId: string | null
 }
 
-function getOrder(
-  item: TestCase | undefined,
-  fallbackIndex: number
-): number {
+function getOrder(item: TestCase | undefined, fallbackIndex: number): number {
   return item?.order ?? fallbackIndex + 1
 }
 

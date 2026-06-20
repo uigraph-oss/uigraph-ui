@@ -12,7 +12,7 @@ import {
   GoProjectTemplate,
   GoStack,
 } from 'react-icons/go'
-import { LuBot, LuFingerprint, LuKey } from 'react-icons/lu'
+import { LuBot, LuFingerprint } from 'react-icons/lu'
 
 type NavLinkMeta = {
   icon: ReactNode
@@ -81,12 +81,6 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings/users',
     label: 'Users',
     icon: <UserListIcon />,
-    adminOnly: true,
-  },
-  {
-    id: '/settings/tokens',
-    label: 'API Tokens',
-    icon: <LuKey />,
     adminOnly: true,
   },
   {

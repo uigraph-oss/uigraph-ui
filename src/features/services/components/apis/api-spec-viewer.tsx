@@ -1,6 +1,6 @@
 'use client'
 
-import { graphql, privateClient } from '@/api'
+import { privateClient, v1Graphql } from '@/api'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
 import { cn } from '@/lib/utils'
@@ -111,7 +111,7 @@ interface ParsedSpec {
 
 // ─── GraphQL ──────────────────────────────────────────────────────────────────
 
-const GET_FILE_BY_ID_QUERY = graphql(`
+const GET_FILE_BY_ID_QUERY = v1Graphql(`
   query GetFileByID_SpecViewer($fileId: String!) {
     GetFileByID(fileId: $fileId, download: true) {
       fileId

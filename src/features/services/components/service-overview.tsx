@@ -3,8 +3,8 @@
 import { clientV2 } from '@/api-v2/client'
 import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
 import { useServiceContext } from '@/features/services/contexts/service-context'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
@@ -228,6 +228,7 @@ export function ServiceOverview() {
                   href={href}
                   target="_blank"
                   className="flex items-center gap-3 rounded-xl border border-[#E8EAEC] bg-[#FAFAFA] px-4 py-3 transition-colors hover:border-[#D0D5DD] hover:bg-white"
+                  rel="noreferrer"
                 >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-[#E8EAEC]">
                     {icon}

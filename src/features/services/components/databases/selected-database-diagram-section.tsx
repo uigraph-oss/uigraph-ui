@@ -1,5 +1,5 @@
-import { clientV2 } from '@/api-v2/client'
 import { GT } from '@/api'
+import { clientV2 } from '@/api-v2/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import {

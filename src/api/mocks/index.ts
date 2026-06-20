@@ -3,7 +3,9 @@
 // keyed by operation name. Unregistered operations fall back to `{}` — enrich
 // this file per feature as needed (a console warning lists the missing names).
 
-type MockResolver = (variables: Record<string, unknown>) => Record<string, unknown>
+type MockResolver = (
+  variables: Record<string, unknown>
+) => Record<string, unknown>
 
 const mockOrg = {
   __typename: 'Organization',
@@ -58,7 +60,9 @@ export function resolveMock(
 
   if (operationName && !warned.has(operationName)) {
     warned.add(operationName)
-    console.warn(`[mock] no fixture for operation "${operationName}" — returning {}`)
+    console.warn(
+      `[mock] no fixture for operation "${operationName}" — returning {}`
+    )
   }
 
   return {}

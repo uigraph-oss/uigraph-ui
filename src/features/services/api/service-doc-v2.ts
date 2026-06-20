@@ -39,7 +39,12 @@ export const UPDATE_SERVICE_DOC_V2 = graphql(`
     $id: ID!
     $input: UpdateServiceDocInput!
   ) {
-    updateServiceDoc(orgId: $orgId, serviceId: $serviceId, id: $id, input: $input) {
+    updateServiceDoc(
+      orgId: $orgId
+      serviceId: $serviceId
+      id: $id
+      input: $input
+    ) {
       id
       fileName
     }

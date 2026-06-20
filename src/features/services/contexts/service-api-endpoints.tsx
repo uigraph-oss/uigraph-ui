@@ -28,8 +28,8 @@ import {
   apiGroupToLegacy,
   apiGroupVersionToLegacy,
   endpointsToLegacyWithMeta,
-  type LegacyAPIGroupView,
   type LegacyAPIGroupVersion,
+  type LegacyAPIGroupView,
   type LegacyEndpointWithMeta,
 } from '../api/api-v2-adapters'
 
@@ -87,8 +87,7 @@ export const [
     }, [apiGroupRaw])
 
     const apiGroups = useMemo(
-      () =>
-        arrayNonNullable(groupsRes.data?.apiGroups).map(apiGroupToLegacy),
+      () => arrayNonNullable(groupsRes.data?.apiGroups).map(apiGroupToLegacy),
       [groupsRes.data?.apiGroups]
     )
 
@@ -347,7 +346,10 @@ export const [
       if (apiGroup?.protocol) {
         return apiGroup.protocol.toLowerCase()
       }
-      if (apiGroup?.graphqlSpecFileIds && apiGroup.graphqlSpecFileIds.length > 0)
+      if (
+        apiGroup?.graphqlSpecFileIds &&
+        apiGroup.graphqlSpecFileIds.length > 0
+      )
         return 'graphql'
       if (apiGroup?.grpcSpecFileIds && apiGroup.grpcSpecFileIds.length > 0)
         return 'grpc'

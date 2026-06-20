@@ -1,14 +1,14 @@
 import { V2 } from '@/api-v2'
 import { clientV2 } from '@/api-v2/client'
-import { useOrganizationContext } from '@/contexts'
 import { GET_COMPONENTS_V2 } from '@/features/components/api/components-v2'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
 import { ComponentsGroup } from '../types'
 
 export function useComponents() {
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const { data, loading } = useQuery(GET_COMPONENTS_V2, {
     client: clientV2,
     variables: { orgId: organizationId! },

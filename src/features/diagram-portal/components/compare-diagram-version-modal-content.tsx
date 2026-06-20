@@ -1,5 +1,5 @@
-import { clientV2 } from '@/api-v2/client'
 import type { V2 } from '@/api-v2'
+import { clientV2 } from '@/api-v2/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { VersionLayout } from '@/components/version-layout'
 import { useEffect, useMemo, useState } from 'react'
@@ -9,10 +9,7 @@ import { FlowDiagramPreview } from '../flow-diagram-preview'
 import { convertDiagramServerData } from '../helpers/diagram-data'
 import { ServerDiagramData } from '../types/diagram'
 
-type DiagramVersionSummary = Pick<
-  V2.DiagramVersion,
-  'id' | 'versionNumber'
->
+type DiagramVersionSummary = Pick<V2.DiagramVersion, 'id' | 'versionNumber'>
 
 export type VersionCompareModalContentProps = {
   versions: DiagramVersionSummary[]

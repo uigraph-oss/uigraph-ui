@@ -87,7 +87,9 @@ export function DashboardServiceDiagrams() {
           orgId: orgId!,
           serviceId,
           input: {
-            name: service?.name ? `${service.name} Diagram` : 'Untitled Diagram',
+            name: service?.name
+              ? `${service.name} Diagram`
+              : 'Untitled Diagram',
             content: '{}',
             ...(service?.teamId ? { teamId: service.teamId } : {}),
           },

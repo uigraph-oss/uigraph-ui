@@ -24,10 +24,10 @@ const compat = new FlatCompat({
 export default [
   {
     ignores: [
-      '*.d.ts',
       '**/.gql',
       '**/dist',
       '**/.next',
+      "**/*.d.ts",
       '**/node_modules',
       './*.{js,mjs,ts,mts}',
       './src/components/ui/*.{tsx,jsx}',

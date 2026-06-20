@@ -1,6 +1,6 @@
 'use client'
 
-import { graphql, privateClient } from '@/api'
+import { privateClient, v1Graphql } from '@/api'
 import {
   ApiContextOption,
   ApiContextToolbar,
@@ -36,7 +36,7 @@ import { GrpcSpecViewer } from './grpc-spec-viewer'
 import { CreateApiGroupVersionModal } from './modals/create-api-group-version-modal'
 import { ServiceApiEndpoints } from './service-apis'
 
-const GET_FILE_BY_ID_QUERY = graphql(`
+const GET_FILE_BY_ID_QUERY = v1Graphql(`
   query GetFileByID_ApiContextToolbar($fileId: String!) {
     GetFileByID(fileId: $fileId, download: true) {
       fileId
@@ -265,7 +265,10 @@ function ApiGroupEndpointsPageContent() {
   const provenance = useMemo(() => {
     const repoUrl = service?.gitRepoUrl?.trim() || null
     const repoName = repoUrl
-      ? repoUrl.replace(/\.git$/, '').split('/').pop() || null
+      ? repoUrl
+          .replace(/\.git$/, '')
+          .split('/')
+          .pop() || null
       : null
     const commitFull = service?.lastCommitSha?.trim() || null
     const commitShort = commitFull?.slice(0, 7) || null

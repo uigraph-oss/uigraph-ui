@@ -1,5 +1,3 @@
-import type { ServiceStatsRow } from '@/features/services/api/service-stats'
-import type { DashboardService } from '@/features/services/api/services-v2'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
@@ -16,6 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import type { ServiceStatsRow } from '@/features/services/api/service-stats'
+import type { DashboardService } from '@/features/services/api/services-v2'
 import { cn } from '@/lib/utils'
 import { objectOmitNull } from 'daily-code'
 import { format } from 'date-fns'

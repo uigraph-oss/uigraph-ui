@@ -1,6 +1,5 @@
 'use client'
 
-import type { GT } from '@/api'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +13,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import type { SettingsTeam } from '../api/teams-v2'
 import { TEAM_MEMBER_ROLES } from '../constants/team'
 import { useTeamContext } from '../context/team-context'
 
@@ -50,8 +50,8 @@ export function ConfigureTeamMemberModal({
     },
   })
 
-  const selectableTeams = teams.filter(
-    (team): team is GT.TeamInfo & { teamId: string } => Boolean(team.teamId)
+  const selectableTeams = teams.filter((team): team is SettingsTeam =>
+    Boolean(team.teamId)
   )
 
   return (

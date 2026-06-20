@@ -1,3 +1,4 @@
+import { clientV2 } from '@/api-v2/client'
 import {
   Accordion,
   AccordionContent,
@@ -10,11 +11,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useOrganizationContext } from '@/contexts'
-import { GET_FOCAL_POINT } from '@/features/dashboard-pages/api'
-import { GET_PAGE } from '@/features/dashboard-projects/api/page'
-import { GET_PROJECT } from '@/features/dashboard-projects/api/project'
+import { FOCAL_POINTS_V2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { FRAMES_V2 } from '@/features/dashboard-projects/api/frame-v2'
+import { MAPS_V2 } from '@/features/dashboard-projects/api/map-v2'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import {
@@ -34,24 +35,27 @@ type SelectionType = {
 }
 
 function FocalPointSection({
+  orgId,
   pageId,
   projectId,
 
   value,
   onChange,
 }: {
+  orgId: string
   pageId: string
   projectId: string
   value: Partial<SelectionType>
   onChange: (value: SelectionType) => void
 }) {
-  const { data, loading } = useQuery(GET_FOCAL_POINT, {
+  const { data, loading } = useQuery(FOCAL_POINTS_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { pageId },
+    variables: { orgId, mapId: projectId, frameId: pageId },
   })
 
-  const points = arrayNonNullable(data?.v1GetFocalPoint).filter((point) =>
-    Boolean(point.focalPointId)
+  const points = arrayNonNullable(data?.focalPoints).filter((point) =>
+    Boolean(point.id)
   )
 
   if (loading) {
@@ -71,45 +75,48 @@ function FocalPointSection({
   return points.map((point) => {
     return (
       <Button
-        key={point.focalPointId}
+        key={point.id}
         type="button"
         variant="ghost"
         onClick={() => {
           onChange({
-            focalPointId: point.focalPointId!,
+            focalPointId: point.id,
             mapId: projectId,
             screenId: pageId,
           })
         }}
         className={cn(
           'h-auto w-full justify-start rounded-none py-3 pr-4 pl-10! text-left text-[13px] font-normal text-[#1f2937] hover:bg-[#f8fafc]',
-          value.focalPointId === point.focalPointId &&
+          value.focalPointId === point.id &&
             'bg-[#eef2ff] text-[#1d4ed8] hover:bg-[#eef2ff]'
         )}
       >
         <CircleDot className="size-3.5 text-[#9ca3af]" />
-        <span>{point.focalPointName?.trim() || 'Untitled Focal Point'}</span>
+        <span>{point.name?.trim() || 'Untitled Focal Point'}</span>
       </Button>
     )
   })
 }
 
 function MapScreensSection({
+  orgId,
   projectId,
   value,
   onChange,
 }: {
+  orgId: string
   projectId: string
   value: SelectionType
   onChange: (value: SelectionType) => void
 }) {
-  const { data, loading } = useQuery(GET_PAGE, {
+  const { data, loading } = useQuery(FRAMES_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { projectId },
+    variables: { orgId, mapId: projectId },
   })
 
-  const pages = arrayNonNullable(data?.v1GetPage).filter((page) =>
-    Boolean(page.pageId)
+  const pages = arrayNonNullable(data?.frames).filter((page) =>
+    Boolean(page.id)
   )
 
   if (loading) {
@@ -128,23 +135,24 @@ function MapScreensSection({
     <Accordion type="multiple" className="w-full">
       {pages.map((page) => (
         <AccordionItem
-          key={page.pageId}
-          value={page.pageId!}
+          key={page.id}
+          value={page.id}
           className="border-b border-[#e8edf3] last:border-b-0"
         >
           <AccordionTrigger className="bg-[#f8fafc] px-5 py-2.5 text-[14px] font-semibold text-[#374151] hover:no-underline">
             <span className="flex items-center gap-2">
               <Monitor className="size-3.5 text-[#6b7280]" />
               <span className="text-xs font-medium text-[#111827]">
-                {page.pageName?.trim() || 'Untitled Screen'}
+                {page.name?.trim() || 'Untitled Screen'}
               </span>
             </span>
           </AccordionTrigger>
 
           <AccordionContent className="divide-y divide-[#eef2f7] pt-0 pb-0">
             <FocalPointSection
+              orgId={orgId}
               projectId={projectId}
-              pageId={page.pageId!}
+              pageId={page.id}
               value={value}
               onChange={onChange}
             />
@@ -164,57 +172,55 @@ export function LinkUiMapNodeSelect({
 }) {
   const [mapId = '', screenId = '', focalPointId = ''] = value.split(':')
 
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const [open, setOpen] = useState(false)
 
-  const { data: projectsData, loading: isProjectsLoading } = useQuery(
-    GET_PROJECT,
-    {
-      fetchPolicy: 'cache-first',
-      variables: { organizationId },
-      skip: !organizationId,
-    }
-  )
+  const { data: projectsData, loading: isProjectsLoading } = useQuery(MAPS_V2, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
+  })
 
-  const projects = arrayNonNullable(projectsData?.v1GetProject).filter(
-    (project) => Boolean(project.projectId)
+  const projects = arrayNonNullable(projectsData?.maps).filter((project) =>
+    Boolean(project.id)
   )
   const defaultExpandedProjectIds = arrayNonNullable(
-    projects.map((project) => project.projectId)
+    projects.map((project) => project.id)
   )
 
-  const { data: screensData, loading: isScreensLoading } = useQuery(GET_PAGE, {
+  const { data: screensData, loading: isScreensLoading } = useQuery(FRAMES_V2, {
+    client: clientV2,
     fetchPolicy: 'cache-first',
-    variables: { projectId: mapId },
-    skip: !mapId,
+    variables: { orgId: organizationId!, mapId },
+    skip: !organizationId || !mapId,
   })
 
   const { data: focalPointsData, loading: isFocalPointsLoading } = useQuery(
-    GET_FOCAL_POINT,
+    FOCAL_POINTS_V2,
     {
+      client: clientV2,
       fetchPolicy: 'cache-first',
-      variables: { pageId: screenId },
-      skip: !screenId,
+      variables: { orgId: organizationId!, mapId, frameId: screenId },
+      skip: !organizationId || !mapId || !screenId,
     }
   )
 
   const selectedInfo = useMemo(() => {
     return {
-      map: projectsData?.v1GetProject?.find(
-        (project) => project?.projectId === mapId
-      ),
-      screen: screensData?.v1GetPage?.find((page) => page?.pageId === screenId),
-      focalPoint: focalPointsData?.v1GetFocalPoint?.find(
-        (focalPoint) => focalPoint?.focalPointId === focalPointId
+      map: projectsData?.maps?.find((project) => project?.id === mapId),
+      screen: screensData?.frames?.find((page) => page?.id === screenId),
+      focalPoint: focalPointsData?.focalPoints?.find(
+        (focalPoint) => focalPoint?.id === focalPointId
       ),
     }
   }, [
     mapId,
     screenId,
     focalPointId,
-    screensData?.v1GetPage,
-    projectsData?.v1GetProject,
-    focalPointsData?.v1GetFocalPoint,
+    screensData?.frames,
+    projectsData?.maps,
+    focalPointsData?.focalPoints,
   ])
 
   const hasSelectedValue = Boolean(value)
@@ -251,14 +257,14 @@ export function LinkUiMapNodeSelect({
 
               <span className="flex items-center gap-1.5">
                 <Monitor className="text-foreground/75 size-3.5" />
-                {selectedInfo.screen?.pageName?.trim() || 'Untitled Screen'}
+                {selectedInfo.screen?.name?.trim() || 'Untitled Screen'}
               </span>
 
               <LuChevronRight className="text-foreground/50 size-4" />
 
               <span className="flex items-center gap-1.5">
                 <CircleDot className="text-foreground/75 size-3.5" />
-                {selectedInfo.focalPoint?.focalPointName?.trim() ||
+                {selectedInfo.focalPoint?.name?.trim() ||
                   'Untitled Focal Point'}
               </span>
             </span>
@@ -302,8 +308,8 @@ export function LinkUiMapNodeSelect({
           >
             {projects.map((project) => (
               <AccordionItem
-                key={project.projectId}
-                value={project.projectId!}
+                key={project.id}
+                value={project.id}
                 className="rounded-none border-b border-[#e8edf3] last:border-b-0"
               >
                 <AccordionTrigger className="border-b border-[#e8edf3] px-3 py-2.5 hover:no-underline">
@@ -314,15 +320,13 @@ export function LinkUiMapNodeSelect({
                         {project.name?.trim() || 'Untitled Map'}
                       </span>
                     </span>
-                    <span className="text-xs font-medium text-[#94a3b8]">
-                      {project.pageCount ?? 0} screens
-                    </span>
                   </span>
                 </AccordionTrigger>
 
                 <AccordionContent className="pt-0 pb-0">
                   <MapScreensSection
-                    projectId={project.projectId!}
+                    orgId={organizationId!}
+                    projectId={project.id}
                     value={{ mapId, screenId, focalPointId }}
                     onChange={(value) => {
                       setOpen(false)

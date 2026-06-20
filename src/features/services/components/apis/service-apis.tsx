@@ -1,6 +1,6 @@
 'use client'
 
-import { GT, graphql, privateClient } from '@/api'
+import { GT, privateClient, v1Graphql } from '@/api'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'
@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody } from '@/components/ui/table'
-import { useOrganizationContext } from '@/contexts'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { normalizePath } from '@/utils/api/display'
 import { createOpenApiRuntime } from '@/utils/api/openapi-runtime'
 import { flattenMetaData } from '@uigraph/sdk'
@@ -44,7 +44,7 @@ import {
 } from './rows/graphql-operation-row'
 import { GrpcMethodItem, GrpcMethodRow } from './rows/grpc-method-row'
 
-const GET_FILE_BY_ID_QUERY = graphql(`
+const GET_FILE_BY_ID_QUERY = v1Graphql(`
   query GetFileByID_ServiceApis($fileId: String!) {
     GetFileByID(fileId: $fileId, download: true) {
       fileId
@@ -89,7 +89,7 @@ export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
     selectedVersionId,
     deleteServiceApiEndpoint,
   } = useServiceApiEndpointsContext()
-  const { organizationId } = useOrganizationContext()
+  const organizationId = useCurrentOrganization()?.id
   const [queryParams, setQueryParams] = useSearchParamsState(
     'endpointId',
     'env'
