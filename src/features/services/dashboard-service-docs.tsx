@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -16,10 +16,10 @@ import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  CREATE_SERVICE_DOC_V2,
-  SERVICE_DOCS_V2,
+  CREATE_SERVICE_DOC,
+  SERVICE_DOCS,
   serviceDocToLegacy,
-} from './api/service-doc-v2'
+} from './api/service-doc'
 import { ConfigureServiceDocModal } from './components/docs/configure-service-doc-modal'
 import { ServiceDocCard } from './components/docs/service-doc-card'
 import { useServiceContext } from './contexts/service-context'
@@ -31,7 +31,7 @@ export function DashboardServiceDocs() {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const { data, loading: isLoadingServiceDocs } = useQuery(SERVICE_DOCS_V2, {
+  const { data, loading: isLoadingServiceDocs } = useQuery(SERVICE_DOCS, {
     client: clientV2,
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
@@ -39,10 +39,10 @@ export function DashboardServiceDocs() {
     skip: !orgId || !serviceId,
   })
 
-  const [createServiceDoc] = useMutation(CREATE_SERVICE_DOC_V2, {
+  const [createServiceDoc] = useMutation(CREATE_SERVICE_DOC, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: SERVICE_DOCS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
   })
 
   const serviceDocs = useMemo(() => {

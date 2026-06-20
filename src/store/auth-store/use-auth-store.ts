@@ -1,5 +1,8 @@
+import { V2 } from '@/api'
 import { create } from 'zustand'
-import type { AuthenticatedUser, UserOrganization } from './actions'
+
+type AuthenticatedUser = V2.MeAndOrgQuery['me']
+type UserOrganization = V2.MeAndOrgQuery['myOrgs'][number]
 
 export const useAuthStore = create(() => ({
   status: 'loading' as 'authenticated' | 'loading' | 'unauthenticated',

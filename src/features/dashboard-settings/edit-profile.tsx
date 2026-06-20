@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import axios from 'axios'
 import { Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { UPDATE_USER_V2 } from './api/update-user-v2'
+import { UPDATE_USER } from './api/update-user'
 import { SettingsHeader } from './components/settings-header'
 
 interface EditProfileProps {
@@ -27,7 +27,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
   const user = useAuthenticatedUser()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [updateUser, { loading: isUpdating }] = useMutation(UPDATE_USER_V2, {
+  const [updateUser, { loading: isUpdating }] = useMutation(UPDATE_USER, {
     client: clientV2,
     onCompleted: async () => {
       await bootstrapSession()

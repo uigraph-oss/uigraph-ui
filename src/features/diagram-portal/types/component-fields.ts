@@ -1,15 +1,5 @@
-export type TComponentField = {
-  componentFieldId?: string | null
-  type?: string | null
+import { V2 } from '@/api'
 
-  label?: string | null
-  order?: number | null
-  options?: (string | null)[] | null
-
+export type TComponentField = V2.ComponentModalField & {
   hidden?: boolean | null
-  required?: boolean | null
-  isReadonly?: boolean | null
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any[] | null
 }

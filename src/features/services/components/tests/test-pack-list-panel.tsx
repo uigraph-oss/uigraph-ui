@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

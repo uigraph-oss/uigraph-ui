@@ -1,5 +1,5 @@
 import { BetterDialogProvider } from '@/components/better-dialog'
-import { readSpecFile } from '@/features/services/api/api-endpoints-v2'
+import { readSpecFile } from '@/features/services/api/api-endpoints'
 import { toast } from 'sonner'
 import { useServiceApiEndpointsContext } from '../../../contexts/service-api-endpoints'
 import { ConfigureApiGroupModal } from './configure-api-group-modal'

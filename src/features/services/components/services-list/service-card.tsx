@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import type { ServiceStatsRow } from '@/features/services/api/service-stats'
-import type { DashboardService } from '@/features/services/api/services-v2'
+import type { DashboardService } from '@/features/services/api/services'
 import { cn } from '@/lib/utils'
 import { objectOmitNull } from 'daily-code'
 import { format } from 'date-fns'

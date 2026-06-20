@@ -1,6 +1,6 @@
 'use client'
 
-import { privateClient, v1Graphql } from '@/api'
+import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,48 +8,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { Download, FileJson, FileText } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-const GET_FILE_BY_ID_DOWNLOAD = v1Graphql(`
-  query GetFileByID_SpecDownload($fileId: String!) {
-    GetFileByID(fileId: $fileId, download: true) {
-      fileId
-      fileName
-      fileDownloadURL
-    }
-  }
-`)
-
 type ApiSpecDownloadProps = {
-  specFileId: string
+  serviceId: string
+  apiGroupId: string
 }
 
-async function fetchSpecContent(specFileId: string): Promise<{
+async function fetchSpecContent(
+  orgId: string,
+  serviceId: string,
+  apiGroupId: string
+): Promise<{
   content: string
   fileName: string | null
 }> {
-  const { data } = await privateClient.query({
-    query: GET_FILE_BY_ID_DOWNLOAD,
-    variables: { fileId: specFileId },
+  const { data } = await clientV2.query({
+    query: API_GROUP_SPEC,
+    variables: { orgId, serviceId, apiGroupId },
     fetchPolicy: 'network-only',
   })
 
-  const downloadURL = data?.GetFileByID?.fileDownloadURL
-  if (!downloadURL) {
-    throw new Error('Could not get download URL')
+  const spec = data?.apiGroupSpec
+  if (!spec) {
+    throw new Error('Could not load spec content')
   }
 
-  const response = await fetch(downloadURL)
-  if (!response.ok) {
-    throw new Error(`Download failed: ${response.statusText}`)
-  }
-
-  const content = await response.text()
   return {
-    content,
-    fileName: data?.GetFileByID?.fileName ?? null,
+    content: spec.content,
+    fileName: spec.fileName ?? null,
   }
 }
 
@@ -75,13 +66,21 @@ function isYamlContent(content: string): boolean {
   )
 }
 
-export function ApiSpecDownload({ specFileId }: ApiSpecDownloadProps) {
+export function ApiSpecDownload({
+  serviceId,
+  apiGroupId,
+}: ApiSpecDownloadProps) {
+  const orgId = useCurrentOrganization()?.id
   const [isDownloading, setIsDownloading] = useState(false)
 
   async function handleDownload(format: 'original' | 'json' | 'yaml') {
     try {
       setIsDownloading(true)
-      const { content, fileName } = await fetchSpecContent(specFileId)
+      const { content, fileName } = await fetchSpecContent(
+        orgId!,
+        serviceId,
+        apiGroupId
+      )
 
       if (format === 'original') {
         const ext = isYamlContent(content) ? 'yaml' : 'json'

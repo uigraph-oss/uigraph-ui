@@ -1,19 +1,45 @@
-import { GT } from '@/api'
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
-import { FLOW_DIAGRAM_COMPONENTS_V2 } from '../api/flow-components-v2'
+import { FLOW_DIAGRAM_COMPONENTS } from '../api/flow-components'
+
+export type FlowDiagramComponentField = {
+  data?: (unknown | null)[] | null
+  flowDiagramComponentFieldId?: string | null
+  label?: string | null
+  options?: (string | null)[] | null
+  order?: number | null
+  readonly?: boolean | null
+  required?: boolean | null
+  type?: string | null
+}
+
+export type FlowDiagramComponent = {
+  category?: string | null
+  componentId?: string | null
+  createdAt?: string | null
+  description?: string | null
+  flowDiagramComponentFields?: (FlowDiagramComponentField | null)[] | null
+  isActive?: boolean | null
+  name?: string | null
+  order?: number | null
+  previewImageJpg?: string | null
+  slug?: string | null
+  tags?: (string | null)[] | null
+  type?: string | null
+  updatedAt?: string | null
+}
 
 export type FlowDiagramComponentsGroup = {
   name: string
-  components: GT.FlowDiagramComponent[]
+  components: FlowDiagramComponent[]
 }
 
 export function useFlowDiagramComponents() {
   const organizationId = useCurrentOrganization()?.id
-  const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS_V2, {
+  const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS, {
     client: clientV2,
     variables: { orgId: organizationId! },
     skip: !organizationId,
@@ -52,8 +78,8 @@ export function useFlowDiagramComponents() {
 }
 
 function transformFlowDiagramComponentToSectionItem(
-  input: GT.FlowDiagramComponent
-): GT.FlowDiagramComponent {
+  input: FlowDiagramComponent
+): FlowDiagramComponent {
   return {
     ...input,
     flowDiagramComponentFields: arrayNonNullable(

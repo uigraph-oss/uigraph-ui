@@ -1,4 +1,4 @@
-export * from './apollo-client'
+export * from './client'
 
-export { graphql as v1Graphql } from './.gql'
-export type * as GT from './.gql/graphql'
+export { graphql } from './.gql'
+export type * as V2 from './.gql/graphql'

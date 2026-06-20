@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -16,14 +16,14 @@ import { createContext } from 'daily-code/react'
 import { ArrowLeft } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { SERVICE_DB_V2, serviceDBToLegacy } from '../api/service-db-v2'
+import { SERVICE_DB, serviceDBToLegacy } from '../api/service-db'
 import {
-  CREATE_SERVICE_DB_VERSION_V2,
-  RESTORE_SERVICE_DB_VERSION_V2,
-  SERVICE_DB_VERSIONS_V2,
+  CREATE_SERVICE_DB_VERSION,
+  RESTORE_SERVICE_DB_VERSION,
+  SERVICE_DB_VERSIONS,
   serviceDBVersionToLegacyWithDb,
   toCreateServiceDBVersionInput,
-} from '../api/service-db-version-v2'
+} from '../api/service-db-version'
 import { useServiceContext } from './service-context'
 
 type CreateServiceDbVersionInput = Parameters<
@@ -50,7 +50,7 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
       serviceDbId: dbId,
     }
 
-    const { data, loading } = useQuery(SERVICE_DB_V2, {
+    const { data, loading } = useQuery(SERVICE_DB, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: dbVars,
@@ -58,7 +58,7 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     })
 
     const { data: versionsData, loading: versionsLoading } = useQuery(
-      SERVICE_DB_VERSIONS_V2,
+      SERVICE_DB_VERSIONS,
       {
         client: clientV2,
         fetchPolicy: 'cache-first',
@@ -86,12 +86,12 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     }, [liveServiceDb, serviceId, versionsData?.serviceDBVersions])
 
     const refetchQueries = [
-      { query: SERVICE_DB_V2, variables: dbVars },
-      { query: SERVICE_DB_VERSIONS_V2, variables: versionVars },
+      { query: SERVICE_DB, variables: dbVars },
+      { query: SERVICE_DB_VERSIONS, variables: versionVars },
     ]
 
     const [restoreServiceDbVersionMutation] = useMutation(
-      RESTORE_SERVICE_DB_VERSION_V2,
+      RESTORE_SERVICE_DB_VERSION,
       {
         client: clientV2,
         awaitRefetchQueries: true,
@@ -100,7 +100,7 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     )
 
     const [createServiceDbVersionMutation] = useMutation(
-      CREATE_SERVICE_DB_VERSION_V2,
+      CREATE_SERVICE_DB_VERSION,
       {
         client: clientV2,
         awaitRefetchQueries: true,

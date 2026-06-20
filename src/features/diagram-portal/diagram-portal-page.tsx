@@ -2,14 +2,14 @@
 
 import './global.scss'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { GlobalLoader } from '@/components/loader/global-loader'
 import { useCurrentOrganization } from '@/store/auth-store/use-auth-store'
 import { useQuery } from '@apollo/client'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { DIAGRAM_CONTENT_V2, DIAGRAM_V2 } from './api/diagram-v2'
+import { DIAGRAM, DIAGRAM_CONTENT } from './api/diagram'
 import { DataSourcesProvider } from './context/data-sources-context'
 import { FlowDiagramProvider } from './context/flow-diagram-context'
 import { FlowDiagramLayout } from './flow-diagram-layout'
@@ -22,7 +22,7 @@ export function DiagramPortalPage() {
 
   const { diagramId } = useParams() as { diagramId: string }
 
-  const { data, loading } = useQuery(DIAGRAM_V2, {
+  const { data, loading } = useQuery(DIAGRAM, {
     client: clientV2,
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
@@ -31,7 +31,7 @@ export function DiagramPortalPage() {
   })
 
   const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT_V2,
+    DIAGRAM_CONTENT,
     {
       client: clientV2,
       errorPolicy: 'ignore',

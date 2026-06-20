@@ -18,9 +18,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { trackGTag } from '@/helpers/track'
-import { signOut, useAuthStore } from '@/store/auth-store'
+import { cn } from '@/lib/utils'
+import {
+  changeOrganization,
+  signOut,
+  useAuthStore,
+  useCurrentOrganization,
+} from '@/store/auth-store'
+import { Check, Shield } from 'lucide-react'
 import { Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { LogoutIcon } from './assets/icons'
 
 export type DashboardHeaderProps = {
@@ -86,7 +93,10 @@ export function DashboardHeader({ crumbs, enableLogo }: DashboardHeaderProps) {
 }
 
 export function UserDropdownMenu() {
+  const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
+  const organizations = useAuthStore((state) => state.organizations)
+  const currentOrganization = useCurrentOrganization()
 
   const initials = (user?.name || '')
     .split(' ')
@@ -113,60 +123,116 @@ export function UserDropdownMenu() {
 
       <DropdownMenuContent
         align="end"
-        className="border-stock bg-shading min-w-[14.375rem] p-0"
+        className="border-stock bg-shading min-w-[16rem] overflow-hidden p-0"
       >
-        <div className="border-stock border-b px-4">
-          <DropdownMenuLabel className="flex flex-col justify-center gap-2 px-0 py-3 leading-[1.33]">
-            <h4 className={'font-semibold'}>{user?.name}</h4>
-            <p className={'text-sm'}>{user?.email}</p>
-          </DropdownMenuLabel>
+        <div className="flex items-center gap-3 px-4 py-3.5">
+          <Avatar className="size-9 shrink-0">
+            <AvatarImage
+              src={user?.avatarUrl || ''}
+              alt="Profile"
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-paragraph/20 text-foreground/70 text-xs font-bold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate font-semibold">{user?.name}</span>
+            <span className="text-paragraph truncate text-sm">
+              {user?.email}
+            </span>
+          </div>
         </div>
 
-        {/* <div className="border-stock space-y-2 border-b px-4 py-2">
-          <DropdownMenuItem
-            asChild
-            className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
-            onClick={() => console.log('Profile')}
-          >
-            <Link href="/settings/profile">
-              <UserIcon className="text-base" />
-              Profile
-            </Link>
-          </DropdownMenuItem>
+        {organizations.length > 0 && (
+          <div className="border-stock border-t px-2 py-2">
+            <DropdownMenuLabel className="text-paragraph px-2 pt-1 pb-1.5 text-[0.6875rem] font-semibold tracking-wider uppercase">
+              Organizations
+            </DropdownMenuLabel>
 
-          <DropdownMenuItem
-            asChild
-            className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
-            onClick={() => console.log('Profile')}
-          >
-            <Link href="/settings/team">
-              <UsersIcon className="text-base" />
-              Team management
-            </Link>
-          </DropdownMenuItem>
+            <div className="max-h-[15rem] space-y-0.5 overflow-y-auto">
+              {organizations.map((organization) => {
+                const isActive = organization.id === currentOrganization?.id
 
-          <DropdownMenuItem
-            asChild
-            className="h-[2.4375rem] cursor-pointer transition-all hover:bg-[#f5f5f5]"
-            onClick={() => console.log('Profile')}
-          >
-            <Link href="/settings/account">
-              <SettingsIcon className="text-base" />
-              Settings
-            </Link>
-          </DropdownMenuItem>
-        </div> */}
+                const orgInitials = organization.name
+                  .split(' ')
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join('')
+                  .toUpperCase()
 
-        <div className="px-2.5 py-2">
+                return (
+                  <DropdownMenuItem
+                    key={organization.id}
+                    className={cn(
+                      'h-[2.75rem] cursor-pointer gap-3 rounded-lg px-2 transition-colors hover:bg-black/[0.04]',
+                      isActive && 'bg-black/[0.04]'
+                    )}
+                    onClick={() => {
+                      if (!isActive) {
+                        changeOrganization(organization.id)
+                        void navigate('/dashboard')
+                      }
+                    }}
+                  >
+                    <Avatar
+                      className={cn(
+                        'size-8 shrink-0 rounded-md',
+                        isActive && 'ring-primary/40 ring-2 ring-offset-1'
+                      )}
+                    >
+                      <AvatarImage
+                        src={organization.logoUrl || ''}
+                        alt={organization.name}
+                        className="rounded-md object-cover"
+                      />
+                      <AvatarFallback className="bg-paragraph/15 text-foreground/70 rounded-md text-xs font-bold">
+                        {orgInitials}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate font-medium">
+                        {organization.name}
+                      </span>
+                      <span className="text-paragraph truncate text-xs capitalize">
+                        {organization.role.toLowerCase()}
+                      </span>
+                    </span>
+
+                    {isActive && (
+                      <Check className="text-primary ml-auto size-4 shrink-0" />
+                    )}
+                  </DropdownMenuItem>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        <div className="border-stock space-y-0.5 border-t px-2 py-2">
+          {user?.isServerAdmin && (
+            <DropdownMenuItem
+              asChild
+              className="h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-black/[0.04]"
+            >
+              <Link to="/server">
+                <Shield className="size-4" />
+                Manage Server
+              </Link>
+            </DropdownMenuItem>
+          )}
+
           <DropdownMenuItem
             onClick={async () => {
               trackGTag('logout')
               await signOut()
               window.location.href = '/sign-in'
             }}
-            className="hover:text-destructive! h-[2.4375rem] cursor-pointer transition-all hover:bg-red-100!"
+            className="text-destructive focus:text-destructive hover:text-destructive h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-red-50 focus:bg-red-50"
           >
-            <LogoutIcon className="text-base" />
+            <LogoutIcon className="size-4" />
             Logout
           </DropdownMenuItem>
         </div>

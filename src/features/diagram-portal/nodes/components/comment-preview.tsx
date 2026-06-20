@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import type { UIComment } from '@/features/comments/api/comments-v2'
+import type { UIComment } from '@/features/comments/api/comments'
 import { InputRenderer } from '@/features/comments/components/input-editor'
 import { motion } from 'framer-motion'
 import { formatTimeAgo } from '../helpers/comment-helpers'

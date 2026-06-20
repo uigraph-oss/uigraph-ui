@@ -1,6 +1,6 @@
-import { V2 } from '@/api-v2'
-import { clientV2 } from '@/api-v2/client'
-import { GET_COMPONENTS_V2 } from '@/features/components/api/components-v2'
+import { V2 } from '@/api'
+import { clientV2 } from '@/api/client'
+import { GET_COMPONENTS } from '@/features/components/api/components'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -9,7 +9,7 @@ import { ComponentsGroup } from '../types'
 
 export function useComponents() {
   const organizationId = useCurrentOrganization()?.id
-  const { data, loading } = useQuery(GET_COMPONENTS_V2, {
+  const { data, loading } = useQuery(GET_COMPONENTS, {
     client: clientV2,
     variables: { orgId: organizationId! },
     skip: !organizationId,

@@ -1,6 +1,5 @@
 'use client'
 
-import googleIcon from '@/assets/icons/google-icon.svg'
 import lockIcon from '@/assets/icons/lock.svg'
 import backgroundImg from '@/assets/images/auth/background.png'
 import signinImg from '@/assets/images/auth/signup.png'
@@ -11,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Paths } from '@/constants'
 import { trackGTag } from '@/helpers/track'
+import { useOAuthProviders } from '@/hooks/use-oauth-providers'
 import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeIcon, EyeOff, Mail } from 'lucide-react'
@@ -35,6 +35,7 @@ export function SignInForm() {
 
   const status = useAuthStore((state) => state.status)
   const user = useAuthStore((state) => state.user)
+  const { oAuthProviders } = useOAuthProviders()
 
   const methods = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -75,19 +76,6 @@ export function SignInForm() {
         email_domain: values.email.split('@')[1],
       })
 
-      void navigate(Paths.dashboard.root)
-    } catch (e) {
-      setError((e as Error).message || 'An error occurred. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function continueWithFakeGoogle() {
-    try {
-      setLoading(true)
-      setError('')
-      await signIn('google@mock.dev', 'mock')
       void navigate(Paths.dashboard.root)
     } catch (e) {
       setError((e as Error).message || 'An error occurred. Please try again.')
@@ -265,34 +253,38 @@ export function SignInForm() {
             </Button>
           </form>
 
-          <div className="pt-4 md:pt-[3.84375rem]">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full bg-[#E5E7E9]" />
+          {oAuthProviders.length > 0 && (
+            <div className="pt-4 md:pt-[3.84375rem]">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full bg-[#E5E7E9]" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="text-project-gray1 bg-gray-50 px-2 text-lg font-medium">
+                    OR
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="text-project-gray1 bg-gray-50 px-2 text-lg font-medium">
-                  OR
-                </span>
-              </div>
-            </div>
 
-            <div className="pt-4 md:pt-[2.34375rem]">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  trackGTag('login', {
-                    method: 'google',
-                  })
-                  void continueWithFakeGoogle()
-                }}
-                className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
-              >
-                <img src={googleIcon.src} alt="google-icon" />
-                Continue with Google
-              </Button>
+              <div className="space-y-3 pt-4 md:pt-[2.34375rem]">
+                {oAuthProviders.map((provider) => (
+                  <Button
+                    key={provider.name}
+                    variant="outline"
+                    onClick={() => {
+                      trackGTag('login', {
+                        method: provider.name,
+                      })
+                      window.location.href = provider.loginUrl
+                    }}
+                    className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
+                  >
+                    Continue with {provider.displayName}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

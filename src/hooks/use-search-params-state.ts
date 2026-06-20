@@ -32,9 +32,9 @@ export function useSearchParamsState<TKeys extends string[]>(...keys: TKeys) {
       }
 
       if (replace) {
-        navigate(`?${params.toString()}`, { replace: true })
+        void navigate(`?${params.toString()}`, { replace: true })
       } else {
-        navigate(`?${params.toString()}`)
+        void navigate(`?${params.toString()}`)
       }
     },
     [navigate, searchParams]

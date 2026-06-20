@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
@@ -11,14 +11,14 @@ import {
   DashboardSectionHeader,
 } from '@/features/dashboard'
 import {
-  API_GROUPS_V2,
-  CREATE_API_GROUP_V2,
-  DELETE_API_GROUP_V2,
-  SYNC_API_GROUP_V2,
-  UPDATE_API_GROUP_V2,
+  API_GROUPS,
+  CREATE_API_GROUP,
+  DELETE_API_GROUP,
+  SYNC_API_GROUP,
+  UPDATE_API_GROUP,
   protocolToV2,
   readSpecFile,
-} from '@/features/services/api/api-endpoints-v2'
+} from '@/features/services/api/api-endpoints'
 import { apiGroupToLegacy } from '@/features/services/api/api-v2-adapters'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -40,35 +40,35 @@ export function DashboardServiceApis() {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const { data, loading } = useQuery(API_GROUPS_V2, {
+  const { data, loading } = useQuery(API_GROUPS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     skip: !orgId,
     variables: listVars,
   })
 
-  const [createServiceApiGroup] = useMutation(CREATE_API_GROUP_V2, {
+  const [createServiceApiGroup] = useMutation(CREATE_API_GROUP, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+    refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
-  const [updateServiceApiGroup] = useMutation(UPDATE_API_GROUP_V2, {
+  const [updateServiceApiGroup] = useMutation(UPDATE_API_GROUP, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+    refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
-  const [syncAPIGroup] = useMutation(SYNC_API_GROUP_V2, {
+  const [syncAPIGroup] = useMutation(SYNC_API_GROUP, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+    refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
-  const [deleteServiceApiGroup] = useMutation(DELETE_API_GROUP_V2, {
+  const [deleteServiceApiGroup] = useMutation(DELETE_API_GROUP, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: API_GROUPS_V2, variables: listVars }],
+    refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
   const isServiceApiGroupsLoading = loading && !data?.apiGroups

@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -8,7 +8,7 @@ import { useState, type FormEvent } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { BsStars } from 'react-icons/bs'
 import { toast } from 'sonner'
-import { CREATE_DIAGRAM_VERSION_V2 } from '../api/versions-v2'
+import { CREATE_DIAGRAM_VERSION } from '../api/versions'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { SidebarLayout } from './sidebar-layout'
 
@@ -26,7 +26,7 @@ export function SidebarGenerateWithAI() {
   const orgId = useCurrentOrganization()?.id
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION_V2, {
+  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION, {
     client: clientV2,
   })
 

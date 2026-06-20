@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
@@ -17,10 +17,10 @@ import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  CREATE_SERVICE_DIAGRAM_V2,
-  SERVICE_DIAGRAMS_V2,
+  CREATE_SERVICE_DIAGRAM,
+  SERVICE_DIAGRAMS,
   serviceDiagramToLegacyWithMeta,
-} from '../../api/service-diagram-v2'
+} from '../../api/service-diagram'
 import { useServiceContext } from '../../contexts/service-context'
 import { FlowDiagramCard } from './flow-diagram-card'
 
@@ -51,7 +51,7 @@ export function DashboardServiceDiagrams() {
   const listVars = { orgId: orgId!, serviceId }
 
   const { data, loading: isLoadingServiceDiagrams } = useQuery(
-    SERVICE_DIAGRAMS_V2,
+    SERVICE_DIAGRAMS,
     {
       client: clientV2,
       errorPolicy: 'ignore',
@@ -62,10 +62,10 @@ export function DashboardServiceDiagrams() {
   )
 
   const [createServiceDiagram, { loading: isCreatingServiceDiagram }] =
-    useMutation(CREATE_SERVICE_DIAGRAM_V2, {
+    useMutation(CREATE_SERVICE_DIAGRAM, {
       client: clientV2,
       awaitRefetchQueries: true,
-      refetchQueries: [{ query: SERVICE_DIAGRAMS_V2, variables: listVars }],
+      refetchQueries: [{ query: SERVICE_DIAGRAMS, variables: listVars }],
     })
 
   const serviceDiagramsWithMeta = useMemo(() => {

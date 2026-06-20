@@ -8,7 +8,7 @@ import {
 import { ConfigureComponentModal } from '@/features/components/components/configure-component'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
-import { BsDatabase, BsStars } from 'react-icons/bs'
+import { BsDatabase } from 'react-icons/bs'
 import { CgMoreO } from 'react-icons/cg'
 import { GoComment } from 'react-icons/go'
 import {
@@ -137,17 +137,6 @@ export function FloatingLeftSidebar() {
             onClick={() => {
               setSidebarActiveTool((prev) =>
                 prev === 'custom-components' ? null : 'custom-components'
-              )
-            }}
-          />
-
-          <SidebarButton
-            name="Generate with AI"
-            icon={<BsStars />}
-            isActive={sidebarActiveTool === 'generate-ai'}
-            onClick={() => {
-              setSidebarActiveTool((prev) =>
-                prev === 'generate-ai' ? null : 'generate-ai'
               )
             }}
           />

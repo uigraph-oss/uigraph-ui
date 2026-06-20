@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { Button } from '@/components/ui/button'
 import {
   DialogDescription,
@@ -7,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import {
+  ComponentField,
   ComponentFieldAdd,
   ComponentFieldList,
 } from '@/features/components/components/configure-component/component-field-list'
@@ -17,8 +17,8 @@ import { GoCheck } from 'react-icons/go'
 type Props = {
   title: ReactNode
 
-  fields: GT.ComponentField[]
-  setFields: Dispatch<SetStateAction<GT.ComponentField[]>>
+  fields: ComponentField[]
+  setFields: Dispatch<SetStateAction<ComponentField[]>>
 
   doneEditing: () => void
 }

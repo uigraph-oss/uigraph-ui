@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
@@ -10,6 +9,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
@@ -23,8 +26,8 @@ export function ApiEndPointRow({
   componentMeta,
   readonly = false,
 }: {
-  endpoint: GT.ApiEndpoint
-  componentMeta: GT.ComponentMeta
+  endpoint: LegacyApiEndpoint
+  componentMeta: LegacyComponentMeta
   readonly?: boolean
 }) {
   const organizationId = useCurrentOrganization()?.id
@@ -109,9 +112,9 @@ export function ApiEndPointRowReadonly({
   componentMeta,
   onSelect,
 }: {
-  endpoint: GT.ApiEndpoint
-  componentMeta: GT.ComponentMeta
-  onSelect: (endpoint: GT.ApiEndpoint) => void
+  endpoint: LegacyApiEndpoint
+  componentMeta: LegacyComponentMeta
+  onSelect: (endpoint: LegacyApiEndpoint) => void
 }) {
   return (
     <ApiEndPointRowCore

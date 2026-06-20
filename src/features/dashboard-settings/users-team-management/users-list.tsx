@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Input } from '@/components/ui/input'
@@ -17,13 +17,21 @@ import { arrayNonNullable } from 'daily-code'
 import Fuse from 'fuse.js'
 import { Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { MEMBERS_V2, type OrgMemberRow } from '../api/members-v2'
+import { MEMBERS, type OrgMemberRow } from '../api/members'
+import { SETTINGS_TEAMS } from '../api/teams'
 import { UserTable } from './user-table'
 
 export function UsersList({ teamId }: { teamId?: string }) {
   const organizationId = useCurrentOrganization()?.id
 
-  const membersQuery = useQuery(MEMBERS_V2, {
+  const membersQuery = useQuery(MEMBERS, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: { orgId: organizationId! },
+    skip: !organizationId,
+  })
+
+  const teamsQuery = useQuery(SETTINGS_TEAMS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
@@ -36,6 +44,14 @@ export function UsersList({ teamId }: { teamId?: string }) {
 
   const isTeamMembersLoading = membersQuery.loading && !membersQuery.data
 
+  const teamNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    arrayNonNullable(teamsQuery.data?.teams).forEach((t) =>
+      map.set(t.id, t.name)
+    )
+    return map
+  }, [teamsQuery.data?.teams])
+
   const allMembers = useMemo<OrgMemberRow[]>(() => {
     return arrayNonNullable(membersQuery.data?.members).map((m) => ({
       userId: m.userId,
@@ -44,9 +60,9 @@ export function UsersList({ teamId }: { teamId?: string }) {
       role: m.role,
       status: 'Active',
       teamId: m.teamId,
-      teamName: m.teamName,
+      teamName: m.teamId ? (teamNameById.get(m.teamId) ?? null) : null,
     }))
-  }, [membersQuery.data?.members])
+  }, [membersQuery.data?.members, teamNameById])
 
   const usersFuse = useMemo(() => {
     const users = teamId

@@ -5,6 +5,8 @@ import { AiChatIndexPage } from '@/features/ai-chat/ai-chat-index-page'
 import { AiChatLayout } from '@/features/ai-chat/ai-chat-layout'
 import {
   AuthenticatedGuard,
+  ProtectedDashboardLayout,
+  ProtectedServerAdminLayout,
   UnauthenticatedGuard,
 } from '@/features/auth/auth-guards'
 import { SignInForm } from '@/features/auth/sign-in-form'
@@ -22,9 +24,12 @@ import {
   SecuritySettings,
 } from '@/features/dashboard-settings'
 import { ServiceAccountsPage } from '@/features/dashboard-settings/service-accounts/service-accounts-page'
-import { SSOSettingsPage } from '@/features/dashboard-settings/sso-settings/sso-settings-page'
 import { TeamManagementPage } from '@/features/dashboard-settings/users-team-management/team-management-page'
 import { UsersManagementPage } from '@/features/dashboard-settings/users-team-management/users-management-page'
+import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
+import { ServerOverviewPage } from '@/features/server-dashboard/server-overview-page'
+import { ServerSSOPage } from '@/features/server-sso/server-sso-page'
+import { ServerUsersPage } from '@/features/server-users/server-users-page'
 import { DashboardServiceApis } from '@/features/services/components/apis/dashboard-service-apis'
 import { ServiceDatabaseListPage } from '@/features/services/components/databases/service-database-list-page'
 import { ServiceDatabasePage } from '@/features/services/components/databases/service-database-page'
@@ -32,7 +37,6 @@ import { DashboardServiceDiagrams } from '@/features/services/components/diagram
 import { DashboardServices } from '@/features/services/components/services-list/dashboard-services'
 import { ServiceTestsPage } from '@/features/services/components/tests/service-tests-page'
 import { DashboardServiceDocs } from '@/features/services/dashboard-service-docs'
-import { UserInvitePage } from '@/features/user-invite/user-invite-page'
 import { DiagramPreviewPage } from '@/routes/diagram-preview-page'
 import {
   ApiGroupEndpointsPage,
@@ -42,7 +46,6 @@ import {
 } from '@/routes/lazy-pages'
 import { NotFoundPage } from '@/routes/not-found-page'
 import { OnboardingPage } from '@/routes/onboarding-page'
-import { ProtectedLayout } from '@/routes/protected-layout'
 import { ServiceLayout } from '@/routes/service-layout'
 import {
   ServiceOperationsRoute,
@@ -69,6 +72,7 @@ const AiChatLayoutRoute = withOutlet(
   AiChatLayout as ComponentType<PropsWithChildren>
 )
 const SettingsLayoutRoute = withOutlet(DashboardSettingsLayout)
+const ServerAdminLayoutRoute = withOutlet(ServerAdminLayout)
 
 export function AppRoutes() {
   return (
@@ -100,13 +104,21 @@ export function AppRoutes() {
           </AuthenticatedGuard>
         }
       />
-      <Route path="/invitation/:orgId" element={<UserInvitePage />} />
       <Route
         path="/diagram-preview/:diagramId"
         element={<DiagramPreviewPage />}
       />
 
-      <Route element={<ProtectedLayout />}>
+      <Route element={<ProtectedServerAdminLayout />}>
+        <Route path="/server" element={<ServerAdminLayoutRoute />}>
+          <Route index element={<Navigate to="/server/overview" replace />} />
+          <Route path="overview" element={<ServerOverviewPage />} />
+          <Route path="users" element={<ServerUsersPage />} />
+          <Route path="sso" element={<ServerSSOPage />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedDashboardLayout />}>
         <Route path="/diagram/:diagramId" element={<DiagramPortalPage />} />
 
         <Route element={<DashboardLayoutRoute />}>
@@ -174,7 +186,6 @@ export function AppRoutes() {
             <Route path="users" element={<UsersManagementPage />} />
             <Route path="service-accounts" element={<ServiceAccountsPage />} />
             <Route path="security" element={<SecuritySettings />} />
-            <Route path="sso" element={<SSOSettingsPage />} />
           </Route>
         </Route>
       </Route>

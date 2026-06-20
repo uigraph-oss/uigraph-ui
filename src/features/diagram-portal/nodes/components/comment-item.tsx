@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import type { UIComment } from '@/features/comments/api/comments-v2'
+import type { UIComment } from '@/features/comments/api/comments'
 import {
   InputEditor,
   InputRenderer,

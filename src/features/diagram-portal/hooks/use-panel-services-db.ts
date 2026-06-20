@@ -1,9 +1,9 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import {
-  SERVICE_DBS_V2,
+  SERVICE_DBS,
   serviceDBToLegacy,
-} from '@/features/services/api/service-db-v2'
-import { SERVICES_V2 } from '@/features/services/api/services-v2'
+} from '@/features/services/api/service-db'
+import { SERVICES } from '@/features/services/api/services'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -15,7 +15,7 @@ export function usePanelServicesDb() {
     null
   )
 
-  const servicesResult = useQuery(SERVICES_V2, {
+  const servicesResult = useQuery(SERVICES, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: {
@@ -24,7 +24,7 @@ export function usePanelServicesDb() {
     skip: !orgId,
   })
 
-  const servicesDbResult = useQuery(SERVICE_DBS_V2, {
+  const servicesDbResult = useQuery(SERVICE_DBS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     skip: !orgId || !selectedServiceId,

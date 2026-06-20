@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api-v2'
+import { V2 } from '@/api'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'

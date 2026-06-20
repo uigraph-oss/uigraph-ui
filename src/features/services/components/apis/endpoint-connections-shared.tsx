@@ -104,7 +104,7 @@ export function ConnectionSection({
     if (onGoToSystemMaps) {
       onGoToSystemMaps()
     } else {
-      navigate('/dashboard/maps')
+      void navigate('/dashboard/maps')
     }
   }
 

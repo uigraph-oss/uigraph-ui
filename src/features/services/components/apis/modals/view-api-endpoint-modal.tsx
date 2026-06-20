@@ -1,6 +1,9 @@
-import { GT } from '@/api'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { useComponentField } from '@/features/diagram-portal/hooks/use-component-field'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -17,8 +20,8 @@ export function ViewApiEndpointModal({
   componentMeta,
   readonly = false,
 }: {
-  endpoint: GT.ApiEndpoint
-  componentMeta: GT.ComponentMeta
+  endpoint: LegacyApiEndpoint
+  componentMeta: LegacyComponentMeta
   readonly?: boolean
 }) {
   const fields = componentMeta.componentModalFields

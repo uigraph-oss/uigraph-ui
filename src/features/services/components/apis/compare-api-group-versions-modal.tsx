@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import {
   BetterDialogContent,
   BetterDialogProvider,
@@ -8,6 +7,10 @@ import {
 import { SuperCircleLoader } from '@/components/loader'
 import { Table, TableBody } from '@/components/ui/table'
 import { VersionLayout } from '@/components/version-layout'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
@@ -219,8 +222,8 @@ export function CompareApiGroupVersionsModal() {
 // Build a stable comparison key for an endpoint using URL + method from component meta.
 // This stays the same across versions even though apiEndpointId changes.
 function getEndpointCompareKey(item: {
-  apiEndpoint?: GT.ApiEndpoint | null
-  componentMeta?: GT.ComponentMeta | null
+  apiEndpoint?: LegacyApiEndpoint | null
+  componentMeta?: LegacyComponentMeta | null
 }): string {
   const apiEndpointId = item.apiEndpoint?.apiEndpointId ?? ''
   const fields = arrayNonNullable(item.componentMeta?.componentModalFields)
@@ -252,14 +255,14 @@ function ApiEndpointsList({
   onSelect,
 }: {
   allEndpoints: Array<{
-    apiEndpoint?: GT.ApiEndpoint | null
-    componentMeta?: GT.ComponentMeta | null
+    apiEndpoint?: LegacyApiEndpoint | null
+    componentMeta?: LegacyComponentMeta | null
   }>
   protocol: string
   loading: boolean
   onSelect: (item: {
-    apiEndpoint?: GT.ApiEndpoint | null
-    componentMeta?: GT.ComponentMeta | null
+    apiEndpoint?: LegacyApiEndpoint | null
+    componentMeta?: LegacyComponentMeta | null
   }) => void
 }) {
   const isGraphQL = protocol === 'graphql'

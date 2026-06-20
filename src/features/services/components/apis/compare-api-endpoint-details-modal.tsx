@@ -1,8 +1,11 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
@@ -15,12 +18,12 @@ import { ConfigureApiEndpointSamples } from './configure-api-endpoint-samples'
 type CompareApiEndpointDetailsModalProps = {
   protocol: string
   endpointA: {
-    apiEndpoint?: GT.ApiEndpoint | null
-    componentMeta?: GT.ComponentMeta | null
+    apiEndpoint?: LegacyApiEndpoint | null
+    componentMeta?: LegacyComponentMeta | null
   } | null
   endpointB: {
-    apiEndpoint?: GT.ApiEndpoint | null
-    componentMeta?: GT.ComponentMeta | null
+    apiEndpoint?: LegacyApiEndpoint | null
+    componentMeta?: LegacyComponentMeta | null
   } | null
 }
 

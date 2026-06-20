@@ -1,71 +1,69 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import {
-  CREATE_INVITATION_V2,
-  MEMBERS_V2,
-  REMOVE_MEMBER_V2,
-  UPDATE_MEMBER_ROLE_V2,
-} from '../api/members-v2'
+  ADD_MEMBER,
+  MEMBERS,
+  REMOVE_MEMBER,
+  UPDATE_MEMBER,
+} from '../api/members'
 import {
-  CREATE_TEAM_V2,
-  DELETE_TEAM_V2,
-  SETTINGS_TEAMS_V2,
-  UPDATE_TEAM_V2,
+  CREATE_TEAM,
+  DELETE_TEAM,
+  SETTINGS_TEAMS,
+  UPDATE_TEAM,
   type SettingsTeam,
-} from '../api/teams-v2'
+} from '../api/teams'
 
 export const [TeamContextProvider, useTeamContext] = createContext(() => {
   const orgId = useCurrentOrganization()?.id
 
-  const teamsData = useQuery(SETTINGS_TEAMS_V2, {
+  const teamsData = useQuery(SETTINGS_TEAMS, {
     client: clientV2,
     variables: { orgId: orgId! },
     skip: !orgId,
     fetchPolicy: 'cache-first',
   })
 
-  const teamRefetch = [
-    { query: SETTINGS_TEAMS_V2, variables: { orgId: orgId! } },
-  ]
-  const memberRefetch = [MEMBERS_V2]
+  const teamRefetch = [{ query: SETTINGS_TEAMS, variables: { orgId: orgId! } }]
+  const memberRefetch = [MEMBERS]
 
-  const [createTeam] = useMutation(CREATE_TEAM_V2, {
+  const [createTeam] = useMutation(CREATE_TEAM, {
     client: clientV2,
     refetchQueries: teamRefetch,
     awaitRefetchQueries: true,
   })
 
-  const [updateTeam] = useMutation(UPDATE_TEAM_V2, {
+  const [updateTeam] = useMutation(UPDATE_TEAM, {
     client: clientV2,
     refetchQueries: teamRefetch,
     awaitRefetchQueries: true,
   })
 
-  const [deleteTeam] = useMutation(DELETE_TEAM_V2, {
+  const [deleteTeam] = useMutation(DELETE_TEAM, {
     client: clientV2,
     refetchQueries: teamRefetch,
     awaitRefetchQueries: true,
   })
 
-  const [createInvitation] = useMutation(CREATE_INVITATION_V2, {
+  const [addMember] = useMutation(ADD_MEMBER, {
     client: clientV2,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
   })
 
-  const [updateMemberRole] = useMutation(UPDATE_MEMBER_ROLE_V2, {
+  const [updateMember] = useMutation(UPDATE_MEMBER, {
     client: clientV2,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
   })
 
-  const [removeMember] = useMutation(REMOVE_MEMBER_V2, {
+  const [removeMember] = useMutation(REMOVE_MEMBER, {
     client: clientV2,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
@@ -107,18 +105,45 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
       return deleteTeam({ variables: { orgId: orgId!, teamId } })
     },
 
-    createTeamMember(userInput: { email: string; role: string }) {
-      return createInvitation({
+    createTeamMember(userInput: {
+      name: string
+      email: string
+      password: string
+      role: string
+    }) {
+      return addMember({
         variables: {
           orgId: orgId!,
-          input: { email: userInput.email, role: userInput.role },
+          input: {
+            name: userInput.name,
+            email: userInput.email,
+            password: userInput.password,
+            role: userInput.role,
+          },
         },
       })
     },
 
-    updateTeamMember(userId: string, userInput: { role?: string }) {
-      return updateMemberRole({
-        variables: { orgId: orgId!, userId, role: userInput.role ?? '' },
+    updateTeamMember(
+      userId: string,
+      userInput: {
+        name: string
+        email: string
+        role: string
+        teamId?: string | null
+      }
+    ) {
+      return updateMember({
+        variables: {
+          orgId: orgId!,
+          userId,
+          input: {
+            name: userInput.name,
+            email: userInput.email,
+            role: userInput.role,
+            teamId: userInput.teamId || null,
+          },
+        },
       })
     },
 

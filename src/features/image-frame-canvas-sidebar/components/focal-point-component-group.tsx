@@ -1,6 +1,6 @@
 'use client'
 
-import { GT } from '@/api'
+import { V2 } from '@/api'
 import { SuperLogoLoader } from '@/components/loader'
 import {
   Accordion,
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/accordion'
 import { useComponents } from '@/features/dashboard-pages/hooks/use-components'
 import { useMemo } from 'react'
-import { PointMeta } from '../api/focal-point-meta-v2'
+import { PointMeta } from '../api/focal-point-meta'
 import {
   FocalPointMetaSection,
   FocalPointMetaSectionProps,
@@ -30,7 +30,7 @@ type FocalPointComponentGroupProps = CommonMetaOptions & {
 }
 
 type FocalPointComponentSectionProps = CommonMetaOptions & {
-  component: GT.Component
+  component: V2.Component
   pointMetaList: PointMeta[]
 }
 

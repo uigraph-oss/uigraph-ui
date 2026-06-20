@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -30,7 +30,7 @@ import { Filter, X } from 'lucide-react'
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TEST_RUNS_SUMMARY_V2 } from '../../api/tests-v2'
+import { TEST_RUNS_SUMMARY } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 
 type TestRunSummary = {
@@ -69,19 +69,16 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  const { data: runsData, loading: runsLoading } = useQuery(
-    TEST_RUNS_SUMMARY_V2,
-    {
-      client: clientV2,
-      fetchPolicy: 'cache-first',
-      variables: {
-        orgId: orgId!,
-        serviceId,
-        testPackId: testPackId!,
-      },
-      skip: !orgId || !serviceId || !testPackId,
-    }
-  )
+  const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS_SUMMARY, {
+    client: clientV2,
+    fetchPolicy: 'cache-first',
+    variables: {
+      orgId: orgId!,
+      serviceId,
+      testPackId: testPackId!,
+    },
+    skip: !orgId || !serviceId || !testPackId,
+  })
 
   const testRuns = useMemo(
     () => arrayNonNullable(runsData?.testRunsSummary),
@@ -147,9 +144,9 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
     if (!testRun.testRunId || !serviceId) return
     const isRunning = (testRun.status ?? '').toLowerCase() === 'running'
     if (isRunning) {
-      navigate(`/services/${serviceId}/tests/run/${testRun.testRunId}`)
+      void navigate(`/services/${serviceId}/tests/run/${testRun.testRunId}`)
     } else {
-      navigate(`/services/${serviceId}/tests/runs/${testRun.testRunId}`)
+      void navigate(`/services/${serviceId}/tests/runs/${testRun.testRunId}`)
     }
   }
 

@@ -1,11 +1,8 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { VersionLayout } from '@/components/version-layout'
-import {
-  DIAGRAM_CONTENT_V2,
-  DIAGRAM_V2,
-} from '@/features/diagram-portal/api/diagram-v2'
+import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { ServerDiagramData } from '@/features/diagram-portal/types/diagram'
@@ -36,7 +33,7 @@ function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
 
   const skip = !selectedDiagramId || !orgId
 
-  const { loading } = useQuery(DIAGRAM_V2, {
+  const { loading } = useQuery(DIAGRAM, {
     client: clientV2,
     variables: { orgId: orgId!, id: selectedDiagramId! },
     skip,
@@ -44,7 +41,7 @@ function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
   })
 
   const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT_V2,
+    DIAGRAM_CONTENT,
     {
       client: clientV2,
       variables: { orgId: orgId!, id: selectedDiagramId! },

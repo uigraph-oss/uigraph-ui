@@ -1,9 +1,9 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
-import { API_ENDPOINTS_V2 } from '../api/api-endpoints-v2'
+import { API_ENDPOINTS } from '../api/api-endpoints'
 import { endpointsToLegacyWithMeta } from '../api/api-v2-adapters'
 
 export function useVersionEndpoints(
@@ -13,7 +13,7 @@ export function useVersionEndpoints(
 ) {
   const orgId = useCurrentOrganization().id
 
-  const { data, loading } = useQuery(API_ENDPOINTS_V2, {
+  const { data, loading } = useQuery(API_ENDPOINTS, {
     client: clientV2,
     variables: {
       orgId: orgId!,

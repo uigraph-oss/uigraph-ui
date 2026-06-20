@@ -16,7 +16,7 @@ import { DashboardPageSectionLayout } from '@/features/dashboard'
 import {
   toCreateServiceInput,
   toUpdateServiceInput,
-} from '@/features/services/api/services-v2'
+} from '@/features/services/api/services'
 import { cn } from '@/lib/utils'
 import { CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'

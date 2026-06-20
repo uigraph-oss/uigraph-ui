@@ -1,5 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
-import { Diagram, ServiceDiagram } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { serviceDiagramToLegacyWithMeta } from '@/features/services/api/service-diagram'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -20,26 +20,28 @@ import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DIAGRAM_V2,
-  SERVICE_DIAGRAMS_V2,
-} from '../../api/service-diagram-v2'
+  DELETE_SERVICE_DIAGRAM,
+  SERVICE_DIAGRAMS,
+} from '../../api/service-diagram'
 import { useServiceContext } from '../../contexts/service-context'
+
+type ServiceDiagramWithMeta = ReturnType<typeof serviceDiagramToLegacyWithMeta>
 
 export function FlowDiagramCard({
   diagram,
   serviceDiagram,
 }: {
-  diagram: Diagram
-  serviceDiagram: ServiceDiagram
+  diagram: NonNullable<ServiceDiagramWithMeta['diagram']>
+  serviceDiagram: ServiceDiagramWithMeta['serviceDiagram']
 }) {
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM_V2, {
+  const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM, {
     client: clientV2,
-    refetchQueries: [{ query: SERVICE_DIAGRAMS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DIAGRAMS, variables: listVars }],
     awaitRefetchQueries: true,
   })
 

@@ -1,25 +1,19 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
+import { CANVAS, UPSERT_CANVAS } from '@/features/dashboard-pages/api/canvas'
 import {
-  CANVAS_V2,
-  UPSERT_CANVAS_V2,
-} from '@/features/dashboard-pages/api/canvas-v2'
-import {
-  DELETE_FOCAL_POINT_V2,
-  FOCAL_POINTS_V2,
+  DELETE_FOCAL_POINT,
+  FOCAL_POINTS,
   FocalPointV2,
-  UPDATE_FOCAL_POINT_V2,
-} from '@/features/dashboard-pages/api/focal-point-v2'
+  UPDATE_FOCAL_POINT,
+} from '@/features/dashboard-pages/api/focal-point'
 import {
-  DELETE_FRAME_GROUP_V2,
-  FRAME_GROUPS_V2,
+  DELETE_FRAME_GROUP,
+  FRAME_GROUPS,
   FrameGroupV2,
-  UPDATE_FRAME_GROUP_V2,
-} from '@/features/dashboard-pages/api/frame-group-v2'
-import {
-  FRAME_LINKS_V2,
-  FrameLinkV2,
-} from '@/features/dashboard-pages/api/links-v2'
+  UPDATE_FRAME_GROUP,
+} from '@/features/dashboard-pages/api/frame-group'
+import { FRAME_LINKS, FrameLinkV2 } from '@/features/dashboard-pages/api/links'
 import { DashboardFrame, DashboardMap } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
@@ -44,17 +38,17 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
       const orgId = useCurrentOrganization()?.id
       const mapId = project.id
 
-      const canvasRes = useQuery(CANVAS_V2, {
+      const canvasRes = useQuery(CANVAS, {
         client: clientV2,
         variables: { orgId: orgId!, mapId },
         skip: !orgId || !mapId,
       })
 
-      const [upsertCanvas, upsertCanvasRes] = useMutation(UPSERT_CANVAS_V2, {
+      const [upsertCanvas, upsertCanvasRes] = useMutation(UPSERT_CANVAS, {
         client: clientV2,
         awaitRefetchQueries: true,
         refetchQueries: [
-          { query: CANVAS_V2, variables: { orgId: orgId!, mapId } },
+          { query: CANVAS, variables: { orgId: orgId!, mapId } },
         ],
       })
 
@@ -70,17 +64,17 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
           pages.map((frame) =>
             Promise.all([
               clientV2.query({
-                query: FOCAL_POINTS_V2,
+                query: FOCAL_POINTS,
                 variables: { orgId, mapId, frameId: frame.id },
                 fetchPolicy: 'network-only',
               }),
               clientV2.query({
-                query: FRAME_GROUPS_V2,
+                query: FRAME_GROUPS,
                 variables: { orgId, mapId, frameId: frame.id },
                 fetchPolicy: 'network-only',
               }),
               clientV2.query({
-                query: FRAME_LINKS_V2,
+                query: FRAME_LINKS,
                 variables: { orgId, mapId, frameId: frame.id },
                 fetchPolicy: 'network-only',
               }),
@@ -134,19 +128,19 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
       )
 
       const [updateFocalPointMutation, updateFocalPointRes] = useMutation(
-        UPDATE_FOCAL_POINT_V2,
+        UPDATE_FOCAL_POINT,
         { client: clientV2 }
       )
       const [deleteFocalPointMutation, deleteFocalPointRes] = useMutation(
-        DELETE_FOCAL_POINT_V2,
+        DELETE_FOCAL_POINT,
         { client: clientV2 }
       )
       const [updateFrameGroupMutation, updateFrameGroupRes] = useMutation(
-        UPDATE_FRAME_GROUP_V2,
+        UPDATE_FRAME_GROUP,
         { client: clientV2 }
       )
       const [deleteFrameGroupMutation, deleteFrameGroupRes] = useMutation(
-        DELETE_FRAME_GROUP_V2,
+        DELETE_FRAME_GROUP,
         { client: clientV2 }
       )
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { DynamoDBIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -21,7 +21,7 @@ import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { ChevronDown, Upload } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { SERVICE_DBS_V2, serviceDBToLegacy } from '../../api/service-db-v2'
+import { SERVICE_DBS, serviceDBToLegacy } from '../../api/service-db'
 import { useServiceContext } from '../../contexts/service-context'
 import { DBSchemaUploadModal } from './components/db-schema-upload-modal'
 import { NosqlBuilderModal } from './components/nosql-builder-modal'
@@ -35,7 +35,7 @@ export function ServiceDatabaseListPage() {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const { data, loading } = useQuery(SERVICE_DBS_V2, {
+  const { data, loading } = useQuery(SERVICE_DBS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: listVars,

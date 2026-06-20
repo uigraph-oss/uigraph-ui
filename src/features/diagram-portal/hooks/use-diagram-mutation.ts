@@ -1,5 +1,4 @@
-import { GT } from '@/api'
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { useMutation } from '@apollo/client'
 import { Edge, Node } from '@xyflow/react'
@@ -8,15 +7,15 @@ import { useEffectExceptOnMount, useEffectState } from 'daily-code/react'
 import ms from 'ms'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { UPDATE_DIAGRAM_V2 } from '../api/diagram-v2'
+import { UPDATE_DIAGRAM } from '../api/diagram'
 import {
   CONFIRM_DIAGRAM_THUMBNAIL_UPLOAD,
   PREPARE_DIAGRAM_THUMBNAIL_UPLOAD,
-} from '../api/thumbnail-v2'
+} from '../api/thumbnail'
 import { convertDiagramServerDataToString } from '../helpers/diagram-data'
 import { generateDiagramThumbnailFile } from '../helpers/download-image'
 import { DataSource } from '../types/db-flow'
-import { ServerDiagramData } from '../types/diagram'
+import { DiagramCustomComponent, ServerDiagramData } from '../types/diagram'
 
 type TUseDiagramPortalMutationProps = ServerDiagramData & {
   diagramId: string | null
@@ -46,7 +45,7 @@ export function useDiagramPortalMutation({
   initialLastUpdatedAt,
 }: TUseDiagramPortalMutationProps) {
   const [loading, setLoading] = useState(false)
-  const [updateDiagram] = useMutation(UPDATE_DIAGRAM_V2, { client: clientV2 })
+  const [updateDiagram] = useMutation(UPDATE_DIAGRAM, { client: clientV2 })
 
   const serverLastUpdatedAt = useMemo(() => {
     return initialLastUpdatedAt ? new Date(initialLastUpdatedAt).getTime() : 0
@@ -216,7 +215,7 @@ type GetThumbnailFileProps = {
   edges: Edge[]
   diagramId: string
   dataSources: DataSource[]
-  components: GT.CustomComponent[]
+  components: DiagramCustomComponent[]
 }
 
 async function getThumbnailFile({

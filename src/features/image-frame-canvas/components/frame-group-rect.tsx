@@ -1,4 +1,4 @@
-import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group-v2'
+import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group'
 import { DashboardFrame } from '@/features/dashboard-projects/api'
 import { cn } from '@/lib/utils'
 import { getViewPointPositionStyle, getViewPointSizeStyle } from '../helpers'

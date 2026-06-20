@@ -13,18 +13,21 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import type { SettingsTeam } from '../api/teams-v2'
+import type { SettingsTeam } from '../api/teams'
 import { TEAM_MEMBER_ROLES } from '../constants/team'
 import { useTeamContext } from '../context/team-context'
 
 const teamMemberSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
   email: z.email('Enter a valid email address'),
+  password: z.string().optional(),
   role: z.string().min(1, 'Role is required'),
 
   teamId: z.string().optional(),
-  status: z.enum(['Active', 'Pending', 'Deactivated'], {
-    error: 'Status is required',
-  }),
+})
+
+const createMemberSchema = teamMemberSchema.extend({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 type ConfigureTeamMemberModalProps = {
@@ -40,12 +43,15 @@ export function ConfigureTeamMemberModal({
 }: ConfigureTeamMemberModalProps) {
   const { teams } = useTeamContext()
   const form = useForm({
-    resolver: zodResolver(teamMemberSchema),
+    resolver: zodResolver(
+      mode === 'create' ? createMemberSchema : teamMemberSchema
+    ),
     defaultValues: {
+      name: '',
       email: '',
+      password: '',
       role: '',
       teamId: '',
-      status: mode === 'create' ? 'Active' : ('' as 'Active'),
       ...defaultValues,
     },
   })
@@ -68,6 +74,33 @@ export function ConfigureTeamMemberModal({
       footerCancel
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field }) => (
+            <div className="space-y-2">
+              <Label
+                htmlFor="team-member-name"
+                className="text-sm font-medium text-[#111110]"
+              >
+                Name
+              </Label>
+              <Input
+                id="team-member-name"
+                {...field}
+                placeholder="Enter full name"
+                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                autoComplete="off"
+              />
+              {form.formState.errors.name && (
+                <p className="text-destructive text-sm">
+                  {form.formState.errors.name.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+
         <Controller
           name="email"
           control={form.control}
@@ -94,6 +127,36 @@ export function ConfigureTeamMemberModal({
             </div>
           )}
         />
+
+        {mode === 'create' && (
+          <Controller
+            name="password"
+            control={form.control}
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="team-member-password"
+                  className="text-sm font-medium text-[#111110]"
+                >
+                  Password
+                </Label>
+                <Input
+                  id="team-member-password"
+                  {...field}
+                  type="password"
+                  placeholder="Enter a password"
+                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  autoComplete="new-password"
+                />
+                {form.formState.errors.password && (
+                  <p className="text-destructive text-sm">
+                    {form.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        )}
 
         <Controller
           name="role"
@@ -130,42 +193,6 @@ export function ConfigureTeamMemberModal({
             </div>
           )}
         />
-
-        {mode === 'edit' && (
-          <Controller
-            name="status"
-            control={form.control}
-            render={({ field }) => (
-              <div className="space-y-2">
-                <Label
-                  htmlFor="team-member-status"
-                  className="text-sm font-medium text-[#111110]"
-                >
-                  Status
-                </Label>
-                <Select
-                  {...field}
-                  value={field.value ?? ''}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="!h-[56px] !w-full rounded-[16px] border border-[#E5E7E9] bg-white px-4">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Deactivated">Deactivated</SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.status && (
-                  <p className="text-destructive text-sm">
-                    {form.formState.errors.status.message}
-                  </p>
-                )}
-              </div>
-            )}
-          />
-        )}
 
         <Controller
           name="teamId"

@@ -1,12 +1,12 @@
 'use client'
 
-import { V2 } from '@/api-v2'
-import type { TestCase } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api'
+import type { TestCase } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
-import { API_ENDPOINTS_V2 } from '@/features/services/api/api-endpoints-v2'
+import { API_ENDPOINTS } from '@/features/services/api/api-endpoints'
 import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import {
   deriveRestEndpointOptions,
@@ -245,7 +245,7 @@ function APIDetails({ testCase }: { testCase: TestCase }) {
   const api = testCase.api
   const { serviceId, apiGroupId } = parseApiSpecValue(api?.apiSpecId)
 
-  const { data: endpointsData } = useQuery(API_ENDPOINTS_V2, {
+  const { data: endpointsData } = useQuery(API_ENDPOINTS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: {

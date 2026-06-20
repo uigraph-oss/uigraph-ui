@@ -1,12 +1,12 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useNavigate, useParams } from 'react-router-dom'
-import { TEST_RUN_V2 } from '../../api/tests-v2'
+import { TEST_RUN } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 import { RunDetailsView } from './run-details-view'
 
@@ -25,7 +25,7 @@ export function TestRunDetailsPage() {
         ? params.testRunId[0]
         : undefined
 
-  const { data, loading } = useQuery(TEST_RUN_V2, {
+  const { data, loading } = useQuery(TEST_RUN, {
     client: clientV2,
     variables: { orgId: orgId!, serviceId, id: testRunId ?? '' },
     skip: !orgId || !serviceId || !testRunId,

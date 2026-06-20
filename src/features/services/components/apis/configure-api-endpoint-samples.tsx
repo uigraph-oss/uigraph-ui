@@ -1,9 +1,9 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
+import { LegacyApiEndpoint } from '@/features/services/api/api-v2-adapters'
 import { arrayNonNullable } from 'daily-code'
 import { Code } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -14,7 +14,7 @@ import { toast } from 'sonner'
 import { useServiceApiEndpointsContext } from '../../contexts/service-api-endpoints'
 
 type ConfigureApiEndpointSamplesProps = {
-  endpoint: GT.ApiEndpoint
+  endpoint: LegacyApiEndpoint
   readonly?: boolean
 }
 

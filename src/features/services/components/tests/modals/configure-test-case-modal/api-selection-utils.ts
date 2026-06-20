@@ -1,11 +1,14 @@
-import { GT } from '@/api'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { normalizePath } from '@/utils/api/display'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 
 type EndpointWithMeta = {
-  apiEndpoint?: GT.ApiEndpoint | null
-  componentMeta?: GT.ComponentMeta | null
+  apiEndpoint?: LegacyApiEndpoint | null
+  componentMeta?: LegacyComponentMeta | null
 }
 
 export type ParsedApiSpec = {

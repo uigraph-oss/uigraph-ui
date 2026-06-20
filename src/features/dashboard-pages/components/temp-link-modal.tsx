@@ -12,7 +12,7 @@ import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { PlusIcon } from '../../../assets/svgs/component-icons'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FRAMES_V2, MAPS_V2 } from '@/features/dashboard-projects/api'
+import { FRAMES, MAPS } from '@/features/dashboard-projects/api'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -52,7 +52,7 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
     },
   })
 
-  const mapsQuery = useQuery(MAPS_V2, {
+  const mapsQuery = useQuery(MAPS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },
@@ -60,7 +60,7 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
   })
 
   const targetMapId = form.watch('targetMapId')
-  const framesQuery = useQuery(FRAMES_V2, {
+  const framesQuery = useQuery(FRAMES, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId!, mapId: targetMapId },

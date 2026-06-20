@@ -1,4 +1,4 @@
-import { GT } from '@/api'
+import { V2 } from '@/api'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { Button } from '@/components/ui/button'
 import { COMPONENT_FLOW_DIAGRAM_ID } from '@/constants/component-meta'
@@ -10,20 +10,20 @@ import { useMemo, useState } from 'react'
 import { HiOutlineTrash } from 'react-icons/hi2'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
-import { PointMeta } from '../api/focal-point-meta-v2'
+import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta'
 import { FocalPointName } from './focal-point-name'
 import { FocalPointMetaModal } from './meta-modal'
 
 type FocalPointMetaMiniCardProps = {
   index: number
-  component: GT.Component
+  component: V2.Component
   pointMeta: PointMeta
   showFocalPointName: boolean
   startFlowDiagram: () => void
   startCompositeLink: () => void
   openDeleteConfirmationModal: () => void
   updatePointMeta: (input: {
-    componentModalFields?: GT.ComponentFieldInput[]
+    componentModalFields?: ComponentFieldInput[]
   }) => Promise<void>
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import type { TestCase, TestRunResult } from '@/api-v2/.gql/graphql'
+import type { TestCase, TestRunResult } from '@/api/.gql/graphql'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'

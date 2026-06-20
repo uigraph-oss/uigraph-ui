@@ -1,8 +1,8 @@
 'use client'
 
-import { V2 } from '@/api-v2'
-import type { TestCase } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
+import { V2 } from '@/api'
+import type { TestCase } from '@/api/.gql/graphql'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -12,7 +12,7 @@ import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
 import { ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { TEST_RUN_RESULTS_V2, TEST_RUNS_V2 } from '../../api/tests-v2'
+import { TEST_RUN_RESULTS, TEST_RUNS } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 import { RunDetailsView } from './run-details-view'
 
@@ -33,7 +33,7 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
     setSelectedRunId(null)
   }, [testCase.testCaseId])
 
-  const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS_V2, {
+  const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: {
@@ -146,7 +146,7 @@ function TestRunRow({
   onClick,
   getStatusBadgeVariant: _getStatusBadgeVariant,
 }: TestRunRowProps) {
-  const { data: resultsData } = useQuery(TEST_RUN_RESULTS_V2, {
+  const { data: resultsData } = useQuery(TEST_RUN_RESULTS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: {

@@ -1,16 +1,16 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useCallback, useMemo, useState } from 'react'
 import {
-  COMMENTS_V2,
-  CREATE_COMMENT_V2,
-  DELETE_COMMENT_V2,
-  UPDATE_COMMENT_V2,
+  COMMENTS,
+  CREATE_COMMENT,
+  DELETE_COMMENT,
+  UPDATE_COMMENT,
   type UIComment,
-} from '../api/comments-v2'
+} from '../api/comments'
 
 export const [CommentsContextProvider, useCommentsContext] = createContext(
   ({ resourceId }: { resourceId: string }) => {
@@ -19,7 +19,7 @@ export const [CommentsContextProvider, useCommentsContext] = createContext(
       null
     )
 
-    const { data, loading } = useQuery(COMMENTS_V2, {
+    const { data, loading } = useQuery(COMMENTS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, resourceId },
@@ -27,22 +27,22 @@ export const [CommentsContextProvider, useCommentsContext] = createContext(
     })
 
     const refetchQueries = [
-      { query: COMMENTS_V2, variables: { orgId: orgId!, resourceId } },
+      { query: COMMENTS, variables: { orgId: orgId!, resourceId } },
     ]
 
-    const [createCommentMutation] = useMutation(CREATE_COMMENT_V2, {
+    const [createCommentMutation] = useMutation(CREATE_COMMENT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
-    const [updateCommentMutation] = useMutation(UPDATE_COMMENT_V2, {
+    const [updateCommentMutation] = useMutation(UPDATE_COMMENT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
-    const [deleteCommentMutation] = useMutation(DELETE_COMMENT_V2, {
+    const [deleteCommentMutation] = useMutation(DELETE_COMMENT, {
       client: clientV2,
       awaitRefetchQueries: true,
       refetchQueries,

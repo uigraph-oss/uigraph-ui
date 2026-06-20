@@ -1,11 +1,13 @@
 'use client'
 
-import { privateClient, v1Graphql } from '@/api'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { Search } from 'lucide-react'
 import type {
   Enum as ProtoEnum,
@@ -20,18 +22,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-const GET_FILE_BY_ID_QUERY = v1Graphql(`
-  query GetFileByID_SpecViewer($fileId: String!) {
-    GetFileByID(fileId: $fileId, download: true) {
-      fileId
-      fileName
-      fileDownloadURL
-    }
-  }
-`)
-
 type GrpcSpecViewerProps = {
-  specFileIds: string[]
+  serviceId: string
+  apiGroupId: string
 }
 
 type GrpcSpecFile = {
@@ -498,7 +491,8 @@ function renderProtoDetails(
   )
 }
 
-export function GrpcSpecViewer({ specFileIds }: GrpcSpecViewerProps) {
+export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
+  const orgId = useCurrentOrganization()?.id
   const [specFiles, setSpecFiles] = useState<GrpcSpecFile[]>([])
   const [parsedRoot, setParsedRoot] = useState<ProtoRoot | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -515,7 +509,7 @@ export function GrpcSpecViewer({ specFileIds }: GrpcSpecViewerProps) {
   )
 
   const fetchSpec = useCallback(async () => {
-    if (specFileIds.length === 0) {
+    if (!apiGroupId) {
       setSpecFiles([])
       setParsedRoot(null)
       setParseError(null)
@@ -529,31 +523,24 @@ export function GrpcSpecViewer({ specFileIds }: GrpcSpecViewerProps) {
       setError(null)
       setParseError(null)
 
-      const files = await Promise.all(
-        specFileIds.map(async (fileId) => {
-          const { data } = await privateClient.query({
-            query: GET_FILE_BY_ID_QUERY,
-            variables: { fileId },
-            fetchPolicy: 'network-only',
-          })
+      const { data } = await clientV2.query({
+        query: API_GROUP_SPEC,
+        variables: { orgId: orgId!, serviceId, apiGroupId },
+        fetchPolicy: 'network-only',
+      })
 
-          const downloadURL = data?.GetFileByID?.fileDownloadURL
-          if (!downloadURL) {
-            throw new Error('Could not get download URL for proto file')
-          }
+      const spec = data?.apiGroupSpec
+      if (spec?.content == null) {
+        throw new Error('Could not load proto content for API group')
+      }
 
-          const response = await fetch(downloadURL)
-          if (!response.ok) {
-            throw new Error(`Failed to download proto: ${response.statusText}`)
-          }
-
-          return {
-            fileId,
-            fileName: data?.GetFileByID?.fileName ?? `${fileId}.proto`,
-            content: await response.text(),
-          }
-        })
-      )
+      const files = [
+        {
+          fileId: spec.apiGroupId,
+          fileName: spec.fileName ?? `${spec.apiGroupId}.proto`,
+          content: spec.content,
+        },
+      ]
 
       setSpecFiles(files)
 
@@ -636,7 +623,7 @@ export function GrpcSpecViewer({ specFileIds }: GrpcSpecViewerProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [specFileIds])
+  }, [orgId, serviceId, apiGroupId])
 
   useEffect(() => {
     void fetchSpec()

@@ -1,11 +1,7 @@
-import { GT } from '@/api'
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import {
-  DIAGRAM_CONTENT_V2,
-  DIAGRAM_V2,
-} from '@/features/diagram-portal/api/diagram-v2'
+import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -13,13 +9,18 @@ import { useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 import { TbExternalLink } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
+import { ServiceDbSchema } from '../../api/service-db'
 
-export function SelectedDatabaseDiagramSection({ db }: { db: GT.ServiceDb }) {
+export function SelectedDatabaseDiagramSection({
+  db,
+}: {
+  db: ServiceDbSchema
+}) {
   const orgId = useCurrentOrganization().id
   const diagramId = db.dbDiagramId
   const skip = !diagramId || !orgId
 
-  const { data, loading } = useQuery(DIAGRAM_V2, {
+  const { data, loading } = useQuery(DIAGRAM, {
     client: clientV2,
     variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'cache-first',
@@ -27,7 +28,7 @@ export function SelectedDatabaseDiagramSection({ db }: { db: GT.ServiceDb }) {
   })
 
   const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT_V2,
+    DIAGRAM_CONTENT,
     {
       client: clientV2,
       variables: { orgId: orgId!, id: diagramId! },

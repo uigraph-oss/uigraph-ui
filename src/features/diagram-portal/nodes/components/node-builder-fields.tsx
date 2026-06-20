@@ -27,7 +27,7 @@ export function NodeBuilderFields({ fields }: NodeBuilderFieldsProps) {
           f.label !== 'Description'
       )
       .map((f) => {
-        const value = f.data?.[0]?.value
+        const value = (f.data?.[0] as { value?: unknown } | null)?.value
         return {
           name: f.label ?? '',
           value: value === true ? 'Yes' : value === false ? 'No' : value,

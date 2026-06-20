@@ -6,7 +6,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
-import { toUpdateServiceInput } from '@/features/services/api/services-v2'
+import { toUpdateServiceInput } from '@/features/services/api/services'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { objectOmitNull } from 'daily-code'
 import { useState } from 'react'

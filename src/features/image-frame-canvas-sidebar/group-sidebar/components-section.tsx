@@ -1,16 +1,16 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point-v2'
+import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  DELETE_FOCAL_POINT_META_V2,
-  FOCAL_POINT_META_V2,
+  DELETE_FOCAL_POINT_META,
+  FOCAL_POINT_META,
   PointMeta,
   toPointMeta,
-  UPDATE_FOCAL_POINT_META_V2,
-} from '../api/focal-point-meta-v2'
+  UPDATE_FOCAL_POINT_META,
+} from '../api/focal-point-meta'
 import { FocalPointComponentsSection } from '../components/focal-point-component-group'
 
 type ComponentsSectionProps = {
@@ -34,7 +34,7 @@ export function ComponentsSection({
       const results = await Promise.all(
         focalPoints.map((focalPoint) =>
           clientV2.query({
-            query: FOCAL_POINT_META_V2,
+            query: FOCAL_POINT_META,
             variables: {
               orgId,
               mapId,
@@ -84,7 +84,7 @@ export function ComponentsSection({
         if (!meta) throw new Error('Point meta not found')
 
         await clientV2.mutate({
-          mutation: DELETE_FOCAL_POINT_META_V2,
+          mutation: DELETE_FOCAL_POINT_META,
           variables: {
             orgId: orgId!,
             mapId,
@@ -105,7 +105,7 @@ export function ComponentsSection({
         if (!meta) throw new Error('Point meta not found')
 
         const { data } = await clientV2.mutate({
-          mutation: UPDATE_FOCAL_POINT_META_V2,
+          mutation: UPDATE_FOCAL_POINT_META,
           variables: {
             orgId: orgId!,
             mapId,
@@ -114,9 +114,7 @@ export function ComponentsSection({
             id: pointMetaId,
             input: {
               componentId,
-              componentModalFields: input.componentModalFields
-                ? JSON.stringify(input.componentModalFields)
-                : undefined,
+              componentModalFields: input.componentModalFields,
             },
           },
         })

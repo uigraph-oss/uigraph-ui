@@ -67,7 +67,7 @@ function ComponentsPageInner() {
                 field_count: fields.length,
               })
 
-              navigate('/dashboard/components')
+              void navigate('/dashboard/components')
               toast.success('Component updated successfully!')
             } catch {
               toast.error('Error updating component. Please try again later.')
@@ -82,7 +82,7 @@ function ComponentsPageInner() {
                 field_count: fields.length,
               })
 
-              navigate('/dashboard/components')
+              void navigate('/dashboard/components')
               toast.success('Component created successfully!')
             } catch {
               toast.error('Error creating component. Please try again later.')

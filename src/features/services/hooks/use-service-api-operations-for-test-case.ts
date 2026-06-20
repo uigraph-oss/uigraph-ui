@@ -1,11 +1,11 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
-import { API_ENDPOINTS_V2, API_GROUPS_V2 } from '../api/api-endpoints-v2'
+import { API_ENDPOINTS, API_GROUPS } from '../api/api-endpoints'
 import { endpointsToLegacyWithMeta } from '../api/api-v2-adapters'
 import {
   deriveApiOperations,
@@ -25,7 +25,7 @@ export function useServiceApiOperationsForTestCase(serviceId: string | null) {
     null
   )
 
-  const { data: groupsData, loading: groupsLoading } = useQuery(API_GROUPS_V2, {
+  const { data: groupsData, loading: groupsLoading } = useQuery(API_GROUPS, {
     client: clientV2,
     variables: { orgId: orgId!, serviceId: serviceId! },
     skip: !orgId || !serviceId,
@@ -42,7 +42,7 @@ export function useServiceApiOperationsForTestCase(serviceId: string | null) {
   }, [groupsData?.apiGroups])
 
   const { data: endpointsData, loading: endpointsLoading } = useQuery(
-    API_ENDPOINTS_V2,
+    API_ENDPOINTS,
     {
       client: clientV2,
       variables: {

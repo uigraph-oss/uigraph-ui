@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
@@ -21,11 +21,11 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import {
-  DELETE_SERVICE_DOC_V2,
-  SERVICE_DOCS_V2,
-  UPDATE_SERVICE_DOC_V2,
+  DELETE_SERVICE_DOC,
+  SERVICE_DOCS,
+  UPDATE_SERVICE_DOC,
   serviceDocToLegacy,
-} from '../../api/service-doc-v2'
+} from '../../api/service-doc'
 import { useServiceContext } from '../../contexts/service-context'
 import {
   getDocumentFileTypeIcon,
@@ -144,15 +144,15 @@ export function ServiceDocCard({
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [updateServiceDoc] = useMutation(UPDATE_SERVICE_DOC_V2, {
+  const [updateServiceDoc] = useMutation(UPDATE_SERVICE_DOC, {
     client: clientV2,
-    refetchQueries: [{ query: SERVICE_DOCS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
     awaitRefetchQueries: true,
   })
 
-  const [deleteServiceDoc] = useMutation(DELETE_SERVICE_DOC_V2, {
+  const [deleteServiceDoc] = useMutation(DELETE_SERVICE_DOC, {
     client: clientV2,
-    refetchQueries: [{ query: SERVICE_DOCS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
     awaitRefetchQueries: true,
   })
 

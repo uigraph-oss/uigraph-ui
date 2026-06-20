@@ -1,10 +1,9 @@
-import { GT } from '@/api'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import type { NodeChange } from '@xyflow/react'
 import { useEdgesState, useNodesState } from '@xyflow/react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { DataSource } from '../types/db-flow'
-import { ServerDiagramData } from '../types/diagram'
+import { DiagramCustomComponent, ServerDiagramData } from '../types/diagram'
 
 const PARTICIPANT_CENTER_OFFSET = 5
 const MESSAGE_DEFAULT_WIDTH = 120
@@ -24,7 +23,7 @@ export function useDiagramData(initialData: ServerDiagramData) {
   )
 
   const [latestFlowComponents, setLatestFlowComponents] = useState<
-    GT.CustomComponent[]
+    DiagramCustomComponent[]
   >(initialData.components)
 
   const [latestViewport, setLatestViewport] = useState(initialData.viewport)

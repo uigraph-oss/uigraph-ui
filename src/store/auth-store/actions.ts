@@ -1,14 +1,10 @@
-import { MeAndOrgQuery } from '@/api-v2/.gql/graphql'
-import { clientV2 } from '@/api-v2/client'
-import { GET_ME_AND_ORG_V2 } from './gql-v2'
+import { clientV2 } from '@/api/client'
+import { GET_ME_AND_ORG } from './gql'
 import { useAuthStore } from './use-auth-store'
-
-export type AuthenticatedUser = MeAndOrgQuery['me']
-export type UserOrganization = MeAndOrgQuery['myOrgs'][number]
 
 export async function bootstrapSession() {
   try {
-    const { data } = await clientV2.query({ query: GET_ME_AND_ORG_V2 })
+    const { data } = await clientV2.query({ query: GET_ME_AND_ORG })
 
     useAuthStore.setState({
       status: 'authenticated',
@@ -22,6 +18,14 @@ export async function bootstrapSession() {
       user: null,
     })
   }
+}
+
+export async function refreshOrganizations() {
+  const { data } = await clientV2.query({
+    query: GET_ME_AND_ORG,
+    fetchPolicy: 'network-only',
+  })
+  useAuthStore.setState({ organizations: data.myOrgs })
 }
 
 export async function signIn(email: string, password: string) {

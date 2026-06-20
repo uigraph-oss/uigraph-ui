@@ -1,4 +1,3 @@
-import { GT } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -9,8 +8,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { arrayNonNullable } from 'daily-code'
+import { DbTable } from '../../../api/service-db'
 
-export function RenderSQLTable({ tables }: { tables: GT.DbTable[] }) {
+export function RenderSQLTable({ tables }: { tables: DbTable[] }) {
   return (
     <div>
       {tables.length === 0 ? (

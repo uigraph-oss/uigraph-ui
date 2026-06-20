@@ -7,6 +7,7 @@ import { ReactNode } from 'react'
 import { AiOutlineTeam } from 'react-icons/ai'
 import {
   GoGitCompare,
+  GoGraph,
   GoOrganization,
   GoProject,
   GoProjectTemplate,
@@ -56,6 +57,24 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     label: 'Settings',
     icon: <SettingsIcon />,
     nested: true,
+  }
+)
+
+export const SERVER_NAV_LINKS = generateNavItems<NavLinkMeta>(
+  {
+    id: '/server/overview',
+    label: 'Overview',
+    icon: <GoGraph />,
+  },
+  {
+    id: '/server/users',
+    label: 'Users',
+    icon: <UserListIcon />,
+  },
+  {
+    id: '/server/sso',
+    label: 'SSO',
+    icon: <LuFingerprint />,
   }
 )
 

@@ -1,6 +1,5 @@
 'use client'
 
-import { GT } from '@/api'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,14 +8,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { GrpcMethodRowCore } from './grpc-method-row-core'
 
 export type GrpcMethodItem = {
-  apiEndpoint: GT.ApiEndpoint
-  componentMeta: GT.ComponentMeta
+  apiEndpoint: LegacyApiEndpoint
+  componentMeta: LegacyComponentMeta
 }
 
 export function GrpcMethodRow({
@@ -94,7 +97,7 @@ export function GrpcMethodRowReadonly({
   onSelect,
 }: {
   method: GrpcMethodItem
-  componentMeta: GT.ComponentMeta
+  componentMeta: LegacyComponentMeta
   onSelect: (method: GrpcMethodItem) => void
 }) {
   return (

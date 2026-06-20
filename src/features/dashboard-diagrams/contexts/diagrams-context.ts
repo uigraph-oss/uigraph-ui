@@ -1,5 +1,5 @@
-import { clientV2 } from '@/api-v2/client'
-import { MEMBERS_V2 } from '@/features/dashboard-settings/api/members-v2'
+import { clientV2 } from '@/api/client'
+import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -7,19 +7,19 @@ import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
 import {
-  CREATE_DIAGRAM_V2,
-  DELETE_DIAGRAM_V2,
-  DIAGRAMS_V2,
-  UPDATE_DIAGRAM_META_V2,
-} from '../api/diagrams-v2'
+  CREATE_DIAGRAM,
+  DELETE_DIAGRAM,
+  DIAGRAMS,
+  UPDATE_DIAGRAM_META,
+} from '../api/diagrams'
 import {
-  CREATE_FOLDER_V2,
-  DELETE_FOLDER_V2,
-  FOLDER_V2,
-  FOLDERS_V2,
-  UPDATE_FOLDER_V2,
-} from '../api/folders-v2'
-import { TEAMS_V2 } from '../api/teams-v2'
+  CREATE_FOLDER,
+  DELETE_FOLDER,
+  FOLDER,
+  FOLDERS,
+  UPDATE_FOLDER,
+} from '../api/folders'
+import { TEAMS } from '../api/teams'
 
 export const [DiagramsContextProvider, useDiagramsContext] = createContext(
   () => {
@@ -35,14 +35,14 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     const selectedFolderId = searchParams.folder
     const selectedTeamId = searchParams.team
 
-    const foldersQuery = useQuery(FOLDERS_V2, {
+    const foldersQuery = useQuery(FOLDERS, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
       skip: !orgId,
       variables: { orgId: orgId!, type: 'diagram' },
     })
 
-    const diagramsV2Query = useQuery(DIAGRAMS_V2, {
+    const diagramsV2Query = useQuery(DIAGRAMS, {
       client: clientV2,
       fetchPolicy: 'cache-and-network',
       skip: !orgId,
@@ -52,7 +52,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       },
     })
 
-    const folderData = useQuery(FOLDER_V2, {
+    const folderData = useQuery(FOLDER, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: selectedFolderId! },
@@ -65,21 +65,21 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     )
 
     const selectedFolderParentId = selectedFolder?.parentId
-    const parentFolderData = useQuery(FOLDER_V2, {
+    const parentFolderData = useQuery(FOLDER, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: selectedFolderParentId! },
       skip: !orgId || !selectedFolderParentId,
     })
 
-    const teamsData = useQuery(TEAMS_V2, {
+    const teamsData = useQuery(TEAMS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId! },
       skip: !orgId,
     })
 
-    const orgUsersData = useQuery(MEMBERS_V2, {
+    const orgUsersData = useQuery(MEMBERS, {
       client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId! },
@@ -98,21 +98,21 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
 
     const folderListVariables = { orgId: orgId!, type: 'diagram' as const }
 
-    const [createFolder] = useMutation(CREATE_FOLDER_V2, {
+    const [createFolder] = useMutation(CREATE_FOLDER, {
       client: clientV2,
-      refetchQueries: [{ query: FOLDERS_V2, variables: folderListVariables }],
+      refetchQueries: [{ query: FOLDERS, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
-    const [updateFolder] = useMutation(UPDATE_FOLDER_V2, {
+    const [updateFolder] = useMutation(UPDATE_FOLDER, {
       client: clientV2,
-      refetchQueries: [{ query: FOLDERS_V2, variables: folderListVariables }],
+      refetchQueries: [{ query: FOLDERS, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
-    const [deleteFolder] = useMutation(DELETE_FOLDER_V2, {
+    const [deleteFolder] = useMutation(DELETE_FOLDER, {
       client: clientV2,
-      refetchQueries: [{ query: FOLDERS_V2, variables: folderListVariables }],
+      refetchQueries: [{ query: FOLDERS, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
@@ -120,17 +120,17 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       return diagramsV2Query.refetch()
     }
 
-    const [createDiagram] = useMutation(CREATE_DIAGRAM_V2, {
+    const [createDiagram] = useMutation(CREATE_DIAGRAM, {
       client: clientV2,
       onCompleted: refetchDiagrams,
     })
 
-    const [updateDiagram] = useMutation(UPDATE_DIAGRAM_META_V2, {
+    const [updateDiagram] = useMutation(UPDATE_DIAGRAM_META, {
       client: clientV2,
       onCompleted: refetchDiagrams,
     })
 
-    const [deleteDiagram] = useMutation(DELETE_DIAGRAM_V2, {
+    const [deleteDiagram] = useMutation(DELETE_DIAGRAM, {
       client: clientV2,
       onCompleted: refetchDiagrams,
     })

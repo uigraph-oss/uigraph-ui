@@ -1,6 +1,6 @@
 'use client'
 
-import type { TestCase } from '@/api-v2/.gql/graphql'
+import type { TestCase } from '@/api/.gql/graphql'
 import { CommentsContextProvider } from '@/features/comments/contexts/comments-context'
 import { CommentsSection } from '@/features/image-frame-canvas-sidebar/comments/comments-section'
 

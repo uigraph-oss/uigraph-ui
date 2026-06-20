@@ -1,4 +1,4 @@
-import { GT } from '@/api'
+import { V2 } from '@/api'
 import {
   DragBarIcon,
   LinkBackwardIcon,
@@ -22,12 +22,14 @@ import { Dispatch, SetStateAction } from 'react'
 import { ImCommand } from 'react-icons/im'
 import { toast } from 'sonner'
 
-export type ComponentFieldWithError = GT.ComponentField & { error?: string }
+export type ComponentField = V2.ComponentModalField
+
+export type ComponentFieldWithError = ComponentField & { error?: string }
 
 export type ComponentFieldListProps = {
   enableRequired?: boolean
   componentFields: ComponentFieldWithError[]
-  setComponentFields: Dispatch<SetStateAction<GT.ComponentField[]>>
+  setComponentFields: Dispatch<SetStateAction<ComponentField[]>>
 }
 
 export function ComponentFieldList({

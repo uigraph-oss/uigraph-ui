@@ -1,12 +1,12 @@
 'use client'
 
-import { clientV2 } from '@/api-v2/client'
-import { CREATE_DIAGRAM_V2 } from '@/features/dashboard-diagrams/api/diagrams-v2'
+import { clientV2 } from '@/api/client'
+import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import {
-  CREATE_SERVICE_DB_V2,
-  SERVICE_DBS_V2,
+  CREATE_SERVICE_DB,
+  SERVICE_DBS,
   toCreateServiceDBInput,
-} from '@/features/services/api/service-db-v2'
+} from '@/features/services/api/service-db'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -23,11 +23,11 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM_V2, { client: clientV2 })
-  const [createServiceDb] = useMutation(CREATE_SERVICE_DB_V2, {
+  const [createDiagram] = useMutation(CREATE_DIAGRAM, { client: clientV2 })
+  const [createServiceDb] = useMutation(CREATE_SERVICE_DB, {
     client: clientV2,
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: SERVICE_DBS_V2, variables: listVars }],
+    refetchQueries: [{ query: SERVICE_DBS, variables: listVars }],
   })
 
   return (

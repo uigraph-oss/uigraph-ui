@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import {
   Accordion,
   AccordionContent,
@@ -11,9 +11,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { FOCAL_POINTS_V2 } from '@/features/dashboard-pages/api/focal-point-v2'
-import { FRAMES_V2 } from '@/features/dashboard-projects/api/frame-v2'
-import { MAPS_V2 } from '@/features/dashboard-projects/api/map-v2'
+import { FOCAL_POINTS } from '@/features/dashboard-pages/api/focal-point'
+import { FRAMES } from '@/features/dashboard-projects/api/frame'
+import { MAPS } from '@/features/dashboard-projects/api/map'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -48,7 +48,7 @@ function FocalPointSection({
   value: Partial<SelectionType>
   onChange: (value: SelectionType) => void
 }) {
-  const { data, loading } = useQuery(FOCAL_POINTS_V2, {
+  const { data, loading } = useQuery(FOCAL_POINTS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId, mapId: projectId, frameId: pageId },
@@ -109,7 +109,7 @@ function MapScreensSection({
   value: SelectionType
   onChange: (value: SelectionType) => void
 }) {
-  const { data, loading } = useQuery(FRAMES_V2, {
+  const { data, loading } = useQuery(FRAMES, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId, mapId: projectId },
@@ -175,7 +175,7 @@ export function LinkUiMapNodeSelect({
   const organizationId = useCurrentOrganization()?.id
   const [open, setOpen] = useState(false)
 
-  const { data: projectsData, loading: isProjectsLoading } = useQuery(MAPS_V2, {
+  const { data: projectsData, loading: isProjectsLoading } = useQuery(MAPS, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
@@ -189,7 +189,7 @@ export function LinkUiMapNodeSelect({
     projects.map((project) => project.id)
   )
 
-  const { data: screensData, loading: isScreensLoading } = useQuery(FRAMES_V2, {
+  const { data: screensData, loading: isScreensLoading } = useQuery(FRAMES, {
     client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId!, mapId },
@@ -197,7 +197,7 @@ export function LinkUiMapNodeSelect({
   })
 
   const { data: focalPointsData, loading: isFocalPointsLoading } = useQuery(
-    FOCAL_POINTS_V2,
+    FOCAL_POINTS,
     {
       client: clientV2,
       fetchPolicy: 'cache-first',

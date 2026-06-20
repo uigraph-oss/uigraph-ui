@@ -1,6 +1,6 @@
 'use client'
 
-import { GT, privateClient, v1Graphql } from '@/api'
+import { clientV2 } from '@/api/client'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'
@@ -21,6 +21,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody } from '@/components/ui/table'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
+import {
+  LegacyApiEndpoint,
+  LegacyComponentMeta,
+} from '@/features/services/api/api-v2-adapters'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -44,20 +49,11 @@ import {
 } from './rows/graphql-operation-row'
 import { GrpcMethodItem, GrpcMethodRow } from './rows/grpc-method-row'
 
-const GET_FILE_BY_ID_QUERY = v1Graphql(`
-  query GetFileByID_ServiceApis($fileId: String!) {
-    GetFileByID(fileId: $fileId, download: true) {
-      fileId
-      fileDownloadURL
-    }
-  }
-`)
-
 type RestEndpointItem = {
   selectionKey: string
   endpointId: string
-  apiEndpoint: GT.ApiEndpoint
-  componentMeta: GT.ComponentMeta
+  apiEndpoint: LegacyApiEndpoint
+  componentMeta: LegacyComponentMeta
   method: string
   path: string
   fullUrl: string
@@ -78,7 +74,7 @@ type RestEndpointItem = {
 type GroupByKind = 'tags' | 'none'
 type AuthKind = 'none' | 'bearer' | 'api-key' | 'oauth2' | 'other'
 
-export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
+export function ServiceApiEndpoints() {
   const {
     apiEndpoints,
     protocol,
@@ -88,8 +84,11 @@ export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
     isGrpcLoading,
     selectedVersionId,
     deleteServiceApiEndpoint,
+    serviceId,
+    apiGroup,
   } = useServiceApiEndpointsContext()
   const organizationId = useCurrentOrganization()?.id
+  const apiGroupId = apiGroup?.serviceApiGroupId ?? ''
   const [queryParams, setQueryParams] = useSearchParamsState(
     'endpointId',
     'env'
@@ -117,7 +116,7 @@ export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
       normalizedProtocol === 'rest' ||
       normalizedProtocol === 'openapi' ||
       normalizedProtocol === 'swagger'
-    if (!isRestLikeProtocol || !specFileId) {
+    if (!isRestLikeProtocol || !apiGroupId || !organizationId) {
       setOpenApiSpec(null)
       return
     }
@@ -126,17 +125,13 @@ export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
 
     async function run() {
       try {
-        const { data } = await privateClient.query({
-          query: GET_FILE_BY_ID_QUERY,
-          variables: { fileId: specFileId! },
+        const { data } = await clientV2.query({
+          query: API_GROUP_SPEC,
+          variables: { orgId: organizationId!, serviceId, apiGroupId },
           fetchPolicy: 'cache-first',
         })
-        const downloadURL = data?.GetFileByID?.fileDownloadURL
-        if (!downloadURL) return
-
-        const response = await fetch(downloadURL)
-        if (!response.ok) return
-        const raw = await response.text()
+        const raw = data?.apiGroupSpec?.content
+        if (raw == null) return
 
         let parsed: unknown = null
         try {
@@ -158,7 +153,7 @@ export function ServiceApiEndpoints({ specFileId }: { specFileId?: string }) {
     return () => {
       cancelled = true
     }
-  }, [protocol, specFileId])
+  }, [protocol, organizationId, serviceId, apiGroupId])
 
   const isGraphQL = protocol === 'graphql'
   const isGrpc = protocol === 'grpc'

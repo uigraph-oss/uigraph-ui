@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api-v2/client'
+import { clientV2 } from '@/api/client'
 import { GitIcon, JiraIcon, SlackIcon } from '@/assets/svgs'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TagInput } from '@/features/component-meta'
-import { TEAMS_V2 } from '@/features/dashboard-diagrams/api/teams-v2'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -65,7 +65,7 @@ export function ConfigureServiceModal({
   onSubmit,
 }: ConfigureServiceModalProps) {
   const orgId = useCurrentOrganization().id
-  const teamRes = useQuery(TEAMS_V2, {
+  const teamRes = useQuery(TEAMS, {
     client: clientV2,
     variables: { orgId: orgId! },
     skip: !orgId,

@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { FrameLinkV2 } from '@/features/dashboard-pages/api/links-v2'
+import { FrameLinkV2 } from '@/features/dashboard-pages/api/links'
 import { cn } from '@/lib/utils'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'

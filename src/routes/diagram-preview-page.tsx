@@ -1,8 +1,5 @@
-import { clientV2 } from '@/api-v2/client'
-import {
-  DIAGRAM_CONTENT_V2,
-  DIAGRAM_V2,
-} from '@/features/diagram-portal/api/diagram-v2'
+import { clientV2 } from '@/api/client'
+import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -21,7 +18,7 @@ export function DiagramPreviewPage() {
 
   const skip = !diagramId || !organizationId
 
-  const { data, loading } = useQuery(DIAGRAM_V2, {
+  const { data, loading } = useQuery(DIAGRAM, {
     client: clientV2,
     variables: { orgId: organizationId!, id: diagramId! },
     fetchPolicy: 'cache-first',
@@ -29,7 +26,7 @@ export function DiagramPreviewPage() {
   })
 
   const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT_V2,
+    DIAGRAM_CONTENT,
     {
       client: clientV2,
       variables: { orgId: organizationId!, id: diagramId! },

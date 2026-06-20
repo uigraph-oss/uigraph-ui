@@ -12,7 +12,7 @@ import {
 import { useState } from 'react'
 import { FiChevronRight, FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import type { SettingsTeam } from '../api/teams-v2'
+import type { SettingsTeam } from '../api/teams'
 import { useTeamContext } from '../context/team-context'
 import { ConfigureTeamModal } from './configure-team-modal'
 

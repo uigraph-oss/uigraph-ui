@@ -1,6 +1,6 @@
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
-import type { UIComment } from '@/features/comments/api/comments-v2'
+import type { UIComment } from '@/features/comments/api/comments'
 import { InputEditor } from '@/features/comments/components/input-editor'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
