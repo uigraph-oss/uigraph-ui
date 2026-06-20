@@ -6,8 +6,8 @@ export const GET_ME_AND_ORG_V2 = graphql(`
       userId
       email
       name
-      role
       avatarUrl
+      isServerAdmin
     }
     myOrgs {
       id
