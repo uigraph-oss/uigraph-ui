@@ -20,6 +20,14 @@ export async function bootstrapSession() {
   }
 }
 
+export async function refreshOrganizations() {
+  const { data } = await clientV2.query({
+    query: GET_ME_AND_ORG,
+    fetchPolicy: 'network-only',
+  })
+  useAuthStore.setState({ organizations: data.myOrgs })
+}
+
 export async function signIn(email: string, password: string) {
   const res = await fetch('/api/v1/auth/login', {
     method: 'POST',

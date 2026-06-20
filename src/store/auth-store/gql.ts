@@ -12,9 +12,8 @@ export const GET_ME_AND_ORG = graphql(`
     myOrgs {
       id
       name
-      slug
       role
-      active
+      logoUrl
     }
   }
 `)

@@ -1,32 +1,27 @@
 'use client'
 import { clientV2 } from '@/api/client'
-import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useMutation, useQuery } from '@apollo/client'
-import { SquarePen } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import {
+  refreshOrganizations,
+  useCurrentOrganization,
+} from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
+import { Camera, SquarePen, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { ORG, UPDATE_ORG } from './api/organization'
+import { removeOrgLogo, setOrgLogo, UPDATE_ORG } from './api/organization'
 import { SettingsHeader } from './components/settings-header'
 
 export function OrganizationSettings() {
-  const organizationId = useCurrentOrganization()?.id
-
-  const { data, loading, refetch } = useQuery(ORG, {
-    client: clientV2,
-    variables: { id: organizationId! },
-    fetchPolicy: 'cache-first',
-    skip: !organizationId,
-  })
+  const org = useCurrentOrganization()
 
   const [updateOrg, { loading: isUpdating }] = useMutation(UPDATE_ORG, {
     client: clientV2,
-    onCompleted: () => {
+    onCompleted: async () => {
+      await refreshOrganizations()
       toast.success('Organization updated successfully')
-      void refetch()
       setIsEditingName(false)
     },
     onError: (error) => {
@@ -34,36 +29,73 @@ export function OrganizationSettings() {
     },
   })
 
-  const orgData = data?.org
-
   const [isEditingName, setIsEditingName] = useState(false)
   const [name, setName] = useState('')
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (orgData?.name) {
-      setName(orgData.name)
+    if (org?.name) {
+      setName(org.name)
     }
-  }, [orgData])
+  }, [org?.name])
 
   async function handleUpdateName() {
-    if (!orgData?.id) {
+    if (!org?.id) {
       toast.error('Organization ID not found')
       return
     }
 
     await updateOrg({
       variables: {
-        id: orgData.id,
+        id: org.id,
         input: { name },
       },
     })
   }
 
-  if (loading) {
-    return <SectionLoader label="Loading organization..." />
+  async function handleLogoSelected(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) {
+      return
+    }
+    if (!org?.id) {
+      toast.error('Organization ID not found')
+      return
+    }
+    setIsUploadingLogo(true)
+    try {
+      await setOrgLogo(org.id, file)
+      await refreshOrganizations()
+      toast.success('Logo updated successfully')
+    } catch {
+      toast.error('Failed to upload logo')
+    } finally {
+      setIsUploadingLogo(false)
+    }
   }
 
-  if (!orgData) {
+  async function handleRemoveLogo() {
+    if (!org?.id) {
+      toast.error('Organization ID not found')
+      return
+    }
+    setIsUploadingLogo(true)
+    try {
+      await removeOrgLogo(org.id)
+      await refreshOrganizations()
+      toast.success('Logo removed successfully')
+    } catch {
+      toast.error('Failed to remove logo')
+    } finally {
+      setIsUploadingLogo(false)
+    }
+  }
+
+  if (!org) {
     return <SectionNotFound label="Organization not found" />
   }
 
@@ -101,7 +133,7 @@ export function OrganizationSettings() {
                   className="h-9"
                   onClick={() => {
                     setIsEditingName(false)
-                    setName(orgData.name || '')
+                    setName(org.name || '')
                   }}
                   disabled={isUpdating}
                 >
@@ -112,8 +144,33 @@ export function OrganizationSettings() {
           </div>
           <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-colors hover:bg-gray-50">
             <div className="flex items-center space-x-4">
-              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-lg bg-green-500 text-lg font-bold text-white">
-                {orgData.name?.substring(0, 2).toUpperCase() || 'OR'}
+              <div className="relative h-28 w-28 shrink-0">
+                <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-lg bg-green-500 text-lg font-bold text-white">
+                  {org.logoUrl ? (
+                    <img
+                      src={org.logoUrl}
+                      alt={org.name ?? 'Organization logo'}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    org.name?.substring(0, 2).toUpperCase() || 'OR'
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingLogo}
+                  className="absolute right-1 bottom-1 flex size-7 items-center justify-center rounded-full bg-[#015AEB] text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Camera className="size-4" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoSelected}
+                />
               </div>
               <div className="flex-1 space-y-1">
                 <label className="text-sm font-medium text-gray-500">
@@ -128,8 +185,19 @@ export function OrganizationSettings() {
                   />
                 ) : (
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {orgData.name}
+                    {org.name}
                   </h2>
+                )}
+                {org.logoUrl && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveLogo}
+                    disabled={isUploadingLogo}
+                    className="flex items-center gap-1.5 pt-1 text-sm text-red-600 transition-colors hover:text-red-700 disabled:cursor-not-allowed disabled:text-gray-400"
+                  >
+                    <Trash2 className="size-3.5" />
+                    Remove logo
+                  </button>
                 )}
               </div>
             </div>
