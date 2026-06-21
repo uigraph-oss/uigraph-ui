@@ -42,11 +42,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Custom */
-  --color-stock: #e5e7e9;
-  --color-shading: #f9fbfc;
-  --color-shading-gray: #f5f5f7;
+  --color-stock: #2a3242;
+  --color-shading: #141925;
+  --color-shading-gray: #0b0e16;
 
-  --color-paragraph: #939395;
+  --color-paragraph: #828da3;
 
   --color-success: #21ad6d;
   --color-success-dark: #166434;
@@ -72,6 +72,31 @@
     height: 0;
     pointer-events: none;
     color: var(--color-paragraph);
+  }
+}
+
+@keyframes ug-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ug-glow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(59, 107, 255, 0.55),
+      0 8px 28px rgba(59, 107, 255, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(59, 107, 255, 0.7),
+      0 8px 36px rgba(59, 107, 255, 0.6);
   }
 }
 

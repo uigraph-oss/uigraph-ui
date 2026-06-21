@@ -1,3 +1,4 @@
+import { UigraphMark } from '@/components/logo'
 import { cn } from '@/lib/utils'
 
 const sizes = {
@@ -38,14 +39,8 @@ export function SuperLogoLoader({
       />
 
       {/* Logo */}
-      <div className="flex h-full w-full items-center justify-center">
-        <img
-          src="/icons/icon-blue-256.png"
-          alt="UIGraph"
-          width={px}
-          height={px}
-          className="animate-pulse rounded-full"
-        />
+      <div className="flex h-full w-full animate-pulse items-center justify-center">
+        <UigraphMark size={px} />
       </div>
     </div>
   )

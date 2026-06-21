@@ -44,7 +44,7 @@ export function EditOrganization({
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="h-[44px] rounded-[12.85px] border-[#E5E7E9] bg-white text-sm leading-[1.33] text-[#6B7480] hover:bg-gray-50"
+              className="h-[44px] rounded-[12.85px] border-[#E5E7E9] bg-transparent text-sm leading-[1.33] text-[#828DA3] hover:bg-[#1E2533]"
               onClick={onCancel}
             >
               <X className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function EditOrganization({
       />
 
       <div className="px-6 pb-6">
-        <div className="flex flex-col gap-8 rounded-[12px] border border-[#E5E7E9] p-6 lg:flex-row">
+        <div className="flex flex-col gap-8 rounded-[12px] border border-[#2A3242] p-6 lg:flex-row">
           <div className="flex flex-col items-center space-y-4">
             <div className="relative size-[110px] rounded-xl">
               <Avatar className="h-[110px] w-[110px] rounded-lg">
@@ -78,7 +78,7 @@ export function EditOrganization({
             <Button
               variant="outline"
               size="sm"
-              className="flex h-[44px] items-center gap-2 rounded-[12.85px] bg-[#E8E9EA] px-3 text-sm leading-[1.33] text-[#6B7480]"
+              className="flex h-[44px] items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] text-[#828DA3]"
             >
               <Upload className="h-4 w-4" />
               Upload Photo
@@ -92,7 +92,7 @@ export function EditOrganization({
                 <Input
                   id="name"
                   defaultValue={orgData.name}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
               <div className="space-y-2">
@@ -100,7 +100,7 @@ export function EditOrganization({
                 <Input
                   id="domain"
                   defaultValue={orgData.domain}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
             </div>
@@ -113,7 +113,7 @@ export function EditOrganization({
                 <Input
                   id="email"
                   defaultValue={orgData.email}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
               <div className="space-y-2">
@@ -123,7 +123,7 @@ export function EditOrganization({
                 <Input
                   id="phone"
                   defaultValue={orgData.phone}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
             </div>
@@ -136,7 +136,7 @@ export function EditOrganization({
                 <Input
                   id="country"
                   defaultValue={orgData.country}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
               <div className="space-y-2">
@@ -146,7 +146,7 @@ export function EditOrganization({
                 <Input
                   id="city"
                   defaultValue={orgData.city}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
             </div>
@@ -159,7 +159,7 @@ export function EditOrganization({
                 <Input
                   id="state"
                   defaultValue={orgData.state}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
               <div className="space-y-2">
@@ -169,7 +169,7 @@ export function EditOrganization({
                 <Input
                   id="zipCode"
                   defaultValue={orgData.zipCode}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@ export function EditOrganization({
                 <Input
                   id="address"
                   defaultValue={orgData.address}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
               <div className="space-y-2">
@@ -192,7 +192,7 @@ export function EditOrganization({
                 <Input
                   id="taxId"
                   defaultValue={orgData.taxId}
-                  className="h-14 rounded-[12px] border border-[#E5E7E9]"
+                  className="h-14 rounded-[12px] border border-[#2A3242]"
                 />
               </div>
             </div>
@@ -204,7 +204,7 @@ export function EditOrganization({
               <Textarea
                 id="description"
                 defaultValue={orgData.description}
-                className="focus:border-input min-h-[123px] rounded-[12px] border border-[#E5E7E9] focus:ring-0 focus:ring-offset-0"
+                className="focus:border-input min-h-[123px] rounded-[12px] border border-[#2A3242] focus:ring-0 focus:ring-offset-0"
               />
             </div>
           </form>

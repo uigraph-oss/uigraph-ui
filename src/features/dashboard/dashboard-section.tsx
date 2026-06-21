@@ -33,10 +33,10 @@ export function DashboardSectionHeader({
   description,
 }: PropsWithChildren<DashboardSectionHeaderProps>) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[#E5E7E9] bg-[#F9FBFC] px-4 py-6 pt-4">
+    <div className="bg-card flex items-center justify-between gap-4 border-b border-[#2A3242] px-4 py-6 pt-4">
       <div>
-        <h2 className="mb-2 text-xl font-semibold text-[#111110]">{title}</h2>
-        <p className="text-sm leading-[1.33] font-normal text-[#939395]">
+        <h2 className="mb-2 text-xl font-semibold text-[#F4F7FC]">{title}</h2>
+        <p className="text-sm leading-[1.33] font-normal text-[#828DA3]">
           {description}
         </p>
       </div>

@@ -1,18 +1,13 @@
 'use client'
 
-import lockIcon from '@/assets/icons/lock.svg'
-import backgroundImg from '@/assets/images/auth/background.png'
-import signinImg from '@/assets/images/auth/signup.png'
 import { CircleLoader } from '@/components/loader/circle-loader'
-import { Button } from '@/components/ui/button'
+import { UigraphMark } from '@/components/logo'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { Paths } from '@/constants'
 import { useOAuthProviders } from '@/hooks/use-oauth-providers'
 import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { EyeIcon, EyeOff, Mail } from 'lucide-react'
+import { EyeIcon, EyeOff, Lock, Mail } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -30,7 +25,7 @@ export function SignInForm() {
   const navigate = useNavigate()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const status = useAuthStore((state) => state.status)
   const user = useAuthStore((state) => state.user)
@@ -38,10 +33,7 @@ export function SignInForm() {
 
   const methods = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   })
 
   useEffect(() => {
@@ -50,16 +42,13 @@ export function SignInForm() {
       return
     }
 
-    const { search } = window.location
-    const query = new URLSearchParams(search)
-
+    const query = new URLSearchParams(window.location.search)
     const redirect = query.get('redirect')
     const withToken = query.get('withToken')
 
     if (redirect) {
       localStorage.setItem('redirect', JSON.stringify({ redirect, withToken }))
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
@@ -67,7 +56,6 @@ export function SignInForm() {
     try {
       setLoading(true)
       setError('')
-
       await signIn(values.email, values.password)
 
       void navigate(Paths.dashboard.root)
@@ -90,190 +78,306 @@ export function SignInForm() {
     )
   }
 
+  function handleSSO() {
+    const provider = oAuthProviders[0]
+    if (!provider) return
+    trackGTag('login', { method: provider.name })
+    window.location.href = provider.loginUrl
+  }
+
   return (
-    <div className="bg-project-background-white flex min-h-screen flex-col gap-[3rem] p-2 *:flex-1 lg:flex-row lg:pr-[3rem] xl:gap-[5.9375rem] xl:py-1.5 xl:pr-[5.9375rem] xl:pl-1.5">
-      {/* Left Section - Promotional Content */}
+    <div
+      className="relative flex min-h-screen flex-col items-center justify-center px-6 py-12"
+      style={{
+        background: '#0B0E16',
+        backgroundImage:
+          'radial-gradient(rgba(59,107,255,0.10) 1px, transparent 1px)',
+        backgroundSize: '22px 22px',
+        fontFamily: 'var(--font-jakarta, var(--font-poppins), sans-serif)',
+      }}
+    >
+      {/* Ambient glow */}
       <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0"
         style={{
-          backgroundImage: `url(${backgroundImg.src})`,
+          height: 400,
+          background:
+            'radial-gradient(ellipse at 50% 0%, rgba(59,107,255,0.12) 0%, transparent 70%)',
         }}
-        className="relative flex flex-col items-center justify-center overflow-hidden rounded-3xl bg-cover bg-no-repeat p-6 text-white *:flex-1 lg:p-[3.590625rem]"
+      />
+
+      {/* Card */}
+      <div
+        className="relative z-10 w-full"
+        style={{
+          maxWidth: 420,
+          background: '#141925',
+          border: '1px solid #2A3242',
+          borderRadius: 20,
+          padding: '40px 40px 36px',
+          boxShadow:
+            '0 1px 0 rgba(255,255,255,0.04) inset, 0 24px 60px rgba(0,0,0,0.55)',
+          animation: 'ug-fade-up 0.45s cubic-bezier(0.22,1,0.36,1) both',
+        }}
       >
-        <div className="flex flex-col items-center justify-center">
-          <div className="z-10 max-w-md text-center xl:pt-[3.75rem]">
-            <h1 className="text-[2rem] leading-[1.2] font-medium text-white xl:text-[2.62rem]">
-              Start mapping today.
-            </h1>
-            <p className="mt-4 text-[1.125rem] leading-[1.4] text-white/80 xl:text-[1.25rem]">
-              Turn your UI into a live map of APIs, logic, and data — all in one
-              place.
-            </p>
-
-            {/* User avatars and trust indicator */}
-            {/* <div className="flex flex-col items-center justify-center gap-2 pt-[2rem] sm:flex-row">
-              <div className="flex -space-x-2">
-                <div className="border-project-blue1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-orange-400 text-xs font-bold">
-                  <img src={trustedImg1.src} alt="trusted-img-1" />
-                </div>
-                <div className="border-project-blue1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-[#D9D9D9] text-xs font-bold">
-                  <img src={trustedImg2.src} alt="trusted-img-1" />
-                </div>
-                <div className="border-project-blue1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-[#D9D9D9] text-xs font-bold">
-                  <img src={trustedImg3.src} alt="trusted-img-1" />
-                </div>
-                <div className="border-project-blue1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-[#D9D9D9] text-xs font-bold"></div>
-                <div className="border-project-blue1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-[#D9D9D9] text-xs font-bold"></div>
-              </div>
-              <span className="ml-2 text-[22px] leading-[1.6] font-normal whitespace-nowrap text-white">
-                Trusted by 25,000+ users!
-              </span>
-            </div> */}
-          </div>
-          {/* UI Preview Image */}
-
-          <div className="flex justify-center pt-[0.25rem] xl:pt-[0.5rem]">
-            <img
-              src={signinImg.src}
-              alt="UI Mapping Tool Preview"
-              className="h-auto w-full rounded"
-            />
-          </div>
+        {/* Logo + wordmark */}
+        <div className="mb-8 flex items-center gap-2.5">
+          <UigraphMark />
+          <span
+            style={{
+              fontFamily:
+                'var(--font-space-grotesk, var(--font-poppins), sans-serif)',
+              fontSize: 17,
+              fontWeight: 600,
+              color: '#F4F7FC',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            UIGraph
+          </span>
         </div>
-      </div>
 
-      {/* Right Section - Login Form */}
-      <div className="flex flex-col justify-center">
-        <div>
-          <div className="mb-8 text-center">
-            <h2 className="text-project-black1 mb-2 text-2xl leading-[1] font-medium">
-              Welcome Back!
-            </h2>
-          </div>
+        {/* Heading */}
+        <h1
+          style={{
+            fontFamily:
+              'var(--font-space-grotesk, var(--font-poppins), sans-serif)',
+            fontSize: 26,
+            fontWeight: 700,
+            color: '#F4F7FC',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.15,
+            marginBottom: 6,
+          }}
+        >
+          Welcome back
+        </h1>
+        <p style={{ fontSize: 14, color: '#828DA3', marginBottom: 28 }}>
+          Sign in to your UIGraph workspace
+        </p>
 
-          <form onSubmit={methods.handleSubmit(onLogin)}>
-            <div className="space-y-[0.75rem]">
-              <Label
-                htmlFor="email"
-                className="text-project-black1 text-lg leading-[1] font-normal"
-              >
-                Email address
-              </Label>
-
-              <div className="relative w-full">
-                <div className="absolute top-1/2 left-6 -translate-y-1/2 transform text-gray-400">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <Controller
-                  name="email"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="example@gmail.com"
-                      className="placeholder:text-project-gray1 h-[3rem] w-full rounded-[1rem] border-[0.0625rem] border-[#E5E7E9] pr-6 pl-14 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-[3.5rem]"
-                    />
-                  )}
-                />
-              </div>
-              {methods.formState.errors.email && (
-                <p className="mt-1 text-sm text-red-500">
-                  {methods.formState.errors.email.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-[0.75rem] pt-[1.5rem]">
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="password"
-                  className="text-project-black1 text-lg leading-[1] font-normal"
-                >
-                  Password
-                </Label>
-                <button
-                  onClick={handleForgotPassword}
-                  className="text-project-blue1 block cursor-pointer text-[1rem] duration-300 hover:text-blue-500"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div className="relative w-full">
-                <div className="absolute top-1/2 left-6 -translate-y-1/2 transform text-gray-400">
-                  <img src={lockIcon.src} alt="lock-icon" />
-                </div>
-                <Controller
-                  name="password"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
-                      className="placeholder:text-project-gray1 h-[3rem] w-full rounded-[1rem] border-[0.0625rem] border-[#E5E7E9] pr-6 pl-14 shadow-[#0000000A] focus:outline-none md:h-[3.5rem]"
-                    />
-                  )}
-                />
-                <div
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute top-1/2 right-6 -translate-y-1/2 transform cursor-pointer text-gray-400"
-                >
-                  {showPassword ? (
-                    <EyeIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeOff className="h-5 w-5" />
-                  )}
-                </div>
-              </div>
-              {methods.formState.errors.password && (
-                <p className="mt-1 text-sm text-red-500">
-                  {methods.formState.errors.password.message}
-                </p>
-              )}
-            </div>
-
-            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
-
-            <Button
-              disabled={loading}
-              className="mt-[2rem] h-[3rem] w-full cursor-pointer rounded-[1.5rem] bg-blue-600 px-4 py-2 text-lg leading-[1] font-medium text-white hover:bg-blue-700 md:h-[3.5rem]"
+        <form onSubmit={methods.handleSubmit(onLogin)}>
+          {/* Email */}
+          <div style={{ marginBottom: 14 }}>
+            <label
+              htmlFor="email"
+              style={{
+                display: 'block',
+                fontSize: 13,
+                fontWeight: 500,
+                color: '#D2D9E6',
+                marginBottom: 6,
+              }}
             >
-              {loading && <CircleLoader />}
-              Login Now
-            </Button>
-          </form>
-
-          {oAuthProviders.length > 0 && (
-            <div className="pt-4 md:pt-[3.84375rem]">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full bg-[#E5E7E9]" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="text-project-gray1 bg-gray-50 px-2 text-lg font-medium">
-                    OR
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-3 pt-4 md:pt-[2.34375rem]">
-                {oAuthProviders.map((provider) => (
-                  <Button
-                    key={provider.name}
-                    variant="outline"
-                    onClick={() => {
-                      window.location.href = provider.loginUrl
-                    }}
-                    className="border-project-gray2 flex h-[3rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.5rem] border bg-white px-4 py-2 text-lg leading-[1] font-normal text-[#111110] hover:bg-gray-50 md:h-[3.5rem]"
-                  >
-                    Continue with {provider.displayName}
-                  </Button>
-                ))}
-              </div>
+              Email address
+            </label>
+            <div className="relative">
+              <Mail
+                size={15}
+                className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+                style={{ color: '#586378' }}
+              />
+              <Controller
+                name="email"
+                control={methods.control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="email"
+                    type="email"
+                    placeholder="you@company.com"
+                    className="h-10 w-full rounded-[10px] border-[#2A3242] bg-[#0F131D] pl-[38px] text-sm text-[#F4F7FC] placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:ring-[rgba(92,132,255,0.45)]"
+                  />
+                )}
+              />
             </div>
-          )}
-        </div>
+            {methods.formState.errors.email && (
+              <p className="mt-1 text-xs text-red-400">
+                {methods.formState.errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div style={{ marginBottom: 22 }}>
+            <div className="mb-1.5 flex items-baseline justify-between">
+              <label
+                htmlFor="password"
+                style={{ fontSize: 13, fontWeight: 500, color: '#D2D9E6' }}
+              >
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                style={{
+                  fontSize: 12,
+                  color: '#5C84FF',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                Forgot password?
+              </button>
+            </div>
+            <div className="relative">
+              <Lock
+                size={15}
+                className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+                style={{ color: '#586378' }}
+              />
+              <Controller
+                name="password"
+                control={methods.control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    className="h-10 w-full rounded-[10px] border-[#2A3242] bg-[#0F131D] pr-10 pl-[38px] text-sm text-[#F4F7FC] placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:ring-[rgba(92,132,255,0.45)]"
+                  />
+                )}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#586378',
+                  padding: 2,
+                }}
+              >
+                {showPassword ? <EyeIcon size={16} /> : <EyeOff size={16} />}
+              </button>
+            </div>
+            {methods.formState.errors.password && (
+              <p className="mt-1 text-xs text-red-400">
+                {methods.formState.errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+
+          {/* Sign in CTA */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex w-full cursor-pointer items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+            style={{
+              padding: '12px 24px',
+              background: '#3B6BFF',
+              border: 'none',
+              borderRadius: 10,
+              color: '#fff',
+              fontFamily:
+                'var(--font-jakarta, var(--font-poppins), sans-serif)',
+              fontSize: 15,
+              fontWeight: 600,
+              letterSpacing: '-0.01em',
+              marginBottom: 28,
+              animation: 'ug-glow-pulse 3s ease-in-out infinite',
+              transition: 'background 0.15s, transform 0.1s',
+            }}
+          >
+            {loading ? (
+              <CircleLoader />
+            ) : (
+              <>
+                Sign in
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </>
+            )}
+          </button>
+        </form>
+
+        {oAuthProviders.length > 0 && (
+          <>
+            {/* Divider */}
+            <div className="mb-3.5 flex items-center gap-3">
+              <div style={{ flex: 1, height: 1, background: '#2A3242' }} />
+              <span
+                style={{
+                  fontSize: 11,
+                  color: '#586378',
+                  fontFamily: 'var(--font-jetbrains, monospace)',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                or
+              </span>
+              <div style={{ flex: 1, height: 1, background: '#2A3242' }} />
+            </div>
+
+            {/* SSO button */}
+            <button
+              type="button"
+              onClick={handleSSO}
+              className="flex w-full cursor-pointer items-center justify-center gap-2 transition-colors hover:border-[#3B4658] hover:bg-[#1E2533] hover:text-[#F4F7FC]"
+              style={{
+                padding: '11px 16px',
+                background: 'transparent',
+                border: '1px solid #3B4658',
+                borderRadius: 10,
+                color: '#D2D9E6',
+                fontFamily:
+                  'var(--font-jakarta, var(--font-poppins), sans-serif)',
+                fontSize: 14,
+                fontWeight: 500,
+                letterSpacing: '-0.01em',
+              }}
+            >
+              <Lock size={15} style={{ color: '#828DA3' }} />
+              Continue with SSO
+            </button>
+          </>
+        )}
       </div>
+
+      {/* Footer */}
+      <p style={{ marginTop: 24, fontSize: 12, color: '#586378' }}>
+        © 2026 UIGraph · Open Source ·{' '}
+        {/* <a
+          href="#"
+          style={{
+            color: '#586378',
+            textDecoration: 'none',
+            borderBottom: '1px solid #3B4658',
+          }}
+        >
+          Privacy
+        </a>
+        {' · '}
+        <a
+          href="#"
+          style={{
+            color: '#586378',
+            textDecoration: 'none',
+            borderBottom: '1px solid #3B4658',
+          }}
+        >
+          Terms
+        </a> */}
+      </p>
     </div>
   )
 }

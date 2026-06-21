@@ -34,7 +34,7 @@ const buttonVariants = cva(
           "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-[1.125rem] [&_[role='svg']]:size-[1.125rem] rounded-[0.80315625rem] px-4 has-[>svg]:px-4 font-normal shadow-none leading-[1.33] bg-primary text-primary-foreground hover:bg-primary/90",
 
         outline:
-          "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-[1.125rem] [&_[role='svg']]:size-[1.125rem] rounded-[0.80315625rem] px-4 has-[>svg]:px-4 font-normal shadow-none leading-[1.33] border border-stock bg-white text-foreground/80 hover:text-foreground hover:bg-stock",
+          "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-[1.125rem] [&_[role='svg']]:size-[1.125rem] rounded-[0.80315625rem] px-4 has-[>svg]:px-4 font-normal shadow-none leading-[1.33] border border-stock bg-transparent text-foreground/80 hover:text-foreground hover:bg-stock",
 
         ghost:
           "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-[1.125rem] [&_[role='svg']]:size-[1.125rem] rounded-[0.80315625rem] px-4 has-[>svg]:px-4 font-normal shadow-none leading-[1.33] bg-transparent text-foreground hover:text-foreground hover:bg-stock",

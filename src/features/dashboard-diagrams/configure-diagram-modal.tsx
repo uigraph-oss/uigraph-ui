@@ -126,7 +126,7 @@ export function ConfigureDiagramModal({
         <div className="space-y-2">
           <Label
             htmlFor="diagram-name"
-            className="text-sm font-medium text-[#111110]"
+            className="text-foreground text-sm font-medium"
           >
             Name
           </Label>
@@ -138,7 +138,7 @@ export function ConfigureDiagramModal({
                 id="diagram-name"
                 {...field}
                 placeholder="Enter flow name"
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="none"
@@ -155,13 +155,15 @@ export function ConfigureDiagramModal({
         {mode === 'create' && (
           <div className="space-y-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-[#6B7280]">Team</Label>
+              <Label className="text-muted-foreground text-xs font-medium">
+                Team
+              </Label>
               <Controller
                 name="teamId"
                 control={form.control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm">
+                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#2A3242] bg-[#1E2533] px-3 text-sm">
                       <SelectValue placeholder="Select a team" />
                     </SelectTrigger>
                     <SelectContent>
@@ -182,8 +184,8 @@ export function ConfigureDiagramModal({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-[#6B7280]">
-                Folder <span className="text-[#9CA3AF]">(optional)</span>
+              <Label className="text-muted-foreground text-xs font-medium">
+                Folder <span className="text-muted-foreground">(optional)</span>
               </Label>
               <Controller
                 name="folderId"
@@ -196,7 +198,7 @@ export function ConfigureDiagramModal({
                     }
                     disabled={!selectedTeamId}
                   >
-                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm disabled:opacity-60">
+                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#2A3242] bg-[#1E2533] px-3 text-sm disabled:opacity-60">
                       <SelectValue
                         placeholder={
                           selectedTeamId ? 'No folder' : 'Select a team first'

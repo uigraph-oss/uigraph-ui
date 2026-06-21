@@ -94,7 +94,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="h-[44px] rounded-[12.85px] border-[#E5E7E9] bg-white text-sm leading-[1.33] text-[#6B7480] hover:bg-gray-50"
+              className="h-[44px] rounded-[12.85px] border-[#E5E7E9] bg-transparent text-sm leading-[1.33] text-[#828DA3] hover:bg-[#1E2533]"
               onClick={onCancel}
               disabled={isUpdating || isUploadingImage}
             >
@@ -112,7 +112,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
         }
       />
 
-      <div className="flex flex-col gap-8 rounded-[12px] border border-[#E5E7E9] p-6 lg:flex-row">
+      <div className="flex flex-col gap-8 rounded-[12px] border border-[#2A3242] p-6 lg:flex-row">
         <div className="flex flex-col items-center space-y-4">
           <div className="relative size-[110px] rounded-full">
             <Avatar className="h-[110px] w-[110px]">
@@ -146,7 +146,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
           <Button
             variant="outline"
             size="sm"
-            className="flex h-[44px] items-center gap-2 rounded-[12.85px] bg-[#E8E9EA] px-3 text-sm leading-[1.33] text-[#6B7480] hover:bg-gray-100"
+            className="flex h-[44px] items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] text-[#828DA3] hover:bg-[#1E2533]"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploadingImage}
           >
@@ -164,7 +164,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="h-14 rounded-[12px] border border-[#E5E7E9]"
+              className="h-14 rounded-[12px] border border-[#2A3242]"
               disabled={isUpdating}
             />
           </div>
@@ -176,10 +176,10 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
             <Input
               id="email"
               defaultValue={user.email || initialData.email}
-              className="h-14 rounded-[12px] border border-[#E5E7E9] bg-gray-50"
+              className="h-14 rounded-[12px] border border-[#2A3242] bg-[#1E2533]"
               disabled
             />
-            <p className="text-xs text-gray-500">Email cannot be changed</p>
+            <p className="text-xs text-[#828DA3]">Email cannot be changed</p>
           </div>
         </form>
       </div>

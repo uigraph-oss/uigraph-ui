@@ -165,7 +165,7 @@ export function UserDropdownMenu() {
                   <DropdownMenuItem
                     key={organization.id}
                     className={cn(
-                      'h-[2.75rem] cursor-pointer gap-3 rounded-lg px-2 transition-colors hover:bg-black/[0.04]',
+                      'h-[2.75rem] cursor-pointer gap-3 rounded-lg px-2 transition-colors hover:bg-white/[0.06]',
                       isActive && 'bg-black/[0.04]'
                     )}
                     onClick={() => {
@@ -214,7 +214,7 @@ export function UserDropdownMenu() {
           {user?.isServerAdmin && (
             <DropdownMenuItem
               asChild
-              className="h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-black/[0.04]"
+              className="h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-white/[0.06]"
             >
               <Link to="/server">
                 <Shield className="size-4" />
@@ -228,7 +228,7 @@ export function UserDropdownMenu() {
               await signOut()
               window.location.href = '/sign-in'
             }}
-            className="text-destructive focus:text-destructive hover:text-destructive h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-red-50 focus:bg-red-50"
+            className="text-destructive focus:text-destructive hover:text-destructive h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-red-500/10 focus:bg-red-500/10"
           >
             <LogoutIcon className="size-4" />
             Logout

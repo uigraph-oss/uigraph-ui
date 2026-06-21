@@ -43,15 +43,15 @@ export function TeamList() {
   return (
     <>
       <div className="px-6 pt-4">
-        <div className="space-y-6 overflow-hidden rounded-[12px] border border-[#E5E7E9]">
+        <div className="space-y-6 overflow-hidden rounded-[12px] border border-[#2A3242]">
           <div className="flex justify-between px-6 pt-6">
             <div className="relative w-80">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-[#586378]" />
               <Input
                 placeholder="Search teams..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 min-w-[440px] rounded-[12px] border-gray-300 bg-white pl-10"
+                className="h-12 min-w-[440px] rounded-[12px] border-[#2A3242] bg-transparent pl-10"
               />
             </div>
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
@@ -88,7 +88,7 @@ export function TeamList() {
       </div>
 
       <div className="mt-4 flex items-center justify-between px-6">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-[#828DA3]">
           Total <span className="font-medium">{filteredTeams.length}</span>{' '}
           users
         </p>

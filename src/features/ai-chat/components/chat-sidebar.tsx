@@ -86,7 +86,7 @@ export function ChatSidebar({
   return (
     <aside className="border-stock bg-shading flex h-full min-h-0 flex-col border-r">
       <div className="p-4 pb-2">
-        <h2 className="text-lg font-semibold text-[#111110]">AI Assist</h2>
+        <h2 className="text-lg font-semibold text-[#F4F7FC]">AI Assist</h2>
         <p className="text-paragraph mt-0.5 text-sm">
           Ask about your architecture
         </p>
@@ -99,7 +99,7 @@ export function ChatSidebar({
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
             placeholder="Search conversations..."
-            className="h-10 bg-white pr-3 pl-9 text-sm"
+            className="h-10 bg-transparent pr-3 pl-9 text-sm"
           />
         </div>
       </div>
@@ -145,7 +145,7 @@ export function ChatSidebar({
                     <p
                       className={cn(
                         'w-full truncate text-[13px] font-medium',
-                        isActive ? 'text-primary' : 'text-[#111110]'
+                        isActive ? 'text-primary' : 'text-[#D2D9E6]'
                       )}
                     >
                       {item.isPinned ? (
@@ -273,12 +273,12 @@ export function ChatSidebar({
           }}
         >
           <div className="space-y-2">
-            <p className="text-sm font-medium text-[#111110]">Title</p>
+            <p className="text-sm font-medium text-[#F4F7FC]">Title</p>
             <Input
               value={renamingValue}
               onChange={(event) => setRenamingValue(event.target.value)}
               placeholder="Conversation title"
-              className="h-11 rounded-[12px] bg-white"
+              className="h-11 rounded-[12px] bg-transparent"
             />
           </div>
         </BetterDialogContent>

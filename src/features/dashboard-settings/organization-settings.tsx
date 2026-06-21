@@ -108,13 +108,13 @@ export function OrganizationSettings() {
       <div className="space-y-6 p-6">
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-[#F4F7FC]">
               Organization Profile
             </h2>
             {!isEditingName ? (
               <button
                 onClick={() => setIsEditingName(true)}
-                className="flex h-9 items-center gap-2 rounded-lg bg-[#E8E9EA] px-3 text-sm font-normal transition-colors hover:bg-gray-100"
+                className="flex h-9 items-center gap-2 rounded-lg bg-[#2A3242] px-3 text-sm font-normal text-[#D2D9E6] transition-colors hover:bg-[#3B4658]"
               >
                 <SquarePen className="h-4 w-4" />
                 Edit
@@ -142,7 +142,7 @@ export function OrganizationSettings() {
               </div>
             )}
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-colors hover:bg-gray-50">
+          <div className="bg-card rounded-2xl border border-[#2A3242] p-6 transition-colors hover:bg-[#1E2533]">
             <div className="flex items-center space-x-4">
               <div className="relative h-28 w-28 shrink-0">
                 <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-lg bg-green-500 text-lg font-bold text-white">
@@ -173,18 +173,18 @@ export function OrganizationSettings() {
                 />
               </div>
               <div className="flex-1 space-y-1">
-                <label className="text-sm font-medium text-gray-500">
+                <label className="text-sm font-medium text-[#828DA3]">
                   Name
                 </label>
                 {isEditingName ? (
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-10 rounded-lg border border-gray-200"
+                    className="h-10 rounded-lg border border-[#2A3242] bg-transparent"
                     placeholder="Organization name"
                   />
                 ) : (
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-[#F4F7FC]">
                     {org.name}
                   </h2>
                 )}

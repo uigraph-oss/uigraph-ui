@@ -80,9 +80,9 @@ export function AiChatIndexPage() {
           className="flex flex-col items-center gap-3 text-center"
         >
           <div className="bg-primary/8 mb-1 flex size-14 items-center justify-center rounded-2xl">
-            <LuBrain strokeWidth={1.5} className="size-8 text-blue-900" />
+            <LuBrain strokeWidth={1.5} className="size-8 text-[#5C84FF]" />
           </div>
-          <h2 className="text-xl font-semibold tracking-tight text-[#111110]">
+          <h2 className="text-xl font-semibold tracking-tight text-[#F4F7FC]">
             What can I help you explore?
           </h2>
           <p className="text-paragraph max-w-md text-sm leading-relaxed">
@@ -110,13 +110,13 @@ export function AiChatIndexPage() {
                 setDraft(s.prompt)
                 formRef.current?.querySelector('textarea')?.focus()
               }}
-              className="group border-stock hover:border-primary/25 flex items-start gap-3 rounded-xl border bg-white p-3.5 text-left transition-all hover:shadow-sm disabled:opacity-50"
+              className="group border-stock hover:border-primary/25 flex items-start gap-3 rounded-xl border bg-[#141925] p-3.5 text-left transition-all hover:bg-[#1E2533] hover:shadow-sm disabled:opacity-50"
             >
               <div className="bg-shading text-paragraph group-hover:text-primary group-hover:bg-primary/8 flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors">
                 <s.icon className="size-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[13px] font-medium text-[#111110]">
+                <p className="text-[13px] font-medium text-[#F4F7FC]">
                   {s.label}
                 </p>
                 <p className="text-paragraph mt-0.5 line-clamp-1 text-xs">
@@ -160,7 +160,7 @@ export function AiChatIndexPage() {
                 }
               }}
               placeholder="Ask anything about your UiGraph..."
-              className="border-stock focus-visible:border-primary/30 focus-visible:ring-primary/10 min-h-[80px] resize-none rounded-xl bg-white pr-14 text-sm shadow-none"
+              className="border-stock focus-visible:border-primary/30 focus-visible:ring-primary/10 min-h-[80px] resize-none rounded-xl bg-[#141925] pr-14 text-sm text-[#F4F7FC] shadow-none placeholder:text-[#586378]"
               disabled={isSending}
             />
             <div className="absolute right-2.5 bottom-2.5">

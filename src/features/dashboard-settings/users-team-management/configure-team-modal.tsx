@@ -53,7 +53,7 @@ export function ConfigureTeamModal({
             <div className="space-y-2">
               <Label
                 htmlFor="team-name"
-                className="text-sm font-medium text-[#111110]"
+                className="text-foreground text-sm font-medium"
               >
                 Team Name
               </Label>
@@ -61,7 +61,7 @@ export function ConfigureTeamModal({
                 {...field}
                 id="team-name"
                 placeholder="Enter your team name"
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
                 autoComplete="off"
               />
               {form.formState.errors.teamName && (
@@ -80,7 +80,7 @@ export function ConfigureTeamModal({
             <div className="space-y-2">
               <Label
                 htmlFor="team-description"
-                className="text-sm font-medium text-[#111110]"
+                className="text-foreground text-sm font-medium"
               >
                 Description
               </Label>
@@ -88,7 +88,7 @@ export function ConfigureTeamModal({
                 {...field}
                 id="team-description"
                 placeholder="Enter your team description"
-                className="min-h-[98px] resize-none rounded-[16px] border border-[#E5E7E9] bg-white px-4 py-3"
+                className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
               />
             </div>
           )}
