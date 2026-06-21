@@ -108,7 +108,7 @@ export function ConfigureServiceModal({
                 autoComplete="off"
                 autoCapitalize="off"
                 className={cn(
-                  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                  'h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none',
                   form.formState.errors.name && 'border-red-500'
                 )}
                 {...field}
@@ -136,13 +136,13 @@ export function ConfigureServiceModal({
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={cn(
-                    'h-[56px]! w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                    'h-[56px]! w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none',
                     form.formState.errors.category && 'border-red-500'
                   )}
                   id="category"
                 >
                   <SelectValue
-                    className="text-sm leading-[1.33] font-normal text-[#6B7480]"
+                    className="text-muted-foreground text-sm leading-[1.33] font-normal"
                     placeholder="Select a category"
                   />
                 </SelectTrigger>
@@ -181,7 +181,7 @@ export function ConfigureServiceModal({
                 autoComplete="off"
                 autoCapitalize="off"
                 className={cn(
-                  'min-h-[6.75rem] w-full resize-none rounded-[16px] border border-[#E5E7E9] bg-white p-6 text-sm leading-normal focus:outline-none',
+                  'min-h-[6.75rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none',
                   form.formState.errors.description && 'border-red-500'
                 )}
                 {...field}
@@ -215,7 +215,7 @@ export function ConfigureServiceModal({
                   autoCorrect="off"
                   autoComplete="off"
                   autoCapitalize="off"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -244,7 +244,7 @@ export function ConfigureServiceModal({
                   autoCorrect="off"
                   autoComplete="off"
                   autoCapitalize="off"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -277,7 +277,7 @@ export function ConfigureServiceModal({
                   autoCorrect="off"
                   autoComplete="off"
                   autoCapitalize="off"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -306,7 +306,7 @@ export function ConfigureServiceModal({
                   autoCorrect="off"
                   autoComplete="off"
                   autoCapitalize="off"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -339,7 +339,7 @@ export function ConfigureServiceModal({
                   autoCorrect="off"
                   autoComplete="off"
                   autoCapitalize="off"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -368,7 +368,7 @@ export function ConfigureServiceModal({
                   autoCorrect="off"
                   autoComplete="off"
                   autoCapitalize="off"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -400,13 +400,13 @@ export function ConfigureServiceModal({
               >
                 <SelectTrigger
                   className={cn(
-                    'h-[56px]! w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                    'h-[56px]! w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none',
                     form.formState.errors.teamId && 'border-red-500'
                   )}
                   id="teamId"
                 >
                   <SelectValue
-                    className="text-sm leading-[1.33] font-normal text-[#6B7480]"
+                    className="text-muted-foreground text-sm leading-[1.33] font-normal"
                     placeholder="Select a team"
                   />
                 </SelectTrigger>

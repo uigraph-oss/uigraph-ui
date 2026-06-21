@@ -11,15 +11,15 @@ export function SecuritySettings() {
       />
 
       <div className="space-y-6 p-6">
-        <div className="rounded-lg border border-gray-100 p-6">
+        <div className="rounded-lg border border-[#2A3242] p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="mb-1 text-[16px] font-medium text-[#6B7480]">
+              <h3 className="mb-1 text-[16px] font-medium text-[#828DA3]">
                 Password
               </h3>
               <p className="text-[#111110]">Last updated 3 months ago</p>
             </div>
-            <button className="font-sm flex h-[44px] items-center gap-1 rounded-[12px] bg-[#E8E9EA] px-3 leading-[1.33] font-normal">
+            <button className="font-sm flex h-[44px] items-center gap-1 rounded-[12px] bg-[#2A3242] px-3 leading-[1.33] font-normal">
               <img
                 className="size-[16px]"
                 src={forgotPasswordIcon.src}

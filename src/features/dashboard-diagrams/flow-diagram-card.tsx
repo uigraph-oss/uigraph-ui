@@ -68,13 +68,15 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
         target="_blank"
         to={portalLink}
         draggable={false}
-        className="relative block cursor-pointer overflow-hidden rounded-[1.4525rem] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#E2E4E6] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]"
+        className="relative block cursor-pointer overflow-hidden rounded-[1.4525rem] bg-[#141925] shadow-[0_1px_3px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.2)] ring-1 ring-[#2A3242] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(59,107,255,0.22),0_8px_24px_rgba(0,0,0,0.4)] hover:ring-2 hover:ring-[#3B6BFF]"
       >
         {/* Preview area — flush to card edges, clipped by overflow-hidden */}
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
-            previewSrc ? 'bg-[#F5F6F8] group-hover:bg-white' : 'bg-[#EDEEF1]'
+            previewSrc
+              ? 'bg-[#1E2533] group-hover:bg-[#252D3E]'
+              : 'bg-[#1A2030]'
           )}
         >
           {previewSrc && !imageError ? (
@@ -97,34 +99,34 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2">
-              <div className="flex size-10 items-center justify-center rounded-full bg-white/70">
-                <LuCloudUpload className="size-4 text-[#AAAAB0]" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-[#2A3242]/70">
+                <LuCloudUpload className="size-4 text-[#586378]" />
               </div>
-              <span className="text-[11px] font-medium text-[#AAAAB0]">
+              <span className="text-[11px] font-medium text-[#586378]">
                 Publish to get preview
               </span>
             </div>
           )}
           {/* Bottom fade for smooth transition into content */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-white/30 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
 
         {/* Thin divider */}
-        <div className="h-px bg-[#EBEBED]" />
+        <div className="h-px bg-[#2A3242]" />
 
         {/* Content */}
         <div className="px-4 py-3">
-          <h4 className="line-clamp-1 text-sm font-semibold text-[#111111]">
+          <h4 className="line-clamp-1 text-sm font-semibold text-[#F4F7FC]">
             {diagram.name ? (
               diagram.name.charAt(0).toUpperCase() + diagram.name.slice(1)
             ) : (
-              <span className="text-[#B0B0B2]">Blank Diagram</span>
+              <span className="text-[#586378]">Blank Diagram</span>
             )}
           </h4>
 
           <div className="mt-2 flex min-h-[1.75rem] items-center justify-between gap-2">
             {updatedDate ? (
-              <div className="flex min-w-0 items-center gap-1.5 text-[#B4B4B6]">
+              <div className="flex min-w-0 items-center gap-1.5 text-[#586378]">
                 <Calendar className="h-3 w-3 shrink-0" />
                 <span className="text-[11px]">
                   {format(updatedDate, 'dd MMM yyyy')}
@@ -148,11 +150,11 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
             size="icon"
             variant="ghost"
             className={cn(
-              'absolute top-2 right-2 h-7 w-7 rounded-lg bg-white/70 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white',
+              'absolute top-2 right-2 h-7 w-7 rounded-lg bg-[#1E2533]/80 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#2A3242]',
               isDropdownOpen && 'opacity-100'
             )}
           >
-            <MoreVerticalIcon className="h-3.5 w-3.5 text-[#555]" />
+            <MoreVerticalIcon className="h-3.5 w-3.5 text-[#828DA3]" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

@@ -1,3 +1,5 @@
+import { UigraphMark } from '@/components/logo'
+
 export function LogoLoader({ width = 128 }) {
   const height = width
   const ringSize = width + 16
@@ -16,17 +18,11 @@ export function LogoLoader({ width = 128 }) {
           top: '-8px',
           left: '-8px',
         }}
-      ></div>
+      />
 
       {/* Logo */}
       <div className="flex h-full w-full items-center justify-center">
-        <img
-          src="/icons/icon-blue-256.png"
-          alt="UIGraph"
-          width={width}
-          height={height}
-          className="rounded-full"
-        />
+        <UigraphMark size={width} />
       </div>
     </div>
   )

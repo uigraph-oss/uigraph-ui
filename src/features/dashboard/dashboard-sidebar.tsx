@@ -1,6 +1,6 @@
 'use client'
 
-import { UiGraphLogo } from '@/components/logo'
+import { UigraphMark } from '@/components/logo'
 import {
   Tooltip,
   TooltipContent,
@@ -15,13 +15,10 @@ export function DashboardSidebar() {
   const { pathname } = useLocation()
 
   return (
-    <aside className={'flex h-full flex-col gap-[1.31rem] bg-gray-100 py-4'}>
+    <aside className={'flex h-full flex-col gap-[1.31rem] bg-[#141925] py-4'}>
       <div className={'px-4'}>
-        <Link
-          to="/dashboard"
-          className={'flex items-center justify-center rounded-full'}
-        >
-          <UiGraphLogo className={'w-full'} />
+        <Link to="/dashboard" className={'flex items-center justify-center'}>
+          <UigraphMark size={42} />
         </Link>
       </div>
 
@@ -38,7 +35,7 @@ export function DashboardSidebar() {
                   item.disabled
                     ? 'text-paragraph cursor-not-allowed'
                     : [
-                        isActive || 'cursor-pointer hover:bg-gray-200',
+                        isActive || 'cursor-pointer hover:bg-[#1E2533]',
                         isActive && 'text-primary cursor-default',
                       ]
                 )}

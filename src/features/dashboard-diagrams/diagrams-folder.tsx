@@ -79,14 +79,14 @@ export function DiagramsFolder() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search folders and flows"
-          className="h-9 max-w-sm flex-1 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none focus-visible:bg-white"
+          className="h-9 max-w-sm flex-1 rounded-xl border-[#2A3242] bg-[#0F131D] px-3 text-sm text-[#F4F7FC] shadow-none placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:bg-[#0F131D]"
         />
 
         <Select
           value={selectedTeamId ?? '__all__'}
           onValueChange={(v) => setSelectedTeamId(v === '__all__' ? null : v)}
         >
-          <SelectTrigger className="h-9 w-40 shrink-0 rounded-xl border-[#E8EAEC] bg-white px-3 text-sm shadow-none">
+          <SelectTrigger className="h-9 w-40 shrink-0 rounded-xl border-[#2A3242] bg-[#0F131D] px-3 text-sm text-[#D2D9E6] shadow-none">
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
           <SelectContent>
@@ -133,7 +133,7 @@ export function DiagramsFolder() {
             {!selectedFolderId &&
               filteredFolders.length === 0 &&
               searchQuery && (
-                <span className="text-sm text-[#B0B0B2]">No folders found</span>
+                <span className="text-sm text-[#586378]">No folders found</span>
               )}
           </div>
         </div>
@@ -268,7 +268,7 @@ function DiagramGrid({
               entry === '...' ? (
                 <span
                   key={`ellipsis-${i}`}
-                  className="flex h-8 w-8 items-center justify-center text-sm text-[#999]"
+                  className="flex h-8 w-8 items-center justify-center text-sm text-[#586378]"
                 >
                   …
                 </span>
@@ -280,7 +280,7 @@ function DiagramGrid({
                     'flex h-8 w-8 items-center justify-center rounded-lg text-sm transition-colors',
                     entry === page
                       ? 'bg-primary text-white'
-                      : 'text-[#555] hover:bg-[#F0F0F2]'
+                      : 'text-[#828DA3] hover:bg-[#2A3242]'
                   )}
                 >
                   {(entry as number) + 1}
@@ -441,8 +441,8 @@ function FolderChip({ folder }: { folder: DashboardFolder }) {
             isDraggingOver
               ? 'border-primary/50 ring-primary/20 ring-2'
               : isSelected
-                ? 'border-primary/30 bg-primary/5 text-primary'
-                : 'border-[#E8EAEC] text-[#111] hover:border-[#D0D2D4] hover:bg-[#FAFAFA]'
+                ? 'border-primary/30 bg-primary/10 text-primary'
+                : 'border-[#2A3242] bg-[#141925] text-[#D2D9E6] hover:border-[#3B4658] hover:bg-[#1E2533]'
           )}
           onClick={() => setSelectedFolderId(folder.id ?? null)}
           onDragLeave={() => setIsDraggingOver(false)}
@@ -485,7 +485,7 @@ function FolderChip({ folder }: { folder: DashboardFolder }) {
                   : 'opacity-0 group-hover:opacity-100',
                 isSelected
                   ? 'text-primary hover:bg-primary/10'
-                  : 'text-[#999] hover:bg-[#F0F0F2]'
+                  : 'text-[#586378] hover:bg-[#2A3242]'
               )}
             >
               <MoreHorizontal className="size-3.5" />

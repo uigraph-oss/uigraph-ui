@@ -43,7 +43,7 @@ export function BetterDeleteConfirmationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 rounded-[16px] border border-[#E5E7E9] bg-[#F9FBFC] p-0 sm:max-w-[463px]">
+      <DialogContent className="gap-0 rounded-[16px] border border-[#2A3242] bg-[#141925] p-0 sm:max-w-[463px]">
         <div className="p-6 text-center">
           <img src={deleteImg.src} alt="trash" className="mx-auto mb-4" />
 

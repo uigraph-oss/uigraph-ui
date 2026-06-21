@@ -14,7 +14,7 @@ export function SectionNotFound({
     <div
       {...props}
       className={cn(
-        'border-stock flex h-[400px] flex-col items-center justify-center gap-4 rounded-[28px] border border-dashed bg-white text-center',
+        'border-stock flex h-[400px] flex-col items-center justify-center gap-4 rounded-[28px] border border-dashed bg-transparent text-center',
         plain && 'border-none bg-transparent',
         className
       )}

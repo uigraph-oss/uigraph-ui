@@ -51,7 +51,7 @@ export function ProfileSettings() {
         }
       />
       <div className="space-y-3 p-6">
-        <div className="rounded-[12px] border border-[#E5E7E9] bg-white p-6">
+        <div className="bg-card rounded-[12px] border border-[#2A3242] p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
@@ -65,13 +65,13 @@ export function ProfileSettings() {
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-2">
-                <h2 className="text-lg font-semibold text-[#111110]">
+                <h2 className="text-lg font-semibold text-[#F4F7FC]">
                   {user.name}
                 </h2>
               </div>
             </div>
             <button
-              className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#E8E9EA] px-3 text-sm leading-[1.33] font-normal"
+              className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] font-normal text-[#D2D9E6] hover:bg-[#3B4658]"
               onClick={() => setIsEditMode(true)}
             >
               <SquarePen className="mr-0.5 h-4 w-4" />
@@ -79,13 +79,13 @@ export function ProfileSettings() {
             </button>
           </div>
         </div>
-        <div className="rounded-[12px] border border-[#E5E7E9] bg-white p-6">
+        <div className="bg-card rounded-[12px] border border-[#2A3242] p-6">
           <div className="mb-6 flex items-center justify-between">
-            <h3 className="text-[16px] leading-[1.33] font-semibold text-[#111110]">
+            <h3 className="text-[16px] leading-[1.33] font-semibold text-[#F4F7FC]">
               Personal Information
             </h3>
             <button
-              className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#E8E9EA] px-3 text-sm leading-[1.33] font-normal"
+              className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] font-normal text-[#D2D9E6] hover:bg-[#3B4658]"
               onClick={() => setIsEditMode(true)}
             >
               <SquarePen className="mr-0.5 h-4 w-4" />
@@ -95,19 +95,19 @@ export function ProfileSettings() {
 
           <div className="grid max-w-[40rem] grid-cols-2 gap-x-[64px] gap-y-6">
             <div>
-              <Label className="text-sm leading-[1.33] font-normal text-[#6B7480]">
+              <Label className="text-sm leading-[1.33] font-normal text-[#828DA3]">
                 Name
               </Label>
-              <p className="text-[1rem] leading-[1.33] font-normal text-[#111110]">
+              <p className="text-[1rem] leading-[1.33] font-normal text-[#F4F7FC]">
                 {user.name}
               </p>
             </div>
 
             <div>
-              <Label className="text-sm leading-[1.33] font-normal text-[#6B7480]">
+              <Label className="text-sm leading-[1.33] font-normal text-[#828DA3]">
                 Email address
               </Label>
-              <p className="text-[1rem] leading-[1.33] font-normal text-[#111110]">
+              <p className="text-[1rem] leading-[1.33] font-normal text-[#F4F7FC]">
                 {user.email}
               </p>
             </div>

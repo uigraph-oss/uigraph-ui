@@ -75,7 +75,7 @@ export function ServiceAccountsPage() {
       />
 
       <div className="px-6 pt-4">
-        <div className="overflow-x-auto rounded-[12px] border border-[#E5E7E9]">
+        <div className="overflow-x-auto rounded-[12px] border border-[#2A3242]">
           {loading ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
               Loading…
