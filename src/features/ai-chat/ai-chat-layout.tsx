@@ -126,7 +126,7 @@ export function AiChatLayout({ children }: PropsWithChildren) {
           onCreateSession={handleCreateSession}
         />
 
-        <section className="flex min-h-0 flex-col bg-[#f9fafb]">
+        <section className="flex min-h-0 flex-col bg-[#0B0E16]">
           {children}
         </section>
       </div>

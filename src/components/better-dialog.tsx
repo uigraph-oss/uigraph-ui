@@ -64,7 +64,7 @@ export function BetterDialogProvider({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          'flex h-full max-h-full w-full max-w-full flex-col gap-0 overflow-hidden rounded-none border-0 border-[#E5E7E9] bg-[#F9FBFC] p-0 outline-none sm:h-auto sm:max-h-[90vh] sm:max-w-[min(var(--width,45rem),90%)] sm:rounded-[1rem] sm:border',
+          'flex h-full max-h-full w-full max-w-full flex-col gap-0 overflow-hidden rounded-none border-0 border-[#2A3242] bg-[#141925] p-0 outline-none sm:h-auto sm:max-h-[90vh] sm:max-w-[min(var(--width,45rem),90%)] sm:rounded-[1rem] sm:border',
           className
         )}
       >
@@ -94,7 +94,7 @@ export function BetterDialogContent({
   const header = headerContent ? (
     headerContent
   ) : title || description ? (
-    <DialogHeader className="flex min-h-18 w-full flex-row items-center justify-between border-b border-[#E5E7E9] px-6">
+    <DialogHeader className="flex min-h-18 w-full flex-row items-center justify-between border-b border-[#2A3242] px-6">
       <div className="flex flex-col gap-1">
         <DialogTitle className="text-base font-medium">{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
@@ -166,7 +166,7 @@ export function BetterDialogCloseButton({
     <DialogClose asChild {...props}>
       <button
         className={cn(
-          'flex size-[1em] cursor-pointer items-center justify-center rounded-[0.3em] bg-[#F6F6F6] text-sm text-[2.5rem] text-[#6B7480] transition-all hover:bg-red-100 hover:text-red-700',
+          'flex size-[1em] cursor-pointer items-center justify-center rounded-[0.3em] bg-[#2A3242] text-sm text-[2.5rem] text-[#828DA3] transition-all hover:bg-red-500/15 hover:text-red-400',
           className
         )}
       >

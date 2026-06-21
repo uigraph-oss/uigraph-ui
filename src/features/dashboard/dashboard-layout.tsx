@@ -45,7 +45,7 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
   return (
     <DashboardPageLayout crumbs={crumbs}>
       <div className="grid h-full grid-cols-[15rem_1fr] gap-3 p-3">
-        <aside className="border-stock block rounded-[0.75rem] border bg-white">
+        <aside className="border-stock bg-card block rounded-[0.75rem] border">
           <label className="border-stock flex h-14 items-center border-b px-4">
             Settings
           </label>
@@ -63,8 +63,8 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
                     className={cn(
                       'flex h-[2.4375rem] items-center rounded-[0.5rem] bg-transparent px-3 py-2',
                       isActive
-                        ? 'text-primary bg-primary/5'
-                        : 'hover:bg-gray-100'
+                        ? 'text-primary bg-primary/10'
+                        : 'hover:bg-white/[0.06]'
                     )}
                   >
                     <span className={'block text-base'}>{item.icon}</span>
@@ -77,7 +77,7 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
         </aside>
 
         <GridScrollBody
-          className={'border-stock rounded-[0.75rem] border bg-white'}
+          className={'border-stock bg-card rounded-[0.75rem] border'}
         >
           {children}
         </GridScrollBody>

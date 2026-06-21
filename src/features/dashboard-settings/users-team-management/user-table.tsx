@@ -39,14 +39,14 @@ function UserRowActions({ user }: { user: OrgMemberRow }) {
     <div className="flex items-center gap-[10px]">
       <button
         disabled={user.email === currentUser?.email}
-        className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-400"
+        className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-[#586378]"
         onClick={() => setIsEditModalOpen(true)}
       >
         Edit
       </button>
       <button
         disabled={user.email === currentUser?.email}
-        className="flex size-8 items-center justify-center rounded-md border border-red-200 text-red-600 transition-colors hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:bg-transparent"
+        className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:border-[#2A3242] disabled:text-[#586378] disabled:hover:border-[#2A3242] disabled:hover:bg-transparent"
         onClick={() => setIsDeleteModalOpen(true)}
       >
         <Trash2 className="size-4" />
@@ -121,15 +121,15 @@ const userColumns = [
       return (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
-            <AvatarFallback className="bg-blue-100 text-xs font-medium text-blue-700">
+            <AvatarFallback className="bg-blue-500/20 text-xs font-medium text-blue-300">
               {getInitials(name || email)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
             {name && (
-              <span className="text-sm font-medium text-gray-900">{name}</span>
+              <span className="text-sm font-medium text-[#F4F7FC]">{name}</span>
             )}
-            <span className="text-sm text-gray-500">{email}</span>
+            <span className="text-sm text-[#828DA3]">{email}</span>
           </div>
         </div>
       )
@@ -142,7 +142,7 @@ const userColumns = [
       const isEmpty = !teamName || teamName.trim() === ''
       return (
         <span
-          className={`text-sm ${isEmpty ? 'text-gray-400' : 'text-textPrimary'}`}
+          className={`text-sm ${isEmpty ? 'text-[#586378]' : 'text-textPrimary'}`}
         >
           {teamName || '  -  '}
         </span>
@@ -156,7 +156,7 @@ const userColumns = [
       return (
         <Badge
           variant="secondary"
-          className="h-6 rounded-md border border-gray-200 bg-gray-50 px-2.5 text-xs font-medium text-gray-700 capitalize"
+          className="h-6 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 text-xs font-medium text-[#D2D9E6] capitalize"
         >
           {role}
         </Badge>
@@ -172,11 +172,13 @@ const userColumns = [
       let badgeClassName = 'h-6 rounded-md px-2.5 text-xs font-medium'
 
       if (statusLower === 'active') {
-        badgeClassName += ' border border-green-200 bg-green-50 text-green-700'
+        badgeClassName +=
+          ' border border-green-500/30 bg-green-500/10 text-green-400'
       } else if (statusLower === 'pending') {
-        badgeClassName += ' border border-amber-200 bg-amber-50 text-amber-700'
+        badgeClassName +=
+          ' border border-amber-500/30 bg-amber-500/10 text-amber-400'
       } else {
-        badgeClassName += ' border border-gray-200 bg-gray-50 text-gray-700'
+        badgeClassName += ' border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6]'
       }
 
       return (
@@ -211,7 +213,7 @@ export function UserTable({ users }: { users: OrgMemberRow[] }) {
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className="px-6 py-4 text-left text-xs font-medium tracking-tight text-gray-500"
+                className="px-6 py-4 text-left text-xs font-medium tracking-tight text-[#828DA3]"
               >
                 {header.isPlaceholder
                   ? null
@@ -239,7 +241,7 @@ export function UserTable({ users }: { users: OrgMemberRow[] }) {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="group border-b border-gray-100 transition-colors hover:bg-gray-50"
+            className="group border-b border-[#2A3242] transition-colors hover:bg-[#1E2533]"
           >
             {row.getVisibleCells().map((cell) => {
               const cellClassName =

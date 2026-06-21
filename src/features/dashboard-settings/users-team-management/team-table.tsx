@@ -49,7 +49,7 @@ function TeamRowActions({ team }: { team: SettingsTeam }) {
           size="sm"
           variant="ghost"
           onClick={() => navigate(`?team=${team.teamId}`)}
-          className="flex h-8 items-center justify-center rounded-[8px] bg-[#F6F6F6] px-2 text-xs"
+          className="flex h-8 items-center justify-center rounded-[8px] bg-[#2A3242] px-2 text-xs"
         >
           <FiChevronRight />
         </Button>
@@ -176,7 +176,7 @@ export function TeamTable({ teams }: { teams: SettingsTeam[] }) {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="group border-b border-gray-100 hover:bg-gray-50"
+            className="group border-b border-[#2A3242] hover:bg-[#1E2533]"
           >
             {row.getVisibleCells().map((cell) => {
               const cellClassName =

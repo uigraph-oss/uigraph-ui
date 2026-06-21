@@ -119,7 +119,7 @@ export function ServiceAccountModal({
         <div className="space-y-2">
           <Label
             htmlFor="sa-name"
-            className="text-sm font-medium text-[#111110]"
+            className="text-foreground text-sm font-medium"
           >
             Name
           </Label>
@@ -128,7 +128,7 @@ export function ServiceAccountModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g., ci-pipeline"
-            className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+            className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
             autoComplete="off"
           />
         </div>
@@ -136,7 +136,7 @@ export function ServiceAccountModal({
         <div className="space-y-2">
           <Label
             htmlFor="sa-description"
-            className="text-sm font-medium text-[#111110]"
+            className="text-foreground text-sm font-medium"
           >
             Description (Optional)
           </Label>
@@ -145,13 +145,13 @@ export function ServiceAccountModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What is this service account used for?"
-            className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+            className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
             autoComplete="off"
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[#111110]">
+          <Label className="text-foreground text-sm font-medium">
             Permissions
           </Label>
           <ScopeSelector
