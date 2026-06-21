@@ -4,7 +4,6 @@ import { CircleLoader } from '@/components/loader/circle-loader'
 import { UigraphMark } from '@/components/logo'
 import { Input } from '@/components/ui/input'
 import { Paths } from '@/constants'
-import { trackGTag } from '@/helpers/track'
 import { useOAuthProviders } from '@/hooks/use-oauth-providers'
 import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -58,10 +57,7 @@ export function SignInForm() {
       setLoading(true)
       setError('')
       await signIn(values.email, values.password)
-      trackGTag('login', {
-        method: 'email',
-        email_domain: values.email.split('@')[1],
-      })
+
       void navigate(Paths.dashboard.root)
     } catch (e) {
       setError((e as Error).message || 'An error occurred. Please try again.')
@@ -76,7 +72,7 @@ export function SignInForm() {
       toast.error('Please type the email!')
       return
     }
-    trackGTag('forgot_password', { email_domain: email.split('@')[1] })
+
     window.location.replace(
       `${location.host + Paths.auth.forgotPassword}?email=${encodeURIComponent(email)}`
     )

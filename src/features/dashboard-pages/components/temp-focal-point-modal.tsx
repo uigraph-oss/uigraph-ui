@@ -8,7 +8,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { getViewPointPositionStyle } from '@/features/image-frame-canvas/helpers'
-import { trackGTag } from '@/helpers/track'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
@@ -68,10 +67,6 @@ export function AddFocalPointModal({ x, y }: AddFocalPointModalProps) {
             })
 
             const id = data?.createFocalPoint?.id
-
-            trackGTag('create_focal_point', {
-              focal_point_id: id,
-            })
 
             if (id) {
               canvasTarget.setTarget('point', id)

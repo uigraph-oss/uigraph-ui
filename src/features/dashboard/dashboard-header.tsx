@@ -17,7 +17,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import {
   changeOrganization,
@@ -226,7 +225,6 @@ export function UserDropdownMenu() {
 
           <DropdownMenuItem
             onClick={async () => {
-              trackGTag('logout')
               await signOut()
               window.location.href = '/sign-in'
             }}

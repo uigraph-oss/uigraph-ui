@@ -1,6 +1,5 @@
 import { UiGraphLogo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
-import { trackGTag } from '@/helpers/track'
 import { signOut, useAuthStore } from '@/store/auth-store'
 import { LogOut, Shield } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -41,7 +40,6 @@ export function OnboardingPage() {
         <Button
           preset="destructive"
           onClick={async () => {
-            trackGTag('logout')
             await signOut()
             window.location.href = '/sign-in'
           }}

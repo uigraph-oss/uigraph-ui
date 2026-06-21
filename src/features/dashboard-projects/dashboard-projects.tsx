@@ -3,7 +3,6 @@
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
-import { trackGTag } from '@/helpers/track'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { CirclePlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -85,11 +84,6 @@ export function DashboardProjects() {
                 teamId: data.teamId || undefined,
               },
             },
-          })
-
-          trackGTag('create_project', {
-            project_name: data.name,
-            team_id: data.teamId,
           })
 
           setCreateProjectOpen(false)

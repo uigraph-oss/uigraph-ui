@@ -10,7 +10,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { trackGTag } from '@/helpers/track'
 import { cn } from '@/lib/utils'
 import {
   convertMermaidToReactFlow,
@@ -56,11 +55,6 @@ export function FloatingCanvasToolbar() {
 
     try {
       await downloadFlowDiagramImage(nodes, diagramName)
-
-      trackGTag('export_diagram', {
-        node_count: nodes.length,
-        has_groups: nodes.some((n) => n.type === 'group'),
-      })
 
       toast.success('Diagram exported successfully')
     } catch {
@@ -215,10 +209,6 @@ export function FloatingCanvasToolbar() {
           isActive={drawingMode || !!selectedGroup}
           onClick={() => {
             if (selectedGroup) {
-              trackGTag('ungroup_nodes', {
-                group_id: selectedGroup.id,
-              })
-
               const childNodesSet = new Set(
                 (selectedGroup.data?.childNodes as string[]) ?? []
               )
@@ -243,9 +233,6 @@ export function FloatingCanvasToolbar() {
                   })
               })
             } else {
-              trackGTag('toggle_drawing_mode', {
-                enabled: !drawingMode,
-              })
               setDrawingMode((prev) => !prev)
             }
           }}
@@ -283,10 +270,6 @@ export function FloatingCanvasToolbar() {
             const laid = applyAutoLayout(nodes, edges, 'LR')
             setNodes(laid)
             setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
-            trackGTag('auto_layout_diagram', {
-              node_count: nodes.length,
-              direction: 'LR',
-            })
           }}
         >
           <icons.LayoutLRIcon />
@@ -301,10 +284,6 @@ export function FloatingCanvasToolbar() {
             const laid = applyAutoLayout(nodes, edges, 'TB')
             setNodes(laid)
             setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
-            trackGTag('auto_layout_diagram', {
-              node_count: nodes.length,
-              direction: 'TB',
-            })
           }}
         >
           <icons.LayoutTBIcon />

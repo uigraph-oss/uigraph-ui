@@ -16,7 +16,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { trackGTag } from '@/helpers/track'
 import { signOut, useAuthStore } from '@/store/auth-store'
 import { LayoutGrid, LogOut } from 'lucide-react'
 import { Fragment } from 'react'
@@ -107,7 +106,6 @@ function ServerUserMenu() {
         <div className="px-2.5 py-2">
           <DropdownMenuItem
             onClick={async () => {
-              trackGTag('logout')
               await signOut()
               window.location.href = '/sign-in'
             }}
