@@ -52,7 +52,7 @@ function ComponentCard({
       <Link
         to={`/dashboard/components/?component=${component.componentId}`}
         className={cn(
-          'border-stock flex h-[7.1875rem] flex-col justify-between rounded-2xl border bg-white p-4 transition-all',
+          'border-stock flex h-[7.1875rem] flex-col justify-between rounded-2xl border bg-[#141925] p-4 transition-all',
           isDeleting && 'pointer-events-none opacity-80',
           !isDeleting && 'group-hover:border-primary'
         )}
@@ -82,7 +82,7 @@ function ComponentCard({
         variant="outline"
         disabled={isDeleting}
         className={cn(
-          'hover:text-destructive hover:border-destructive absolute top-3 right-3 bg-white opacity-0 transition-all group-hover:opacity-100 hover:bg-red-50',
+          'hover:text-destructive hover:border-destructive absolute top-3 right-3 bg-[#1E2533] opacity-0 transition-all group-hover:opacity-100 hover:bg-red-500/10',
           isDeleting && 'opacity-100'
         )}
         onClick={async () => {

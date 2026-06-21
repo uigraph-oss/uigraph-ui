@@ -27,7 +27,7 @@ import {
 import { Search } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 type GraphqlSpecViewerProps = {
   serviceId: string
@@ -121,22 +121,22 @@ function renderTypeSummary(
     return (
       <div className="space-y-6">
         {type.description ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {type.description}
           </div>
         ) : null}
 
         <div className="grid gap-3 xl:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
             <div className="text-muted-foreground text-xs font-medium">
               Fields
             </div>
-            <div className="mt-2 text-2xl font-semibold text-slate-900">
+            <div className="mt-2 text-2xl font-semibold text-[#F4F7FC]">
               {fields.length}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
             <div className="text-muted-foreground text-xs font-medium">
               Implements
             </div>
@@ -149,33 +149,33 @@ function renderTypeSummary(
                       key={item.name}
                       type="button"
                       onClick={() => onSelectType(item.name)}
-                      className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-700"
+                      className="rounded-full border border-[#2A3242] bg-[#1E2533] px-3 py-1 text-sm font-medium text-[#D2D9E6] transition hover:border-sky-300 hover:text-sky-700"
                     >
                       {item.name}
                     </button>
                   )
                 )
               ) : (
-                <div className="text-sm text-slate-500">No interfaces</div>
+                <div className="text-sm text-[#828DA3]">No interfaces</div>
               )}
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <div className="text-base font-semibold text-slate-900">Fields</div>
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925]">
+          <div className="border-b border-[#2A3242] px-5 py-4">
+            <div className="text-base font-semibold text-[#F4F7FC]">Fields</div>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-[#2A3242]">
             {fields.map((field) => (
               <div key={field.name} className="space-y-3 px-5 py-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-900">
+                  <code className="rounded bg-[#1E2533] px-2 py-1 text-sm font-semibold text-[#F4F7FC]">
                     {field.name}
                   </code>
 
-                  <span className="text-sm text-slate-400">returns</span>
+                  <span className="text-sm text-[#586378]">returns</span>
                   {renderTypeJump(field.type, onSelectType)}
 
                   {field.deprecationReason ? (
@@ -189,7 +189,7 @@ function renderTypeSummary(
                 </div>
 
                 {field.args.length > 0 ? (
-                  <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="space-y-2 rounded-xl border border-[#2A3242] bg-[#1E2533] p-4">
                     <div className="text-muted-foreground text-xs font-medium">
                       Arguments
                     </div>
@@ -198,15 +198,15 @@ function renderTypeSummary(
                       {field.args.map((arg) => (
                         <div
                           key={arg.name}
-                          className="flex flex-wrap items-center gap-2 text-sm text-slate-700"
+                          className="flex flex-wrap items-center gap-2 text-sm text-[#D2D9E6]"
                         >
-                          <code className="rounded bg-white px-2 py-1 font-medium text-slate-900">
+                          <code className="rounded bg-[#141925] px-2 py-1 font-medium text-[#F4F7FC]">
                             {arg.name}
                           </code>
-                          <span className="text-slate-400">:</span>
+                          <span className="text-[#586378]">:</span>
                           {renderTypeJump(arg.type, onSelectType)}
                           {arg.defaultValue !== undefined ? (
-                            <span className="text-slate-500">
+                            <span className="text-[#828DA3]">
                               = {JSON.stringify(arg.defaultValue)}
                             </span>
                           ) : null}
@@ -217,7 +217,7 @@ function renderTypeSummary(
                 ) : null}
 
                 {field.description ? (
-                  <div className="text-sm leading-6 whitespace-pre-wrap text-slate-600">
+                  <div className="text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
                     {field.description}
                   </div>
                 ) : null}
@@ -233,8 +233,8 @@ function renderTypeSummary(
         </div>
 
         {isInterfaceType(type) ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="text-base font-semibold text-slate-900">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
+            <div className="text-base font-semibold text-[#F4F7FC]">
               Implemented By
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -244,13 +244,13 @@ function renderTypeSummary(
                     key={item.name}
                     type="button"
                     onClick={() => onSelectType(item.name)}
-                    className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-700"
+                    className="rounded-full border border-[#2A3242] bg-[#1E2533] px-3 py-1 text-sm font-medium text-[#D2D9E6] transition hover:border-sky-300 hover:text-sky-700"
                   >
                     {item.name}
                   </button>
                 ))
               ) : (
-                <div className="text-sm text-slate-500">No implementations</div>
+                <div className="text-sm text-[#828DA3]">No implementations</div>
               )}
             </div>
           </div>
@@ -265,36 +265,36 @@ function renderTypeSummary(
     return (
       <div className="space-y-6">
         {type.description ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {type.description}
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <div className="text-base font-semibold text-slate-900">
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925]">
+          <div className="border-b border-[#2A3242] px-5 py-4">
+            <div className="text-base font-semibold text-[#F4F7FC]">
               Input Fields
             </div>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-[#2A3242]">
             {fields.map((field) => (
               <div key={field.name} className="space-y-3 px-5 py-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-900">
+                  <code className="rounded bg-[#1E2533] px-2 py-1 text-sm font-semibold text-[#F4F7FC]">
                     {field.name}
                   </code>
-                  <span className="text-sm text-slate-400">:</span>
+                  <span className="text-sm text-[#586378]">:</span>
                   {renderTypeJump(field.type, onSelectType)}
                   {field.defaultValue !== undefined ? (
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-[#828DA3]">
                       = {JSON.stringify(field.defaultValue)}
                     </span>
                   ) : null}
                 </div>
 
                 {field.description ? (
-                  <div className="text-sm leading-6 whitespace-pre-wrap text-slate-600">
+                  <div className="text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
                     {field.description}
                   </div>
                 ) : null}
@@ -310,23 +310,23 @@ function renderTypeSummary(
     return (
       <div className="space-y-6">
         {type.description ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {type.description}
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <div className="text-base font-semibold text-slate-900">
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925]">
+          <div className="border-b border-[#2A3242] px-5 py-4">
+            <div className="text-base font-semibold text-[#F4F7FC]">
               Enum Values
             </div>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-[#2A3242]">
             {type.getValues().map((value) => (
               <div key={value.name} className="space-y-3 px-5 py-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-900">
+                  <code className="rounded bg-[#1E2533] px-2 py-1 text-sm font-semibold text-[#F4F7FC]">
                     {value.name}
                   </code>
 
@@ -341,7 +341,7 @@ function renderTypeSummary(
                 </div>
 
                 {value.description ? (
-                  <div className="text-sm leading-6 whitespace-pre-wrap text-slate-600">
+                  <div className="text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
                     {value.description}
                   </div>
                 ) : null}
@@ -363,13 +363,13 @@ function renderTypeSummary(
     return (
       <div className="space-y-6">
         {type.description ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {type.description}
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <div className="text-base font-semibold text-slate-900">
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
+          <div className="text-base font-semibold text-[#F4F7FC]">
             Possible Types
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -378,7 +378,7 @@ function renderTypeSummary(
                 key={item.name}
                 type="button"
                 onClick={() => onSelectType(item.name)}
-                className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-700"
+                className="rounded-full border border-[#2A3242] bg-[#1E2533] px-3 py-1 text-sm font-medium text-[#D2D9E6] transition hover:border-sky-300 hover:text-sky-700"
               >
                 {item.name}
               </button>
@@ -393,18 +393,18 @@ function renderTypeSummary(
     return (
       <div className="space-y-6">
         {type.description ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {type.description}
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <div className="text-muted-foreground text-xs font-medium">
                 Kind
               </div>
-              <div className="mt-2 text-sm font-medium text-slate-800">
+              <div className="mt-2 text-sm font-medium text-[#F4F7FC]">
                 {isSpecifiedScalarType(type)
                   ? 'Built-in scalar'
                   : 'Custom scalar'}
@@ -415,7 +415,7 @@ function renderTypeSummary(
               <div className="text-muted-foreground text-xs font-medium">
                 Specification
               </div>
-              <div className="mt-2 text-sm text-slate-700">
+              <div className="mt-2 text-sm text-[#D2D9E6]">
                 {type.specifiedByURL ? (
                   <a
                     href={type.specifiedByURL}
@@ -648,7 +648,7 @@ export function GraphqlSpecViewer({
   }
 
   return (
-    <div className="graphql-spec-viewer-shell h-full w-full bg-white">
+    <div className="graphql-spec-viewer-shell h-full w-full bg-[#141925]">
       <div className="flex min-h-full flex-col">
         <div className="viewer-header backdrop-blur-xl">
           <div className="flex flex-col gap-4 px-6 py-5">
@@ -658,14 +658,14 @@ export function GraphqlSpecViewer({
                   <Badge variant="secondary">GraphQL</Badge>
                   <Badge
                     variant="outline"
-                    className="border-slate-200 text-slate-600"
+                    className="border-[#2A3242] text-[#828DA3]"
                   >
                     {specFiles.length} file{specFiles.length === 1 ? '' : 's'}
                   </Badge>
                   {parsedSchema.schema ? (
                     <Badge
                       variant="outline"
-                      className="border-slate-200 text-slate-600"
+                      className="border-[#2A3242] text-[#828DA3]"
                     >
                       {
                         Object.values(parsedSchema.schema.getTypeMap()).filter(
@@ -693,12 +693,12 @@ export function GraphqlSpecViewer({
 
             {activeTab === 'reference' ? (
               <div className="relative max-w-md">
-                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#586378]" />
                 <Input
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Search types, operations, enums..."
-                  className="border-stock h-11! !rounded-[0.8rem] bg-white pl-9 shadow-none"
+                  className="border-stock h-11! !rounded-[0.8rem] bg-[#141925] pl-9 shadow-none"
                 />
               </div>
             ) : null}
@@ -753,12 +753,12 @@ export function GraphqlSpecViewer({
                                 <div className="text-sm font-medium">
                                   {typeName}
                                 </div>
-                                <div className="mt-1 text-xs text-slate-500">
+                                <div className="mt-1 text-xs text-[#828DA3]">
                                   {type ? getGraphqlTypeKind(type) : 'Type'}
                                 </div>
                               </div>
 
-                              <div className="text-xs text-slate-400">
+                              <div className="text-xs text-[#586378]">
                                 {type &&
                                 (isObjectType(type) || isInterfaceType(type))
                                   ? Object.keys(type.getFields()).length
@@ -829,7 +829,7 @@ export function GraphqlSpecViewer({
                             <div className="text-xl font-semibold text-slate-950">
                               {selectedType.name}
                             </div>
-                            <div className="mt-2 text-sm text-slate-500">
+                            <div className="mt-2 text-sm text-[#828DA3]">
                               {selectedType.description
                                 ? 'Schema details and field contracts'
                                 : 'No description provided in schema'}
@@ -872,7 +872,7 @@ export function GraphqlSpecViewer({
 
                 <SyntaxHighlighter
                   language="graphql"
-                  style={oneLight}
+                  style={oneDark}
                   customStyle={{
                     margin: 0,
                     borderRadius: 0,
@@ -903,39 +903,39 @@ export function GraphqlSpecViewer({
         .graphql-spec-viewer-shell .viewer-section-label,
         .graphql-spec-viewer-shell .viewer-empty,
         .graphql-spec-viewer-shell .viewer-state-card,
-        .graphql-spec-viewer-shell .text-slate-400,
-        .graphql-spec-viewer-shell .text-slate-500,
-        .graphql-spec-viewer-shell .text-slate-600 {
+        .graphql-spec-viewer-shell .text-[#586378],
+        .graphql-spec-viewer-shell .text-[#828DA3],
+        .graphql-spec-viewer-shell .text-[#828DA3] {
           color: #939395 !important;
         }
 
-        .graphql-spec-viewer-shell .text-slate-700,
-        .graphql-spec-viewer-shell .text-slate-800,
-        .graphql-spec-viewer-shell .text-slate-900,
+        .graphql-spec-viewer-shell .text-[#D2D9E6],
+        .graphql-spec-viewer-shell .text-[#F4F7FC],
+        .graphql-spec-viewer-shell .text-[#F4F7FC],
         .graphql-spec-viewer-shell .text-slate-950 {
           color: #111110 !important;
         }
 
-        .graphql-spec-viewer-shell .border-slate-200,
-        .graphql-spec-viewer-shell .border-slate-200\/80 {
+        .graphql-spec-viewer-shell .border-[#2A3242],
+        .graphql-spec-viewer-shell .border-[#2A3242]\/80 {
           border-color: #e5e7e9 !important;
         }
 
         .graphql-spec-viewer-shell
-          .divide-slate-200
+          .divide-[#2A3242]
           > :not([hidden])
           ~ :not([hidden]) {
           border-color: #e5e7e9 !important;
         }
 
-        .graphql-spec-viewer-shell .bg-slate-50,
+        .graphql-spec-viewer-shell .bg-[#1E2533],
         .graphql-spec-viewer-shell .bg-sky-50,
-        .graphql-spec-viewer-shell .bg-white\/70,
-        .graphql-spec-viewer-shell .bg-white\/80 {
+        .graphql-spec-viewer-shell .bg-[#141925]\/70,
+        .graphql-spec-viewer-shell .bg-[#141925]\/80 {
           background: #f9fafb !important;
         }
 
-        .graphql-spec-viewer-shell .bg-slate-100 {
+        .graphql-spec-viewer-shell .bg-[#1E2533] {
           background: #f4f6f7 !important;
         }
 

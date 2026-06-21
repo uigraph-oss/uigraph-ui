@@ -100,7 +100,7 @@ export function DashboardServices() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search services..."
-              className="h-8 w-52 rounded-lg border-[#E2E8F0] bg-white text-[13px] shadow-none focus-visible:bg-white"
+              className="h-8 w-52 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
             />
 
             {teams.length > 0 && (
@@ -110,7 +110,7 @@ export function DashboardServices() {
                   setSelectedTeamId(v === '__all__' ? null : v)
                 }
               >
-                <SelectTrigger className="h-8 w-40 shrink-0 rounded-lg border-[#E2E8F0] bg-white text-[13px] shadow-none">
+                <SelectTrigger className="h-8 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
                   <SelectValue placeholder="All Teams" />
                 </SelectTrigger>
                 <SelectContent>
@@ -124,7 +124,7 @@ export function DashboardServices() {
               </Select>
             )}
 
-            <div className="flex items-center gap-0.5 rounded-lg bg-[#F8FAFC] p-0.5 ring-1 ring-[#E2E8F0]">
+            <div className="flex items-center gap-0.5 rounded-lg bg-[#1E2533] p-0.5 ring-1 ring-[#2A3242]">
               <FilterPill
                 label="All"
                 count={services.length}
@@ -225,15 +225,15 @@ function FilterPill({
       className={cn(
         'inline-flex h-8 items-center gap-2 rounded-lg px-3 text-[13px] font-medium transition-all duration-150',
         active
-          ? 'bg-[#0F172A] text-white'
-          : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]'
+          ? 'bg-[#2A3242] text-[#F4F7FC]'
+          : 'text-[#828DA3] hover:bg-[#2A3242]/50 hover:text-[#F4F7FC]'
       )}
     >
       {label}
       <span
         className={cn(
           'rounded px-1 py-px text-[10px] font-semibold tabular-nums',
-          active ? 'bg-white/20 text-white' : 'bg-[#E2E8F0] text-[#64748B]'
+          active ? 'bg-white/15 text-white' : 'bg-[#141925] text-[#828DA3]'
         )}
       >
         {count}

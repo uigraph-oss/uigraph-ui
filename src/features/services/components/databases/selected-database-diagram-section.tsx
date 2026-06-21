@@ -55,7 +55,7 @@ export function SelectedDatabaseDiagramSection({
 
   if (!diagramId) {
     return (
-      <div className="flex min-h-[200px] items-center justify-center text-sm text-[#939395]">
+      <div className="flex min-h-[200px] items-center justify-center text-sm text-[#828DA3]">
         No data model diagram linked to this database
       </div>
     )
@@ -65,7 +65,7 @@ export function SelectedDatabaseDiagramSection({
 
   if (!diagramData) {
     return (
-      <div className="flex min-h-[200px] items-center justify-center text-sm text-[#939395]">
+      <div className="flex min-h-[200px] items-center justify-center text-sm text-[#828DA3]">
         No diagram found
       </div>
     )

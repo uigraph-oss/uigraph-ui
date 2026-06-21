@@ -414,7 +414,7 @@ export function EndpointTryItTab({
         </div>
         <div className="text-muted-foreground text-xs">
           <span className="font-medium">Resolved URL:</span>{' '}
-          <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px]">
+          <code className="rounded bg-[#1E2533] px-1.5 py-0.5 text-[10px]">
             {resolvedUrl}
           </code>
         </div>
@@ -422,7 +422,7 @@ export function EndpointTryItTab({
 
       {/* Auth Configuration */}
       {authKind !== 'none' && (
-        <div className="space-y-2 rounded-lg border bg-slate-50 p-3">
+        <div className="space-y-2 rounded-lg border bg-[#1E2533] p-3">
           <Label className="text-xs font-semibold tracking-wide uppercase">
             {authKind === 'bearer' || authKind === 'oauth2'
               ? 'Authentication (Bearer Token)'
@@ -491,7 +491,7 @@ export function EndpointTryItTab({
             </Label>
             {request.pathParams.map((param, idx) => (
               <div key={param.name} className="flex items-center gap-2">
-                <code className="w-32 text-xs text-slate-600">
+                <code className="w-32 text-xs text-[#828DA3]">
                   {param.name}
                 </code>
                 <Input
@@ -727,7 +727,7 @@ export function EndpointTryItTab({
               }
             />
           ) : (
-            <div className="space-y-3 rounded-lg border bg-white p-4">
+            <div className="space-y-3 rounded-lg border bg-[#141925] p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span
@@ -736,7 +736,7 @@ export function EndpointTryItTab({
                         ? 'bg-green-100 text-green-700'
                         : response.status >= 400
                           ? 'bg-red-100 text-red-700'
-                          : 'bg-gray-100 text-gray-700'
+                          : 'bg-[#1E2533] text-[#D2D9E6]'
                     }`}
                   >
                     {response.status === 0 ? 'Error' : response.status}
@@ -838,7 +838,7 @@ function CorsBlockedUI({
       <div className="space-y-2">
         <button
           onClick={() => setShowHelp(!showHelp)}
-          className="flex w-full items-center justify-between rounded-md border border-amber-200 bg-white px-3 py-2 text-left text-sm text-amber-900 hover:bg-amber-100"
+          className="flex w-full items-center justify-between rounded-md border border-amber-200 bg-[#141925] px-3 py-2 text-left text-sm text-amber-900 hover:bg-amber-100"
         >
           <span className="font-medium">How to fix CORS</span>
           {showHelp ? (
@@ -848,7 +848,7 @@ function CorsBlockedUI({
           )}
         </button>
         {showHelp && (
-          <div className="rounded-md border border-amber-200 bg-white p-3 text-xs text-amber-900">
+          <div className="rounded-md border border-amber-200 bg-[#141925] p-3 text-xs text-amber-900">
             <p className="mb-2 font-medium">Server-side fix:</p>
             <ul className="ml-4 list-disc space-y-1">
               <li>
@@ -881,7 +881,7 @@ function ResponseTabs({ response }: { response: ResponseState }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-1 rounded-md bg-slate-100 p-1">
+      <div className="flex items-center gap-1 rounded-md bg-[#1E2533] p-1">
         <Button
           variant={activeTab === 'body' ? 'default' : 'ghost'}
           size="sm"
@@ -924,7 +924,7 @@ function ResponseTabs({ response }: { response: ResponseState }) {
               key={key}
               className="flex gap-2 border-b px-3 py-2 text-xs last:border-b-0"
             >
-              <code className="font-semibold text-slate-700">{key}:</code>
+              <code className="font-semibold text-[#D2D9E6]">{key}:</code>
               <code className="text-muted-foreground">{value}</code>
             </div>
           ))}

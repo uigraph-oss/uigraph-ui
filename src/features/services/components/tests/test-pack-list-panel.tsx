@@ -49,7 +49,7 @@ export function TestPackListPanel({
   }
 
   return (
-    <div className="border-border flex h-full w-[300px] flex-col overflow-y-auto border-r bg-white">
+    <div className="border-border flex h-full w-[300px] flex-col overflow-y-auto border-r bg-[#141925]">
       {isTestPacksLoading ? (
         <div className="flex h-full items-center justify-center">
           <SectionLoader label="Loading test packs..." />
@@ -197,7 +197,7 @@ function TestPackRow({
             <EllipsisVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="bg-white">
+        <DropdownMenuContent align="end" className="bg-[#141925]">
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation()

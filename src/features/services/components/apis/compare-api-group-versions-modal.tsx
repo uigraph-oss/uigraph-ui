@@ -346,7 +346,7 @@ function ApiEndpointsList({
     if (graphQLOperations.length === 0) {
       return (
         <div className="flex h-[400px] items-center justify-center text-center">
-          <p className="text-sm text-[#6B7280]">No operations found</p>
+          <p className="text-sm text-[#828DA3]">No operations found</p>
         </div>
       )
     }
@@ -372,7 +372,7 @@ function ApiEndpointsList({
     if (groupedGrpcMethods.length === 0) {
       return (
         <div className="flex h-[400px] items-center justify-center text-center">
-          <p className="text-sm text-[#6B7280]">No methods found</p>
+          <p className="text-sm text-[#828DA3]">No methods found</p>
         </div>
       )
     }
@@ -380,7 +380,7 @@ function ApiEndpointsList({
       <div className="space-y-6">
         {groupedGrpcMethods.map(({ serviceKey, methods }) => (
           <div key={serviceKey} className="space-y-2">
-            <h3 className="px-4 text-sm font-semibold text-[#0B1220]">
+            <h3 className="px-4 text-sm font-semibold text-[#F4F7FC]">
               {serviceKey}
             </h3>
             <Table>
@@ -406,7 +406,7 @@ function ApiEndpointsList({
   if (apiEndpoints.length === 0) {
     return (
       <div className="flex h-[400px] items-center justify-center text-center">
-        <p className="text-sm text-[#6B7280]">No endpoints found</p>
+        <p className="text-sm text-[#828DA3]">No endpoints found</p>
       </div>
     )
   }

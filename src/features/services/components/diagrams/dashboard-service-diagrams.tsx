@@ -174,7 +174,7 @@ export function DashboardServiceDiagrams() {
                           'flex h-8 w-8 items-center justify-center rounded-lg text-sm transition-colors',
                           entry === page
                             ? 'bg-primary text-white'
-                            : 'text-[#555] hover:bg-[#F0F0F2]'
+                            : 'text-[#555] hover:bg-[#1E2533]'
                         )}
                       >
                         {(entry as number) + 1}

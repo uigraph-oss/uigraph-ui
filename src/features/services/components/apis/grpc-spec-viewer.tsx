@@ -20,7 +20,7 @@ import type {
 } from 'protobufjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 type GrpcSpecViewerProps = {
   serviceId: string
@@ -214,12 +214,12 @@ function renderProtoTarget(
   onSelectEntry: (key: string) => void
 ) {
   if (!targetName) {
-    return <span className="font-medium text-slate-700">{label}</span>
+    return <span className="font-medium text-[#D2D9E6]">{label}</span>
   }
 
   const key = entryKeyByName.get(targetName)
   if (!key) {
-    return <span className="font-medium text-slate-700">{label}</span>
+    return <span className="font-medium text-[#D2D9E6]">{label}</span>
   }
 
   return (
@@ -244,39 +244,39 @@ function renderProtoDetails(
     return (
       <div className="space-y-6">
         {service.comment ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {service.comment}
           </div>
         ) : null}
 
         <div className="grid gap-3 xl:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
             <div className="text-muted-foreground text-xs font-medium">
               Methods
             </div>
-            <div className="mt-2 text-2xl font-semibold text-slate-900">
+            <div className="mt-2 text-2xl font-semibold text-[#F4F7FC]">
               {service.methodsArray.length}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
             <div className="text-muted-foreground text-xs font-medium">
               Package Path
             </div>
-            <div className="mt-2 text-sm font-medium break-all text-slate-700">
+            <div className="mt-2 text-sm font-medium break-all text-[#D2D9E6]">
               {entry.fullName}
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <div className="text-base font-semibold text-slate-900">
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925]">
+          <div className="border-b border-[#2A3242] px-5 py-4">
+            <div className="text-base font-semibold text-[#F4F7FC]">
               RPC Methods
             </div>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-[#2A3242]">
             {service.methodsArray.map((method) => {
               const requestName = method.resolvedRequestType?.fullName
                 ? method.resolvedRequestType.fullName.replace(/^\./, '')
@@ -288,43 +288,43 @@ function renderProtoDetails(
               return (
                 <div key={method.name} className="space-y-3 px-5 py-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-900">
+                    <code className="rounded bg-[#1E2533] px-2 py-1 text-sm font-semibold text-[#F4F7FC]">
                       {method.name}
                     </code>
                     <Badge
                       variant="outline"
-                      className="border-slate-200 text-slate-700"
+                      className="border-[#2A3242] text-[#D2D9E6]"
                     >
                       {formatProtoRpcType(method)}
                     </Badge>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                  <div className="rounded-xl border border-[#2A3242] bg-[#1E2533] p-4 text-sm text-[#D2D9E6]">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-slate-500">rpc</span>
+                      <span className="font-medium text-[#828DA3]">rpc</span>
                       <span>{method.name}</span>
-                      <span className="text-slate-400">(</span>
+                      <span className="text-[#586378]">(</span>
                       {renderProtoTarget(
                         method.requestType,
                         requestName,
                         entryKeyByName,
                         onSelectEntry
                       )}
-                      <span className="text-slate-400">)</span>
-                      <span className="text-slate-400">returns</span>
-                      <span className="text-slate-400">(</span>
+                      <span className="text-[#586378]">)</span>
+                      <span className="text-[#586378]">returns</span>
+                      <span className="text-[#586378]">(</span>
                       {renderProtoTarget(
                         method.responseType,
                         responseName,
                         entryKeyByName,
                         onSelectEntry
                       )}
-                      <span className="text-slate-400">)</span>
+                      <span className="text-[#586378]">)</span>
                     </div>
                   </div>
 
                   {method.comment ? (
-                    <div className="text-sm leading-6 whitespace-pre-wrap text-slate-600">
+                    <div className="text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
                       {method.comment}
                     </div>
                   ) : null}
@@ -343,37 +343,37 @@ function renderProtoDetails(
     return (
       <div className="space-y-6">
         {message.comment ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
             {message.comment}
           </div>
         ) : null}
 
         <div className="grid gap-3 xl:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
             <div className="text-muted-foreground text-xs font-medium">
               Fields
             </div>
-            <div className="mt-2 text-2xl font-semibold text-slate-900">
+            <div className="mt-2 text-2xl font-semibold text-[#F4F7FC]">
               {message.fieldsArray.length}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5">
             <div className="text-muted-foreground text-xs font-medium">
               Nested Types
             </div>
-            <div className="mt-2 text-2xl font-semibold text-slate-900">
+            <div className="mt-2 text-2xl font-semibold text-[#F4F7FC]">
               {'nestedArray' in message ? message.nestedArray.length : 0}
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <div className="text-base font-semibold text-slate-900">Fields</div>
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925]">
+          <div className="border-b border-[#2A3242] px-5 py-4">
+            <div className="text-base font-semibold text-[#F4F7FC]">Fields</div>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-[#2A3242]">
             {message.fieldsArray.map((field) => {
               const targetName = field.resolvedType?.fullName
                 ? field.resolvedType.fullName.replace(/^\./, '')
@@ -382,13 +382,13 @@ function renderProtoDetails(
               return (
                 <div key={field.name} className="space-y-3 px-5 py-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-900">
+                    <code className="rounded bg-[#1E2533] px-2 py-1 text-sm font-semibold text-[#F4F7FC]">
                       {field.name}
                     </code>
 
                     <Badge
                       variant="outline"
-                      className="border-slate-200 text-slate-700"
+                      className="border-[#2A3242] text-[#D2D9E6]"
                     >
                       #{field.id}
                     </Badge>
@@ -421,7 +421,7 @@ function renderProtoDetails(
                     ) : null}
                   </div>
 
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                  <div className="rounded-xl border border-[#2A3242] bg-[#1E2533] p-4 text-sm text-[#D2D9E6]">
                     {renderProtoTarget(
                       formatProtoFieldType(field),
                       targetName,
@@ -431,7 +431,7 @@ function renderProtoDetails(
                   </div>
 
                   {field.comment ? (
-                    <div className="text-sm leading-6 whitespace-pre-wrap text-slate-600">
+                    <div className="text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
                       {field.comment}
                     </div>
                   ) : null}
@@ -449,37 +449,37 @@ function renderProtoDetails(
   return (
     <div className="space-y-6">
       {enumType.comment ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 whitespace-pre-wrap text-slate-600">
+        <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-5 text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
           {enumType.comment}
         </div>
       ) : null}
 
-      <div className="rounded-2xl border border-slate-200 bg-white">
-        <div className="border-b border-slate-200 px-5 py-4">
-          <div className="text-base font-semibold text-slate-900">
+      <div className="rounded-2xl border border-[#2A3242] bg-[#141925]">
+        <div className="border-b border-[#2A3242] px-5 py-4">
+          <div className="text-base font-semibold text-[#F4F7FC]">
             Enum Values
           </div>
         </div>
 
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-[#2A3242]">
           {Object.entries(enumType.values)
             .sort((left, right) => left[1] - right[1])
             .map(([name, value]) => (
               <div key={name} className="space-y-3 px-5 py-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-900">
+                  <code className="rounded bg-[#1E2533] px-2 py-1 text-sm font-semibold text-[#F4F7FC]">
                     {name}
                   </code>
                   <Badge
                     variant="outline"
-                    className="border-slate-200 text-slate-700"
+                    className="border-[#2A3242] text-[#D2D9E6]"
                   >
                     {value}
                   </Badge>
                 </div>
 
                 {enumType.comments?.[name] ? (
-                  <div className="text-sm leading-6 whitespace-pre-wrap text-slate-600">
+                  <div className="text-sm leading-6 whitespace-pre-wrap text-[#828DA3]">
                     {enumType.comments[name]}
                   </div>
                 ) : null}
@@ -734,7 +734,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
   }
 
   return (
-    <div className="grpc-spec-viewer-shell h-full w-full bg-white">
+    <div className="grpc-spec-viewer-shell h-full w-full bg-[#141925]">
       <div className="flex min-h-full flex-col">
         <div className="viewer-header backdrop-blur-xl">
           <div className="flex flex-col gap-4 px-6 py-5">
@@ -744,20 +744,20 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
                   <Badge variant="secondary">gRPC</Badge>
                   <Badge
                     variant="outline"
-                    className="border-slate-200 text-slate-600"
+                    className="border-[#2A3242] text-[#828DA3]"
                   >
                     {specFiles.length} file{specFiles.length === 1 ? '' : 's'}
                   </Badge>
                   <Badge
                     variant="outline"
-                    className="border-slate-200 text-slate-600"
+                    className="border-[#2A3242] text-[#828DA3]"
                   >
                     {entries.filter((entry) => entry.kind === 'service').length}{' '}
                     services
                   </Badge>
                   <Badge
                     variant="outline"
-                    className="border-slate-200 text-slate-600"
+                    className="border-[#2A3242] text-[#828DA3]"
                   >
                     {entries.filter((entry) => entry.kind === 'message').length}{' '}
                     messages
@@ -781,12 +781,12 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
 
             {activeTab === 'reference' ? (
               <div className="relative max-w-md">
-                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#586378]" />
                 <Input
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Search services, messages, enums..."
-                  className="border-stock h-11! !rounded-[0.8rem] bg-white pl-9 shadow-none"
+                  className="border-stock h-11! !rounded-[0.8rem] bg-[#141925] pl-9 shadow-none"
                 />
               </div>
             ) : null}
@@ -838,12 +838,12 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
                               <div className="text-sm font-medium">
                                 {entry.name}
                               </div>
-                              <div className="mt-1 text-xs text-slate-500">
+                              <div className="mt-1 text-xs text-[#828DA3]">
                                 {entry.fullName}
                               </div>
                             </div>
 
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-[#586378]">
                               {entry.kind === 'service'
                                 ? entry.object.methodsArray.length
                                 : entry.kind === 'message'
@@ -880,7 +880,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
                             </Badge>
                             <Badge
                               variant="outline"
-                              className="border-slate-200 text-slate-600"
+                              className="border-[#2A3242] text-[#828DA3]"
                             >
                               {selectedEntry.fullName}
                             </Badge>
@@ -890,7 +890,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
                             <div className="text-xl font-semibold text-slate-950">
                               {selectedEntry.name}
                             </div>
-                            <div className="mt-2 text-sm text-slate-500">
+                            <div className="mt-2 text-sm text-[#828DA3]">
                               {selectedEntry.kind === 'service'
                                 ? 'RPC methods and message contracts'
                                 : selectedEntry.kind === 'message'
@@ -936,7 +936,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
 
                 <SyntaxHighlighter
                   language="protobuf"
-                  style={oneLight}
+                  style={oneDark}
                   customStyle={{
                     margin: 0,
                     borderRadius: 0,
@@ -967,39 +967,39 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
         .grpc-spec-viewer-shell .viewer-section-label,
         .grpc-spec-viewer-shell .viewer-empty,
         .grpc-spec-viewer-shell .viewer-state-card,
-        .grpc-spec-viewer-shell .text-slate-400,
-        .grpc-spec-viewer-shell .text-slate-500,
-        .grpc-spec-viewer-shell .text-slate-600 {
+        .grpc-spec-viewer-shell .text-[#586378],
+        .grpc-spec-viewer-shell .text-[#828DA3],
+        .grpc-spec-viewer-shell .text-[#828DA3] {
           color: #939395 !important;
         }
 
-        .grpc-spec-viewer-shell .text-slate-700,
-        .grpc-spec-viewer-shell .text-slate-800,
-        .grpc-spec-viewer-shell .text-slate-900,
+        .grpc-spec-viewer-shell .text-[#D2D9E6],
+        .grpc-spec-viewer-shell .text-[#F4F7FC],
+        .grpc-spec-viewer-shell .text-[#F4F7FC],
         .grpc-spec-viewer-shell .text-slate-950 {
           color: #111110 !important;
         }
 
-        .grpc-spec-viewer-shell .border-slate-200,
-        .grpc-spec-viewer-shell .border-slate-200\/80 {
+        .grpc-spec-viewer-shell .border-[#2A3242],
+        .grpc-spec-viewer-shell .border-[#2A3242]\/80 {
           border-color: #e5e7e9 !important;
         }
 
         .grpc-spec-viewer-shell
-          .divide-slate-200
+          .divide-[#2A3242]
           > :not([hidden])
           ~ :not([hidden]) {
           border-color: #e5e7e9 !important;
         }
 
-        .grpc-spec-viewer-shell .bg-slate-50,
+        .grpc-spec-viewer-shell .bg-[#1E2533],
         .grpc-spec-viewer-shell .bg-cyan-50,
-        .grpc-spec-viewer-shell .bg-white\/70,
-        .grpc-spec-viewer-shell .bg-white\/80 {
+        .grpc-spec-viewer-shell .bg-[#141925]\/70,
+        .grpc-spec-viewer-shell .bg-[#141925]\/80 {
           background: #f9fafb !important;
         }
 
-        .grpc-spec-viewer-shell .bg-slate-100 {
+        .grpc-spec-viewer-shell .bg-[#1E2533] {
           background: #f4f6f7 !important;
         }
 

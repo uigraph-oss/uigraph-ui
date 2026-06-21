@@ -146,7 +146,7 @@ export function ConfigureServiceDocModal({
             )}
           />
           {defaultValues?.fileId && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#828DA3]">
               Current file: {defaultValues.fileName || 'File uploaded'}
             </p>
           )}
@@ -169,7 +169,7 @@ export function ConfigureServiceDocModal({
                 id="fileName"
                 placeholder="e.g. API Documentation v1.0"
                 className={cn(
-                  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
                   form.formState.errors.fileName && 'border-red-500'
                 )}
                 {...field}
@@ -199,7 +199,7 @@ export function ConfigureServiceDocModal({
                   {...field}
                   id="fileType"
                   className={cn(
-                    'h-[56px]! w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                    'h-[56px]! w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
                     form.formState.errors.fileType && 'border-red-500'
                   )}
                 >
@@ -229,7 +229,7 @@ export function ConfigureServiceDocModal({
                 id="description"
                 placeholder="Brief description of this documentation..."
                 className={cn(
-                  'min-h-[100px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 py-4 focus:outline-none',
+                  'min-h-[100px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 py-4 focus:outline-none',
                   form.formState.errors.description && 'border-red-500'
                 )}
                 {...field}
@@ -266,7 +266,7 @@ function LocalFileInput({
 
       <button
         type="button"
-        className="border-primary/20 flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed bg-white p-6"
+        className="border-primary/20 flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed bg-[#141925] p-6"
         onClick={async () => {
           const [file] = await openFileExplorer({ accept })
           onChange(file)
@@ -276,8 +276,8 @@ function LocalFileInput({
           <div className="flex flex-col items-center gap-2">
             <FileText className="size-5 text-green-600" />
             <div>
-              <p className="text-sm font-medium text-gray-900">{file.name}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-medium text-[#F4F7FC]">{file.name}</p>
+              <p className="text-xs text-[#828DA3]">
                 {formatBytesToHumanReadable(file.size).text}
               </p>
             </div>

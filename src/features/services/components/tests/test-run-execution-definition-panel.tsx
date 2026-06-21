@@ -33,7 +33,7 @@ function InfoTile({
   mono?: boolean
 }) {
   return (
-    <div className="rounded-[12px] border border-[#E5E7E9] bg-white px-4 py-3">
+    <div className="rounded-[12px] border border-[#2A3242] bg-[#141925] px-4 py-3">
       <div className="text-muted-foreground mb-1.5 text-xs font-medium">
         {label}
       </div>
@@ -59,8 +59,8 @@ function CodeBlock({
 }) {
   if (!value?.trim()) return null
   return (
-    <div className="overflow-hidden rounded-[12px] border border-[#E5E7E9] bg-white">
-      <div className="border-b border-[#E5E7E9] bg-[#F9FBFC] px-3 py-2">
+    <div className="overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#141925]">
+      <div className="border-b border-[#2A3242] bg-[#141925] px-3 py-2">
         <span className="text-muted-foreground font-mono text-xs">
           {languageLabel}
         </span>
@@ -90,7 +90,7 @@ function AssertionList({
       {assertions.map((a, i) => (
         <div
           key={i}
-          className="flex flex-wrap items-center gap-2 rounded-[12px] border border-[#E5E7E9] bg-[#F9FBFC] px-3 py-2 text-sm"
+          className="flex flex-wrap items-center gap-2 rounded-[12px] border border-[#2A3242] bg-[#141925] px-3 py-2 text-sm"
         >
           {a.field && (
             <span className="text-foreground font-mono font-semibold">
@@ -132,8 +132,8 @@ function APIDefinition({ testCase }: { testCase: TestCase }) {
 
   return (
     <>
-      <div className="mb-5 flex items-center gap-0 overflow-hidden rounded-[12px] border border-[#E5E7E9] bg-white">
-        <div className="flex shrink-0 border-r border-[#E5E7E9] bg-[#F9FBFC] px-3 py-2.5">
+      <div className="mb-5 flex items-center gap-0 overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#141925]">
+        <div className="flex shrink-0 border-r border-[#2A3242] bg-[#141925] px-3 py-2.5">
           <span
             className={`rounded px-2 py-0.5 font-mono text-xs font-extrabold ${methodBg}`}
           >
@@ -294,7 +294,7 @@ function GRPCDefinition({ testCase }: { testCase: TestCase }) {
         />
       </div>
       {grpc.protoFileId && (
-        <div className="mb-4 flex items-center gap-2 rounded-[12px] border border-[#E5E7E9] bg-white px-4 py-3">
+        <div className="mb-4 flex items-center gap-2 rounded-[12px] border border-[#2A3242] bg-[#141925] px-4 py-3">
           <span className="text-foreground font-mono text-sm font-semibold">
             ⟁ {grpc.protoFileId}
           </span>
@@ -360,7 +360,7 @@ function ManualDefinition({ testCase }: { testCase: TestCase }) {
             {sortedSteps.map((step, idx) => (
               <div
                 key={idx}
-                className="flex gap-3 rounded-[12px] border border-[#E5E7E9] bg-white p-4"
+                className="flex gap-3 rounded-[12px] border border-[#2A3242] bg-[#141925] p-4"
               >
                 <div className="bg-primary text-primary-foreground flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold">
                   {(step.order ?? idx) + 1}
@@ -425,7 +425,7 @@ export function TestRunExecutionDefinitionPanel({
     <div className="flex flex-col">
       <SectionLabel>Definition</SectionLabel>
       {testCase.description && (
-        <div className="text-muted-foreground mb-5 rounded-[12px] border border-[#E5E7E9] bg-white px-4 py-3 text-sm leading-[1.6]">
+        <div className="text-muted-foreground mb-5 rounded-[12px] border border-[#2A3242] bg-[#141925] px-4 py-3 text-sm leading-[1.6]">
           {testCase.description}
         </div>
       )}

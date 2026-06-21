@@ -70,7 +70,7 @@ export function RunPackModal({
                 autoComplete="off"
                 autoCapitalize="off"
                 className={cn(
-                  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
                   environmentError && 'border-red-500'
                 )}
                 {...field}
@@ -97,7 +97,7 @@ export function RunPackModal({
                 autoCorrect="off"
                 autoComplete="off"
                 autoCapitalize="off"
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none"
                 {...field}
               />
             )}

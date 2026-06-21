@@ -68,15 +68,15 @@ function PageCard({ page }: { page: DashboardFrame }) {
     <div className="group relative">
       <Link
         to={`/dashboard/frame/${page.id}`}
-        className="relative block cursor-pointer overflow-hidden rounded-[1.4525rem] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#E2E4E6] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]"
+        className="relative block cursor-pointer overflow-hidden rounded-[1.4525rem] bg-[#141925] shadow-[0_1px_3px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.2)] ring-1 ring-[#2A3242] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.25),0_8px_24px_rgba(0,0,0,0.4)] hover:ring-2 hover:ring-[#015AEB]"
       >
         {/* Preview area — flush to card edges */}
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
             screenshotSrc && !imageError
-              ? 'bg-[#F5F6F8] group-hover:bg-white'
-              : 'bg-[#EDEEF1]'
+              ? 'bg-[#1E2533] group-hover:bg-[#2A3242]'
+              : 'bg-[#1E2533]'
           )}
         >
           {screenshotSrc && !imageError ? (
@@ -99,31 +99,31 @@ function PageCard({ page }: { page: DashboardFrame }) {
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2">
-              <div className="flex size-10 items-center justify-center rounded-full bg-white/70">
-                <LuCloudUpload className="size-4 text-[#AAAAB0]" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-[#2A3242]">
+                <LuCloudUpload className="size-4 text-[#586378]" />
               </div>
-              <span className="text-[11px] font-medium text-[#AAAAB0]">
+              <span className="text-[11px] font-medium text-[#586378]">
                 No preview available
               </span>
             </div>
           )}
           {/* Bottom fade for smooth transition into content */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-white/30 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#141925]/40 to-transparent" />
         </div>
 
         {/* Thin divider */}
-        <div className="h-px bg-[#EBEBED]" />
+        <div className="h-px bg-[#2A3242]" />
 
         {/* Content */}
         <div className="px-4 py-3">
-          <h4 className="line-clamp-1 text-sm font-semibold text-[#111111]">
+          <h4 className="line-clamp-1 text-sm font-semibold text-[#F4F7FC]">
             {page.name ?? (
-              <span className="text-[#B0B0B2]">Untitled Frame</span>
+              <span className="text-[#586378]">Untitled Frame</span>
             )}
           </h4>
 
           <div className="mt-2 flex min-h-[1.75rem] items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-1.5 text-[#B4B4B6]">
+            <div className="flex min-w-0 items-center gap-1.5 text-[#828DA3]">
               <Calendar className="h-3 w-3 shrink-0" />
               <span className="text-[11px]">
                 {page.createdAt
@@ -146,11 +146,11 @@ function PageCard({ page }: { page: DashboardFrame }) {
             size="icon"
             variant="ghost"
             className={cn(
-              'absolute top-2 right-2 h-7 w-7 rounded-lg bg-white/70 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white',
+              'absolute top-2 right-2 h-7 w-7 rounded-lg bg-[#1E2533]/80 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#1E2533]',
               isDropdownOpen && 'opacity-100'
             )}
           >
-            <MoreVertical className="h-3.5 w-3.5 text-[#555]" />
+            <MoreVertical className="h-3.5 w-3.5 text-[#828DA3]" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

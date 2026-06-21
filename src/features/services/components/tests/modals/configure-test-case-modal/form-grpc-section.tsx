@@ -19,25 +19,25 @@ export function FormGrpcSection({ form }: { form: FormType }) {
     <>
       <div className="flex items-center gap-2 py-[12px] pb-1">
         <span className="text-[18px]">⟁</span>
-        <span className="text-[13px] font-bold text-[#1e293b]">
+        <span className="text-[13px] font-bold text-[#F4F7FC]">
           gRPC Fields
         </span>
-        <span className="text-xs text-[#94a3b8]">
+        <span className="text-xs text-[#828DA3]">
           - gRPC service method test
         </span>
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Service & Method
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3.5 grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Service Name
           </Label>
           <Controller
@@ -49,7 +49,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   placeholder="shipping.ShipmentService"
                   value={field.value ?? ''}
                   onChange={field.onChange}
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
                 />
                 <FieldMessage message={fieldState.error?.message} />
               </>
@@ -57,7 +57,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
           />
         </div>
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Method Name <span className="text-red-500">*</span>
           </Label>
           <Controller
@@ -69,7 +69,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   placeholder="CreateShipment"
                   value={field.value ?? ''}
                   onChange={field.onChange}
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
                 />
                 {fieldState.error?.message ? (
                   <FieldMessage message={fieldState.error.message} />
@@ -84,7 +84,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
 
       <div className="mb-3.5 grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Call Mode <span className="text-red-500">*</span>
           </Label>
           <Controller
@@ -96,7 +96,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   value={field.value ?? ''}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6">
+                  <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6">
                     <SelectValue placeholder="Select mode" />
                   </SelectTrigger>
                   <SelectContent>
@@ -122,9 +122,9 @@ export function FormGrpcSection({ form }: { form: FormType }) {
           />
         </div>
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Proto File{' '}
-            <span className="text-xs text-[#94a3b8]">(optional)</span>
+            <span className="text-xs text-[#828DA3]">(optional)</span>
           </Label>
           <Controller
             name="grpcProto"
@@ -135,7 +135,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   placeholder="shipping-v1.proto"
                   value={field.value ?? ''}
                   onChange={field.onChange}
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
                 />
                 <FieldMessage message={fieldState.error?.message} />
               </>
@@ -145,9 +145,9 @@ export function FormGrpcSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Server Address Override{' '}
-          <span className="text-xs text-[#94a3b8]">(optional)</span>
+          <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         <Controller
           name="grpcAddress"
@@ -158,7 +158,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                 placeholder="shipping.internal:443"
                 value={field.value ?? ''}
                 onChange={field.onChange}
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
               />
               <FieldMessage message={fieldState.error?.message} />
             </>
@@ -167,15 +167,15 @@ export function FormGrpcSection({ form }: { form: FormType }) {
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Request
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Request Message (JSON)
         </Label>
         <Controller
@@ -183,7 +183,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
           control={form.control}
           render={({ field, fieldState }) => (
             <>
-              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-white">
+              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-[#141925]">
                 <CodeMirrorWrapped
                   height="9.5rem"
                   value={field.value ?? ''}
@@ -197,9 +197,9 @@ export function FormGrpcSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Metadata Headers{' '}
-          <span className="text-xs text-[#94a3b8]">(optional)</span>
+          <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         {(form.watch('grpcMetadata') ?? []).map((item, index) => (
           <div
@@ -220,7 +220,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <Input
               placeholder="Bearer {{TOKEN}}"
@@ -236,7 +236,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <Button
               type="button"
@@ -250,7 +250,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto rounded-[6px] border border-[#fecaca] bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
+              className="h-auto rounded-[6px] border border-red-500/30 bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
             >
               ×
             </Button>
@@ -272,23 +272,23 @@ export function FormGrpcSection({ form }: { form: FormType }) {
               { shouldDirty: true, shouldValidate: true }
             )
           }}
-          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#e2e8f0] bg-transparent px-3 py-2 text-xs text-[#64748b] hover:bg-transparent"
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#2A3242] bg-transparent px-3 py-2 text-xs text-[#828DA3] hover:bg-transparent"
         >
           + Add Metadata Header
         </Button>
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Expected Response
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3.5 grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Expected gRPC Status <span className="text-red-500">*</span>
           </Label>
           <Controller
@@ -300,7 +300,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   value={field.value ?? ''}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6">
+                  <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -336,9 +336,9 @@ export function FormGrpcSection({ form }: { form: FormType }) {
           />
         </div>
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Deadline (ms){' '}
-            <span className="text-xs text-[#94a3b8]">(optional)</span>
+            <span className="text-xs text-[#828DA3]">(optional)</span>
           </Label>
           <Controller
             name="grpcDeadline"
@@ -350,7 +350,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   placeholder="2000"
                   value={field.value ?? ''}
                   onChange={field.onChange}
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
                 />
                 <FieldMessage message={fieldState.error?.message} />
               </>
@@ -360,16 +360,16 @@ export function FormGrpcSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Response Body{' '}
-          <span className="text-xs text-[#94a3b8]">(optional)</span>
+          <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         <Controller
           name="grpcResponseBody"
           control={form.control}
           render={({ field, fieldState }) => (
             <>
-              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-white">
+              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-[#141925]">
                 <CodeMirrorWrapped
                   height="8.5rem"
                   value={field.value ?? ''}
@@ -383,8 +383,8 @@ export function FormGrpcSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
-          Assertions <span className="text-xs text-[#94a3b8]">(optional)</span>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
+          Assertions <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         {(form.watch('grpcAssertions') ?? []).map((item, index) => (
           <div
@@ -406,7 +406,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <Select
               value={item.type ?? ''}
@@ -421,7 +421,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                 )
               }}
             >
-              <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6">
+              <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6">
                 <SelectValue placeholder="Assertion" />
               </SelectTrigger>
               <SelectContent>
@@ -454,7 +454,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <Button
               type="button"
@@ -468,7 +468,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto rounded-[6px] border border-[#fecaca] bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
+              className="h-auto rounded-[6px] border border-red-500/30 bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
             >
               ×
             </Button>
@@ -490,7 +490,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
               { shouldDirty: true, shouldValidate: true }
             )
           }}
-          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#e2e8f0] bg-transparent px-3 py-2 text-xs text-[#64748b] hover:bg-transparent"
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#2A3242] bg-transparent px-3 py-2 text-xs text-[#828DA3] hover:bg-transparent"
         >
           + Add Assertion
         </Button>
@@ -510,7 +510,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
             </>
           )}
         />
-        <Label className="text-sm font-normal text-[#334155]">
+        <Label className="text-sm font-normal text-[#D2D9E6]">
           Use TLS / Secure channel
         </Label>
       </div>
@@ -528,7 +528,7 @@ export function FormGrpcSection({ form }: { form: FormType }) {
             </>
           )}
         />
-        <Label className="text-sm font-normal text-[#334155]">
+        <Label className="text-sm font-normal text-[#D2D9E6]">
           This test expects an error status (non-OK)
         </Label>
       </div>

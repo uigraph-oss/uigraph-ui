@@ -50,7 +50,7 @@ export function RenderMongoCollections({
 
   if (!collections || collections.length === 0) {
     return (
-      <div className="flex min-h-[140px] items-center justify-center text-sm text-[#939395]">
+      <div className="flex min-h-[140px] items-center justify-center text-sm text-[#828DA3]">
         No collections found
       </div>
     )
@@ -69,14 +69,14 @@ export function RenderMongoCollections({
             className="p-4 pt-2.5"
           >
             <div className="flex flex-wrap items-center justify-between gap-2 px-2 pb-2">
-              <div className="flex items-center gap-2 text-[0.975rem] font-medium text-[#161616]">
+              <div className="flex items-center gap-2 text-[0.975rem] font-medium text-[#F4F7FC]">
                 {collection.name || (
                   <span className="text-paragraph text-xs">
                     Untitled collection
                   </span>
                 )}
               </div>
-              <div className="flex shrink-0 items-center gap-4 text-sm text-[#6B7280]">
+              <div className="flex shrink-0 items-center gap-4 text-sm text-[#828DA3]">
                 <div>{fields.length} fields</div>
                 {indexes.length > 0 && <div>{indexes.length} indexes</div>}
               </div>
@@ -95,7 +95,7 @@ export function RenderMongoCollections({
                   <TableBody>
                     {fieldRows.map(({ field, depth }, rowIndex) => (
                       <TableRow key={field.id ?? `${field.name}-${rowIndex}`}>
-                        <TableCell className="h-11 w-[50%] max-w-[200px] truncate px-3! text-sm text-[#161616]">
+                        <TableCell className="h-11 w-[50%] max-w-[200px] truncate px-3! text-sm text-[#F4F7FC]">
                           <div
                             className="flex items-center"
                             style={{ paddingLeft: `${depth * 16}px` }}
@@ -125,18 +125,18 @@ export function RenderMongoCollections({
             )}
 
             {indexes.length > 0 && (
-              <div className="mt-4 rounded-[0.5rem] border border-[#EEF0F2] px-3.5 py-3">
-                <div className="text-[13px] text-[#161616]">Indexes</div>
+              <div className="mt-4 rounded-[0.5rem] border border-[#2A3242] px-3.5 py-3">
+                <div className="text-[13px] text-[#F4F7FC]">Indexes</div>
                 <div className="mt-2 space-y-2.5">
                   {indexes.map((idx) => (
                     <div
                       key={idx.id ?? idx.name}
-                      className="rounded-lg bg-[#F9FAFB] px-3 py-2 text-sm text-[#161616]"
+                      className="rounded-lg bg-[#1E2533] px-3 py-2 text-sm text-[#F4F7FC]"
                     >
-                      <div className="text-[13px] text-[#161616]">
+                      <div className="text-[13px] text-[#F4F7FC]">
                         {idx.name}
                       </div>
-                      <div className="text-[12px] text-[#6B7280]">
+                      <div className="text-[12px] text-[#828DA3]">
                         {idx.unique ? 'unique' : 'non-unique'} • fields:{' '}
                         {idx.fields
                           .map(

@@ -297,7 +297,7 @@ export function ConfigureDbSchemaModal({
                 <Input
                   id="schema-name"
                   placeholder="e.g., users_database"
-                  className="border-stock !h-[56px] !w-full rounded-[16px] border bg-white px-6 focus:outline-none"
+                  className="border-stock !h-[56px] !w-full rounded-[16px] border bg-[#141925] px-6 focus:outline-none"
                   {...field}
                 />
               )}
@@ -320,7 +320,7 @@ export function ConfigureDbSchemaModal({
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger
                     id="db-type"
-                    className="border-stock !h-[56px] !w-full rounded-[16px] border bg-white px-6 focus:outline-none"
+                    className="border-stock !h-[56px] !w-full rounded-[16px] border bg-[#141925] px-6 focus:outline-none"
                   >
                     <SelectValue placeholder="Select database type" />
                   </SelectTrigger>
@@ -355,14 +355,14 @@ export function ConfigureDbSchemaModal({
           )}
         </form>
       ) : (
-        <div className="flex aspect-[1/0.75] flex-col items-center justify-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-          <Upload className="h-12 w-12 text-gray-400" />
+        <div className="flex aspect-[1/0.75] flex-col items-center justify-center gap-3 rounded-lg border border-[#2A3242] bg-[#1E2533] p-8 text-center">
+          <Upload className="h-12 w-12 text-[#586378]" />
 
           <div>
-            <p className="font-medium text-gray-900">
+            <p className="font-medium text-[#F4F7FC]">
               Drop your file here or click to browse
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#828DA3]">
               Supports .sql and .json files
             </p>
           </div>

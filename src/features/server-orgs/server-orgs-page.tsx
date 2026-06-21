@@ -21,47 +21,49 @@ import { Plus, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  CREATE_SERVER_USER,
-  DISABLE_SERVER_USER,
-  SERVER_USERS,
-  UPDATE_SERVER_USER,
-  type ServerUser,
-} from './api/server-users'
-import { ConfigureServerUserModal } from './configure-server-user-modal'
-import { ServerUsersTable } from './server-users-table'
+  CREATE_SERVER_ORG,
+  DELETE_SERVER_ORG,
+  removeServerOrgLogo,
+  SERVER_ORGS,
+  setServerOrgLogo,
+  UPDATE_SERVER_ORG,
+  type ServerOrg,
+} from './api/server-orgs'
+import { ConfigureServerOrgModal } from './configure-server-org-modal'
+import { ServerOrgsTable } from './server-orgs-table'
 
-export function ServerUsersPage() {
-  const { data, loading, error } = useQuery(SERVER_USERS, {
+export function ServerOrgsPage() {
+  const { data, loading, error, refetch } = useQuery(SERVER_ORGS, {
     client: clientV2,
   })
 
-  const refetchQueries = [{ query: SERVER_USERS }]
+  const refetchQueries = [{ query: SERVER_ORGS }]
 
-  const [createUser] = useMutation(CREATE_SERVER_USER, {
-    client: clientV2,
-    awaitRefetchQueries: true,
-    refetchQueries,
-  })
-  const [updateUser] = useMutation(UPDATE_SERVER_USER, {
+  const [createOrg] = useMutation(CREATE_SERVER_ORG, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })
-  const [disableUser] = useMutation(DISABLE_SERVER_USER, {
+  const [updateOrg] = useMutation(UPDATE_SERVER_ORG, {
+    client: clientV2,
+    awaitRefetchQueries: true,
+    refetchQueries,
+  })
+  const [deleteOrg] = useMutation(DELETE_SERVER_ORG, {
     client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })
 
-  const users = useMemo<ServerUser[]>(() => data?.users ?? [], [data])
+  const orgs = useMemo<ServerOrg[]>(() => data?.serverOrgs ?? [], [data])
 
   const [searchTerm, setSearchTerm] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(20)
   const [currentPage, setCurrentPage] = useState(1)
 
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [editUser, setEditUser] = useState<ServerUser | null>(null)
-  const [deleteUser, setDeleteUser] = useState<ServerUser | null>(null)
+  const [editOrg, setEditOrg] = useState<ServerOrg | null>(null)
+  const [removeOrg, setRemoveOrg] = useState<ServerOrg | null>(null)
 
   useEffect(() => {
     if (error) {
@@ -69,40 +71,37 @@ export function ServerUsersPage() {
     }
   }, [error])
 
-  const fuse = useMemo(
-    () => new Fuse(users, { keys: ['name', 'email', 'role'] }),
-    [users]
-  )
+  const fuse = useMemo(() => new Fuse(orgs, { keys: ['name'] }), [orgs])
 
-  const filteredUsers = useMemo(() => {
-    if (!searchTerm.trim()) return users
+  const filteredOrgs = useMemo(() => {
+    if (!searchTerm.trim()) return orgs
     return fuse.search(searchTerm.toLowerCase()).map((result) => result.item)
-  }, [users, fuse, searchTerm])
+  }, [orgs, fuse, searchTerm])
 
-  const paginatedUsers = useMemo(() => {
+  const paginatedOrgs = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage
-    return filteredUsers.slice(startIndex, startIndex + rowsPerPage)
-  }, [filteredUsers, currentPage, rowsPerPage])
+    return filteredOrgs.slice(startIndex, startIndex + rowsPerPage)
+  }, [filteredOrgs, currentPage, rowsPerPage])
 
   useEffect(() => {
     setCurrentPage((prev) => {
-      const maxPage = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage))
+      const maxPage = Math.max(1, Math.ceil(filteredOrgs.length / rowsPerPage))
       return Math.min(prev, maxPage)
     })
-  }, [filteredUsers.length, rowsPerPage])
+  }, [filteredOrgs.length, rowsPerPage])
 
   return (
     <>
       <ServerSectionHeader
-        title="User Management"
-        description="Manage all accounts on this server"
+        title="Organization Management"
+        description="Manage all organizations on this server"
         cta={
           <Button
             className="h-11 rounded-[0.75rem] px-6 text-sm"
             onClick={() => setIsCreateOpen(true)}
           >
             <Plus className="mr-0.5 h-4 w-4" />
-            Add User
+            Add Organization
           </Button>
         }
       />
@@ -148,12 +147,12 @@ export function ServerUsersPage() {
 
           <div className="border-stock overflow-x-auto border-t">
             {loading ? (
-              <SectionLoader label="Loading users..." />
+              <SectionLoader label="Loading organizations..." />
             ) : (
-              <ServerUsersTable
-                users={paginatedUsers}
-                onEdit={setEditUser}
-                onDelete={setDeleteUser}
+              <ServerOrgsTable
+                orgs={paginatedOrgs}
+                onEdit={setEditOrg}
+                onDelete={setRemoveOrg}
               />
             )}
           </div>
@@ -163,31 +162,30 @@ export function ServerUsersPage() {
       <div className="mt-4 flex items-center justify-between px-6">
         <div className="text-muted-foreground text-sm">
           Total{' '}
-          <span className="font-medium text-[#F4F7FC]">{users.length}</span>{' '}
-          users
+          <span className="font-medium text-[#F4F7FC]">{orgs.length}</span>{' '}
+          organizations
         </div>
 
         <FunctionalPagination
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-          totalPages={Math.max(
-            1,
-            Math.ceil(filteredUsers.length / rowsPerPage)
-          )}
+          totalPages={Math.max(1, Math.ceil(filteredOrgs.length / rowsPerPage))}
         />
       </div>
 
       <BetterDialogProvider open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <ConfigureServerUserModal
+        <ConfigureServerOrgModal
           mode="create"
           onSubmit={async (values) => {
             try {
-              await createUser({ variables: { input: values } })
+              await createOrg({ variables: { input: values } })
               setIsCreateOpen(false)
-              toast.success('User created successfully')
+              toast.success('Organization created successfully')
             } catch (error) {
               toast.error(
-                error instanceof Error ? error.message : 'Failed to create user'
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to create organization'
               )
             }
           }}
@@ -195,39 +193,51 @@ export function ServerUsersPage() {
       </BetterDialogProvider>
 
       <BetterDialogProvider
-        open={editUser !== null}
+        open={editOrg !== null}
         onOpenChange={(open) => {
-          if (!open) setEditUser(null)
+          if (!open) setEditOrg(null)
         }}
       >
-        {editUser && (
-          <ConfigureServerUserModal
+        {editOrg && (
+          <ConfigureServerOrgModal
             mode="edit"
+            logoUrl={editOrg.logoUrl}
             defaultValues={{
-              name: editUser.name,
-              email: editUser.email,
-              role: editUser.role === 'server_admin' ? 'server_admin' : 'user',
-              disabled: editUser.disabled,
+              name: editOrg.name,
+              autoJoin: editOrg.autoJoin,
+              disabled: editOrg.disabled,
+            }}
+            onUploadLogo={async (file) => {
+              await setServerOrgLogo(editOrg.id, file)
+              const { data } = await refetch()
+              const updated = data.serverOrgs.find((o) => o.id === editOrg.id)
+              if (updated) setEditOrg(updated)
+            }}
+            onRemoveLogo={async () => {
+              await removeServerOrgLogo(editOrg.id)
+              const { data } = await refetch()
+              const updated = data.serverOrgs.find((o) => o.id === editOrg.id)
+              if (updated) setEditOrg(updated)
             }}
             onSubmit={async (values) => {
               try {
-                await updateUser({
+                await updateOrg({
                   variables: {
-                    id: editUser.id,
+                    id: editOrg.id,
                     input: {
                       name: values.name,
-                      role: values.role,
+                      autoJoin: values.autoJoin,
                       disabled: values.disabled,
                     },
                   },
                 })
-                setEditUser(null)
-                toast.success('User updated successfully')
+                setEditOrg(null)
+                toast.success('Organization updated successfully')
               } catch (error) {
                 toast.error(
                   error instanceof Error
                     ? error.message
-                    : 'Failed to update user'
+                    : 'Failed to update organization'
                 )
               }
             }}
@@ -236,25 +246,27 @@ export function ServerUsersPage() {
       </BetterDialogProvider>
 
       <BetterDeleteConfirmationModal
-        open={deleteUser !== null}
+        open={removeOrg !== null}
         onOpenChange={(open) => {
-          if (!open) setDeleteUser(null)
+          if (!open) setRemoveOrg(null)
         }}
         onConfirm={async () => {
-          if (!deleteUser) return
+          if (!removeOrg) return
           try {
-            await disableUser({ variables: { id: deleteUser.id } })
-            setDeleteUser(null)
-            toast.success('User disabled')
+            await deleteOrg({ variables: { id: removeOrg.id } })
+            setRemoveOrg(null)
+            toast.success('Organization deleted')
           } catch (error) {
             toast.error(
-              error instanceof Error ? error.message : 'Failed to disable user'
+              error instanceof Error
+                ? error.message
+                : 'Failed to delete organization'
             )
           }
         }}
-        title="Do you want to disable this user?"
-        description="Disabling a user revokes their access to this server."
-        deleteButtonText="Disable User"
+        title="Do you want to delete this organization?"
+        description="Deleting an organization permanently removes it and all of its data."
+        deleteButtonText="Delete Organization"
         cancelButtonText="Cancel"
       />
     </>

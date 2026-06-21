@@ -1,13 +1,7 @@
 'use client'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { useAuthStore } from '@/store/auth-store'
 import {
   createColumnHelper,
   flexRender,
@@ -15,60 +9,45 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
-import type { ServerUser } from './api/server-users'
+import type { ServerOrg } from './api/server-orgs'
 
 function getInitials(value: string | null | undefined): string {
-  if (!value) return 'U'
+  if (!value) return 'O'
   return value.charAt(0).toUpperCase()
 }
 
-function ServerUserRowActions({
-  user,
+function ServerOrgRowActions({
+  org,
   onEdit,
   onDelete,
 }: {
-  user: ServerUser
-  onEdit: (user: ServerUser) => void
-  onDelete: (user: ServerUser) => void
+  org: ServerOrg
+  onEdit: (org: ServerOrg) => void
+  onDelete: (org: ServerOrg) => void
 }) {
-  const currentUser = useAuthStore((state) => state.user)
-  const isSelf = user.email === currentUser?.email
-
-  const actionsTrigger = (
+  return (
     <div className="flex items-center gap-[10px]">
       <button
-        disabled={isSelf}
-        className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-[#586378]"
-        onClick={() => onEdit(user)}
+        className="text-sm text-blue-600 transition-colors hover:text-blue-700"
+        onClick={() => onEdit(org)}
       >
         Edit
       </button>
       <button
-        disabled={isSelf}
-        className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:border-[#2A3242] disabled:text-[#586378] disabled:hover:border-[#2A3242] disabled:hover:bg-transparent"
-        onClick={() => onDelete(user)}
+        className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10"
+        onClick={() => onDelete(org)}
       >
         <Trash2 className="size-4" />
       </button>
     </div>
   )
-
-  if (isSelf) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{actionsTrigger}</TooltipTrigger>
-        <TooltipContent>You cannot edit your own account</TooltipContent>
-      </Tooltip>
-    )
-  }
-  return actionsTrigger
 }
 
-const columnHelper = createColumnHelper<ServerUser>()
+const columnHelper = createColumnHelper<ServerOrg>()
 
 function buildColumns(
-  onEdit: (user: ServerUser) => void,
-  onDelete: (user: ServerUser) => void
+  onEdit: (org: ServerOrg) => void,
+  onDelete: (org: ServerOrg) => void
 ) {
   return [
     columnHelper.accessor('name', {
@@ -76,30 +55,39 @@ function buildColumns(
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
+            {row.original.logoUrl && (
+              <AvatarImage src={row.original.logoUrl} alt={row.original.name} />
+            )}
             <AvatarFallback className="bg-blue-500/20 text-xs font-medium text-blue-300">
-              {getInitials(row.original.name || row.original.email)}
+              {getInitials(row.original.name)}
             </AvatarFallback>
           </Avatar>
           <span className="text-[#F4F7FC]">{row.original.name}</span>
         </div>
       ),
     }),
-    columnHelper.accessor('email', {
-      header: 'Email',
-      cell: ({ getValue }) => (
-        <span className="text-sm text-[#828DA3]">{getValue()}</span>
-      ),
-    }),
-    columnHelper.accessor('role', {
-      header: 'Role',
-      cell: ({ getValue }) => (
-        <Badge
-          variant="secondary"
-          className="h-6 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 text-xs font-medium text-[#D2D9E6]"
-        >
-          {getValue() === 'server_admin' ? 'Server Admin' : 'User'}
-        </Badge>
-      ),
+    columnHelper.accessor('autoJoin', {
+      header: 'Auto Join',
+      cell: ({ getValue }) => {
+        if (getValue()) {
+          return (
+            <Badge
+              variant="secondary"
+              className="h-6 rounded-md border border-blue-500/30 bg-blue-500/10 px-2.5 text-xs font-medium text-blue-400"
+            >
+              Enabled
+            </Badge>
+          )
+        }
+        return (
+          <Badge
+            variant="secondary"
+            className="h-6 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 text-xs font-medium text-[#D2D9E6]"
+          >
+            Disabled
+          </Badge>
+        )
+      },
     }),
     columnHelper.accessor('disabled', {
       header: 'Status',
@@ -129,8 +117,8 @@ function buildColumns(
       id: 'action',
       header: 'Action',
       cell: ({ row }) => (
-        <ServerUserRowActions
-          user={row.original}
+        <ServerOrgRowActions
+          org={row.original}
           onEdit={onEdit}
           onDelete={onDelete}
         />
@@ -139,17 +127,17 @@ function buildColumns(
   ]
 }
 
-export function ServerUsersTable({
-  users,
+export function ServerOrgsTable({
+  orgs,
   onEdit,
   onDelete,
 }: {
-  users: ServerUser[]
-  onEdit: (user: ServerUser) => void
-  onDelete: (user: ServerUser) => void
+  orgs: ServerOrg[]
+  onEdit: (org: ServerOrg) => void
+  onDelete: (org: ServerOrg) => void
 }) {
   const table = useReactTable({
-    data: users,
+    data: orgs,
     columns: buildColumns(onEdit, onDelete),
     getCoreRowModel: getCoreRowModel(),
   })
@@ -185,7 +173,7 @@ export function ServerUsersTable({
               colSpan={table.getAllColumns().length}
               className="h-32 py-4 text-center"
             >
-              No users found
+              No organizations found
             </td>
           </tr>
         )}

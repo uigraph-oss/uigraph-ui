@@ -21,7 +21,7 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
       case 'deprecated':
         return 'bg-red-100 text-red-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-[#1E2533] text-[#F4F7FC]'
     }
   }
 
@@ -34,7 +34,7 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
       case 'native':
         return 'bg-green-100 text-green-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-[#1E2533] text-[#F4F7FC]'
     }
   }
 
@@ -66,17 +66,17 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
             {mockRunbooks.map((runbook) => (
               <div
                 key={runbook.id}
-                className="rounded-lg border border-gray-200 p-4"
+                className="rounded-lg border border-[#2A3242] p-4"
               >
                 <div className="mb-3 flex items-start justify-between">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       {getTypeIcon(runbook.type)}
-                      <h3 className="font-medium text-gray-900">
+                      <h3 className="font-medium text-[#F4F7FC]">
                         {runbook.title}
                       </h3>
                     </div>
-                    <p className="mb-2 text-sm text-gray-600">
+                    <p className="mb-2 text-sm text-[#828DA3]">
                       {runbook.description}
                     </p>
                     <div className="mb-2 flex items-center gap-2">
@@ -87,7 +87,7 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
                         {runbook.status}
                       </Badge>
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-[#828DA3]">
                       Last reviewed:{' '}
                       {new Date(runbook.lastReviewed).toLocaleDateString()} by{' '}
                       {runbook.reviewer}
@@ -128,18 +128,20 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
             {mockNativeDocs.map((doc) => (
               <div
                 key={doc.id}
-                className="rounded-lg border border-gray-200 p-4"
+                className="rounded-lg border border-[#2A3242] p-4"
               >
                 <div className="mb-3 flex items-start justify-between">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       {getTypeIcon(doc.type)}
-                      <h3 className="font-medium text-gray-900">{doc.title}</h3>
+                      <h3 className="font-medium text-[#F4F7FC]">
+                        {doc.title}
+                      </h3>
                     </div>
-                    <p className="mb-2 text-sm text-gray-600">
+                    <p className="mb-2 text-sm text-[#828DA3]">
                       {doc.description}
                     </p>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-[#828DA3]">
                       Last updated:{' '}
                       {new Date(doc.lastUpdated).toLocaleDateString()}
                     </div>
@@ -148,8 +150,8 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
                     View
                   </Button>
                 </div>
-                <div className="rounded-md bg-gray-50 p-3">
-                  <pre className="line-clamp-3 text-xs text-gray-700">
+                <div className="rounded-md bg-[#1E2533] p-3">
+                  <pre className="line-clamp-3 text-xs text-[#D2D9E6]">
                     {doc.content}
                   </pre>
                 </div>
@@ -164,10 +166,10 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
         <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
           <div className="p-4 px-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-[#F4F7FC]">
                 {mockRunbooks.length + mockNativeDocs.length}
               </div>
-              <div className="text-sm text-gray-600">Total Docs</div>
+              <div className="text-sm text-[#828DA3]">Total Docs</div>
             </div>
           </div>
         </div>
@@ -177,7 +179,7 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
               <div className="text-2xl font-bold text-blue-600">
                 {mockRunbooks.filter((r) => r.type === 'runbook').length}
               </div>
-              <div className="text-sm text-gray-600">Runbooks</div>
+              <div className="text-sm text-[#828DA3]">Runbooks</div>
             </div>
           </div>
         </div>
@@ -187,7 +189,7 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
               <div className="text-2xl font-bold text-purple-600">
                 {mockRunbooks.filter((r) => r.type === 'playbook').length}
               </div>
-              <div className="text-sm text-gray-600">Playbooks</div>
+              <div className="text-sm text-[#828DA3]">Playbooks</div>
             </div>
           </div>
         </div>
@@ -197,7 +199,7 @@ export function ServiceRunbooks({}: ServiceRunbooksProps) {
               <div className="text-2xl font-bold text-green-600">
                 {mockRunbooks.filter((r) => r.status === 'current').length}
               </div>
-              <div className="text-sm text-gray-600">Current</div>
+              <div className="text-sm text-[#828DA3]">Current</div>
             </div>
           </div>
         </div>

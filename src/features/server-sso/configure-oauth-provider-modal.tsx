@@ -30,7 +30,7 @@ const schema = z.object({
 export type OAuthProviderFormValues = z.infer<typeof schema>
 
 const inputClassName =
-  'h-[48px] rounded-[12px] border border-[#E5E7E9] bg-white px-4'
+  'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4'
 
 function Field({
   label,
@@ -43,7 +43,7 @@ function Field({
 }) {
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium text-[#111110]">{label}</Label>
+      <Label className="text-sm font-medium text-[#D2D9E6]">{label}</Label>
       {children}
       {message && <p className="text-destructive text-sm">{message}</p>}
     </div>
@@ -215,8 +215,8 @@ export function ConfigureOAuthProviderModal({
           name="allowSignUp"
           control={form.control}
           render={({ field }) => (
-            <div className="flex items-center justify-between rounded-[12px] border border-[#E5E7E9] px-4 py-3">
-              <Label className="text-sm font-medium text-[#111110]">
+            <div className="flex items-center justify-between rounded-[12px] border border-[#2A3242] px-4 py-3">
+              <Label className="text-sm font-medium text-[#D2D9E6]">
                 Allow new users to sign up
               </Label>
               <Switch checked={field.value} onCheckedChange={field.onChange} />

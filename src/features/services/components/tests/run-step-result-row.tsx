@@ -122,7 +122,7 @@ function getStatusCodeBadge(statusCode: number): {
     return {
       label: 'Informational',
       className:
-        'border-gray-500/50 bg-gray-50 text-gray-700 text-sm px-3 py-1',
+        'border-gray-500/50 bg-[#1E2533] text-[#D2D9E6] text-sm px-3 py-1',
     }
   }
 }
@@ -136,7 +136,7 @@ function getStepStatusColor(status: string): string {
     case 'blocked':
       return 'bg-amber-500 border-amber-500'
     default:
-      return 'bg-gray-300 border-gray-300'
+      return 'bg-gray-300 border-[#3B4658]'
   }
 }
 
@@ -463,8 +463,8 @@ function expandedPanelContent(
   onImageClick: (url: string) => void
 ) {
   return (
-    <div className="bg-white">
-      <div className="flex items-center justify-start gap-2.5 border-b border-gray-200 px-4 py-2">
+    <div className="bg-[#141925]">
+      <div className="flex items-center justify-start gap-2.5 border-b border-[#2A3242] px-4 py-2">
         <button
           type="button"
           onClick={(e) => {
@@ -475,7 +475,7 @@ function expandedPanelContent(
             'flex h-9 items-center rounded-md border px-3.5 text-sm font-medium transition-colors',
             expandedTab === 'result'
               ? 'border-primary/20 bg-primary/10 text-primary'
-              : 'border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground bg-white'
+              : 'border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground bg-[#141925]'
           )}
         >
           Result
@@ -490,7 +490,7 @@ function expandedPanelContent(
             'flex h-9 items-center rounded-md border px-3.5 text-sm font-medium transition-colors',
             expandedTab === 'details'
               ? 'border-primary/20 bg-primary/10 text-primary'
-              : 'border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground bg-white'
+              : 'border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground bg-[#141925]'
           )}
         >
           Steps &amp; Details

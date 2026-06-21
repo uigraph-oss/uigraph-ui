@@ -51,7 +51,7 @@ export function DashboardProjects() {
       }
     >
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-[#111110]">Your Maps</h3>
+        <h3 className="text-lg font-semibold text-[#F4F7FC]">Your Maps</h3>
 
         <BasicFilterInput
           teams={teams}

@@ -180,7 +180,7 @@ function ServiceTestsPageContent() {
             />
 
             <div className="flex-1 overflow-hidden p-3">
-              <div className="size-full min-w-0 flex-1 rounded-2xl border border-gray-200 bg-gray-50 transition-all duration-200">
+              <div className="size-full min-w-0 flex-1 rounded-2xl border border-[#2A3242] bg-[#1E2533] transition-all duration-200">
                 <TestPackWorkspacePanel
                   onAddTestCase={handleAddTestCase}
                   onRunPack={handleRunPack}

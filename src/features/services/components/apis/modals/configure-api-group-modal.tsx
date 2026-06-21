@@ -211,7 +211,7 @@ export function ConfigureApiGroupModal({
                   autoCapitalize="off"
                   disabled={isUploading}
                   className={cn(
-                    'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                    'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
                     (nameError || (nameBlurred && !name.trim())) &&
                       'border-red-500'
                   )}
@@ -224,7 +224,7 @@ export function ConfigureApiGroupModal({
               )
             }}
           />
-          <p className="text-xs text-[#939395]">
+          <p className="text-xs text-[#828DA3]">
             Used to group endpoints (e.g. uigraph-adapter-openapi, public,
             internal).
           </p>
@@ -240,7 +240,7 @@ export function ConfigureApiGroupModal({
             <Label className="text-sm font-normal">
               Import API Specification
             </Label>
-            <p className="mt-1 text-xs text-[#939395]">Upload one source.</p>
+            <p className="mt-1 text-xs text-[#828DA3]">Upload one source.</p>
           </div>
 
           <ToggleGroup
@@ -295,15 +295,15 @@ export function ConfigureApiGroupModal({
               {uploadedFiles.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between rounded-lg border border-[#E5E7E9] bg-white p-3"
+                  className="flex items-center justify-between rounded-lg border border-[#2A3242] bg-[#141925] p-3"
                 >
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-green-600" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-[#F4F7FC]">
                         {file.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[#828DA3]">
                         {formatBytesToHumanReadable(file.size).text}
                         {uploadedFiles.length > 1 &&
                           ` • File ${index + 1} of ${uploadedFiles.length}`}
@@ -333,10 +333,10 @@ export function ConfigureApiGroupModal({
               onClick={handleFileSelect}
               disabled={isUploading}
               className={cn(
-                'flex h-[8.75rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed bg-white p-6 transition-colors',
+                'flex h-[8.75rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed bg-[#141925] p-6 transition-colors',
                 fileError
                   ? 'border-red-300 bg-red-50'
-                  : 'hover:border-primary/40 border-[#E5E7E9] hover:bg-gray-50',
+                  : 'hover:border-primary/40 border-[#2A3242] hover:bg-[#1E2533]',
                 isUploading && 'cursor-not-allowed opacity-50'
               )}
             >
@@ -344,11 +344,11 @@ export function ConfigureApiGroupModal({
                 <div className="flex h-11 flex-col items-center justify-center">
                   <FileText className="text-primary h-6 w-6" />
                 </div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-[#F4F7FC]">
                   Drag & drop or click to upload
                 </p>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#828DA3]">
                 {getDropzoneSecondaryText()}
                 {(importSource === 'graphql' || importSource === 'grpc') &&
                   ' (select multiple files at once)'}

@@ -137,7 +137,7 @@ export function RunDetailsHeader({
   return (
     <div className="w-full space-y-4">
       {/* Meta strip: run id, status, context + actions */}
-      <div className="border-border flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-white px-5 py-3.5">
+      <div className="border-border flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-[#141925] px-5 py-3.5">
         <div className="flex flex-wrap gap-8">
           {metaItems.map(({ label, value, valueClassName }) => (
             <div key={label}>
@@ -197,7 +197,7 @@ export function RunDetailsHeader({
       {/* Stat cards grid: Total, Passed, Failed, Blocked, Skipped */}
       {hasStats && (
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="border-border rounded-xl border bg-white px-4 py-4">
+          <div className="border-border rounded-xl border bg-[#141925] px-4 py-4">
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               TOTAL TESTS
             </p>
@@ -208,7 +208,7 @@ export function RunDetailsHeader({
               {executed} executed · {stats.skipped} skipped
             </p>
           </div>
-          <div className="border-border rounded-xl border bg-white px-4 py-4">
+          <div className="border-border rounded-xl border bg-[#141925] px-4 py-4">
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               PASSED
             </p>
@@ -219,7 +219,7 @@ export function RunDetailsHeader({
               {successRatePct}% pass rate
             </p>
           </div>
-          <div className="border-border rounded-xl border bg-white px-4 py-4">
+          <div className="border-border rounded-xl border bg-[#141925] px-4 py-4">
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               FAILED
             </p>
@@ -232,7 +232,7 @@ export function RunDetailsHeader({
                 : 'need attention'}
             </p>
           </div>
-          <div className="border-border rounded-xl border bg-white px-4 py-4">
+          <div className="border-border rounded-xl border bg-[#141925] px-4 py-4">
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               BLOCKED
             </p>
@@ -243,11 +243,11 @@ export function RunDetailsHeader({
               {stats.blocked === 1 ? '1 dependency' : 'dependencies'}
             </p>
           </div>
-          <div className="border-border rounded-xl border bg-white px-4 py-4">
+          <div className="border-border rounded-xl border bg-[#141925] px-4 py-4">
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               SKIPPED
             </p>
-            <p className="text-2xl font-bold text-slate-600 tabular-nums dark:text-slate-400">
+            <p className="text-2xl font-bold text-[#828DA3] tabular-nums dark:text-[#586378]">
               {stats.skipped}
             </p>
             <p className="text-muted-foreground mt-1 text-[11px]">

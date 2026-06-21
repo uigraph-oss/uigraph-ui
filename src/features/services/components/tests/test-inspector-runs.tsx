@@ -102,8 +102,8 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   if (sortedRuns.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 px-6 py-12 text-center">
-        <p className="text-sm font-semibold text-gray-900">No test runs yet</p>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm font-semibold text-[#F4F7FC]">No test runs yet</p>
+        <p className="text-sm text-[#828DA3]">
           Test runs will appear here once you execute a test pack.
         </p>
       </div>
@@ -177,26 +177,26 @@ function TestRunRow({
       case 'failed':
         return { dot: 'bg-red-500', text: 'text-red-600', label: 'Failed' }
       case 'skipped':
-        return { dot: 'bg-gray-400', text: 'text-gray-600', label: 'Skipped' }
+        return { dot: 'bg-gray-400', text: 'text-[#828DA3]', label: 'Skipped' }
       case 'blocked':
         return { dot: 'bg-amber-500', text: 'text-amber-600', label: 'Blocked' }
       default:
-        return { dot: 'bg-gray-400', text: 'text-gray-600', label: 'Unknown' }
+        return { dot: 'bg-gray-400', text: 'text-[#828DA3]', label: 'Unknown' }
     }
   }
 
   const statusInfo = status ? getStatusColor(status) : null
 
   return (
-    <div className="border-b border-gray-100 py-3">
+    <div className="border-b border-[#2A3242] py-3">
       <button
         onClick={onClick}
-        className="-mx-2 flex w-full items-center justify-between rounded px-2 py-1.5 text-left transition-colors hover:bg-gray-50"
+        className="-mx-2 flex w-full items-center justify-between rounded px-2 py-1.5 text-left transition-colors hover:bg-[#1E2533]"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-center gap-2">
-              <span className="truncate font-mono text-xs text-gray-500">
+              <span className="truncate font-mono text-xs text-[#828DA3]">
                 {run.testRunId?.slice(-8) ?? '—'}
               </span>
               {statusInfo && (
@@ -208,7 +208,7 @@ function TestRunRow({
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-4 text-xs text-gray-600">
+            <div className="flex items-center gap-4 text-xs text-[#828DA3]">
               {run.executedBy && (
                 <span className="flex items-center gap-1.5 truncate">
                   <span>By:</span>
@@ -236,7 +236,7 @@ function TestRunRow({
               {run.environment}
             </Badge>
           )}
-          <ChevronRight className="h-4 w-4 text-gray-400" />
+          <ChevronRight className="h-4 w-4 text-[#586378]" />
         </div>
       </button>
     </div>

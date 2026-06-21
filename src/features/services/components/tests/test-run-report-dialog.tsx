@@ -248,7 +248,7 @@ function VerdictBanner({
             { label: 'Passed', value: stats.passed, color: 'text-green-700' },
             { label: 'Failed', value: stats.failed, color: 'text-red-700' },
             { label: 'Blocked', value: stats.blocked, color: 'text-amber-700' },
-            { label: 'Skipped', value: stats.skipped, color: 'text-slate-600' },
+            { label: 'Skipped', value: stats.skipped, color: 'text-[#828DA3]' },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p
@@ -424,7 +424,7 @@ function ResultsTable({
   const thCls = 'px-4 py-3 text-[10px] font-bold uppercase tracking-wider'
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="overflow-hidden rounded-xl border bg-[#141925]">
       {/* Section header */}
       <div className="bg-muted/30 flex items-center justify-between border-b px-5 py-3">
         <h3 className="text-foreground text-sm font-semibold">
@@ -450,7 +450,7 @@ function ResultsTable({
             <th className={cn(thCls, 'text-center text-green-700')}>Pass</th>
             <th className={cn(thCls, 'text-center text-red-700')}>Fail</th>
             <th className={cn(thCls, 'text-center text-amber-700')}>Block</th>
-            <th className={cn(thCls, 'text-center text-slate-600')}>Skip</th>
+            <th className={cn(thCls, 'text-center text-[#828DA3]')}>Skip</th>
             <th className={cn(thCls, 'text-muted-foreground text-left')}>
               Pass %
             </th>
@@ -497,7 +497,7 @@ function ResultsTable({
                 </td>
                 <td className="px-4 py-3 text-center text-sm font-semibold tabular-nums">
                   {r.d.skipped > 0 ? (
-                    <span className="text-slate-600">{r.d.skipped}</span>
+                    <span className="text-[#828DA3]">{r.d.skipped}</span>
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
@@ -532,7 +532,7 @@ function ResultsTable({
             <td className="px-4 py-3 text-center text-sm font-bold text-amber-700 tabular-nums">
               {stats.blocked}
             </td>
-            <td className="px-4 py-3 text-center text-sm font-bold text-slate-600 tabular-nums">
+            <td className="px-4 py-3 text-center text-sm font-bold text-[#828DA3] tabular-nums">
               {stats.skipped}
             </td>
             <td className="px-4 py-3">
@@ -577,7 +577,7 @@ function IssuesSection({
     : 'bg-amber-50 text-amber-700 border-amber-200'
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="overflow-hidden rounded-xl border bg-[#141925]">
       <div
         className={cn(
           'flex items-center justify-between border-b px-5 py-3',
@@ -743,7 +743,7 @@ function ActionsCard({ stats }: { stats: ReportStats }) {
     })
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="overflow-hidden rounded-xl border bg-[#141925]">
       <div className="bg-muted/30 border-b px-5 py-3">
         <h3 className="text-foreground text-sm font-semibold">
           Recommended Actions
@@ -979,7 +979,7 @@ export function TestRunReportDialog({
     <BetterDialogContent
       className="p-0"
       _headerContent={
-        <div className="flex shrink-0 items-center justify-between border-b bg-white px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b bg-[#141925] px-6 py-4">
           <div>
             <DialogTitle className="flex items-center gap-2 text-base font-semibold">
               <FileText className="h-4 w-4" />
@@ -1006,11 +1006,11 @@ export function TestRunReportDialog({
         </div>
       }
     >
-      <div className="shrink-0 border-b bg-white px-5 pt-2 pb-3">
+      <div className="shrink-0 border-b bg-[#141925] px-5 pt-2 pb-3">
         <BetterTabController
           control={tabs}
-          className="mx-0 w-fit bg-slate-100"
-          triggerClassName="h-9 text-xs font-medium text-slate-600"
+          className="mx-0 w-fit bg-[#1E2533]"
+          triggerClassName="h-9 text-xs font-medium text-[#828DA3]"
           activeTriggerClassName="text-foreground"
           overlayClassName="shadow-none"
         />

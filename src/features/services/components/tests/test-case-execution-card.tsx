@@ -473,7 +473,7 @@ export function TestCaseExecutionCard({
                         )?.url ?? '')
                   }
                   alt={`Screenshot ${index + 1}`}
-                  className="h-24 w-full rounded-[12px] border border-[#E5E7E9] object-cover"
+                  className="h-24 w-full rounded-[12px] border border-[#2A3242] object-cover"
                 />
                 <button
                   type="button"
@@ -504,7 +504,7 @@ export function TestCaseExecutionCard({
           onClick={() => handleStatusClick('passed')}
           disabled={isLocked || isSaving}
           className={cn(
-            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#E5E7E9] bg-white hover:bg-[#F9FBFC]',
+            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'passed' &&
               'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50'
           )}
@@ -519,7 +519,7 @@ export function TestCaseExecutionCard({
           onClick={() => handleStatusClick('failed')}
           disabled={isLocked || isSaving}
           className={cn(
-            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#E5E7E9] bg-white hover:bg-[#F9FBFC]',
+            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'failed' &&
               'border-red-200 bg-red-50 text-red-700 hover:bg-red-50'
           )}
@@ -534,9 +534,9 @@ export function TestCaseExecutionCard({
           onClick={() => handleStatusClick('skipped')}
           disabled={isLocked || isSaving}
           className={cn(
-            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#E5E7E9] bg-white hover:bg-[#F9FBFC]',
+            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'skipped' &&
-              'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-100'
+              'border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:bg-[#1E2533]'
           )}
         >
           <PiSkipForwardCircle className="size-5!" />
@@ -549,7 +549,7 @@ export function TestCaseExecutionCard({
           onClick={() => handleStatusClick('blocked')}
           disabled={isLocked || isSaving}
           className={cn(
-            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#E5E7E9] bg-white hover:bg-[#F9FBFC]',
+            'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'blocked' &&
               'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50'
           )}
@@ -566,7 +566,7 @@ export function TestCaseExecutionCard({
           }
         >
           {!recordOnly && (
-            <div className="rounded-[12px] border border-[#E5E7E9] bg-[#F9FBFC] p-4">
+            <div className="rounded-[12px] border border-[#2A3242] bg-[#141925] p-4">
               <p className="text-muted-foreground mb-3 flex items-center gap-2 text-xs font-medium tracking-wide uppercase">
                 <MdOutlineFormatListNumbered className="h-4 w-4" />
                 Steps & Expected
@@ -621,8 +621,8 @@ export function TestCaseExecutionCard({
           )}
           <div
             className={cn(
-              'rounded-[12px] border border-[#E5E7E9] p-4',
-              !recordOnly && 'bg-[#F9FBFC]'
+              'rounded-[12px] border border-[#2A3242] p-4',
+              !recordOnly && 'bg-[#141925]'
             )}
           >
             <p className="text-muted-foreground mb-3 flex items-center gap-2 text-xs font-medium tracking-wide uppercase">
@@ -653,7 +653,7 @@ export function TestCaseExecutionCard({
                           ? 'Reason is required for blocked tests'
                           : true,
                     })}
-                    className="h-11 rounded-[12px] border-[#E5E7E9] bg-white px-4"
+                    className="h-11 rounded-[12px] border-[#2A3242] bg-[#141925] px-4"
                   />
                   {errors.blockedReason?.message && (
                     <p className="text-destructive mt-1 text-xs">
@@ -720,7 +720,7 @@ export function TestCaseExecutionCard({
                           ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
                           : displayStatus === 'blocked'
                             ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
-                            : 'rounded-full border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700'
+                            : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                     }
                   >
                     {displayStatus?.toUpperCase()}
@@ -760,7 +760,7 @@ export function TestCaseExecutionCard({
                       ? 'Reason is required for blocked tests'
                       : true,
                 })}
-                className="h-11 rounded-[12px] border-[#E5E7E9] bg-white px-4"
+                className="h-11 rounded-[12px] border-[#2A3242] bg-[#141925] px-4"
               />
               {errors.blockedReason?.message && (
                 <p className="text-destructive mt-1 text-xs">
@@ -785,7 +785,7 @@ export function TestCaseExecutionCard({
                   placeholder="e.g. 200, 404, 500"
                   readOnly={isLocked}
                   {...register('responseStatus', { valueAsNumber: true })}
-                  className="h-11 rounded-[12px] border-[#E5E7E9] bg-white px-4"
+                  className="h-11 rounded-[12px] border-[#2A3242] bg-[#141925] px-4"
                 />
               </div>
               <div className="space-y-2">
@@ -795,7 +795,7 @@ export function TestCaseExecutionCard({
                 >
                   Response Snippet (optional)
                 </Label>
-                <div className="w-full overflow-hidden rounded-[12px] border border-[#E5E7E9] bg-white">
+                <div className="w-full overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#141925]">
                   <Controller
                     name="responseBody"
                     control={control}
@@ -884,7 +884,7 @@ export function TestCaseExecutionCard({
       {recordOnly ? (
         <div>{formContent}</div>
       ) : (
-        <div className="rounded-[12px] border border-[#E5E7E9] bg-white p-6">
+        <div className="rounded-[12px] border border-[#2A3242] bg-[#141925] p-6">
           <div className="mb-4 flex items-start justify-between">
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -948,7 +948,7 @@ export function TestCaseExecutionCard({
                       ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
                       : displayStatus === 'blocked'
                         ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
-                        : 'rounded-full border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700'
+                        : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                 }
               >
                 {displayStatus?.toUpperCase()}
@@ -973,7 +973,7 @@ export function TestCaseExecutionCard({
                       ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
                       : displayStatus === 'blocked'
                         ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
-                        : 'rounded-full border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700'
+                        : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                 }
               >
                 {displayStatus?.toUpperCase()}

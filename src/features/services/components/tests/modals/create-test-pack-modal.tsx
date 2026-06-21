@@ -86,7 +86,7 @@ export function CreateTestPackModal({
                 autoComplete="off"
                 autoCapitalize="off"
                 className={cn(
-                  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
                   nameError && 'border-red-500'
                 )}
                 {...field}
@@ -114,7 +114,7 @@ export function CreateTestPackModal({
                 <SelectTrigger
                   id="type"
                   className={cn(
-                    'h-[56px] !w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                    'h-[56px] !w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
                     typeError && 'border-red-500'
                   )}
                 >

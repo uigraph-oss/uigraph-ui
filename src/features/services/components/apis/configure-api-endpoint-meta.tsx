@@ -190,7 +190,7 @@ export function ConfigureApiEndpointMeta({
                         {field.label ?? 'Label'}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="inline-flex cursor-help items-center text-[#6B7280]">
+                            <span className="inline-flex cursor-help items-center text-[#828DA3]">
                               <Lock className="h-3.5 w-3.5" />
                             </span>
                           </TooltipTrigger>
@@ -273,7 +273,7 @@ export function ConfigureApiEndpointMeta({
                   )}
 
                   {field.type === ComponentInputType.CodeEditor && (
-                    <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-white">
+                    <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-[#141925]">
                       <CodeMirrorWrapped
                         height={'10rem'}
                         value={value ?? ''}
@@ -373,7 +373,7 @@ export function ConfigureApiEndpointMeta({
       </div>
 
       {!readonly && !hideFooter && (
-        <div className="sticky bottom-0 flex justify-end bg-[#fafbfc] px-6 py-4">
+        <div className="sticky bottom-0 flex justify-end bg-[#141925] px-6 py-4">
           <Button
             disabled={isSubmitting || !isDirty}
             className={'h-11 rounded-[0.8125rem]'}

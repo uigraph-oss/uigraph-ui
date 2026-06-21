@@ -17,9 +17,9 @@ export function TestInspectorHeader({
   const isManual = testCase.type?.toLowerCase() === 'manual'
 
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
+    <div className="flex items-center justify-between border-b border-[#2A3242] px-6 py-5">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-[#F4F7FC]">
           {testCase.title ?? 'Untitled'}
         </h2>
         {testCase.type && (

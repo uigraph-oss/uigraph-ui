@@ -93,7 +93,7 @@ export function TestPackWorkspacePanel({
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="border-border border-b bg-white pt-1">
+      <div className="border-border border-b bg-[#141925] pt-1">
         <BetterTabController
           control={control}
           className="m-0 mb-[-1px] rounded-none border-transparent bg-transparent p-0"
@@ -128,7 +128,7 @@ export function TestPackWorkspacePanel({
         />
       </BetterDialogProvider>
 
-      <div className="border-border border-b bg-white px-4 py-4">
+      <div className="border-border border-b bg-[#141925] px-4 py-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export function TestPackWorkspacePanel({
               )}
             </div>
           ) : (
-            <div className="border-border rounded-2xl border bg-white p-4">
+            <div className="border-border rounded-2xl border bg-[#141925] p-4">
               <TestCaseList onView={onViewTestCase} />
             </div>
           )

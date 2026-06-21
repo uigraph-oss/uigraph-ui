@@ -47,7 +47,7 @@ export function FunctionalPagination({
       <Button
         variant="ghost"
         size="sm"
-        className="h-8 w-8 rounded-md border border-gray-200 p-0 hover:bg-gray-50 disabled:opacity-50"
+        className="h-8 w-8 rounded-md border border-[#2A3242] p-0 hover:bg-[#1E2533] disabled:opacity-50"
         disabled={currentPage === 1}
         onClick={() => setCurrentPage(currentPage - 1)}
       >
@@ -60,8 +60,8 @@ export function FunctionalPagination({
             size="sm"
             className={
               num === currentPage
-                ? 'h-8 min-w-[36px] rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100'
-                : 'h-8 min-w-[36px] rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                ? 'h-8 min-w-[36px] rounded-md border border-blue-500/30 bg-blue-500/15 px-3 py-1.5 text-sm font-medium text-blue-300 hover:bg-blue-500/25'
+                : 'h-8 min-w-[36px] rounded-md border border-[#2A3242] bg-[#1E2533] px-3 py-1.5 text-sm text-[#D2D9E6] hover:bg-[#2A3242] hover:text-[#F4F7FC]'
             }
             variant="ghost"
             onClick={() => setCurrentPage(num)}
@@ -69,7 +69,7 @@ export function FunctionalPagination({
             {num}
           </Button>
         ) : (
-          <span key={idx} className="px-2 text-gray-500">
+          <span key={idx} className="px-2 text-[#828DA3]">
             ...
           </span>
         )
@@ -77,7 +77,7 @@ export function FunctionalPagination({
       <Button
         variant="ghost"
         size="sm"
-        className="h-8 w-8 rounded-md border border-gray-200 p-0 hover:bg-gray-50 disabled:opacity-50"
+        className="h-8 w-8 rounded-md border border-[#2A3242] p-0 hover:bg-[#1E2533] disabled:opacity-50"
         disabled={currentPage === totalPages}
         onClick={() => setCurrentPage(currentPage + 1)}
       >

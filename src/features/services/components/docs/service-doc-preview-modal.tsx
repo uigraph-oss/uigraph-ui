@@ -210,7 +210,7 @@ export function ServiceDocPreviewModal({
     if (loading) {
       return (
         <div className="flex h-64 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#586378]" />
         </div>
       )
     }
@@ -246,7 +246,7 @@ export function ServiceDocPreviewModal({
     ) {
       return (
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          <div className="overflow-hidden rounded-lg border bg-white p-6 dark:bg-gray-900">
+          <div className="overflow-hidden rounded-lg border bg-[#141925] p-6 dark:bg-gray-900">
             <div className="w-full overflow-x-auto">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
@@ -305,7 +305,7 @@ export function ServiceDocPreviewModal({
                     </a>
                   ),
                   blockquote: ({ children }) => (
-                    <blockquote className="my-4 border-l-4 border-gray-300 pl-4 italic">
+                    <blockquote className="my-4 border-l-4 border-[#3B4658] pl-4 italic">
                       {children}
                     </blockquote>
                   ),
@@ -318,7 +318,7 @@ export function ServiceDocPreviewModal({
                   li: ({ children }) => <li className="my-1">{children}</li>,
                   table: ({ children }) => (
                     <div className="my-4 w-full overflow-x-auto">
-                      <table className="min-w-full border-collapse border border-gray-300">
+                      <table className="min-w-full border-collapse border border-[#3B4658]">
                         {children}
                       </table>
                     </div>
@@ -332,12 +332,12 @@ export function ServiceDocPreviewModal({
                     />
                   ),
                   th: ({ children }) => (
-                    <th className="border border-gray-300 bg-gray-100 px-4 py-2 text-left font-semibold">
+                    <th className="border border-[#3B4658] bg-[#1E2533] px-4 py-2 text-left font-semibold">
                       {children}
                     </th>
                   ),
                   td: ({ children }) => (
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-[#3B4658] px-4 py-2">
                       {children}
                     </td>
                   ),
@@ -439,7 +439,7 @@ export function ServiceDocPreviewModal({
     if (isCodeFile) {
       const language = getLanguageFromFileName(fileName)
       return (
-        <div className="overflow-hidden rounded-lg border bg-white dark:bg-gray-900">
+        <div className="overflow-hidden rounded-lg border bg-[#141925] dark:bg-gray-900">
           <div className="w-full overflow-x-auto">
             <SyntaxHighlighter
               style={vscDarkPlus}
@@ -460,7 +460,7 @@ export function ServiceDocPreviewModal({
 
     // Fallback: show as plain text
     return (
-      <div className="overflow-hidden rounded-lg border bg-white p-6 dark:bg-gray-900">
+      <div className="overflow-hidden rounded-lg border bg-[#141925] p-6 dark:bg-gray-900">
         <div className="w-full overflow-x-auto">
           <pre className="font-mono text-sm break-words whitespace-pre-wrap">
             {content}

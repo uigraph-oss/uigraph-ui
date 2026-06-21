@@ -171,7 +171,7 @@ export function ConfigureApiEndpointSamples({
     return (
       <div className="m-0 p-6" role="tabpanel">
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-[#0B1220]">
+          <h4 className="text-sm font-semibold text-[#F4F7FC]">
             {editState.mode === 'create' ? sampleLabel : `Edit ${sampleLabel}`}
           </h4>
 
@@ -185,7 +185,7 @@ export function ConfigureApiEndpointSamples({
           />
         </div>
 
-        <div className="sticky bottom-0 -mx-6 flex justify-end gap-3 bg-white px-6 py-3">
+        <div className="sticky bottom-0 -mx-6 flex justify-end gap-3 bg-[#141925] px-6 py-3">
           <Button
             variant="ghost"
             className="h-11"
@@ -231,7 +231,7 @@ export function ConfigureApiEndpointSamples({
         {addButtons && <div className="flex justify-end">{addButtons}</div>}
         <div className="flex h-[240px] flex-col items-center justify-center space-y-3 text-center">
           <Code className="h-10 w-10 text-[#D1D5DB]" />
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-sm text-[#828DA3]">
             No samples yet — add request/response examples to help developers.
           </p>
         </div>
@@ -293,7 +293,7 @@ function Snippet({
   return (
     <div className="border-stock rounded-lg border p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-[#0B1220]">{title}</h4>
+        <h4 className="text-sm font-semibold text-[#F4F7FC]">{title}</h4>
         {!readonly && (
           <div className="flex gap-1">
             <Button variant="ghost" size="sm" onClick={onEdit}>

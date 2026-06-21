@@ -398,7 +398,7 @@ export function CompareApiEndpointDetailsModal({
         title="Compare Endpoints"
         description="Unable to compare endpoints - missing metadata"
       >
-        <div className="p-6 text-center text-sm text-gray-500">
+        <div className="p-6 text-center text-sm text-[#828DA3]">
           Endpoint metadata is missing. Please ensure both endpoints have
           complete metadata.
         </div>
@@ -413,8 +413,8 @@ export function CompareApiEndpointDetailsModal({
       description="Compare endpoint details side by side"
     >
       <div className="grid grid-cols-2 gap-3">
-        <div className="border-stock overflow-hidden rounded-[1rem] border bg-white">
-          <div className="border-b bg-white px-6 py-4">
+        <div className="border-stock overflow-hidden rounded-[1rem] border bg-[#141925]">
+          <div className="border-b bg-[#141925] px-6 py-4">
             <div className="mb-2">{titleA}</div>
             {descriptionA}
           </div>
@@ -473,8 +473,8 @@ export function CompareApiEndpointDetailsModal({
           </div>
         </div>
 
-        <div className="border-stock overflow-hidden rounded-[1rem] border bg-white">
-          <div className="border-b bg-white px-6 py-4">
+        <div className="border-stock overflow-hidden rounded-[1rem] border bg-[#141925]">
+          <div className="border-b bg-[#141925] px-6 py-4">
             <div className="mb-2">{titleB}</div>
             {descriptionB}
           </div>

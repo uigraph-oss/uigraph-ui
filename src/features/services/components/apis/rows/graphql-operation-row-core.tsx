@@ -76,7 +76,7 @@ export function GraphQLOperationRowCore({
         className={
           selected
             ? 'h-20 cursor-pointer bg-blue-50/60'
-            : 'h-20 cursor-pointer hover:bg-slate-50'
+            : 'h-20 cursor-pointer hover:bg-[#1E2533]'
         }
         onClick={onViewOpen}
       >
@@ -90,7 +90,7 @@ export function GraphQLOperationRowCore({
         </TableCell>
 
         <TableCell className="truncate whitespace-normal">
-          <p className="line-clamp-1 font-mono text-sm font-semibold text-[#111827]">
+          <p className="line-clamp-1 font-mono text-sm font-semibold text-[#F4F7FC]">
             {parsedData.name || <span className="text-paragraph/50">N/A</span>}
           </p>
           {parsedData.signature && (

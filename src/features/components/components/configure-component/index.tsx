@@ -269,7 +269,7 @@ function ConfigureComponentContent({
           <Button
             type="button"
             variant="outline"
-            className="text-paragraph border-stock h-11 w-[4.5rem] rounded-[0.8125rem] bg-white"
+            className="text-paragraph border-stock h-11 w-[4.5rem] rounded-[0.8125rem] bg-transparent"
             onClick={() => {
               if (currentStep > 1) {
                 setCurrentStep(currentStep - 1)

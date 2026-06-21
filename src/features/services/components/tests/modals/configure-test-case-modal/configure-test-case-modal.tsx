@@ -57,7 +57,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#e2e8f0] bg-[#f8fafc] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
           >
             <FormManualSection form={form} />
           </motion.div>
@@ -71,7 +71,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#e2e8f0] bg-[#f8fafc] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
           >
             <FormApiSection form={form} />
           </motion.div>
@@ -85,7 +85,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#e2e8f0] bg-[#f8fafc] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
           >
             <FormGraphqlSection form={form} />
           </motion.div>
@@ -99,7 +99,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#e2e8f0] bg-[#f8fafc] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
           >
             <FormDatabaseSection form={form} />
           </motion.div>
@@ -113,7 +113,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#e2e8f0] bg-[#f8fafc] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
           >
             <FormGrpcSection form={form} />
           </motion.div>
@@ -121,11 +121,11 @@ export function ConfigureTestCaseModal({
       </AnimatePresence>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Flags
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-2 flex flex-wrap gap-8">
@@ -141,7 +141,7 @@ export function ConfigureTestCaseModal({
                 />
               )}
             />
-            <Label className="text-sm font-normal text-[#334155]">
+            <Label className="text-sm font-normal text-[#D2D9E6]">
               Critical - blocks run completion if failed
             </Label>
           </div>
@@ -159,7 +159,7 @@ export function ConfigureTestCaseModal({
                 />
               )}
             />
-            <Label className="text-sm font-normal text-[#334155]">
+            <Label className="text-sm font-normal text-[#D2D9E6]">
               Evidence Required (screenshots)
             </Label>
           </div>

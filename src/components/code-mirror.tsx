@@ -3,14 +3,14 @@ import { css } from '@codemirror/lang-css'
 import { go } from '@codemirror/lang-go'
 import { html } from '@codemirror/lang-html'
 import { EditorView } from '@codemirror/view'
-import { vscodeLight } from '@uiw/codemirror-themes-all'
+import { vscodeDark } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror, { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
 
 const meGutterTheme = EditorView.theme({
   '.cm-gutters': {
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#141925',
     fontFamily: "'Fira Code', monospace",
   },
 
@@ -41,7 +41,7 @@ const defaultExtensions = [
   css(),
   html(),
   meGutterTheme,
-  vscodeLight,
+  vscodeDark,
   meFontFamilyTheme,
 ]
 

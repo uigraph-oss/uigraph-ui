@@ -106,7 +106,7 @@ export function ConfigureProjectModal({
                 autoCapitalize="off"
                 placeholder="e.g. Checkout Flow"
                 className={cn(
-                  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6 focus:outline-none',
                   errors.name && 'border-red-500'
                 )}
               />
@@ -131,7 +131,7 @@ export function ConfigureProjectModal({
                 autoCapitalize="off"
                 placeholder="Describe what this map represents"
                 className={cn(
-                  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6 focus:outline-none',
                   errors.description && 'border-red-500'
                 )}
               />
@@ -151,12 +151,12 @@ export function ConfigureProjectModal({
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={cn(
-                    'h-[56px]! w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none',
+                    'h-[56px]! w-full rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6 focus:outline-none',
                     errors.teamId && 'border-red-500'
                   )}
                 >
                   <SelectValue
-                    className="text-sm leading-[1.33] font-normal text-[#6B7480]"
+                    className="text-sm leading-[1.33] font-normal text-[#828DA3]"
                     placeholder="Select a team"
                   />
                 </SelectTrigger>

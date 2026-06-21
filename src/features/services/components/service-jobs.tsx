@@ -28,7 +28,7 @@ export function ServiceJobs({}: ServiceJobsProps) {
       case 'queue':
         return 'bg-purple-100 text-purple-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-[#1E2533] text-[#F4F7FC]'
     }
   }
 
@@ -83,7 +83,7 @@ export function ServiceJobs({}: ServiceJobsProps) {
                     <div>
                       <div className="font-medium">{job.name}</div>
                       {job.linkedFlowNode && (
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[#828DA3]">
                           Linked to: {job.linkedFlowNode}
                         </div>
                       )}
@@ -98,22 +98,22 @@ export function ServiceJobs({}: ServiceJobsProps) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <code className="rounded bg-gray-100 px-2 py-1 text-sm">
+                    <code className="rounded bg-[#1E2533] px-2 py-1 text-sm">
                       {job.trigger}
                     </code>
                   </TableCell>
                   <TableCell>
                     {job.sourceFile ? (
-                      <code className="text-sm text-gray-600">
+                      <code className="text-sm text-[#828DA3]">
                         {job.sourceFile}
                       </code>
                     ) : (
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-[#586378]">
                         No source file
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-[#828DA3]">
                     {new Date(job.lastUpdated).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
@@ -142,10 +142,10 @@ export function ServiceJobs({}: ServiceJobsProps) {
         <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
           <div className="p-4 px-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-[#F4F7FC]">
                 {mockJobs.length}
               </div>
-              <div className="text-sm text-gray-600">Total Jobs</div>
+              <div className="text-sm text-[#828DA3]">Total Jobs</div>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ export function ServiceJobs({}: ServiceJobsProps) {
               <div className="text-2xl font-bold text-blue-600">
                 {mockJobs.filter((j) => j.type === 'cron').length}
               </div>
-              <div className="text-sm text-gray-600">Cron Jobs</div>
+              <div className="text-sm text-[#828DA3]">Cron Jobs</div>
             </div>
           </div>
         </div>
@@ -165,7 +165,7 @@ export function ServiceJobs({}: ServiceJobsProps) {
               <div className="text-2xl font-bold text-green-600">
                 {mockJobs.filter((j) => j.type === 'event').length}
               </div>
-              <div className="text-sm text-gray-600">Event Jobs</div>
+              <div className="text-sm text-[#828DA3]">Event Jobs</div>
             </div>
           </div>
         </div>

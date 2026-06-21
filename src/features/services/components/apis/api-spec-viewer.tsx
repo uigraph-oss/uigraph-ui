@@ -588,17 +588,17 @@ function SpecSidebar({
   }, [spec.groups, search])
 
   return (
-    <div className="flex w-[260px] shrink-0 flex-col overflow-hidden border-r border-[#E8EAEC] bg-white">
-      <div className="border-b border-[#F1F5F9] px-3 py-3">
+    <div className="flex w-[260px] shrink-0 flex-col overflow-hidden border-r border-[#2A3242] bg-[#141925]">
+      <div className="border-b border-[#2A3242] px-3 py-3">
         <div className="relative">
-          <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-[#94A3B8]" />
+          <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-[#828DA3]" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search endpoints..."
-            className="h-8 w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] pr-10 pl-8 text-[12px] text-[#0F172A] outline-none placeholder:text-[#94A3B8] focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20"
+            className="h-8 w-full rounded-lg border border-[#2A3242] bg-[#1E2533] pr-10 pl-8 text-[12px] text-[#F4F7FC] outline-none placeholder:text-[#828DA3] focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20"
           />
-          <span className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded bg-[#E8EAEC] px-1 py-0.5 font-mono text-[9px] text-[#94A3B8]">
+          <span className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded bg-[#1E2533] px-1 py-0.5 font-mono text-[9px] text-[#828DA3]">
             ⌘K
           </span>
         </div>
@@ -619,17 +619,17 @@ function SpecSidebar({
                     return next
                   })
                 }
-                className="flex w-full items-center gap-1.5 px-3 py-2 text-left hover:bg-[#F8FAFC]"
+                className="flex w-full items-center gap-1.5 px-3 py-2 text-left hover:bg-[#1E2533]"
               >
                 {isCollapsed ? (
-                  <ChevronRight className="h-3 w-3 text-[#94A3B8]" />
+                  <ChevronRight className="h-3 w-3 text-[#828DA3]" />
                 ) : (
-                  <ChevronDown className="h-3 w-3 text-[#94A3B8]" />
+                  <ChevronDown className="h-3 w-3 text-[#828DA3]" />
                 )}
-                <span className="flex-1 text-[11px] font-medium tracking-[0.04em] text-[#64748B] uppercase">
+                <span className="flex-1 text-[11px] font-medium tracking-[0.04em] text-[#828DA3] uppercase">
                   {group.name}
                 </span>
-                <span className="rounded-full bg-[#F1F5F9] px-1.5 py-0.5 text-[10px] font-semibold text-[#64748B]">
+                <span className="rounded-full bg-[#1E2533] px-1.5 py-0.5 text-[10px] font-semibold text-[#828DA3]">
                   {group.endpoints.length}
                 </span>
               </button>
@@ -645,8 +645,8 @@ function SpecSidebar({
                       className={cn(
                         'flex w-full items-center gap-2 border-l-2 py-2 pr-3 pl-[10px] text-left transition-colors',
                         isActive
-                          ? 'border-blue-500 bg-[#EFF6FF]'
-                          : 'border-transparent hover:bg-[#F8FAFC]'
+                          ? 'border-blue-500 bg-blue-500/10'
+                          : 'border-transparent hover:bg-[#1E2533]'
                       )}
                     >
                       <MethodBadge method={ep.method} className="w-[40px]" />
@@ -655,7 +655,7 @@ function SpecSidebar({
                           'min-w-0 flex-1 truncate font-mono text-[11px]',
                           isActive
                             ? 'font-medium text-blue-600'
-                            : 'text-[#374151]'
+                            : 'text-[#D2D9E6]'
                         )}
                         title={ep.path}
                       >
@@ -676,33 +676,33 @@ function SpecSidebar({
 
 function SchemaFieldRow({ field }: { field: SchemaField }) {
   return (
-    <div className="border-b border-[#F1F5F9] py-3 last:border-0">
+    <div className="border-b border-[#2A3242] py-3 last:border-0">
       {/* Name + type + constraint badges — all on one line */}
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="font-mono text-[13px] font-semibold text-[#0F172A]">
+        <span className="font-mono text-[13px] font-semibold text-[#F4F7FC]">
           {field.name}
         </span>
-        <span className="rounded bg-[#F1F5F9] px-1.5 py-0.5 font-mono text-[10px] text-[#64748B]">
+        <span className="rounded bg-[#1E2533] px-1.5 py-0.5 font-mono text-[10px] text-[#828DA3]">
           {field.type}
         </span>
         {field.enum && (
-          <span className="rounded bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB]">
+          <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB]">
             enum
           </span>
         )}
         {field.required ? (
-          <span className="rounded bg-[#FEF2F2] px-1.5 py-0.5 text-[10px] font-medium text-[#DC2626]">
+          <span className="rounded bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium text-[#DC2626]">
             required
           </span>
         ) : (
-          <span className="rounded bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-medium text-[#94A3B8] ring-1 ring-[#E2E8F0]">
+          <span className="rounded bg-[#1E2533] px-1.5 py-0.5 text-[10px] font-medium text-[#828DA3] ring-1 ring-[#2A3242]">
             optional
           </span>
         )}
       </div>
       {/* Description */}
       {field.description && (
-        <p className="mt-1 text-[12px] leading-relaxed text-[#64748B]">
+        <p className="mt-1 text-[12px] leading-relaxed text-[#828DA3]">
           {field.description}
         </p>
       )}
@@ -712,7 +712,7 @@ function SchemaFieldRow({ field }: { field: SchemaField }) {
           {field.enum.map((v) => (
             <span
               key={v}
-              className="rounded border border-[#E2E8F0] bg-[#F8FAFC] px-2 py-0.5 font-mono text-[11px] text-[#374151]"
+              className="rounded border border-[#2A3242] bg-[#1E2533] px-2 py-0.5 font-mono text-[11px] text-[#D2D9E6]"
             >
               {v}
             </span>
@@ -746,16 +746,16 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
     : endpoint.path
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white">
+    <div className="flex-1 overflow-y-auto bg-[#141925]">
       <div className="px-6 py-6">
         {/* Header card */}
-        <div className="mb-3 rounded-xl border border-[#E8EAEC] bg-white p-4">
+        <div className="mb-3 rounded-xl border border-[#2A3242] bg-[#141925] p-4">
           <div className="mb-2.5 flex items-center gap-3">
             <MethodBadge
               method={endpoint.method}
               className="px-2 py-1 text-[11px]"
             />
-            <span className="flex-1 font-mono text-[14px] font-medium text-[#0F172A]">
+            <span className="flex-1 font-mono text-[14px] font-medium text-[#F4F7FC]">
               {endpoint.path}
             </span>
             <button
@@ -764,14 +764,14 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
                 void navigator.clipboard.writeText(copyUrl)
                 toast.success('URL copied')
               }}
-              className="flex items-center gap-1.5 rounded-lg border border-[#E2E8F0] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#374151] hover:bg-[#F8FAFC]"
+              className="flex items-center gap-1.5 rounded-lg border border-[#2A3242] bg-[#141925] px-2.5 py-1.5 text-[12px] font-medium text-[#D2D9E6] hover:bg-[#1E2533]"
             >
               <Copy className="h-3.5 w-3.5" />
               {endpoint.baseUrl ? 'Copy URL' : 'Copy'}
             </button>
           </div>
           {(endpoint.description ?? endpoint.summary) && (
-            <p className="text-[13px] leading-relaxed text-[#374151]">
+            <p className="text-[13px] leading-relaxed text-[#D2D9E6]">
               {endpoint.description ?? endpoint.summary}
             </p>
           )}
@@ -779,9 +779,9 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
 
         {/* Parameters */}
         {nonBodyParams.length > 0 && (
-          <div className="mb-3 rounded-xl border border-[#E8EAEC] bg-white">
-            <div className="border-b border-[#F1F5F9] px-5 py-3">
-              <span className="text-[13px] font-semibold text-[#0F172A]">
+          <div className="mb-3 rounded-xl border border-[#2A3242] bg-[#141925]">
+            <div className="border-b border-[#2A3242] px-5 py-3">
+              <span className="text-[13px] font-semibold text-[#F4F7FC]">
                 Parameters
               </span>
             </div>
@@ -804,12 +804,12 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
 
         {/* Request body */}
         {endpoint.requestBody && (
-          <div className="mb-3 rounded-xl border border-[#E8EAEC] bg-white">
-            <div className="flex items-center justify-between border-b border-[#F1F5F9] px-5 py-3">
-              <span className="text-[13px] font-semibold text-[#0F172A]">
+          <div className="mb-3 rounded-xl border border-[#2A3242] bg-[#141925]">
+            <div className="flex items-center justify-between border-b border-[#2A3242] px-5 py-3">
+              <span className="text-[13px] font-semibold text-[#F4F7FC]">
                 Request Body
               </span>
-              <span className="text-[12px] text-[#94A3B8]">
+              <span className="text-[12px] text-[#828DA3]">
                 {endpoint.requestBody.contentType} ·{' '}
                 {endpoint.requestBody.required ? 'required' : 'optional'}
               </span>
@@ -820,7 +820,7 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
                   <SchemaFieldRow key={f.name} field={f} />
                 ))
               ) : (
-                <p className="py-4 text-[13px] text-[#94A3B8]">
+                <p className="py-4 text-[13px] text-[#828DA3]">
                   No fields defined
                 </p>
               )}
@@ -830,14 +830,14 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
 
         {/* Responses */}
         {endpoint.responses.length > 0 && (
-          <div className="rounded-xl border border-[#E8EAEC] bg-white">
-            <div className="border-b border-[#F1F5F9] px-5 py-3">
-              <span className="text-[13px] font-semibold text-[#0F172A]">
+          <div className="rounded-xl border border-[#2A3242] bg-[#141925]">
+            <div className="border-b border-[#2A3242] px-5 py-3">
+              <span className="text-[13px] font-semibold text-[#F4F7FC]">
                 Responses
               </span>
             </div>
             {/* Status tabs */}
-            <div className="flex flex-wrap gap-1.5 border-b border-[#F1F5F9] px-5 py-3">
+            <div className="flex flex-wrap gap-1.5 border-b border-[#2A3242] px-5 py-3">
               {endpoint.responses.map((r) => {
                 const color = statusColor(r.statusCode)
                 const isActive = r.statusCode === activeCode
@@ -850,8 +850,8 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
                     className={cn(
                       'flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition-all',
                       isActive
-                        ? 'bg-[#F8FAFC] text-[#0F172A] ring-1 ring-[#E2E8F0]'
-                        : 'text-[#64748B] hover:text-[#0F172A]'
+                        ? 'bg-[#1E2533] text-[#F4F7FC] ring-1 ring-[#2A3242]'
+                        : 'text-[#828DA3] hover:text-[#F4F7FC]'
                     )}
                   >
                     <span
@@ -865,8 +865,8 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
             </div>
             {/* Active response description */}
             {activeResponse?.description && (
-              <div className="border-b border-[#F1F5F9] px-5 py-2.5">
-                <p className="text-[12px] text-[#4B5563]">
+              <div className="border-b border-[#2A3242] px-5 py-2.5">
+                <p className="text-[12px] text-[#D2D9E6]">
                   {activeResponse.description}
                 </p>
               </div>
@@ -878,16 +878,16 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
                   <SchemaFieldRow key={f.name} field={f} />
                 ))
               ) : (
-                <p className="py-3 text-[12px] text-[#CBD5E1]">
+                <p className="py-3 text-[12px] text-[#586378]">
                   No schema defined.
                 </p>
               )}
             </div>
             {/* Example */}
             {activeResponse?.example && (
-              <div className="border-t border-[#F1F5F9]">
+              <div className="border-t border-[#2A3242]">
                 <div className="flex items-center justify-between px-5 py-2.5">
-                  <span className="text-[10px] font-semibold tracking-wider text-[#94A3B8] uppercase">
+                  <span className="text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
                     Example Response
                   </span>
                   <button
@@ -898,12 +898,12 @@ function SpecEndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
                       )
                       toast.success('Copied')
                     }}
-                    className="flex items-center gap-1 text-[11px] text-[#94A3B8] hover:text-[#374151]"
+                    className="flex items-center gap-1 text-[11px] text-[#828DA3] hover:text-[#D2D9E6]"
                   >
                     <Copy className="h-3 w-3" /> Copy
                   </button>
                 </div>
-                <pre className="mx-5 mb-5 overflow-x-auto rounded-lg bg-[#F8FAFC] p-4 font-mono text-[12px] leading-relaxed text-[#374151]">
+                <pre className="mx-5 mb-5 overflow-x-auto rounded-lg bg-[#1E2533] p-4 font-mono text-[12px] leading-relaxed text-[#D2D9E6]">
                   {activeResponse.example}
                 </pre>
               </div>
@@ -1143,13 +1143,13 @@ function SpecTryItWrapper({
         {/* Server selector */}
         {spec.servers.length > 1 && (
           <div className={`${px} ${py}`}>
-            <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-[#64748B] uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
               Server
             </p>
             <select
               value={selectedServerIdx}
               onChange={(e) => onServerChange(Number(e.target.value))}
-              className="h-7 w-full rounded-md border border-[#E2E8F0] bg-white px-2 text-[11px] outline-none focus:border-blue-400"
+              className="h-7 w-full rounded-md border border-[#2A3242] bg-[#141925] px-2 text-[11px] outline-none focus:border-blue-400"
             >
               {spec.servers.map((srv, idx) => (
                 <option key={idx} value={idx}>
@@ -1162,11 +1162,11 @@ function SpecTryItWrapper({
 
         {/* Base URL */}
         <div className={`${px} ${py}`}>
-          <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-[#94A3B8] uppercase">
+          <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
             Base URL
           </p>
-          <div className="flex items-center gap-2 overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-2">
-            <code className="flex-1 overflow-x-auto font-mono text-[11px] whitespace-nowrap text-[#374151]">
+          <div className="flex items-center gap-2 overflow-hidden rounded-lg border border-[#2A3242] bg-[#1E2533] px-2.5 py-2">
+            <code className="flex-1 overflow-x-auto font-mono text-[11px] whitespace-nowrap text-[#D2D9E6]">
               {resolvedUrl}
             </code>
             <button
@@ -1175,7 +1175,7 @@ function SpecTryItWrapper({
                 void navigator.clipboard.writeText(resolvedUrl)
                 toast.success('URL copied')
               }}
-              className="shrink-0 text-[#94A3B8] transition-colors hover:text-[#374151]"
+              className="shrink-0 text-[#828DA3] transition-colors hover:text-[#D2D9E6]"
             >
               <Copy className="h-3 w-3" />
             </button>
@@ -1185,7 +1185,7 @@ function SpecTryItWrapper({
         {/* Auth */}
         <div className={`${px} ${py}`}>
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold tracking-wider text-[#64748B] uppercase">
+            <p className="text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
               Auth
             </p>
             <select
@@ -1193,7 +1193,7 @@ function SpecTryItWrapper({
               onChange={(e) =>
                 onAuthChange({ type: e.target.value as AuthType })
               }
-              className="h-6 rounded border border-[#E2E8F0] bg-white px-1.5 text-[11px] text-[#374151] outline-none focus:border-blue-400"
+              className="h-6 rounded border border-[#2A3242] bg-[#141925] px-1.5 text-[11px] text-[#D2D9E6] outline-none focus:border-blue-400"
             >
               <option value="none">None</option>
               <option value="bearer">Bearer Token</option>
@@ -1207,7 +1207,7 @@ function SpecTryItWrapper({
               value={auth.bearer}
               onChange={(e) => onAuthChange({ bearer: e.target.value })}
               placeholder="Paste token…"
-              className="mt-2 h-7 w-full rounded-md border border-[#E2E8F0] bg-white px-2 font-mono text-[11px] outline-none focus:border-blue-400"
+              className="mt-2 h-7 w-full rounded-md border border-[#2A3242] bg-[#141925] px-2 font-mono text-[11px] outline-none focus:border-blue-400"
             />
           )}
           {auth.type === 'apikey' && (
@@ -1217,14 +1217,14 @@ function SpecTryItWrapper({
                 value={auth.apiKeyHeader}
                 onChange={(e) => onAuthChange({ apiKeyHeader: e.target.value })}
                 placeholder="Header name (e.g. X-API-Key)"
-                className="h-7 w-full rounded-md border border-[#E2E8F0] bg-white px-2 font-mono text-[11px] outline-none focus:border-blue-400"
+                className="h-7 w-full rounded-md border border-[#2A3242] bg-[#141925] px-2 font-mono text-[11px] outline-none focus:border-blue-400"
               />
               <input
                 type="password"
                 value={auth.apiKey}
                 onChange={(e) => onAuthChange({ apiKey: e.target.value })}
                 placeholder="API key value…"
-                className="h-7 w-full rounded-md border border-[#E2E8F0] bg-white px-2 font-mono text-[11px] outline-none focus:border-blue-400"
+                className="h-7 w-full rounded-md border border-[#2A3242] bg-[#141925] px-2 font-mono text-[11px] outline-none focus:border-blue-400"
               />
             </div>
           )}
@@ -1235,14 +1235,14 @@ function SpecTryItWrapper({
                 value={auth.basicUser}
                 onChange={(e) => onAuthChange({ basicUser: e.target.value })}
                 placeholder="Username"
-                className="h-7 w-full rounded-md border border-[#E2E8F0] bg-white px-2 text-[11px] outline-none focus:border-blue-400"
+                className="h-7 w-full rounded-md border border-[#2A3242] bg-[#141925] px-2 text-[11px] outline-none focus:border-blue-400"
               />
               <input
                 type="password"
                 value={auth.basicPass}
                 onChange={(e) => onAuthChange({ basicPass: e.target.value })}
                 placeholder="Password"
-                className="h-7 w-full rounded-md border border-[#E2E8F0] bg-white px-2 text-[11px] outline-none focus:border-blue-400"
+                className="h-7 w-full rounded-md border border-[#2A3242] bg-[#141925] px-2 text-[11px] outline-none focus:border-blue-400"
               />
             </div>
           )}
@@ -1251,14 +1251,14 @@ function SpecTryItWrapper({
         {/* Path Parameters */}
         {state.pathParams.length > 0 && (
           <div className={`${px} ${py}`}>
-            <p className="mb-2 text-[10px] font-semibold tracking-wider text-[#64748B] uppercase">
+            <p className="mb-2 text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
               Path Parameters
             </p>
             <div className="space-y-1.5">
               {state.pathParams.map((pp, i) => (
                 <div key={pp.name} className="flex items-center gap-1.5">
                   <label
-                    className="w-[90px] shrink-0 truncate font-mono text-[11px] text-[#374151]"
+                    className="w-[90px] shrink-0 truncate font-mono text-[11px] text-[#D2D9E6]"
                     title={pp.name}
                   >
                     {pp.name}
@@ -1267,7 +1267,7 @@ function SpecTryItWrapper({
                     value={pp.value}
                     onChange={(e) => setPathParam(i, e.target.value)}
                     placeholder="value"
-                    className="h-7 flex-1 rounded-md border border-[#E2E8F0] bg-white px-2 text-[11px] outline-none focus:border-blue-400"
+                    className="h-7 flex-1 rounded-md border border-[#2A3242] bg-[#141925] px-2 text-[11px] outline-none focus:border-blue-400"
                   />
                 </div>
               ))}
@@ -1278,7 +1278,7 @@ function SpecTryItWrapper({
         {/* Query params */}
         <div className={`${px} ${py}`}>
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold tracking-wider text-[#64748B] uppercase">
+            <p className="text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
               Query Parameters
             </p>
             <button
@@ -1297,18 +1297,18 @@ function SpecTryItWrapper({
                     value={p.name}
                     onChange={(e) => setQueryParam(i, 'name', e.target.value)}
                     placeholder="name"
-                    className="h-7 w-[90px] shrink-0 rounded-md border border-[#E2E8F0] bg-white px-2 font-mono text-[11px] outline-none focus:border-blue-400"
+                    className="h-7 w-[90px] shrink-0 rounded-md border border-[#2A3242] bg-[#141925] px-2 font-mono text-[11px] outline-none focus:border-blue-400"
                   />
                   <input
                     value={p.value}
                     onChange={(e) => setQueryParam(i, 'value', e.target.value)}
                     placeholder="value"
-                    className="h-7 flex-1 rounded-md border border-[#E2E8F0] bg-white px-2 text-[11px] outline-none focus:border-blue-400"
+                    className="h-7 flex-1 rounded-md border border-[#2A3242] bg-[#141925] px-2 text-[11px] outline-none focus:border-blue-400"
                   />
                   <button
                     type="button"
                     onClick={() => removeQueryParam(i)}
-                    className="text-[#CBD5E1] hover:text-[#94A3B8]"
+                    className="text-[#586378] hover:text-[#828DA3]"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -1321,7 +1321,7 @@ function SpecTryItWrapper({
         {/* Headers */}
         <div className={`${px} ${py}`}>
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold tracking-wider text-[#64748B] uppercase">
+            <p className="text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
               Headers
             </p>
             <button
@@ -1340,18 +1340,18 @@ function SpecTryItWrapper({
                     value={h.name}
                     onChange={(e) => setHeader(i, 'name', e.target.value)}
                     placeholder="name"
-                    className="h-7 w-[90px] shrink-0 rounded-md border border-[#E2E8F0] bg-white px-2 font-mono text-[11px] outline-none focus:border-blue-400"
+                    className="h-7 w-[90px] shrink-0 rounded-md border border-[#2A3242] bg-[#141925] px-2 font-mono text-[11px] outline-none focus:border-blue-400"
                   />
                   <input
                     value={h.value}
                     onChange={(e) => setHeader(i, 'value', e.target.value)}
                     placeholder="value"
-                    className="h-7 flex-1 rounded-md border border-[#E2E8F0] bg-white px-2 text-[11px] outline-none focus:border-blue-400"
+                    className="h-7 flex-1 rounded-md border border-[#2A3242] bg-[#141925] px-2 text-[11px] outline-none focus:border-blue-400"
                   />
                   <button
                     type="button"
                     onClick={() => removeHeader(i)}
-                    className="text-[#CBD5E1] hover:text-[#94A3B8]"
+                    className="text-[#586378] hover:text-[#828DA3]"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -1365,14 +1365,14 @@ function SpecTryItWrapper({
         {isBodyMethod && (
           <div className={`${px} ${py}`}>
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-[10px] font-semibold tracking-wider text-[#64748B] uppercase">
+              <p className="text-[10px] font-semibold tracking-wider text-[#828DA3] uppercase">
                 Request Body
               </p>
-              <span className="text-[10px] text-[#94A3B8]">
+              <span className="text-[10px] text-[#828DA3]">
                 application/json
               </span>
             </div>
-            <div className="overflow-hidden rounded-lg border border-[#E2E8F0]">
+            <div className="overflow-hidden rounded-lg border border-[#2A3242]">
               <CodeMirrorRaw
                 value={state.body}
                 onChange={(v) => setState((s) => ({ ...s, body: v }))}
@@ -1385,25 +1385,25 @@ function SpecTryItWrapper({
         {/* Response */}
         {response && (
           <div className={`${px} ${py}`}>
-            <div className="overflow-hidden rounded-xl border border-[#E2E8F0]">
-              <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2">
+            <div className="overflow-hidden rounded-xl border border-[#2A3242]">
+              <div className="flex items-center justify-between border-b border-[#2A3242] bg-[#1E2533] px-3 py-2">
                 <div className="flex items-center gap-2">
                   <span
                     className={cn(
                       'rounded px-2 py-0.5 text-[11px] font-bold',
                       response.status >= 200 && response.status < 300
-                        ? 'bg-[#DCFCE7] text-[#16A34A]'
+                        ? 'bg-green-500/10 text-[#16A34A]'
                         : response.status >= 400
-                          ? 'bg-[#FEF2F2] text-[#DC2626]'
-                          : 'bg-[#F1F5F9] text-[#64748B]'
+                          ? 'bg-red-500/10 text-[#DC2626]'
+                          : 'bg-[#1E2533] text-[#828DA3]'
                     )}
                   >
                     {response.status || 'ERR'}
                   </span>
-                  <span className="text-[11px] text-[#64748B]">
+                  <span className="text-[11px] text-[#828DA3]">
                     {response.statusText}
                   </span>
-                  <span className="text-[11px] text-[#94A3B8]">
+                  <span className="text-[11px] text-[#828DA3]">
                     · {response.latencyMs}ms
                   </span>
                 </div>
@@ -1413,13 +1413,13 @@ function SpecTryItWrapper({
                     void navigator.clipboard.writeText(response.body)
                     toast.success('Copied')
                   }}
-                  className="text-[#94A3B8] hover:text-[#374151]"
+                  className="text-[#828DA3] hover:text-[#D2D9E6]"
                 >
                   <Copy className="h-3 w-3" />
                 </button>
               </div>
               {response.isCorsBlocked ? (
-                <div className="bg-[#FFFBEB] px-3 py-3 text-[12px] text-[#92400E]">
+                <div className="bg-amber-500/10 px-3 py-3 text-[12px] text-[#92400E]">
                   Request blocked by CORS policy. Use the copied cURL command to
                   test from your terminal.
                 </div>
@@ -1435,14 +1435,14 @@ function SpecTryItWrapper({
 
   function renderFooter(isExpanded = false) {
     return (
-      <div className="shrink-0 border-t border-[#E8EAEC] p-3">
+      <div className="shrink-0 border-t border-[#2A3242] p-3">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleCopyCurl}
             title="Copy as cURL"
             className={cn(
-              'flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[#64748B] transition-colors hover:bg-[#F8FAFC] hover:text-[#374151]',
+              'flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[#2A3242] text-[#828DA3] transition-colors hover:bg-[#1E2533] hover:text-[#D2D9E6]',
               isExpanded ? 'px-4 text-[12px] font-medium' : 'w-10'
             )}
           >
@@ -1460,7 +1460,7 @@ function SpecTryItWrapper({
           </button>
         </div>
         {!baseUrl && (
-          <p className="mt-2 text-center text-[11px] text-[#94A3B8]">
+          <p className="mt-2 text-center text-[11px] text-[#828DA3]">
             No server URL in spec
           </p>
         )}
@@ -1471,16 +1471,16 @@ function SpecTryItWrapper({
   return (
     <>
       {/* Inline panel */}
-      <div className="flex w-[320px] shrink-0 flex-col overflow-hidden border-l border-[#E8EAEC] bg-white">
-        <div className="flex shrink-0 items-center justify-between border-b border-[#E8EAEC] px-4 py-3">
-          <span className="text-[13px] font-semibold text-[#0F172A]">
+      <div className="flex w-[320px] shrink-0 flex-col overflow-hidden border-l border-[#2A3242] bg-[#141925]">
+        <div className="flex shrink-0 items-center justify-between border-b border-[#2A3242] px-4 py-3">
+          <span className="text-[13px] font-semibold text-[#F4F7FC]">
             Try it
           </span>
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
             title="Expand"
-            className="text-[#94A3B8] transition-colors hover:text-[#374151]"
+            className="text-[#828DA3] transition-colors hover:text-[#D2D9E6]"
           >
             <Maximize2 className="h-4 w-4" />
           </button>
@@ -1496,22 +1496,22 @@ function SpecTryItWrapper({
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="flex max-h-[90vh] w-[700px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            className="flex max-h-[90vh] w-[700px] flex-col overflow-hidden rounded-2xl bg-[#141925] shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal header */}
-            <div className="flex shrink-0 items-center gap-3 border-b border-[#E8EAEC] px-5 py-4">
-              <span className="text-[14px] font-semibold text-[#0F172A]">
+            <div className="flex shrink-0 items-center gap-3 border-b border-[#2A3242] px-5 py-4">
+              <span className="text-[14px] font-semibold text-[#F4F7FC]">
                 Try it
               </span>
               <MethodBadge method={endpoint.method} />
-              <span className="flex-1 truncate font-mono text-[12px] text-[#4B5563]">
+              <span className="flex-1 truncate font-mono text-[12px] text-[#D2D9E6]">
                 {endpoint.path}
               </span>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="shrink-0 text-[#94A3B8] transition-colors hover:text-[#374151]"
+                className="shrink-0 text-[#828DA3] transition-colors hover:text-[#D2D9E6]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1529,43 +1529,43 @@ function SpecTryItWrapper({
 
 function SpecIntro({ spec }: { spec: ParsedSpec }) {
   return (
-    <div className="flex flex-1 overflow-y-auto bg-white">
+    <div className="flex flex-1 overflow-y-auto bg-[#141925]">
       <div className="max-w-3xl px-8 py-10">
         <div className="mb-3 flex items-center gap-2">
           {spec.version && (
-            <span className="rounded-md bg-[#F1F5F9] px-2.5 py-1 text-[12px] font-medium text-[#64748B]">
+            <span className="rounded-md bg-[#1E2533] px-2.5 py-1 text-[12px] font-medium text-[#828DA3]">
               v{spec.version}
             </span>
           )}
           {spec.oasVersion && (
-            <span className="rounded-md bg-[#F1F5F9] px-2.5 py-1 text-[12px] font-medium text-[#64748B]">
+            <span className="rounded-md bg-[#1E2533] px-2.5 py-1 text-[12px] font-medium text-[#828DA3]">
               {spec.oasVersion}
             </span>
           )}
         </div>
-        <h1 className="mb-4 text-[28px] font-bold tracking-tight text-[#0F172A]">
+        <h1 className="mb-4 text-[28px] font-bold tracking-tight text-[#F4F7FC]">
           {spec.title}
         </h1>
         {spec.description && (
-          <p className="mb-8 text-[14px] leading-relaxed text-[#4B5563]">
+          <p className="mb-8 text-[14px] leading-relaxed text-[#D2D9E6]">
             {spec.description}
           </p>
         )}
-        <div className="rounded-xl border border-[#E8EAEC] bg-white p-5">
-          <p className="mb-3 text-[11px] font-semibold tracking-widest text-[#94A3B8] uppercase">
+        <div className="rounded-xl border border-[#2A3242] bg-[#141925] p-5">
+          <p className="mb-3 text-[11px] font-semibold tracking-widest text-[#828DA3] uppercase">
             Endpoint Groups
           </p>
           <div className="space-y-2">
             {spec.groups.map((g) => (
               <div key={g.name} className="flex items-center gap-2">
-                <span className="text-[14px] font-medium text-[#0F172A]">
+                <span className="text-[14px] font-medium text-[#F4F7FC]">
                   {g.name}
                 </span>
-                <span className="rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[11px] text-[#64748B]">
+                <span className="rounded-full bg-[#1E2533] px-2 py-0.5 text-[11px] text-[#828DA3]">
                   {g.endpoints.length}
                 </span>
                 {g.description && (
-                  <span className="text-[13px] text-[#94A3B8]">
+                  <span className="text-[13px] text-[#828DA3]">
                     — {g.description}
                   </span>
                 )}
@@ -1695,7 +1695,7 @@ export function RestApiSpecViewer({
         <div className="text-sm font-medium text-red-500">
           Failed to load specification
         </div>
-        <p className="max-w-md text-xs text-[#64748B]">{error}</p>
+        <p className="max-w-md text-xs text-[#828DA3]">{error}</p>
         <button
           onClick={() => void fetchSpec()}
           className="text-xs text-blue-500 underline hover:no-underline"
@@ -1708,7 +1708,7 @@ export function RestApiSpecViewer({
 
   if (!parsedSpec) {
     return (
-      <div className="flex items-center justify-center py-16 text-sm text-[#94A3B8]">
+      <div className="flex items-center justify-center py-16 text-sm text-[#828DA3]">
         No specification content found
       </div>
     )

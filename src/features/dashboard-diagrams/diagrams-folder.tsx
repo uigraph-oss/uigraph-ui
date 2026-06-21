@@ -437,7 +437,7 @@ function FolderChip({ folder }: { folder: DashboardFolder }) {
           type="button"
           disabled={isUpdatingDiagram}
           className={cn(
-            'flex h-16 shrink-0 items-center gap-2 rounded-2xl border bg-white pr-8 pl-4 text-left text-sm font-semibold transition-all duration-150',
+            'flex h-16 shrink-0 items-center gap-2 rounded-2xl border bg-[#141925] pr-8 pl-4 text-left text-sm font-semibold transition-all duration-150',
             isDraggingOver
               ? 'border-primary/50 ring-primary/20 ring-2'
               : isSelected

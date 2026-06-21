@@ -23,7 +23,7 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
       case 'reviewer':
         return 'bg-green-100 text-green-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-[#1E2533] text-[#F4F7FC]'
     }
   }
 
@@ -52,8 +52,8 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
             <div className="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                    <UserIcon className="h-5 w-5 text-gray-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2A3242]">
+                    <UserIcon className="h-5 w-5 text-[#828DA3]" />
                   </div>
                   <div>
                     <h3 className="text-lg leading-none font-semibold">
@@ -70,14 +70,14 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
             <div className="px-6">
               <div className="space-y-3">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700">Team</h4>
-                  <p className="text-sm text-gray-600">{owner.team}</p>
+                  <h4 className="text-sm font-medium text-[#D2D9E6]">Team</h4>
+                  <p className="text-sm text-[#828DA3]">{owner.team}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700">
+                  <h4 className="text-sm font-medium text-[#D2D9E6]">
                     Role Description
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[#828DA3]">
                     {getRoleDescription(owner.role)}
                   </p>
                 </div>
@@ -111,17 +111,17 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4">
               <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
+                <h4 className="mb-2 text-sm font-medium text-[#D2D9E6]">
                   Communication Channels
                 </h4>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <MessageIcon className="h-4 w-4 text-gray-500" />
+                      <MessageIcon className="h-4 w-4 text-[#828DA3]" />
                       <span className="text-sm">Slack Channel</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <code className="rounded bg-gray-100 px-2 py-1 text-sm">
+                      <code className="rounded bg-[#1E2533] px-2 py-1 text-sm">
                         {mockCollaborationInfo.slackChannel}
                       </code>
                       <Button variant="ghost" size="sm">
@@ -131,11 +131,11 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <UserIcon className="h-4 w-4 text-gray-500" />
+                      <UserIcon className="h-4 w-4 text-[#828DA3]" />
                       <span className="text-sm">On-Call</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-[#828DA3]">
                         Active rotation
                       </span>
                       <Button variant="ghost" size="sm">
@@ -147,7 +147,7 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
               </div>
 
               <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
+                <h4 className="mb-2 text-sm font-medium text-[#D2D9E6]">
                   Team Resources
                 </h4>
                 <div className="space-y-2">
@@ -163,12 +163,12 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
 
             <div className="space-y-4">
               <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
+                <h4 className="mb-2 text-sm font-medium text-[#D2D9E6]">
                   Code Reviewers
                 </h4>
                 <div className="space-y-1">
                   {mockCollaborationInfo.codeReviewers.map((email) => (
-                    <div key={email} className="text-sm text-gray-600">
+                    <div key={email} className="text-sm text-[#828DA3]">
                       {email}
                     </div>
                   ))}
@@ -176,12 +176,12 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
               </div>
 
               <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
+                <h4 className="mb-2 text-sm font-medium text-[#D2D9E6]">
                   Escalation Contacts
                 </h4>
                 <div className="space-y-1">
                   {mockCollaborationInfo.escalationContacts.map((email) => (
-                    <div key={email} className="text-sm text-gray-600">
+                    <div key={email} className="text-sm text-[#828DA3]">
                       {email}
                     </div>
                   ))}
@@ -197,10 +197,10 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
         <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
           <div className="p-4 px-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-[#F4F7FC]">
                 {mockOwners.length}
               </div>
-              <div className="text-sm text-gray-600">Team Members</div>
+              <div className="text-sm text-[#828DA3]">Team Members</div>
             </div>
           </div>
         </div>
@@ -210,7 +210,7 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
               <div className="text-2xl font-bold text-red-600">
                 {mockOwners.filter((o) => o.role === 'owner').length}
               </div>
-              <div className="text-sm text-gray-600">Owners</div>
+              <div className="text-sm text-[#828DA3]">Owners</div>
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
               <div className="text-2xl font-bold text-blue-600">
                 {mockOwners.filter((o) => o.role === 'contributor').length}
               </div>
-              <div className="text-sm text-gray-600">Contributors</div>
+              <div className="text-sm text-[#828DA3]">Contributors</div>
             </div>
           </div>
         </div>
@@ -230,7 +230,7 @@ export function ServiceOwnership({}: ServiceOwnershipProps) {
               <div className="text-2xl font-bold text-green-600">
                 {mockOwners.filter((o) => o.role === 'reviewer').length}
               </div>
-              <div className="text-sm text-gray-600">Reviewers</div>
+              <div className="text-sm text-[#828DA3]">Reviewers</div>
             </div>
           </div>
         </div>

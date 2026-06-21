@@ -67,7 +67,7 @@ function InfoTile({
   mono?: boolean
 }) {
   return (
-    <div className="border-border rounded-xl border bg-white px-4 py-3">
+    <div className="border-border rounded-xl border bg-[#141925] px-4 py-3">
       <div className="text-muted-foreground mb-1.5 text-xs">{label}</div>
       <div
         className={
@@ -94,7 +94,7 @@ function CodeBlock({
   if (!hasText(value)) return null
 
   return (
-    <div className="border-border overflow-hidden rounded-xl border bg-white">
+    <div className="border-border overflow-hidden rounded-xl border bg-[#141925]">
       <div className="border-border bg-muted/40 border-b px-3 py-2">
         <span className="text-muted-foreground text-xs">{languageLabel}</span>
       </div>
@@ -162,7 +162,7 @@ function KeyValueList({
   if (!rows.length) return null
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="overflow-hidden rounded-xl border bg-[#141925]">
       {rows.map((item, index) => (
         <div
           key={`${item.key ?? 'item'}-${index}`}
@@ -204,7 +204,7 @@ function Overview({
     <div className="mb-6">
       <SectionLabel>Overview</SectionLabel>
       {hasText(testCase.description) && (
-        <div className="border-border text-muted-foreground mb-5 rounded-xl border bg-white px-4 py-3 text-sm leading-[1.33]">
+        <div className="border-border text-muted-foreground mb-5 rounded-xl border bg-[#141925] px-4 py-3 text-sm leading-[1.33]">
           {testCase.description}
         </div>
       )}
@@ -281,7 +281,7 @@ function APIDetails({ testCase }: { testCase: TestCase }) {
 
   return (
     <>
-      <div className="border-border mb-4 flex items-center gap-0 overflow-hidden rounded-lg border bg-white">
+      <div className="border-border mb-4 flex items-center gap-0 overflow-hidden rounded-lg border bg-[#141925]">
         <div className="border-border bg-shading-gray flex shrink-0 border-r px-3 py-2.5">
           <span
             className={`rounded px-2 py-0.5 font-mono text-xs font-medium ${methodBg}`}
