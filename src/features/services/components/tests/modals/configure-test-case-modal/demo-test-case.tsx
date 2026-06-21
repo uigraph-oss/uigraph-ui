@@ -3,8 +3,8 @@ import { FormType } from './schema'
 
 export function DemoTestCase({ form }: { form: FormType }) {
   return (
-    <div className="mb-4 rounded-[12px] border border-[#e2e8f0] bg-[#f8fafc] p-3">
-      <div className="mb-2 text-[11px] font-bold tracking-[0.08em] text-[#64748b] uppercase">
+    <div className="mb-4 rounded-[12px] border border-[#2A3242] bg-[#1E2533] p-3">
+      <div className="mb-2 text-[11px] font-bold tracking-[0.08em] text-[#828DA3] uppercase">
         Demo Autofill
       </div>
 

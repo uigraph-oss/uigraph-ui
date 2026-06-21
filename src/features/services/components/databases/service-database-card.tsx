@@ -95,7 +95,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
     if (value === 'sqlite') {
       return 'bg-green-100 text-green-800'
     }
-    return 'bg-gray-100 text-gray-800'
+    return 'bg-[#1E2533] text-[#F4F7FC]'
   }
 
   const updatedDate = db.updatedAt
@@ -118,11 +118,11 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
     <div className="group relative">
       <Link
         to={`/services/${serviceId}/data/${db.serviceDBId}`}
-        className="group magic-shadow hover:ring-primary relative block cursor-pointer rounded-[1.4525rem] bg-white p-[0.62rem] pb-6 ring-1 ring-[#E5E7E9] transition-all duration-500 hover:shadow-[0_1.2313rem_2.4625rem_0_#00000029] hover:ring-2"
+        className="group magic-shadow hover:ring-primary relative block cursor-pointer rounded-[1.4525rem] bg-[#141925] p-[0.62rem] pb-6 ring-1 ring-[#2A3242] transition-all duration-500 hover:shadow-[0_1.2313rem_2.4625rem_0_#00000029] hover:ring-2"
       >
         <Avatar
           className={cn(
-            'border-stock/40 pointer-events-none aspect-square size-full rounded-[0.875rem] border-2 bg-white object-contain object-center'
+            'border-stock/40 pointer-events-none aspect-square size-full rounded-[0.875rem] border-2 bg-[#141925] object-contain object-center'
           )}
         >
           <AvatarImage
@@ -139,7 +139,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
 
         <div className="px-4 pt-[1.2313rem]">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <h4 className="line-clamp-1 text-[1.385rem] font-semibold text-[#161616]">
+            <h4 className="line-clamp-1 text-[1.385rem] font-semibold text-[#F4F7FC]">
               {db.dbName ?? 'Untitled Database'}
             </h4>
             <Badge className={cn('text-xs', getTypeBadgeClass(db.dbType))}>
@@ -147,7 +147,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
             </Badge>
           </div>
 
-          <div className="mb-4 flex items-center gap-4 text-sm text-[#939395]">
+          <div className="mb-4 flex items-center gap-4 text-sm text-[#828DA3]">
             <div className="flex items-center space-x-1">
               <Table2 className="h-4 w-4" />
               <span>{tables.length} tables</span>
@@ -164,7 +164,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
 
           <div className="flex items-center justify-between">
             {updatedDate ? (
-              <div className="flex items-center space-x-1 text-[#939395]">
+              <div className="flex items-center space-x-1 text-[#828DA3]">
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm">
                   Updated{' '}
@@ -189,7 +189,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
             size="icon"
             variant="ghost"
             className={cn(
-              'absolute top-2 right-2 h-6 w-6 bg-white/80 opacity-0 shadow-[0_5.81px_23.241px_0_rgba(0,0,0,0.12)] group-hover:opacity-100 hover:bg-white',
+              'absolute top-2 right-2 h-6 w-6 bg-[#1E2533]/80 opacity-0 shadow-[0_5.81px_23.241px_0_rgba(0,0,0,0.12)] group-hover:opacity-100 hover:bg-[#141925]',
               isDropdownOpen && 'opacity-100'
             )}
           >

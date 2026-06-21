@@ -315,7 +315,7 @@ function ApiGroupEndpointsPageContent() {
             {hasSpec && (
               <BetterTabController
                 control={control}
-                className="rounded-[0.80315625rem] border bg-white p-0.5"
+                className="rounded-[0.80315625rem] border bg-[#141925] p-0.5"
                 overlayClassName="rounded-[11px] bg-primary shadow-sm"
                 triggerClassName="flex h-full items-center justify-center gap-1.5 rounded-[0.80315625rem] px-4 py-[9.5px] text-sm font-medium"
                 activeTriggerClassName="text-primary-foreground rounded-[0.80315625rem]"

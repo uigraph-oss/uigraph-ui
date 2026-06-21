@@ -99,7 +99,7 @@ export function ServiceOverview() {
 
   const integrations = [
     repoHref && {
-      icon: <FaGithub className="size-4 text-[#24292E]" />,
+      icon: <FaGithub className="size-4 text-[#F4F7FC]" />,
       label: 'Repository',
       sub: 'View on GitHub',
       href: repoHref,
@@ -125,7 +125,7 @@ export function ServiceOverview() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-[#E8EAEC] bg-white p-6">
+      <div className="rounded-2xl border border-[#2A3242] bg-[#141925] p-6">
         {/* Service identity header */}
         <div className="mb-5 flex items-center gap-4">
           <div
@@ -135,11 +135,11 @@ export function ServiceOverview() {
             {getMonogram(service.name || '')}
           </div>
           <div className="min-w-0">
-            <h2 className="text-[18px] font-semibold tracking-tight text-[#0F172A]">
+            <h2 className="text-[18px] font-semibold tracking-tight text-[#F4F7FC]">
               {service.name}
             </h2>
             {service.description && (
-              <p className="mt-0.5 text-[13px] text-[#64748B]">
+              <p className="mt-0.5 text-[13px] text-[#828DA3]">
                 {service.description}
               </p>
             )}
@@ -160,7 +160,7 @@ export function ServiceOverview() {
             {labels.map((label) => (
               <span
                 key={label}
-                className="inline-flex items-center rounded-md bg-[#F1F5F9] px-2.5 py-1 text-[12px] font-medium text-[#475569]"
+                className="inline-flex items-center rounded-md bg-[#1E2533] px-2.5 py-1 text-[12px] font-medium text-[#D2D9E6]"
               >
                 {label}
               </span>
@@ -169,7 +169,7 @@ export function ServiceOverview() {
         )}
 
         {/* Metadata row */}
-        <div className="grid grid-cols-2 gap-y-5 border-t border-[#F1F5F9] pt-5 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-y-5 border-t border-[#2A3242] pt-5 sm:grid-cols-4">
           {[
             {
               label: 'Created',
@@ -193,12 +193,12 @@ export function ServiceOverview() {
             { label: 'Team', value: teamName ?? '—' },
           ].map(({ label, value, mono }) => (
             <div key={label}>
-              <p className="mb-1 text-[10px] font-semibold tracking-widest text-[#94A3B8] uppercase">
+              <p className="mb-1 text-[10px] font-semibold tracking-widest text-[#828DA3] uppercase">
                 {label}
               </p>
               <p
                 className={cn(
-                  'text-[13px] font-medium text-[#0F172A]',
+                  'text-[13px] font-medium text-[#F4F7FC]',
                   mono && 'font-mono'
                 )}
               >
@@ -211,7 +211,7 @@ export function ServiceOverview() {
         {/* Integrations */}
         {integrations.length > 0 && (
           <>
-            <h4 className="mt-6 mb-3 text-[13px] font-semibold text-[#0F172A]">
+            <h4 className="mt-6 mb-3 text-[13px] font-semibold text-[#F4F7FC]">
               Integrations
             </h4>
             <div
@@ -227,17 +227,17 @@ export function ServiceOverview() {
                   key={label}
                   href={href}
                   target="_blank"
-                  className="flex items-center gap-3 rounded-xl border border-[#E8EAEC] bg-[#FAFAFA] px-4 py-3 transition-colors hover:border-[#D0D5DD] hover:bg-white"
+                  className="flex items-center gap-3 rounded-xl border border-[#2A3242] bg-[#1E2533] px-4 py-3 transition-colors hover:border-[#3B4658] hover:bg-[#2A3242]"
                   rel="noreferrer"
                 >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-[#E8EAEC]">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#2A3242] shadow-sm ring-1 ring-[#3B4658]">
                     {icon}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[13px] font-medium text-[#0F172A]">
+                    <p className="text-[13px] font-medium text-[#F4F7FC]">
                       {label}
                     </p>
-                    <p className="truncate font-mono text-[11px] text-[#94A3B8]">
+                    <p className="truncate font-mono text-[11px] text-[#828DA3]">
                       {sub}
                     </p>
                   </div>

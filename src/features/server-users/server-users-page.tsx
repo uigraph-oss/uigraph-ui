@@ -108,10 +108,10 @@ export function ServerUsersPage() {
       />
 
       <div className="px-6 pt-4">
-        <div className="space-y-6 rounded-[12px] border border-[#E5E7E9]">
+        <div className="space-y-6 rounded-[12px] border border-[#2A3242]">
           <div className="flex items-center justify-between px-6 pt-6 pb-4">
             <div className="relative max-w-[420px]">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-[#828DA3]" />
               <Input
                 placeholder="Search"
                 value={searchTerm}
@@ -119,7 +119,7 @@ export function ServerUsersPage() {
                   setSearchTerm(e.target.value)
                   setCurrentPage(1)
                 }}
-                className="h-11 w-full rounded-[12px] border-gray-300 bg-white pt-3 pb-3 pl-10"
+                className="h-11 w-full rounded-[12px] border-[#2A3242] bg-[#1E2533] pt-3 pb-3 pl-10"
               />
             </div>
 
@@ -163,7 +163,7 @@ export function ServerUsersPage() {
       <div className="mt-4 flex items-center justify-between px-6">
         <div className="text-muted-foreground text-sm">
           Total{' '}
-          <span className="font-medium text-gray-700">{users.length}</span>{' '}
+          <span className="font-medium text-[#F4F7FC]">{users.length}</span>{' '}
           users
         </div>
 

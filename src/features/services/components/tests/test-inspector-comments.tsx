@@ -16,7 +16,7 @@ export function TestInspectorComments({
   if (!testCase.testCaseId) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 px-6 py-12 text-center">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-[#828DA3]">
           Test case ID is required for comments
         </p>
       </div>

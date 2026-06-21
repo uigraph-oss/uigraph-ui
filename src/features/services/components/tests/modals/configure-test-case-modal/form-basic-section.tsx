@@ -93,7 +93,7 @@ function OwnerOptionContent({ option }: { option: OwnerOption }) {
     <div className="flex items-center gap-2">
       <Avatar className="size-6">
         <AvatarImage src={option.avatarSrc ?? ''} className="object-cover" />
-        <AvatarFallback className="bg-[#eff6ff] text-[10px] font-medium text-[#2563eb]">
+        <AvatarFallback className="bg-blue-500/10 text-[10px] font-medium text-[#2563eb]">
           {getOwnerInitials(option.label, option.email)}
         </AvatarFallback>
       </Avatar>
@@ -149,7 +149,7 @@ function TestOwnerSelect({
       value={value}
       onValueChange={onChange}
     >
-      <SelectTrigger className="border-stock text-foreground !h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm">
+      <SelectTrigger className="border-stock text-foreground !h-[3.5rem] w-full rounded-[1rem] border bg-[#141925] px-4 text-sm">
         {selectedOption ? (
           <OwnerOptionContent option={selectedOption} />
         ) : (
@@ -159,11 +159,11 @@ function TestOwnerSelect({
         )}
       </SelectTrigger>
 
-      <SelectContent className="bg-white">
+      <SelectContent className="bg-[#141925]">
         <div className="p-1">
           <Input
             placeholder="Search by name or email"
-            className="bg-white/80"
+            className="bg-white/10"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             onKeyDown={(event) => {
@@ -300,7 +300,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
   return (
     <>
       <div className="mb-4">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">Title</Label>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">Title</Label>
         <Controller
           name="title"
           control={form.control}
@@ -309,7 +309,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
               placeholder="e.g. Verify user can log in with valid credentials"
               value={field.value ?? ''}
               onChange={field.onChange}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 [font-family:'DM_Sans',sans-serif] text-[13px] text-[#1e293b]"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 [font-family:'DM_Sans',sans-serif] text-[13px] text-[#F4F7FC]"
             />
           )}
         />
@@ -317,8 +317,8 @@ export function FormBasicSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-4">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
-          Description <span className="text-xs text-[#94a3b8]">(optional)</span>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
+          Description <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         <Controller
           name="description"
@@ -329,7 +329,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
               value={field.value ?? ''}
               onChange={field.onChange}
               rows={2}
-              className="resize-y rounded-[16px] border border-[#E5E7E9] bg-white px-6 py-4 [font-family:'DM_Sans',sans-serif] text-[13px] leading-[1.6] text-[#1e293b]"
+              className="resize-y rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 py-4 [font-family:'DM_Sans',sans-serif] text-[13px] leading-[1.6] text-[#F4F7FC]"
             />
           )}
         />
@@ -337,7 +337,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-4">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">Type</Label>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">Type</Label>
         <Controller
           name="type"
           control={form.control}
@@ -352,7 +352,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
                     field.onChange(item.id)
                   }}
                   className={cn(
-                    'border-stock h-11 rounded-[12px] border bg-white px-1 py-2.5 text-center outline-2 -outline-offset-2 outline-transparent outline-solid hover:bg-white',
+                    'border-stock h-11 rounded-[12px] border bg-[#141925] px-1 py-2.5 text-center outline-2 -outline-offset-2 outline-transparent outline-solid hover:bg-[#141925]',
                     field.value === item.id &&
                       'bg-shading-gray outline-primary hover:bg-shading-gray'
                   )}
@@ -375,7 +375,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-4">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Priority
         </Label>
         <Controller
@@ -392,23 +392,23 @@ export function FormBasicSection({ form }: { form: FormType }) {
                     field.onChange(item.id)
                   }}
                   className={cn(
-                    'border-stock h-11 flex-1 rounded-[12px] border bg-white px-1 py-2 text-xs font-medium text-[#94a3b8] outline-2 -outline-offset-2 outline-transparent outline-solid hover:bg-white',
+                    'border-stock h-11 flex-1 rounded-[12px] border bg-[#141925] px-1 py-2 text-xs font-medium text-[#828DA3] outline-2 -outline-offset-2 outline-transparent outline-solid hover:bg-[#141925]',
 
                     item.id === 'p0' &&
                       field.value === item.id &&
-                      'bg-[#fef2f2] text-[#ef4444]! outline-[#ef4444] hover:bg-[#fef2f2]',
+                      'bg-red-500/10 text-[#ef4444]! outline-[#ef4444] hover:bg-red-500/10',
 
                     item.id === 'p1' &&
                       field.value === item.id &&
-                      'bg-[#fff7ed] text-[#f97316]! outline-[#f97316] hover:bg-[#fff7ed]',
+                      'bg-amber-500/10 text-[#f97316]! outline-[#f97316] hover:bg-amber-500/10',
 
                     item.id === 'p2' &&
                       field.value === item.id &&
-                      'bg-[#fefce8] text-[#eab308]! outline-[#eab308] hover:bg-[#fefce8]',
+                      'bg-yellow-500/10 text-[#eab308]! outline-[#eab308] hover:bg-yellow-500/10',
 
                     item.id === 'p3' &&
                       field.value === item.id &&
-                      'bg-[#f9fafb] text-[#6b7280]! outline-[#6b7280] hover:bg-[#f9fafb]'
+                      'bg-[#1E2533] text-[#828DA3]! outline-[#6b7280] hover:bg-[#1E2533]'
                   )}
                 >
                   {item.label}
@@ -421,9 +421,9 @@ export function FormBasicSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-4">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Linked UI Map Node{' '}
-          <span className="text-xs text-[#94a3b8]">(optional)</span>
+          <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         <Controller
           name="linkedMapNode"
@@ -441,8 +441,8 @@ export function FormBasicSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-4">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
-          Tags <span className="text-xs text-[#94a3b8]">(optional)</span>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
+          Tags <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
 
         <Controller
@@ -457,9 +457,9 @@ export function FormBasicSection({ form }: { form: FormType }) {
 
       <div className="mb-4 grid grid-cols-3 gap-2">
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Linked Ticket{' '}
-            <span className="text-xs text-[#94a3b8]">(optional)</span>
+            <span className="text-xs text-[#828DA3]">(optional)</span>
           </Label>
           <Controller
             name="linkedTicket"
@@ -469,16 +469,16 @@ export function FormBasicSection({ form }: { form: FormType }) {
                 placeholder="JIRA-1234"
                 value={field.value ?? ''}
                 onChange={field.onChange}
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
               />
             )}
           />
           <FieldMessage message={form.formState.errors.linkedTicket?.message} />
         </div>
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Est. Duration (min){' '}
-            <span className="text-xs text-[#94a3b8]">(optional)</span>
+            <span className="text-xs text-[#828DA3]">(optional)</span>
           </Label>
           <Controller
             name="estimatedMins"
@@ -489,7 +489,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
                 type="number"
                 value={field.value ?? ''}
                 onChange={field.onChange}
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
               />
             )}
           />
@@ -498,9 +498,9 @@ export function FormBasicSection({ form }: { form: FormType }) {
           />
         </div>
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Test Owner{' '}
-            <span className="text-xs text-[#94a3b8]">(optional)</span>
+            <span className="text-xs text-[#828DA3]">(optional)</span>
           </Label>
           <Controller
             name="testOwner"
@@ -523,7 +523,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
                     onClick={() => field.onChange('')}
                     aria-label="Clear test owner"
                     title="Clear test owner"
-                    className="h-10 w-10 shrink-0 rounded-full p-0 text-[#64748b] hover:bg-[#f8fafc]"
+                    className="h-10 w-10 shrink-0 rounded-full p-0 text-[#828DA3] hover:bg-[#1E2533]"
                   >
                     <RxCross2 className="h-4 w-4" />
                   </Button>

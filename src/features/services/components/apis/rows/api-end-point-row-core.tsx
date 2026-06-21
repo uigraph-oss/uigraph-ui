@@ -103,7 +103,7 @@ export function ApiEndPointRowCore({
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="bg-[#EEF2F7] text-[10px] text-[#394150]"
+                  className="bg-[#1E2533] text-[10px] text-[#394150]"
                 >
                   {tag}
                 </Badge>

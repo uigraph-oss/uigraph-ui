@@ -50,11 +50,11 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
       />
 
       {isServiceLoading ? (
-        <div className="flex h-full items-center justify-center rounded-t-[1.2rem] bg-[#fafbfc]">
+        <div className="flex h-full items-center justify-center rounded-t-[1.2rem] bg-[#0b0e16]">
           <SectionLoader />
         </div>
       ) : service ? (
-        <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#fafbfc]">
+        <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#0b0e16]">
           <div>
             <div className="border-stock flex items-center border-b-2">
               {serviceTabs.map((tab) => (

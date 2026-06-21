@@ -210,7 +210,7 @@ function TestCaseRow({
     <Reorder.Item
       value={testCase}
       className={cn(
-        'group border-border relative flex items-center gap-3 rounded-[16px] border bg-white p-4 transition-colors',
+        'group border-border relative flex items-center gap-3 rounded-[16px] border bg-[#141925] p-4 transition-colors',
         'hover:bg-accent/50 hover:border-primary/30',
         onView && 'cursor-pointer'
       )}
@@ -300,7 +300,7 @@ function TestCaseRow({
               <EllipsisVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white">
+          <DropdownMenuContent align="end" className="bg-[#141925]">
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation()

@@ -70,7 +70,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
       case 'pii':
         return 'bg-pink-100 text-pink-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-[#1E2533] text-[#F4F7FC]'
     }
   }
 
@@ -79,7 +79,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <div className="relative">
-            <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+            <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-[#586378]" />
             <Input
               placeholder="Search config keys, descriptions, or tags..."
               value={searchQuery}
@@ -122,7 +122,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-[#D2D9E6]">
                       {config.description}
                     </div>
                   </TableCell>
@@ -143,7 +143,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
                             <Badge variant="outline" className="w-20 text-xs">
                               {env}
                             </Badge>
-                            <code className="flex-1 rounded bg-gray-100 px-2 py-1 text-xs">
+                            <code className="flex-1 rounded bg-[#1E2533] px-2 py-1 text-xs">
                               {visibleValues.has(`${config.key}-${env}`)
                                 ? value
                                 : maskValue(value)}
@@ -176,7 +176,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
                   <TableCell>
                     <div className="space-y-1">
                       {config.usedBy.map((item) => (
-                        <div key={item} className="text-xs text-gray-600">
+                        <div key={item} className="text-xs text-[#828DA3]">
                           {item}
                         </div>
                       ))}
@@ -198,10 +198,10 @@ export function ServiceConfig({}: ServiceConfigProps) {
         <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
           <div className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-[#F4F7FC]">
                 {mockConfigs.length}
               </div>
-              <div className="text-sm text-gray-600">Total Configs</div>
+              <div className="text-sm text-[#828DA3]">Total Configs</div>
             </div>
           </div>
         </div>
@@ -211,7 +211,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
               <div className="text-2xl font-bold text-red-600">
                 {mockConfigs.filter((c) => c.tags.includes('critical')).length}
               </div>
-              <div className="text-sm text-gray-600">Critical</div>
+              <div className="text-sm text-[#828DA3]">Critical</div>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
               <div className="text-2xl font-bold text-orange-600">
                 {mockConfigs.filter((c) => c.tags.includes('security')).length}
               </div>
-              <div className="text-sm text-gray-600">Security</div>
+              <div className="text-sm text-[#828DA3]">Security</div>
             </div>
           </div>
         </div>
@@ -231,7 +231,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
               <div className="text-2xl font-bold text-pink-600">
                 {mockConfigs.filter((c) => c.tags.includes('pii')).length}
               </div>
-              <div className="text-sm text-gray-600">PII</div>
+              <div className="text-sm text-[#828DA3]">PII</div>
             </div>
           </div>
         </div>

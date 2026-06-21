@@ -31,7 +31,7 @@ export function BasicFilterInput({
           value={selectedTeamId ?? '__all__'}
           onValueChange={(v) => setSelectedTeamId?.(v === '__all__' ? null : v)}
         >
-          <SelectTrigger className="!h-[37.8789px] w-[130px] rounded-[35.4px] border-[1.18px] border-[#E5E7E9] bg-white px-4 py-[9.44px] text-sm font-normal text-[#6E6E6E] outline-none">
+          <SelectTrigger className="!h-[37.8789px] w-[130px] rounded-[35.4px] border-[1.18px] border-[#2A3242] bg-[#1E2533] px-4 py-[9.44px] text-sm font-normal text-[#D2D9E6] outline-none">
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
 
@@ -50,7 +50,7 @@ export function BasicFilterInput({
         value={sortBy}
         onValueChange={(value) => setSortBy(value === 'none' ? '' : value)}
       >
-        <SelectTrigger className="!h-[37.8789px] w-[114.19723510742188px] rounded-[35.4px] border-[1.18px] border-[#E5E7E9] bg-white px-4 py-[9.44px] text-sm font-normal text-[#6E6E6E] outline-none">
+        <SelectTrigger className="!h-[37.8789px] w-[114.19723510742188px] rounded-[35.4px] border-[1.18px] border-[#2A3242] bg-[#1E2533] px-4 py-[9.44px] text-sm font-normal text-[#D2D9E6] outline-none">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
 

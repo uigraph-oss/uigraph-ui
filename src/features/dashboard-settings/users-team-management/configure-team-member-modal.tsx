@@ -81,7 +81,7 @@ export function ConfigureTeamMemberModal({
             <div className="space-y-2">
               <Label
                 htmlFor="team-member-name"
-                className="text-sm font-medium text-[#111110]"
+                className="text-sm font-medium text-[#D2D9E6]"
               >
                 Name
               </Label>
@@ -89,7 +89,7 @@ export function ConfigureTeamMemberModal({
                 id="team-member-name"
                 {...field}
                 placeholder="Enter full name"
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6"
                 autoComplete="off"
               />
               {form.formState.errors.name && (
@@ -108,7 +108,7 @@ export function ConfigureTeamMemberModal({
             <div className="space-y-2">
               <Label
                 htmlFor="team-member-email"
-                className="text-sm font-medium text-[#111110]"
+                className="text-sm font-medium text-[#D2D9E6]"
               >
                 Email Address
               </Label>
@@ -116,7 +116,7 @@ export function ConfigureTeamMemberModal({
                 id="team-member-email"
                 {...field}
                 placeholder="Enter email address"
-                className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6"
                 autoComplete="off"
               />
               {form.formState.errors.email && (
@@ -136,7 +136,7 @@ export function ConfigureTeamMemberModal({
               <div className="space-y-2">
                 <Label
                   htmlFor="team-member-password"
-                  className="text-sm font-medium text-[#111110]"
+                  className="text-sm font-medium text-[#D2D9E6]"
                 >
                   Password
                 </Label>
@@ -145,7 +145,7 @@ export function ConfigureTeamMemberModal({
                   {...field}
                   type="password"
                   placeholder="Enter a password"
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6"
                   autoComplete="new-password"
                 />
                 {form.formState.errors.password && (
@@ -165,7 +165,7 @@ export function ConfigureTeamMemberModal({
             <div className="space-y-2">
               <Label
                 htmlFor="team-member-role"
-                className="text-sm font-medium text-[#111110]"
+                className="text-sm font-medium text-[#D2D9E6]"
               >
                 Role
               </Label>
@@ -174,7 +174,7 @@ export function ConfigureTeamMemberModal({
                 onValueChange={field.onChange}
                 aria-label="role select"
               >
-                <SelectTrigger className="!h-[56px] !w-full rounded-[16px] border border-[#E5E7E9] bg-white px-4 capitalize">
+                <SelectTrigger className="!h-[56px] !w-full rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-4 capitalize">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,7 +201,7 @@ export function ConfigureTeamMemberModal({
             <div className="space-y-2">
               <Label
                 htmlFor="team-member-team"
-                className="text-sm font-medium text-[#111110]"
+                className="text-sm font-medium text-[#D2D9E6]"
               >
                 Team
               </Label>
@@ -210,7 +210,7 @@ export function ConfigureTeamMemberModal({
                 value={field.value ?? ''}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger className="!h-[56px] !w-full rounded-[16px] border border-[#E5E7E9] bg-white px-4">
+                <SelectTrigger className="!h-[56px] !w-full rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-4">
                   <SelectValue placeholder="Select Team" />
                 </SelectTrigger>
                 <SelectContent>

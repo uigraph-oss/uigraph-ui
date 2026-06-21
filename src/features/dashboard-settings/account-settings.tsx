@@ -17,7 +17,7 @@ export function SecuritySettings() {
               <h3 className="mb-1 text-[16px] font-medium text-[#828DA3]">
                 Password
               </h3>
-              <p className="text-[#111110]">Last updated 3 months ago</p>
+              <p className="text-[#828DA3]">Last updated 3 months ago</p>
             </div>
             <button className="font-sm flex h-[44px] items-center gap-1 rounded-[12px] bg-[#2A3242] px-3 leading-[1.33] font-normal">
               <img

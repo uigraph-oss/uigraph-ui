@@ -54,7 +54,7 @@ export function ApiEndPointRow({
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuContent align="end" className="bg-[#141925]">
               <DropdownMenuItem
                 onClick={() => {
                   setIsDropdownOpen(false)

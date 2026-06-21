@@ -36,11 +36,11 @@ const executionStatusClassMap: Record<
     summary: 'text-rose-700',
   },
   skipped: {
-    badge: 'border border-slate-200 bg-slate-100 text-slate-700',
-    icon: 'bg-slate-100 text-slate-600',
+    badge: 'border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6]',
+    icon: 'bg-[#1E2533] text-[#828DA3]',
     button:
-      'border-slate-200 bg-slate-100 text-slate-700 hover:border-slate-300 hover:bg-slate-200',
-    summary: 'text-slate-700',
+      'border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3B4658] hover:bg-[#2A3242]',
+    summary: 'text-[#D2D9E6]',
   },
   blocked: {
     badge: 'border border-amber-200 bg-amber-50 text-amber-700',
@@ -70,10 +70,10 @@ export function getExecutionStatusButtonClass(
   selected: boolean
 ) {
   return cn(
-    'h-11 rounded-[12px] border bg-white text-sm font-medium text-slate-700 shadow-none',
+    'h-11 rounded-[12px] border bg-[#141925] text-sm font-medium text-[#D2D9E6] shadow-none',
     selected
       ? executionStatusClassMap[status].button
-      : 'border-[#E5E7E9] hover:border-slate-300 hover:bg-slate-50'
+      : 'border-[#2A3242] hover:border-[#3B4658] hover:bg-[#1E2533]'
   )
 }
 
@@ -94,6 +94,6 @@ export function getExecutionTypeBadgeClass(type: string | null | undefined) {
     case 'database':
       return 'border border-teal-200 bg-teal-50 text-teal-700'
     default:
-      return 'border border-slate-200 bg-slate-100 text-slate-700'
+      return 'border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6]'
   }
 }

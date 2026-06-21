@@ -165,7 +165,7 @@ export function ServiceCard({
     >
       <Link
         to={`/services/${service.id}`}
-        className="relative flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-[#E8EAEC] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.2),0_6px_20px_rgba(0,0,0,0.08)] hover:ring-[#015AEB]"
+        className="relative flex flex-col overflow-hidden rounded-2xl bg-[#141925] ring-1 ring-[#2A3242] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.25),0_6px_20px_rgba(0,0,0,0.4)] hover:ring-[#015AEB]"
       >
         {/* Category band — semantic color (Backend=blue, Frontend=green, etc.) */}
         <div
@@ -194,11 +194,11 @@ export function ServiceCard({
               {getMonogram(service.name || '')}
             </div>
             <div className="min-w-0">
-              <h3 className="text-[14px] leading-5 font-semibold tracking-[-0.01em] text-[#0F172A]">
+              <h3 className="text-[14px] leading-5 font-semibold tracking-[-0.01em] text-[#F4F7FC]">
                 {service.name}
               </h3>
               {subtitle && (
-                <p className="mt-0.5 truncate font-mono text-[11px] text-[#94A3B8]">
+                <p className="mt-0.5 truncate font-mono text-[11px] text-[#828DA3]">
                   {subtitle}
                 </p>
               )}
@@ -207,7 +207,7 @@ export function ServiceCard({
 
           {/* Description */}
           {service.description && (
-            <p className="mb-3 line-clamp-2 text-[13px] leading-[1.5] text-[#64748B]">
+            <p className="mb-3 line-clamp-2 text-[13px] leading-[1.5] text-[#828DA3]">
               {service.description}
             </p>
           )}
@@ -222,7 +222,7 @@ export function ServiceCard({
                   style={
                     idx === 0
                       ? { backgroundColor: `${bandColor}14`, color: bandColor }
-                      : { backgroundColor: '#F1F5F9', color: '#475569' }
+                      : { backgroundColor: '#1E2533', color: '#D2D9E6' }
                   }
                 >
                   {chip}
@@ -232,7 +232,7 @@ export function ServiceCard({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="cursor-help rounded-md bg-[#F1F5F9] px-2 py-0.5 text-[11px] text-[#94A3B8]">
+                      <span className="cursor-help rounded-md bg-[#1E2533] px-2 py-0.5 text-[11px] text-[#828DA3]">
                         +{overflowCount}
                       </span>
                     </TooltipTrigger>
@@ -252,7 +252,7 @@ export function ServiceCard({
           )}
 
           {/* Stat tiles */}
-          <div className="mt-4 grid grid-cols-3 gap-1.5 border-t border-[#F1F5F9] pt-3">
+          <div className="mt-4 grid grid-cols-3 gap-1.5 border-t border-[#2A3242] pt-3">
             {[
               { value: endpointCount, label: 'ENDPOINTS' },
               { value: diagramCount, label: 'DIAGRAMS' },
@@ -261,19 +261,19 @@ export function ServiceCard({
               <div
                 key={label}
                 className={cn(
-                  'flex flex-col items-start rounded-lg bg-[#F8FAFC] px-2.5 py-2',
+                  'flex flex-col items-start rounded-lg bg-[#1E2533] px-2.5 py-2',
                   value === 0 && 'opacity-50'
                 )}
               >
                 <span
                   className={cn(
                     'text-[20px] leading-none font-bold tracking-tight tabular-nums',
-                    value > 0 ? 'text-[#0F172A]' : 'text-[#94A3B8]'
+                    value > 0 ? 'text-[#F4F7FC]' : 'text-[#586378]'
                   )}
                 >
                   {statsLoading ? '—' : value}
                 </span>
-                <span className="mt-1.5 text-[9px] font-semibold tracking-widest text-[#94A3B8]">
+                <span className="mt-1.5 text-[9px] font-semibold tracking-widest text-[#828DA3]">
                   {label}
                 </span>
               </div>
@@ -282,7 +282,7 @@ export function ServiceCard({
 
           {/* Date */}
           {updatedDate && (
-            <p className="mt-2 text-right text-[11px] text-[#CBD5E1]">
+            <p className="mt-2 text-right text-[11px] text-[#586378]">
               {format(updatedDate, 'd MMM yyyy')}
             </p>
           )}
@@ -296,11 +296,11 @@ export function ServiceCard({
             size="icon"
             variant="ghost"
             className={cn(
-              'absolute top-4 right-3 h-6 w-6 rounded-md bg-white/90 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white',
+              'absolute top-4 right-3 h-6 w-6 rounded-md bg-[#1E2533]/90 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#1E2533]',
               isDropdownOpen && 'opacity-100'
             )}
           >
-            <MoreVerticalIcon className="h-3.5 w-3.5 text-[#64748B]" />
+            <MoreVerticalIcon className="h-3.5 w-3.5 text-[#828DA3]" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

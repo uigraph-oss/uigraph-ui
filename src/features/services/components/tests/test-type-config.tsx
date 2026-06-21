@@ -60,7 +60,7 @@ const TYPE_CONFIG: Record<Exclude<TestTypeKey, 'all'>, TestTypeConfig> = {
     label: 'Other',
     icon: Braces,
     pillClass:
-      'text-slate-600 border-slate-200 bg-slate-100 dark:text-slate-400 dark:border-slate-700 dark:bg-slate-800/50',
+      'text-[#828DA3] border-[#2A3242] bg-[#1E2533] dark:text-[#586378] dark:border-slate-700 dark:bg-slate-800/50',
   },
 }
 

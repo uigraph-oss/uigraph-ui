@@ -158,15 +158,15 @@ export function DashboardServiceApis() {
           <SectionNotFound plain label="No API groups found" />
         ) : (
           <>
-            <div className="flex flex-wrap items-center gap-3 border-b border-[#F1F5F9] px-6 py-3">
+            <div className="flex flex-wrap items-center gap-3 border-b border-[#2A3242] px-6 py-3">
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search groups..."
-                className="h-8 w-48 rounded-lg border-[#E2E8F0] bg-white text-[13px] shadow-none focus-visible:bg-white"
+                className="h-8 w-48 rounded-lg border-[#2A3242] bg-[#141925] text-[13px] shadow-none focus-visible:bg-[#141925]"
               />
               {protocols.length > 1 && (
-                <div className="flex items-center gap-0.5 rounded-lg bg-[#F8FAFC] p-0.5 ring-1 ring-[#E2E8F0]">
+                <div className="flex items-center gap-0.5 rounded-lg bg-[#1E2533] p-0.5 ring-1 ring-[#2A3242]">
                   <ProtocolPill
                     label="All"
                     active={activeProtocol === null}
@@ -274,7 +274,7 @@ function ProtocolPill({
         'inline-flex h-7 items-center rounded-md px-3 text-[12px] font-medium transition-all duration-150',
         active
           ? 'bg-[#0F172A] text-white'
-          : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]'
+          : 'text-[#828DA3] hover:bg-[#1E2533] hover:text-[#F4F7FC]'
       )}
     >
       {label}

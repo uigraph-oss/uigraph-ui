@@ -50,10 +50,10 @@ export function SchemaUploadSchemaSection({
           {attachedSchema?.ast?.tables.map((table, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between text-sm text-gray-600"
+              className="flex items-center justify-between text-sm text-[#828DA3]"
             >
               <span className="font-mono">{table.name}</span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-[#828DA3]">
                 {table.columns.length} columns
               </span>
             </div>
@@ -65,10 +65,10 @@ export function SchemaUploadSchemaSection({
         <div className="flex flex-col items-center gap-2 text-center">
           <FileText className="h-12 w-12 text-green-600" />
           <div>
-            <p className="font-medium text-gray-900">
+            <p className="font-medium text-[#F4F7FC]">
               {attachedSchema.file.name}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#828DA3]">
               {(attachedSchema.file.size / 1024).toFixed(2)} KB
             </p>
           </div>
@@ -76,7 +76,7 @@ export function SchemaUploadSchemaSection({
             type="button"
             preset="outline"
             onClick={triggerFileSelect}
-            className="bg-white/70"
+            className="bg-white/10"
           >
             Choose Different File
           </Button>

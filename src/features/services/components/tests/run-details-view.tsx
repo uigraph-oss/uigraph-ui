@@ -323,8 +323,8 @@ export function RunDetailsView({
         >
           {stepResults.length > 0 ? (
             <div className="flex w-full flex-col px-6 pb-4">
-              <div className="border-border flex flex-col overflow-hidden rounded-lg border bg-white">
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-white px-4 py-3.5">
+              <div className="border-border flex flex-col overflow-hidden rounded-lg border bg-[#141925]">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-[#141925] px-4 py-3.5">
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                       Type
@@ -408,7 +408,7 @@ export function RunDetailsView({
                 </div>
 
                 <Table>
-                  <TableHeader className="bg-white">
+                  <TableHeader className="bg-[#141925]">
                     <TableRow className="border-b hover:bg-transparent">
                       <TableHead className="text-muted-foreground h-10 pl-4 font-medium">
                         ID
@@ -525,7 +525,7 @@ export function RunDetailsView({
             </div>
           ) : (
             <div className="flex flex-1 flex-col px-6 pt-6">
-              <div className="border-border rounded-xl border bg-white px-6 py-8">
+              <div className="border-border rounded-xl border bg-[#141925] px-6 py-8">
                 <p className="text-muted-foreground text-center text-sm">
                   No test cases found for this run
                 </p>
@@ -546,7 +546,7 @@ export function RunDetailsView({
               <DynamicScrollArea
                 topOffset={200}
                 bottomOffset={16}
-                className="border-border flex h-full min-w-[calc(480px-1.5rem)] shrink-0 flex-col overflow-hidden rounded-lg border bg-white"
+                className="border-border flex h-full min-w-[calc(480px-1.5rem)] shrink-0 flex-col overflow-hidden rounded-lg border bg-[#141925]"
               >
                 <TestCaseDetailsPanel
                   testCase={selectedPanelStep.testCase}
@@ -636,7 +636,7 @@ function TestCaseDetailsPanel({
   const displayStatus = normalizeResultStatus(result?.status)
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-white">
+    <div className="flex h-full min-h-0 flex-col bg-[#141925]">
       <div className="border-border flex shrink-0 items-center justify-between gap-3 border-b px-5 py-3.5">
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">

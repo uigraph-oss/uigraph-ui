@@ -688,7 +688,7 @@ export function TestRunExecutionPage() {
 
   return (
     <div className="bg-shading-gray flex h-full flex-col gap-3 p-3">
-      <div className="border-stock rounded-[12px] border bg-white">
+      <div className="border-stock rounded-[12px] border bg-[#141925]">
         <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-5">
           <div className="flex flex-1 flex-col gap-3">
             <div className="flex flex-wrap items-center gap-3">
@@ -756,7 +756,7 @@ export function TestRunExecutionPage() {
               <Button
                 preset="primary"
                 onClick={() => setIsAbortDialogOpen(true)}
-                className="border border-amber-200 bg-white text-amber-700 hover:bg-amber-50"
+                className="border border-amber-200 bg-[#141925] text-amber-700 hover:bg-amber-50"
               >
                 <FiStopCircle className="h-4 w-4" />
                 Abort Run
@@ -776,7 +776,7 @@ export function TestRunExecutionPage() {
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden rounded-[12px] border border-[#E5E7E9] bg-white">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#141925]">
         {testCases.length === 0 ? (
           <div className="flex h-full items-center justify-center p-6">
             <div className="text-center">
@@ -790,9 +790,9 @@ export function TestRunExecutionPage() {
           </div>
         ) : (
           <div className="flex h-full min-h-0">
-            <div className="bg-shading-gray/45 border-r border-[#E5E7E9]">
+            <div className="bg-shading-gray/45 border-r border-[#2A3242]">
               <div className="flex h-full w-72 shrink-0 flex-col">
-                <div className="border-b border-[#E5E7E9] px-5 py-4">
+                <div className="border-b border-[#2A3242] px-5 py-4">
                   <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                     Test Cases
                   </p>
@@ -818,8 +818,8 @@ export function TestRunExecutionPage() {
                         onClick={() => setSelectedIndex(index)}
                         className={
                           isActive
-                            ? 'relative mb-2 flex w-full items-start gap-3 rounded-[12px] bg-[#F7FAFF] px-3 py-3 text-left ring-1 ring-[#8DB4FF] transition-all duration-200 ease-out'
-                            : 'relative mb-2 flex w-full items-start gap-3 rounded-[12px] bg-transparent px-3 py-3 text-left transition-all duration-200 ease-out hover:bg-white hover:ring-1 hover:ring-[#E5E7E9]'
+                            ? 'relative mb-2 flex w-full items-start gap-3 rounded-[12px] bg-[#1E2533] px-3 py-3 text-left ring-1 ring-[#8DB4FF] transition-all duration-200 ease-out'
+                            : 'relative mb-2 flex w-full items-start gap-3 rounded-[12px] bg-transparent px-3 py-3 text-left transition-all duration-200 ease-out hover:bg-[#141925] hover:ring-1 hover:ring-[#2A3242]'
                         }
                       >
                         <div
@@ -832,10 +832,10 @@ export function TestRunExecutionPage() {
                                 : status === 'blocked'
                                   ? 'bg-amber-100 text-amber-700'
                                   : status === 'skipped'
-                                    ? 'bg-slate-200 text-slate-700'
+                                    ? 'bg-[#2A3242] text-[#D2D9E6]'
                                     : isActive
                                       ? 'bg-primary/12 text-primary'
-                                      : 'text-muted-foreground border border-[#E5E7E9] bg-white'
+                                      : 'text-muted-foreground border border-[#2A3242] bg-[#141925]'
                           )}
                         >
                           {stepNum}
@@ -889,7 +889,7 @@ export function TestRunExecutionPage() {
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col">
-              <div className="border-b border-[#E5E7E9] bg-white px-6 py-4">
+              <div className="border-b border-[#2A3242] bg-[#141925] px-6 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
                     <div
@@ -899,7 +899,7 @@ export function TestRunExecutionPage() {
                           : selectedDisplayStatus === 'failed'
                             ? 'bg-red-100 text-red-700'
                             : selectedDisplayStatus === 'skipped'
-                              ? 'bg-slate-200 text-slate-700'
+                              ? 'bg-[#2A3242] text-[#D2D9E6]'
                               : selectedDisplayStatus === 'blocked'
                                 ? 'bg-amber-100 text-amber-700'
                                 : 'bg-primary/12 text-primary'
@@ -951,7 +951,7 @@ export function TestRunExecutionPage() {
                                   ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
                                   : selectedDisplayStatus === 'blocked'
                                     ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
-                                    : 'rounded-full border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700'
+                                    : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                             }
                           >
                             {selectedDisplayStatus.toUpperCase()}
@@ -992,7 +992,7 @@ export function TestRunExecutionPage() {
               <div className="bg-shading-gray/45 flex min-h-0 flex-1 gap-3 p-3">
                 <div
                   ref={definitionPanelRef}
-                  className="min-h-0 w-[47%] shrink-0 overflow-y-auto rounded-[12px] border border-[#E5E7E9] bg-[#F9FBFC] p-5"
+                  className="min-h-0 w-[47%] shrink-0 overflow-y-auto rounded-[12px] border border-[#2A3242] bg-[#141925] p-5"
                 >
                   {selectedTestCase && (
                     <TestRunExecutionDefinitionPanel
@@ -1003,7 +1003,7 @@ export function TestRunExecutionPage() {
 
                 <div
                   ref={recordPanelRef}
-                  className="min-h-0 min-w-0 flex-1 overflow-y-auto rounded-[12px] border border-[#E5E7E9] bg-white p-5"
+                  className="min-h-0 min-w-0 flex-1 overflow-y-auto rounded-[12px] border border-[#2A3242] bg-[#141925] p-5"
                 >
                   <p className="text-muted-foreground mb-4 text-xs font-medium tracking-wide uppercase">
                     Record Result
@@ -1050,7 +1050,7 @@ export function TestRunExecutionPage() {
       </div>
 
       {testCases.length > 0 && (
-        <div className="border-stock sticky bottom-0 rounded-[12px] border bg-white px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+        <div className="border-stock sticky bottom-0 rounded-[12px] border bg-[#141925] px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
           <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-muted-foreground font-medium">
@@ -1067,14 +1067,14 @@ export function TestRunExecutionPage() {
               <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
                 Failed: {summary.failed}
               </span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+              <span className="rounded-full bg-[#1E2533] px-2.5 py-1 text-xs font-medium text-[#D2D9E6]">
                 Skipped: {summary.skipped}
               </span>
               <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
                 Blocked: {summary.blocked}
               </span>
               {summary.remaining > 0 && (
-                <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-[#E5E7E9]">
+                <span className="rounded-full bg-[#141925] px-2.5 py-1 text-xs font-medium text-[#828DA3] ring-1 ring-[#2A3242]">
                   Remaining: {summary.remaining}
                 </span>
               )}

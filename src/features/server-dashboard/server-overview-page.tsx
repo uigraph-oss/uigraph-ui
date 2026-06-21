@@ -46,9 +46,9 @@ export function ServerOverviewPage() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-[12px] border border-[#E5E7E9] px-6 py-6">
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold text-gray-800">{value}</p>
+    <div className="rounded-[12px] border border-[#2A3242] px-6 py-6">
+      <p className="text-sm font-medium text-[#828DA3]">{label}</p>
+      <p className="mt-2 text-3xl font-semibold text-[#F4F7FC]">{value}</p>
     </div>
   )
 }

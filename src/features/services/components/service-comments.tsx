@@ -67,7 +67,7 @@ export function ServiceComments({}: ServiceCommentsProps) {
       case 'job':
         return 'bg-orange-100 text-orange-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-[#1E2533] text-[#F4F7FC]'
     }
   }
 
@@ -137,7 +137,7 @@ export function ServiceComments({}: ServiceCommentsProps) {
               {filteredComments.map((comment) => (
                 <div
                   key={comment.id}
-                  className={`cursor-pointer border-b border-gray-200 p-4 hover:bg-gray-50 ${
+                  className={`cursor-pointer border-b border-[#2A3242] p-4 hover:bg-[#1E2533] ${
                     selectedComment?.id === comment.id
                       ? 'border-blue-200 bg-blue-50'
                       : ''
@@ -161,10 +161,10 @@ export function ServiceComments({}: ServiceCommentsProps) {
                           </Badge>
                         )}
                       </div>
-                      <p className="mb-2 line-clamp-2 text-sm text-gray-900">
+                      <p className="mb-2 line-clamp-2 text-sm text-[#F4F7FC]">
                         {comment.content}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-2 text-xs text-[#828DA3]">
                         <UserIcon className="h-3 w-3" />
                         <span>{comment.author}</span>
                         <span>•</span>
@@ -198,7 +198,7 @@ export function ServiceComments({}: ServiceCommentsProps) {
             </div>
             <div className="space-y-4 px-6">
               {/* Main Comment */}
-              <div className="rounded-lg border border-gray-200 p-3">
+              <div className="rounded-lg border border-[#2A3242] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <Badge
                     className={getTargetTypeColor(selectedComment.targetType)}
@@ -209,10 +209,10 @@ export function ServiceComments({}: ServiceCommentsProps) {
                     {selectedComment.resolved ? 'Resolved' : 'Unresolved'}
                   </Badge>
                 </div>
-                <p className="mb-2 text-sm text-gray-900">
+                <p className="mb-2 text-sm text-[#F4F7FC]">
                   {selectedComment.content}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-[#828DA3]">
                   <UserIcon className="h-3 w-3" />
                   <span>{selectedComment.author}</span>
                   <span>•</span>
@@ -230,12 +230,12 @@ export function ServiceComments({}: ServiceCommentsProps) {
                     {selectedComment.replies.map((reply) => (
                       <div
                         key={reply.id}
-                        className="border-l-2 border-gray-200 pl-3"
+                        className="border-l-2 border-[#2A3242] pl-3"
                       >
-                        <p className="mb-1 text-sm text-gray-900">
+                        <p className="mb-1 text-sm text-[#F4F7FC]">
                           {reply.content}
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-2 text-xs text-[#828DA3]">
                           <UserIcon className="h-3 w-3" />
                           <span>{reply.author}</span>
                           <span>•</span>

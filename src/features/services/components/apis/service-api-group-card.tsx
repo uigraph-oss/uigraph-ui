@@ -120,11 +120,11 @@ export function ServiceApiEndpointGroupCard({
       <div
         onClick={handleCardClick}
         key={group.serviceApiGroupId}
-        className="h-full cursor-pointer overflow-hidden rounded-[16px] bg-white ring-1 ring-[#E5E7E9] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.2),0_6px_20px_rgba(0,0,0,0.08)] hover:ring-[#015AEB]"
+        className="h-full cursor-pointer overflow-hidden rounded-[16px] bg-[#141925] ring-1 ring-[#2A3242] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.2),0_6px_20px_rgba(0,0,0,0.08)] hover:ring-[#015AEB]"
       >
         <div className="p-5">
           <div className="mb-3 flex items-start justify-between gap-2 pr-6">
-            <h3 className="text-[14px] leading-snug font-semibold tracking-tight text-[#0F172A]">
+            <h3 className="text-[14px] leading-snug font-semibold tracking-tight text-[#F4F7FC]">
               {group.name ?? group.version ?? '—'}
             </h3>
             {protocol && (
@@ -138,7 +138,7 @@ export function ServiceApiEndpointGroupCard({
           </div>
 
           {group.updatedAt && (
-            <p className="text-[12px] text-[#94A3B8]">
+            <p className="text-[12px] text-[#828DA3]">
               Updated{' '}
               {formatDistanceToNow(new Date(group.updatedAt), {
                 addSuffix: true,
@@ -147,14 +147,14 @@ export function ServiceApiEndpointGroupCard({
           )}
 
           {availableFiles.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[#F1F5F9] pt-3">
+            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[#2A3242] pt-3">
               {availableFiles.map((file) => (
                 <div
                   key={file.label}
-                  className="flex items-center gap-1 rounded-md bg-[#F8FAFC] px-2 py-1 ring-1 ring-[#E2E8F0]"
+                  className="flex items-center gap-1 rounded-md bg-[#1E2533] px-2 py-1 ring-1 ring-[#2A3242]"
                 >
                   {file.icon}
-                  <span className="text-[11px] font-medium text-[#64748B]">
+                  <span className="text-[11px] font-medium text-[#828DA3]">
                     {file.label}
                   </span>
                 </div>
@@ -163,7 +163,7 @@ export function ServiceApiEndpointGroupCard({
           )}
 
           {!protocol && availableFiles.length === 0 && (
-            <p className="mt-4 text-[12px] text-[#CBD5E1]">
+            <p className="mt-4 text-[12px] text-[#586378]">
               No files configured
             </p>
           )}
@@ -183,7 +183,7 @@ export function ServiceApiEndpointGroupCard({
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="bg-white">
+        <DropdownMenuContent align="end" className="bg-[#141925]">
           <DropdownMenuItem onClick={() => setIsUpdateModalOpen(true)}>
             Edit
           </DropdownMenuItem>

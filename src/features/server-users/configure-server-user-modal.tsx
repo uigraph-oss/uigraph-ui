@@ -64,9 +64,9 @@ function FieldError({ message }: { message?: string }) {
 }
 
 const inputClassName =
-  'h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6'
+  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6'
 const selectTriggerClassName =
-  '!h-[56px] !w-full rounded-[16px] border border-[#E5E7E9] bg-white px-4 capitalize'
+  '!h-[56px] !w-full rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-4 capitalize'
 
 function RoleField({
   value,
@@ -116,7 +116,7 @@ function CreateServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">Name</Label>
+              <Label className="text-sm font-medium text-[#D2D9E6]">Name</Label>
               <Input
                 {...field}
                 placeholder="Enter full name"
@@ -133,7 +133,7 @@ function CreateServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">
+              <Label className="text-sm font-medium text-[#D2D9E6]">
                 Email Address
               </Label>
               <Input
@@ -152,7 +152,7 @@ function CreateServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">
+              <Label className="text-sm font-medium text-[#D2D9E6]">
                 Password
               </Label>
               <Input
@@ -172,7 +172,7 @@ function CreateServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">Role</Label>
+              <Label className="text-sm font-medium text-[#D2D9E6]">Role</Label>
               <RoleField value={field.value} onChange={field.onChange} />
               <FieldError message={form.formState.errors.role?.message} />
             </div>
@@ -210,7 +210,7 @@ function EditServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">
+              <Label className="text-sm font-medium text-[#D2D9E6]">
                 Email Address
               </Label>
               <Input
@@ -228,7 +228,7 @@ function EditServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">Name</Label>
+              <Label className="text-sm font-medium text-[#D2D9E6]">Name</Label>
               <Input
                 {...field}
                 placeholder="Enter full name"
@@ -245,7 +245,7 @@ function EditServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">Role</Label>
+              <Label className="text-sm font-medium text-[#D2D9E6]">Role</Label>
               <RoleField value={field.value} onChange={field.onChange} />
               <FieldError message={form.formState.errors.role?.message} />
             </div>
@@ -257,7 +257,7 @@ function EditServerUserModal({
           control={form.control}
           render={({ field }) => (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111110]">
+              <Label className="text-sm font-medium text-[#D2D9E6]">
                 Status
               </Label>
               <Select

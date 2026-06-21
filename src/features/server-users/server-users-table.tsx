@@ -38,14 +38,14 @@ function ServerUserRowActions({
     <div className="flex items-center gap-[10px]">
       <button
         disabled={isSelf}
-        className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-400"
+        className="text-sm text-blue-600 transition-colors hover:text-blue-700 disabled:cursor-not-allowed disabled:text-[#586378]"
         onClick={() => onEdit(user)}
       >
         Edit
       </button>
       <button
         disabled={isSelf}
-        className="flex size-8 items-center justify-center rounded-md border border-red-200 text-red-600 transition-colors hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:bg-transparent"
+        className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:border-[#2A3242] disabled:text-[#586378] disabled:hover:border-[#2A3242] disabled:hover:bg-transparent"
         onClick={() => onDelete(user)}
       >
         <Trash2 className="size-4" />
@@ -76,18 +76,18 @@ function buildColumns(
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
-            <AvatarFallback className="bg-blue-100 text-xs font-medium text-blue-700">
+            <AvatarFallback className="bg-blue-500/20 text-xs font-medium text-blue-300">
               {getInitials(row.original.name || row.original.email)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-gray-700">{row.original.name}</span>
+          <span className="text-[#F4F7FC]">{row.original.name}</span>
         </div>
       ),
     }),
     columnHelper.accessor('email', {
       header: 'Email',
       cell: ({ getValue }) => (
-        <span className="text-sm text-gray-700">{getValue()}</span>
+        <span className="text-sm text-[#828DA3]">{getValue()}</span>
       ),
     }),
     columnHelper.accessor('role', {
@@ -95,7 +95,7 @@ function buildColumns(
       cell: ({ getValue }) => (
         <Badge
           variant="secondary"
-          className="h-6 rounded-md border border-gray-200 bg-gray-50 px-2.5 text-xs font-medium text-gray-700"
+          className="h-6 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 text-xs font-medium text-[#D2D9E6]"
         >
           {getValue() === 'server_admin' ? 'Server Admin' : 'User'}
         </Badge>
@@ -109,7 +109,7 @@ function buildColumns(
           return (
             <Badge
               variant="secondary"
-              className="h-6 rounded-md border border-gray-200 bg-gray-50 px-2.5 text-xs font-medium text-gray-700"
+              className="h-6 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 text-xs font-medium text-[#D2D9E6]"
             >
               Disabled
             </Badge>
@@ -118,7 +118,7 @@ function buildColumns(
         return (
           <Badge
             variant="secondary"
-            className="h-6 rounded-md border border-green-200 bg-green-50 px-2.5 text-xs font-medium text-green-700"
+            className="h-6 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 text-xs font-medium text-green-400"
           >
             Active
           </Badge>
@@ -165,7 +165,7 @@ export function ServerUsersTable({
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className="px-6 py-4 text-left text-xs font-medium tracking-tight text-gray-500"
+                className="px-6 py-4 text-left text-xs font-medium tracking-tight text-[#828DA3]"
               >
                 {header.isPlaceholder
                   ? null
@@ -193,7 +193,7 @@ export function ServerUsersTable({
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="group border-b border-gray-100 transition-colors hover:bg-gray-50"
+            className="group border-b border-[#2A3242] transition-colors hover:bg-[#1E2533]"
           >
             {row.getVisibleCells().map((cell) => {
               const cellClassName =

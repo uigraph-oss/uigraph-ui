@@ -434,10 +434,10 @@ export function ServiceApiEndpoints() {
 
   return (
     <div className="flex h-[calc(100vh-310px)] flex-col">
-      <div className="border-stock space-y-3 border-b bg-[#fafbfc] p-4 shadow-xs">
+      <div className="border-stock space-y-3 border-b bg-[#141925] p-4 shadow-xs">
         <div className="flex items-center justify-between gap-3">
           <div className="relative max-w-md flex-1">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#828DA3]" />
             <Input
               id="endpoint-search"
               placeholder={
@@ -449,7 +449,7 @@ export function ServiceApiEndpoints() {
               }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-stock h-11! !rounded-[0.8rem] bg-white pl-10 shadow-none"
+              className="border-stock h-11! !rounded-[0.8rem] bg-[#141925] pl-10 shadow-none"
               aria-label={
                 isGraphQL
                   ? 'Search operations'
@@ -466,8 +466,11 @@ export function ServiceApiEndpoints() {
                 value={operationTypeFilter}
                 onValueChange={setOperationTypeFilter}
               >
-                <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-white! shadow-none">
-                  <SelectValue placeholder="All Types" className="bg-white" />
+                <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
+                  <SelectValue
+                    placeholder="All Types"
+                    className="bg-[#141925]"
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
@@ -479,8 +482,11 @@ export function ServiceApiEndpoints() {
             ) : isGrpc ? null : (
               <>
                 <Select value={methodFilter} onValueChange={setMethodFilter}>
-                  <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-white! shadow-none">
-                    <SelectValue placeholder="Method" className="bg-white" />
+                  <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
+                    <SelectValue
+                      placeholder="Method"
+                      className="bg-[#141925]"
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Methods</SelectItem>
@@ -494,8 +500,11 @@ export function ServiceApiEndpoints() {
 
                 {openApiRuntime.hasSecuritySchemes && (
                   <Select value={authFilter} onValueChange={setAuthFilter}>
-                    <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-white! shadow-none">
-                      <SelectValue placeholder="Auth" className="bg-white" />
+                    <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
+                      <SelectValue
+                        placeholder="Auth"
+                        className="bg-[#141925]"
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Auth</SelectItem>
@@ -512,8 +521,11 @@ export function ServiceApiEndpoints() {
                   value={groupBy}
                   onValueChange={(value) => setGroupBy(value as GroupByKind)}
                 >
-                  <SelectTrigger className="border-stock h-11! w-[160px] !rounded-[0.8rem] bg-white! shadow-none">
-                    <SelectValue placeholder="Group by" className="bg-white" />
+                  <SelectTrigger className="border-stock h-11! w-[160px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
+                    <SelectValue
+                      placeholder="Group by"
+                      className="bg-[#141925]"
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="tags">Group by: Tags</SelectItem>
@@ -527,13 +539,13 @@ export function ServiceApiEndpoints() {
       </div>
 
       {!isGraphQL && !isGrpc && (
-        <div className="border-stock border-b bg-[#F9FAFB] px-6 py-2">
+        <div className="border-stock border-b bg-[#1E2533] px-6 py-2">
           <div className="flex items-center justify-between gap-2 text-xs">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
-                <p className="text-[#6B7280]">
+                <p className="text-[#828DA3]">
                   Base URL:{' '}
-                  <span className="font-mono font-medium text-[#111827]">
+                  <span className="font-mono font-medium text-[#F4F7FC]">
                     {baseUrl || 'Unavailable'}
                   </span>
                 </p>
@@ -544,7 +556,7 @@ export function ServiceApiEndpoints() {
                 )}
               </div>
               {openApiRuntime.defaultServer?.url && (
-                <p className="text-[11px] text-[#6B7280]">
+                <p className="text-[11px] text-[#828DA3]">
                   Template:{' '}
                   <span className="font-mono">
                     {openApiRuntime.defaultServer.url}
@@ -577,7 +589,7 @@ export function ServiceApiEndpoints() {
             {filteredGraphQLOperations.length === 0 ? (
               <div className="flex h-[400px] items-center justify-center text-center">
                 <div>
-                  <p className="mb-2 text-sm text-[#6B7280]">
+                  <p className="mb-2 text-sm text-[#828DA3]">
                     No operations match these filters
                   </p>
                   <Button
@@ -593,7 +605,7 @@ export function ServiceApiEndpoints() {
                 </div>
               </div>
             ) : (
-              <div className="h-full rounded-lg border bg-white p-1">
+              <div className="h-full rounded-lg border bg-[#141925] p-1">
                 <Table>
                   <TableBody>
                     {filteredGraphQLOperations.map((operation) => (
@@ -647,7 +659,7 @@ export function ServiceApiEndpoints() {
             {groupedGrpcMethods.length === 0 ? (
               <div className="flex h-[400px] items-center justify-center text-center">
                 <div>
-                  <p className="mb-2 text-sm text-[#6B7280]">
+                  <p className="mb-2 text-sm text-[#828DA3]">
                     No methods match these filters
                   </p>
                   <Button
@@ -665,10 +677,10 @@ export function ServiceApiEndpoints() {
               <div className="h-full space-y-6">
                 {groupedGrpcMethods.map(({ serviceKey, methods }) => (
                   <div key={serviceKey} className="space-y-2">
-                    <h3 className="px-2 text-sm font-semibold text-[#0B1220]">
+                    <h3 className="px-2 text-sm font-semibold text-[#F4F7FC]">
                       {serviceKey}
                     </h3>
-                    <div className="rounded-lg border bg-white p-1">
+                    <div className="rounded-lg border bg-[#141925] p-1">
                       <Table>
                         <TableBody>
                           {methods.map((method) => (
@@ -726,7 +738,7 @@ export function ServiceApiEndpoints() {
             {filteredRestEndpoints.length === 0 ? (
               <div className="flex h-[400px] items-center justify-center text-center">
                 <div>
-                  <p className="mb-2 text-sm text-[#6B7280]">
+                  <p className="mb-2 text-sm text-[#828DA3]">
                     No endpoints match these filters
                   </p>
                   <Button
@@ -751,7 +763,7 @@ export function ServiceApiEndpoints() {
                         {group.group}
                       </h3>
                     )}
-                    <div className="space-y-1 rounded-lg border bg-white p-1">
+                    <div className="space-y-1 rounded-lg border bg-[#141925] p-1">
                       {group.endpoints.map((endpoint) => (
                         <RestEndpointRow
                           key={endpoint.endpointId}
@@ -839,7 +851,7 @@ function RestEndpointRow({
       className={`group flex cursor-pointer items-start justify-between rounded-md border px-3 py-2.5 transition-colors ${
         selected
           ? 'border-blue-300 bg-blue-50/60'
-          : 'border-transparent hover:bg-slate-50'
+          : 'border-transparent hover:bg-[#1E2533]'
       }`}
     >
       <div className="flex min-w-0 items-start gap-3">
@@ -852,7 +864,7 @@ function RestEndpointRow({
           {endpoint.method}
         </Badge>
         <div className="min-w-0">
-          <div className="truncate font-mono text-sm font-semibold text-[#111827]">
+          <div className="truncate font-mono text-sm font-semibold text-[#F4F7FC]">
             {endpoint.path}
           </div>
           {endpoint.summary && (
@@ -1038,9 +1050,9 @@ function EndpointDetailsPanel({
     <DynamicScrollArea
       topOffset={164}
       bottomOffset={12}
-      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-white"
+      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-[#141925]"
     >
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-4 py-3">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-[#141925] px-4 py-3">
         <div className="flex flex-col gap-1">
           <h3 className="font-mono text-sm font-semibold">
             {endpoint.method} {endpoint.path}
@@ -1082,7 +1094,7 @@ function EndpointDetailsPanel({
               <h4 className="mb-1 text-xs font-semibold tracking-wide uppercase">
                 Auth requirement
               </h4>
-              <p className="text-sm text-[#374151]">
+              <p className="text-sm text-[#D2D9E6]">
                 {authLabel(endpoint.auth)}
               </p>
             </section>
@@ -1170,7 +1182,7 @@ function EndpointDetailsPanel({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t bg-white px-4 py-3">
+      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
         {activeTab === 'meta' ? (
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -1246,9 +1258,9 @@ function GraphQLOperationDetailsPanel({
     <DynamicScrollArea
       topOffset={164}
       bottomOffset={12}
-      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-white"
+      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-[#141925]"
     >
-      <div className="sticky top-0 z-10 border-b bg-white px-4 py-3">
+      <div className="sticky top-0 z-10 border-b bg-[#141925] px-4 py-3">
         <div className="mb-1 flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="flex min-w-0 items-center gap-2">
@@ -1312,7 +1324,7 @@ function GraphQLOperationDetailsPanel({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t bg-white px-4 py-3">
+      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
         {activeTab === 'meta' ? (
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -1405,9 +1417,9 @@ function GrpcMethodDetailsPanel({
     <DynamicScrollArea
       topOffset={164}
       bottomOffset={12}
-      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-white"
+      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-[#141925]"
     >
-      <div className="sticky top-0 z-10 border-b bg-white px-4 py-3">
+      <div className="sticky top-0 z-10 border-b bg-[#141925] px-4 py-3">
         <div className="mb-1 flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="flex min-w-0 items-center gap-2">
@@ -1469,7 +1481,7 @@ function GrpcMethodDetailsPanel({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t bg-white px-4 py-3">
+      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
         {activeTab === 'meta' ? (
           <div className="flex items-center justify-end gap-2">
             <Button

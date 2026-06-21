@@ -116,7 +116,7 @@ function DataTableCompareSide({ selectedVersion }: DiagramCompareSideProps) {
 
   return (
     <>
-      <h3 className="px-6 py-2 text-right text-[1.385rem] font-semibold text-[#161616]">
+      <h3 className="px-6 py-2 text-right text-[1.385rem] font-semibold text-[#F4F7FC]">
         Tables
       </h3>
 

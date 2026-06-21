@@ -34,10 +34,10 @@ function ManualContentField({
         return (
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <Label className="text-sm font-normal text-[#111110]">
+              <Label className="text-sm font-normal text-[#F4F7FC]">
                 {label}
               </Label>
-              <label className="flex items-center text-xs font-medium text-[#64748b]">
+              <label className="flex items-center text-xs font-medium text-[#828DA3]">
                 <span>{richTextEnabled ? 'Rich Text' : 'Textarea'}</span>
 
                 <CustomSwitch
@@ -55,7 +55,7 @@ function ManualContentField({
             </div>
 
             {richTextEnabled ? (
-              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-white p-2">
+              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-[#141925] p-2">
                 <RichTextEditor
                   value={toDelta(field.value)}
                   setValue={(delta) =>
@@ -67,7 +67,7 @@ function ManualContentField({
               <Textarea
                 value={field.value ?? ''}
                 onChange={(event) => field.onChange(event.target.value)}
-                className="min-h-32 rounded-[16px] border border-[#E5E7E9] bg-white px-6 py-4"
+                className="min-h-32 rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 py-4"
               />
             )}
 
@@ -84,20 +84,20 @@ export function FormManualSection({ form }: { form: FormType }) {
     <>
       <div className="flex items-center gap-2 py-[12px] pb-1">
         <span className="text-[18px]">✦</span>
-        <span className="text-[13px] font-bold text-[#1e293b]">
+        <span className="text-[13px] font-bold text-[#F4F7FC]">
           Manual Fields
         </span>
-        <span className="text-xs text-[#94a3b8]">
+        <span className="text-xs text-[#828DA3]">
           - Human-executed step-by-step test
         </span>
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Preconditions & Setup
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
       <div className="mb-3.5">
         <ManualContentField
@@ -106,7 +106,7 @@ export function FormManualSection({ form }: { form: FormType }) {
           label={
             <>
               Preconditions{' '}
-              <span className="text-xs text-[#94a3b8]">(optional)</span>
+              <span className="text-xs text-[#828DA3]">(optional)</span>
             </>
           }
         />
@@ -118,18 +118,18 @@ export function FormManualSection({ form }: { form: FormType }) {
           label={
             <>
               Test Data Required{' '}
-              <span className="text-xs text-[#94a3b8]">(optional)</span>
+              <span className="text-xs text-[#828DA3]">(optional)</span>
             </>
           }
         />
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Test Steps
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3 flex gap-2 rounded-[8px] border border-[#1A56DB40] bg-[#1A56DB18] px-3 py-2.5">
@@ -142,14 +142,14 @@ export function FormManualSection({ form }: { form: FormType }) {
       {(form.watch('steps') ?? []).map((step, index) => (
         <div
           key={index}
-          className="mb-2 rounded-[10px] border border-[#e2e8f0] bg-[#f8fafc] p-3"
+          className="mb-2 rounded-[10px] border border-[#2A3242] bg-[#1E2533] p-3"
         >
           <div className="mb-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="flex h-[22px] w-[22px] items-center justify-center rounded-[6px] bg-[#1A56DB] text-[11px] font-bold text-white">
                 {index + 1}
               </div>
-              <span className="text-xs font-semibold text-[#64748b]">
+              <span className="text-xs font-semibold text-[#828DA3]">
                 Step {index + 1}
               </span>
             </div>
@@ -163,13 +163,13 @@ export function FormManualSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto border-none bg-transparent p-0 text-[16px] text-[#94a3b8] hover:bg-transparent"
+              className="h-auto border-none bg-transparent p-0 text-[16px] text-[#828DA3] hover:bg-transparent"
             >
               ×
             </Button>
           </div>
           <div className="mb-2">
-            <Label className="mb-2 text-sm font-normal text-[#111110]">
+            <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
               Action
             </Label>
             <Textarea
@@ -185,14 +185,14 @@ export function FormManualSection({ form }: { form: FormType }) {
                 )
               }}
               rows={2}
-              className="rounded-[16px] border border-[#E5E7E9] bg-white px-6 py-4"
+              className="rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 py-4"
             />
             <FieldMessage />
           </div>
           <div>
-            <Label className="mb-2 text-sm font-normal text-[#111110]">
+            <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
               Expected result for this step{' '}
-              <span className="text-xs text-[#94a3b8]">(optional)</span>
+              <span className="text-xs text-[#828DA3]">(optional)</span>
             </Label>
             <Input
               placeholder="What should happen immediately after?"
@@ -208,7 +208,7 @@ export function FormManualSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <FieldMessage />
           </div>
@@ -225,17 +225,17 @@ export function FormManualSection({ form }: { form: FormType }) {
             { shouldDirty: true, shouldValidate: true }
           )
         }}
-        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#e2e8f0] bg-transparent px-3 py-2 text-xs text-[#64748b] hover:bg-transparent"
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#2A3242] bg-transparent px-3 py-2 text-xs text-[#828DA3] hover:bg-transparent"
       >
         + Add Step
       </Button>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Outcome & Cleanup
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3.5">
@@ -245,7 +245,7 @@ export function FormManualSection({ form }: { form: FormType }) {
           label={
             <>
               Overall Expected Outcome{' '}
-              <span className="text-xs text-[#94a3b8]">(optional)</span>
+              <span className="text-xs text-[#828DA3]">(optional)</span>
             </>
           }
         />
@@ -258,7 +258,7 @@ export function FormManualSection({ form }: { form: FormType }) {
           label={
             <>
               Postconditions / Cleanup{' '}
-              <span className="text-xs text-[#94a3b8]">(optional)</span>
+              <span className="text-xs text-[#828DA3]">(optional)</span>
             </>
           }
         />

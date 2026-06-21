@@ -113,7 +113,7 @@ function DocCardThumbnail({
     return (
       <div className="relative h-full w-full overflow-hidden">
         <div
-          className="pointer-events-none absolute top-0 left-0 bg-white p-4 text-left"
+          className="pointer-events-none absolute top-0 left-0 bg-[#141925] p-4 text-left"
           style={{
             width: '400%',
             height: '400%',
@@ -187,7 +187,7 @@ export function ServiceDocCard({
     ) {
       return 'bg-orange-100 text-orange-700 border-orange-200'
     }
-    return 'bg-gray-100 text-gray-700 border-gray-200'
+    return 'bg-[#1E2533] text-[#D2D9E6] border-[#2A3242]'
   }
 
   function handleDownload() {
@@ -225,13 +225,13 @@ export function ServiceDocCard({
       <div className="group relative">
         <div
           className={cn(
-            'relative cursor-pointer overflow-hidden rounded-[1.4525rem] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#E2E4E6] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]',
+            'relative cursor-pointer overflow-hidden rounded-[1.4525rem] bg-[#141925] shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#2A3242] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]',
             !serviceDoc.fileURL && 'cursor-default opacity-60'
           )}
           onClick={serviceDoc.fileURL ? handleClick : undefined}
         >
           {/* Preview area */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EDEEF1] transition-colors duration-300 group-hover:bg-[#E5E7EA]">
+          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1E2533] transition-colors duration-300 group-hover:bg-[#1E2533]">
             <DocCardThumbnail
               fileURL={serviceDoc.fileURL}
               fileType={serviceDoc.fileType}
@@ -244,10 +244,10 @@ export function ServiceDocCard({
             />
           </div>
 
-          <div className="h-px bg-[#EBEBED]" />
+          <div className="h-px bg-[#1E2533]" />
 
           <div className="px-4 py-3">
-            <h4 className="line-clamp-1 text-sm font-semibold text-[#111111]">
+            <h4 className="line-clamp-1 text-sm font-semibold text-[#F4F7FC]">
               {serviceDoc.fileName || 'Untitled Document'}
             </h4>
 
@@ -265,7 +265,7 @@ export function ServiceDocCard({
               </span>
 
               {serviceDoc.updatedAt && (
-                <div className="flex items-center gap-1.5 text-[#B4B4B6]">
+                <div className="flex items-center gap-1.5 text-[#828DA3]">
                   <Calendar className="h-3 w-3 shrink-0" />
                   <span className="text-[11px]">
                     {format(new Date(serviceDoc.updatedAt), 'dd MMM yyyy')}
@@ -282,7 +282,7 @@ export function ServiceDocCard({
               size="icon"
               variant="ghost"
               className={cn(
-                'absolute top-2 right-2 h-7 w-7 rounded-lg bg-white/70 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-white',
+                'absolute top-2 right-2 h-7 w-7 rounded-lg bg-[#1E2533]/80 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#141925]',
                 isDropdownOpen && 'opacity-100'
               )}
             >

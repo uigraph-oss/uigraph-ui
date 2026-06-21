@@ -21,23 +21,23 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
     <>
       <div className="flex items-center gap-2 py-[12px] pb-1">
         <span className="text-[18px]">◈</span>
-        <span className="text-[13px] font-bold text-[#1e293b]">
+        <span className="text-[13px] font-bold text-[#F4F7FC]">
           GraphQL Fields
         </span>
-        <span className="text-xs text-[#94a3b8]">- Query or mutation test</span>
+        <span className="text-xs text-[#828DA3]">- Query or mutation test</span>
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Operation
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3.5 grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Operation Type <span className="text-red-500">*</span>
           </Label>
           <Controller
@@ -55,7 +55,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
                   value={field.value ?? ''}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6">
+                  <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -74,9 +74,9 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
           />
         </div>
         <div>
-          <Label className="mb-2 text-sm font-normal text-[#111110]">
+          <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
             Operation Name{' '}
-            <span className="text-xs text-[#94a3b8]">(optional)</span>
+            <span className="text-xs text-[#828DA3]">(optional)</span>
           </Label>
           <Controller
             name="gqlName"
@@ -87,7 +87,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
                   placeholder="GetUserProfile"
                   value={field.value ?? ''}
                   onChange={field.onChange}
-                  className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
                 />
                 <FieldMessage message={fieldState.error?.message} />
               </>
@@ -97,7 +97,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Query / Mutation <span className="text-red-500">*</span>
         </Label>
         <Controller
@@ -111,7 +111,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
           }}
           render={({ field, fieldState }) => (
             <>
-              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-white">
+              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-[#141925]">
                 <CodeMirrorWrapped
                   height="11rem"
                   value={field.value ?? ''}
@@ -129,15 +129,15 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
-          Variables <span className="text-xs text-[#94a3b8]">(optional)</span>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
+          Variables <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         <Controller
           name="gqlVariables"
           control={form.control}
           render={({ field, fieldState }) => (
             <>
-              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-white">
+              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-[#141925]">
                 <CodeMirrorWrapped
                   height="7.5rem"
                   value={field.value ?? ''}
@@ -151,24 +151,24 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
       </div>
 
       <div className="my-5 mb-4 flex items-center gap-2.5">
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
-        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#94a3b8] uppercase">
+        <div className="h-px flex-1 bg-[#1E2533]" />
+        <span className="text-[11px] font-bold tracking-[0.08em] whitespace-nowrap text-[#828DA3] uppercase">
           Expected Response
         </span>
-        <div className="h-px flex-1 bg-[#f1f5f9]" />
+        <div className="h-px flex-1 bg-[#1E2533]" />
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
           Response Body{' '}
-          <span className="text-xs text-[#94a3b8]">(optional)</span>
+          <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         <Controller
           name="gqlResponseBody"
           control={form.control}
           render={({ field, fieldState }) => (
             <>
-              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-white">
+              <div className="border-stock w-full overflow-hidden rounded-[16px] border bg-[#141925]">
                 <CodeMirrorWrapped
                   height="8.5rem"
                   value={field.value ?? ''}
@@ -182,8 +182,8 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
       </div>
 
       <div className="mb-3.5">
-        <Label className="mb-2 text-sm font-normal text-[#111110]">
-          Assertions <span className="text-xs text-[#94a3b8]">(optional)</span>
+        <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">
+          Assertions <span className="text-xs text-[#828DA3]">(optional)</span>
         </Label>
         {(form.watch('gqlAssertions') ?? []).map((item, index) => (
           <div
@@ -204,7 +204,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <Select
               value={item.type ?? ''}
@@ -218,7 +218,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
                 )
               }}
             >
-              <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6">
+              <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-6">
                 <SelectValue placeholder="Assertion" />
               </SelectTrigger>
               <SelectContent>
@@ -246,7 +246,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6"
             />
             <Button
               type="button"
@@ -260,7 +260,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto rounded-[6px] border border-[#fecaca] bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
+              className="h-auto rounded-[6px] border border-red-500/30 bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
             >
               ×
             </Button>
@@ -282,7 +282,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
               { shouldDirty: true, shouldValidate: true }
             )
           }}
-          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#e2e8f0] bg-transparent px-3 py-2 text-xs text-[#64748b] hover:bg-transparent"
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[8px] border-[1.5px] border-dashed border-[#2A3242] bg-transparent px-3 py-2 text-xs text-[#828DA3] hover:bg-transparent"
         >
           + Add Assertion
         </Button>
@@ -312,7 +312,7 @@ export function FormGraphqlSection({ form }: { form: FormType }) {
             </>
           )}
         />
-        <Label className="text-sm font-normal text-[#334155]">
+        <Label className="text-sm font-normal text-[#D2D9E6]">
           This test expects a GraphQL error in the response{' '}
           <span className="text-red-500">*</span>
         </Label>

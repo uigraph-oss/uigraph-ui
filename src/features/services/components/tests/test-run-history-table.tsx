@@ -159,7 +159,7 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   }
 
   return (
-    <div className="border-border rounded-lg border bg-white">
+    <div className="border-border rounded-lg border bg-[#141925]">
       <div className="border-border bg-muted/30 flex flex-wrap items-center justify-between gap-3 border-b px-3 py-2">
         <div className="flex items-center gap-2">
           <Button

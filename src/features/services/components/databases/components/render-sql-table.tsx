@@ -14,7 +14,7 @@ export function RenderSQLTable({ tables }: { tables: DbTable[] }) {
   return (
     <div>
       {tables.length === 0 ? (
-        <div className="flex min-h-[140px] items-center justify-center text-sm text-[#939395]">
+        <div className="flex min-h-[140px] items-center justify-center text-sm text-[#828DA3]">
           No tables found
         </div>
       ) : (
@@ -26,10 +26,10 @@ export function RenderSQLTable({ tables }: { tables: DbTable[] }) {
             return (
               <div key={t?.name ?? String(i)} className="p-4 pt-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2 px-2 pb-2">
-                  <div className="min-w-0 text-[0.975rem] font-medium text-[#161616]">
+                  <div className="min-w-0 text-[0.975rem] font-medium text-[#F4F7FC]">
                     {t?.name ?? 'Untitled table'}
                   </div>
-                  <div className="flex shrink-0 items-center gap-4 text-sm text-[#6B7280]">
+                  <div className="flex shrink-0 items-center gap-4 text-sm text-[#828DA3]">
                     <div>{columns.length} columns</div>
                     {indexes.length > 0 && <div>{indexes.length} indexes</div>}
                   </div>
@@ -68,7 +68,7 @@ export function RenderSQLTable({ tables }: { tables: DbTable[] }) {
                       <TableBody>
                         {columns.map((column, index) => (
                           <TableRow key={column?.name ?? index}>
-                            <TableCell className="h-11 w-[25%] max-w-[200px] truncate px-3! text-sm text-[#161616]">
+                            <TableCell className="h-11 w-[25%] max-w-[200px] truncate px-3! text-sm text-[#F4F7FC]">
                               {column?.name ?? 'Unnamed column'}
                             </TableCell>
                             <TableCell className="h-11 w-[15%] px-3!">

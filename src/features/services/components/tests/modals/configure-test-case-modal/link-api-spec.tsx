@@ -46,12 +46,12 @@ function ApiGroupsSection({
 
   if (loading) {
     return (
-      <p className="px-5 py-2 text-[12px] text-[#94a3b8]">Loading groups...</p>
+      <p className="px-5 py-2 text-[12px] text-[#828DA3]">Loading groups...</p>
     )
   }
 
   if (groups.length === 0) {
-    return <p className="px-5 py-2 text-[12px] text-[#94a3b8]">No API groups</p>
+    return <p className="px-5 py-2 text-[12px] text-[#828DA3]">No API groups</p>
   }
 
   return groups.map((group) => {
@@ -64,9 +64,9 @@ function ApiGroupsSection({
         variant="ghost"
         onClick={() => onChange(apiSpecValue)}
         className={cn(
-          'h-auto w-full justify-start rounded-none px-5 py-3 text-left text-[13px] font-normal text-[#1f2937] hover:bg-[#f8fafc]',
+          'h-auto w-full justify-start rounded-none px-5 py-3 text-left text-[13px] font-normal text-[#F4F7FC] hover:bg-[#1E2533]',
           value === apiSpecValue &&
-            'bg-[#eef2ff] text-[#1d4ed8] hover:bg-[#eef2ff]'
+            'bg-blue-500/10 text-[#1d4ed8] hover:bg-blue-500/10'
         )}
       >
         <span>
@@ -143,19 +143,19 @@ export function LinkApiSpecSelect({
           aria-label="Select service API group"
           preset="outline"
           className={cn(
-            "h-[56px] w-full rounded-[16px] border border-[#dfe5ec] bg-white px-5 text-left [font-family:'DM_Sans',sans-serif] text-[13px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+            "h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-5 text-left [font-family:'DM_Sans',sans-serif] text-[13px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
             'focus-visible:border-ring focus-visible:ring-ring/50 flex items-center justify-between gap-2 outline-none focus-visible:ring-[3px]',
-            value ? 'text-[#1e293b]' : 'text-[#94a3b8]'
+            value ? 'text-[#F4F7FC]' : 'text-[#828DA3]'
           )}
         >
           {hasResolvedSelectedInfo ? (
             <span className="flex items-center gap-3">
               <span>{selectedServiceLabel}</span>
-              <LuChevronRight className="size-4 text-[#94a3b8]" />
+              <LuChevronRight className="size-4 text-[#828DA3]" />
               <span>{selectedGroupLabel}</span>
             </span>
           ) : isSelectedInfoLoading ? (
-            <span className="flex items-center gap-2 text-[#64748b]">
+            <span className="flex items-center gap-2 text-[#828DA3]">
               <LuLoaderCircle className="size-4 animate-spin" />
               Loading API spec...
             </span>
@@ -172,17 +172,17 @@ export function LinkApiSpecSelect({
         align="start"
         side="bottom"
         sideOffset={8}
-        className="max-h-[360px] w-[var(--radix-popover-trigger-width)] overflow-y-auto bg-white p-0!"
+        className="max-h-[360px] w-[var(--radix-popover-trigger-width)] overflow-y-auto bg-[#141925] p-0!"
         onWheel={(event) => event.stopPropagation()}
       >
         {isServicesLoading && (
-          <p className="px-3 py-2 text-[13px] text-[#64748b]">
+          <p className="px-3 py-2 text-[13px] text-[#828DA3]">
             Loading services...
           </p>
         )}
 
         {!isServicesLoading && services.length === 0 && (
-          <p className="px-3 py-2 text-[13px] text-[#64748b]">
+          <p className="px-3 py-2 text-[13px] text-[#828DA3]">
             No services found.
           </p>
         )}
@@ -203,15 +203,15 @@ export function LinkApiSpecSelect({
               <AccordionItem
                 key={service.id}
                 value={service.id}
-                className="rounded-none border-b border-[#e8edf3] last:border-b-0"
+                className="rounded-none border-b border-[#2A3242] last:border-b-0"
               >
-                <AccordionTrigger className="border-b border-[#e8edf3] px-3 py-2.5 hover:no-underline">
+                <AccordionTrigger className="border-b border-[#2A3242] px-3 py-2.5 hover:no-underline">
                   <span className="flex w-full items-center justify-between gap-2 pr-2">
-                    <span className="text-sm font-medium text-[#111827]">
+                    <span className="text-sm font-medium text-[#F4F7FC]">
                       {service.name?.trim() || 'Untitled Service'}
                     </span>
                     {service.id === currentServiceId && (
-                      <span className="rounded-full bg-[#eef2ff] px-2 py-0.5 text-[11px] font-medium text-[#4f46e5]">
+                      <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-[#4f46e5]">
                         Current
                       </span>
                     )}

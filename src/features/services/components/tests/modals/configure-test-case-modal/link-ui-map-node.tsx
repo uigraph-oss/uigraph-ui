@@ -60,7 +60,7 @@ function FocalPointSection({
 
   if (loading) {
     return (
-      <p className="px-12 py-1 text-[12px] text-[#94a3b8]">
+      <p className="px-12 py-1 text-[12px] text-[#828DA3]">
         - Loading focal points...
       </p>
     )
@@ -68,7 +68,7 @@ function FocalPointSection({
 
   if (points.length === 0) {
     return (
-      <p className="px-12 py-1 text-[12px] text-[#94a3b8]">- No focal points</p>
+      <p className="px-12 py-1 text-[12px] text-[#828DA3]">- No focal points</p>
     )
   }
 
@@ -86,9 +86,9 @@ function FocalPointSection({
           })
         }}
         className={cn(
-          'h-auto w-full justify-start rounded-none py-3 pr-4 pl-10! text-left text-[13px] font-normal text-[#1f2937] hover:bg-[#f8fafc]',
+          'h-auto w-full justify-start rounded-none py-3 pr-4 pl-10! text-left text-[13px] font-normal text-[#F4F7FC] hover:bg-[#1E2533]',
           value.focalPointId === point.id &&
-            'bg-[#eef2ff] text-[#1d4ed8] hover:bg-[#eef2ff]'
+            'bg-blue-500/10 text-[#1d4ed8] hover:bg-blue-500/10'
         )}
       >
         <CircleDot className="size-3.5 text-[#9ca3af]" />
@@ -121,14 +121,14 @@ function MapScreensSection({
 
   if (loading) {
     return (
-      <p className="px-5 py-1 text-[12px] text-[#94a3b8]">
+      <p className="px-5 py-1 text-[12px] text-[#828DA3]">
         - Loading screens...
       </p>
     )
   }
 
   if (pages.length === 0) {
-    return <p className="px-5 py-1 text-[12px] text-[#94a3b8]">- No screens</p>
+    return <p className="px-5 py-1 text-[12px] text-[#828DA3]">- No screens</p>
   }
 
   return (
@@ -137,12 +137,12 @@ function MapScreensSection({
         <AccordionItem
           key={page.id}
           value={page.id}
-          className="border-b border-[#e8edf3] last:border-b-0"
+          className="border-b border-[#2A3242] last:border-b-0"
         >
-          <AccordionTrigger className="bg-[#f8fafc] px-5 py-2.5 text-[14px] font-semibold text-[#374151] hover:no-underline">
+          <AccordionTrigger className="bg-[#1E2533] px-5 py-2.5 text-[14px] font-semibold text-[#D2D9E6] hover:no-underline">
             <span className="flex items-center gap-2">
-              <Monitor className="size-3.5 text-[#6b7280]" />
-              <span className="text-xs font-medium text-[#111827]">
+              <Monitor className="size-3.5 text-[#828DA3]" />
+              <span className="text-xs font-medium text-[#F4F7FC]">
                 {page.name?.trim() || 'Untitled Screen'}
               </span>
             </span>
@@ -241,9 +241,9 @@ export function LinkUiMapNodeSelect({
           aria-label="Link to UI map node"
           preset="outline"
           className={cn(
-            "h-[56px] w-full rounded-[16px] border border-[#dfe5ec] bg-white px-5 text-left [font-family:'DM_Sans',sans-serif] text-[13px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+            "h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-[#141925] px-5 text-left [font-family:'DM_Sans',sans-serif] text-[13px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
             'focus-visible:border-ring focus-visible:ring-ring/50 flex items-center justify-between gap-2 outline-none focus-visible:ring-[3px]',
-            value ? 'text-[#1e293b]' : 'text-[#94a3b8]'
+            value ? 'text-[#F4F7FC]' : 'text-[#828DA3]'
           )}
         >
           {hasResolvedSelectedInfo ? (
@@ -269,7 +269,7 @@ export function LinkUiMapNodeSelect({
               </span>
             </span>
           ) : isSelectedInfoLoading ? (
-            <span className="flex items-center gap-2 text-[#64748b]">
+            <span className="flex items-center gap-2 text-[#828DA3]">
               <Loader2 className="size-4 animate-spin" />
               Loading linked node...
             </span>
@@ -286,18 +286,18 @@ export function LinkUiMapNodeSelect({
         align="start"
         side="bottom"
         sideOffset={8}
-        className="max-h-[360px] w-[var(--radix-popover-trigger-width)] overflow-y-auto bg-white p-0!"
+        className="max-h-[360px] w-[var(--radix-popover-trigger-width)] overflow-y-auto bg-[#141925] p-0!"
         onWheel={(e) => e.stopPropagation()}
       >
         {isProjectsLoading && (
-          <div className="flex items-center gap-2 rounded-[10px] px-3 py-2 text-[13px] text-[#64748b]">
+          <div className="flex items-center gap-2 rounded-[10px] px-3 py-2 text-[13px] text-[#828DA3]">
             <Loader2 className="size-4 animate-spin" />
             Loading maps...
           </div>
         )}
 
         {!isProjectsLoading && projects.length === 0 && (
-          <p className="px-3 py-2 text-[13px] text-[#64748b]">No maps found.</p>
+          <p className="px-3 py-2 text-[13px] text-[#828DA3]">No maps found.</p>
         )}
 
         {!isProjectsLoading && (
@@ -310,13 +310,13 @@ export function LinkUiMapNodeSelect({
               <AccordionItem
                 key={project.id}
                 value={project.id}
-                className="rounded-none border-b border-[#e8edf3] last:border-b-0"
+                className="rounded-none border-b border-[#2A3242] last:border-b-0"
               >
-                <AccordionTrigger className="border-b border-[#e8edf3] px-3 py-2.5 hover:no-underline">
+                <AccordionTrigger className="border-b border-[#2A3242] px-3 py-2.5 hover:no-underline">
                   <span className="flex w-full items-center justify-between gap-2 pr-2">
                     <span className="flex items-center gap-2">
                       <LayoutPanelTop className="size-4 text-[#4f46e5]" />
-                      <span className="text-sm font-medium text-[#111827]">
+                      <span className="text-sm font-medium text-[#F4F7FC]">
                         {project.name?.trim() || 'Untitled Map'}
                       </span>
                     </span>

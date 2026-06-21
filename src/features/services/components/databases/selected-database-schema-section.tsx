@@ -36,7 +36,7 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
       return 'bg-emerald-100 text-emerald-800'
     if (value === 'dynamodb') return 'bg-purple-100 text-purple-800'
     if (value === 'sqlite') return 'bg-green-100 text-green-800'
-    return 'bg-gray-100 text-gray-800'
+    return 'bg-[#1E2533] text-[#F4F7FC]'
   }
 
   const sqlTablesContent = db.tables != null && (
@@ -54,10 +54,10 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-[1.385rem] font-semibold text-[#161616]">
+          <h3 className="text-[1.385rem] font-semibold text-[#F4F7FC]">
             {db.dbName ?? 'Untitled Database'}
           </h3>
-          <p className="text-sm text-[#939395]">
+          <p className="text-sm text-[#828DA3]">
             Overview of the selected database schema
           </p>
         </div>
@@ -66,20 +66,20 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
         </Badge>
       </div>
 
-      <div className="rounded-[1.4525rem] bg-white p-5 ring-1 ring-[#E5E7E9]">
+      <div className="rounded-[1.4525rem] bg-[#141925] p-5 ring-1 ring-[#2A3242]">
         <div className="grid grid-flow-col gap-4">
-          <div className="rounded-xl border border-[#EEF0F2] p-4">
-            <div className="flex items-center gap-2 text-[#6B7280]">
+          <div className="rounded-xl border border-[#2A3242] p-4">
+            <div className="flex items-center gap-2 text-[#828DA3]">
               <Database className="h-4 w-4" />
               <span className="text-xs">Database</span>
             </div>
-            <div className="mt-2 text-[1.15rem] font-semibold text-[#161616]">
+            <div className="mt-2 text-[1.15rem] font-semibold text-[#F4F7FC]">
               {db.dbName ?? 'Untitled'}
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#EEF0F2] p-4">
-            <div className="flex items-center gap-2 text-[#6B7280]">
+          <div className="rounded-xl border border-[#2A3242] p-4">
+            <div className="flex items-center gap-2 text-[#828DA3]">
               <Table2 className="h-4 w-4" />
 
               <span className="text-xs">
@@ -91,7 +91,7 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
               </span>
             </div>
 
-            <div className="mt-2 text-[1.15rem] font-semibold text-[#161616]">
+            <div className="mt-2 text-[1.15rem] font-semibold text-[#F4F7FC]">
               {dynamoTablesContent
                 ? db.noSQLSchema?.dynamo?.table
                   ? 1
@@ -102,32 +102,32 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#EEF0F2] p-4">
-            <div className="flex items-center gap-2 text-[#6B7280]">
+          <div className="rounded-xl border border-[#2A3242] p-4">
+            <div className="flex items-center gap-2 text-[#828DA3]">
               <Hash className="h-4 w-4" />
               <span className="text-xs">Columns</span>
             </div>
-            <div className="mt-2 text-[1.15rem] font-semibold text-[#161616]">
+            <div className="mt-2 text-[1.15rem] font-semibold text-[#F4F7FC]">
               {totalColumns}
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#EEF0F2] p-4">
-            <div className="flex items-center gap-2 text-[#6B7280]">
+          <div className="rounded-xl border border-[#2A3242] p-4">
+            <div className="flex items-center gap-2 text-[#828DA3]">
               <Hash className="h-4 w-4" />
               <span className="text-xs">Indexes</span>
             </div>
-            <div className="mt-2 text-[1.15rem] font-semibold text-[#161616]">
+            <div className="mt-2 text-[1.15rem] font-semibold text-[#F4F7FC]">
               {totalIndexes}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-[1.4525rem] bg-white ring-1 ring-[#E5E7E9]">
+      <div className="rounded-[1.4525rem] bg-[#141925] ring-1 ring-[#2A3242]">
         <div className="border-b px-5 py-4">
           <div className="flex items-center justify-between">
-            <h4 className="flex items-center gap-2 text-[1.075rem] font-semibold text-[#161616]">
+            <h4 className="flex items-center gap-2 text-[1.075rem] font-semibold text-[#F4F7FC]">
               {dynamoTablesContent ? (
                 <>
                   <CiViewTable className="size-5" /> Table
@@ -144,7 +144,7 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
             </h4>
 
             {updatedDate && (
-              <div className="flex items-center gap-2 text-sm text-[#939395]">
+              <div className="flex items-center gap-2 text-sm text-[#828DA3]">
                 <Calendar className="h-4 w-4" />
                 <span>
                   Updated{' '}
