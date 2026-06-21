@@ -9,10 +9,18 @@ import {
 } from '@/components/ui/tooltip'
 import { DASHBOARD_NAV_LINKS } from '@/constants'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth-store'
 import { Link, useLocation } from 'react-router-dom'
 
 export function DashboardSidebar() {
   const { pathname } = useLocation()
+  const hasOrganization = useAuthStore(
+    (state) => state.organizations.length > 0
+  )
+
+  const navLinks = DASHBOARD_NAV_LINKS.filter(
+    (item) => hasOrganization || item.id !== '/server'
+  )
 
   return (
     <aside className={'flex h-full flex-col gap-[1.31rem] bg-[#141925] py-4'}>
@@ -24,7 +32,7 @@ export function DashboardSidebar() {
 
       <TooltipProvider delayDuration={400}>
         <ul className={'flex w-full flex-col gap-3 px-2'}>
-          {DASHBOARD_NAV_LINKS.map((item) => {
+          {navLinks.map((item) => {
             const isActive = item.isActive(pathname)
 
             const link = (

@@ -13,7 +13,7 @@ import {
   GoProjectTemplate,
   GoStack,
 } from 'react-icons/go'
-import { LuBot, LuFingerprint } from 'react-icons/lu'
+import { LuBot, LuFingerprint, LuServer } from 'react-icons/lu'
 
 type NavLinkMeta = {
   icon: ReactNode
@@ -56,6 +56,12 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings',
     label: 'Settings',
     icon: <SettingsIcon />,
+    nested: true,
+  },
+  {
+    id: '/server',
+    label: 'Server',
+    icon: <LuServer />,
     nested: true,
   }
 )
