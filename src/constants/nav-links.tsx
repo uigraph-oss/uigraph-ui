@@ -73,6 +73,11 @@ export const SERVER_NAV_LINKS = generateNavItems<NavLinkMeta>(
     icon: <GoGraph />,
   },
   {
+    id: '/server/orgs',
+    label: 'Organizations',
+    icon: <GoOrganization />,
+  },
+  {
     id: '/server/users',
     label: 'Users',
     icon: <UserListIcon />,

@@ -28,6 +28,7 @@ import { TeamManagementPage } from '@/features/dashboard-settings/users-team-man
 import { UsersManagementPage } from '@/features/dashboard-settings/users-team-management/users-management-page'
 import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
 import { ServerOverviewPage } from '@/features/server-dashboard/server-overview-page'
+import { ServerOrgsPage } from '@/features/server-orgs/server-orgs-page'
 import { ServerSSOPage } from '@/features/server-sso/server-sso-page'
 import { ServerUsersPage } from '@/features/server-users/server-users-page'
 import { DashboardServiceApis } from '@/features/services/components/apis/dashboard-service-apis'
@@ -113,6 +114,7 @@ export function AppRoutes() {
         <Route path="/server" element={<ServerAdminLayoutRoute />}>
           <Route index element={<Navigate to="/server/overview" replace />} />
           <Route path="overview" element={<ServerOverviewPage />} />
+          <Route path="orgs" element={<ServerOrgsPage />} />
           <Route path="users" element={<ServerUsersPage />} />
           <Route path="sso" element={<ServerSSOPage />} />
         </Route>
