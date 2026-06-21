@@ -81,7 +81,6 @@ export function SignInForm() {
   function handleSSO() {
     const provider = oAuthProviders[0]
     if (!provider) return
-    trackGTag('login', { method: provider.name })
     window.location.href = provider.loginUrl
   }
 
