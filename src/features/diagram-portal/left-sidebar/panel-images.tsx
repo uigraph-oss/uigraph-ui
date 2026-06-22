@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
 import { useQuery } from '@apollo/client'
@@ -18,7 +17,6 @@ export function SidebarImages() {
   const { diagramId, organizationId } = useFlowDiagramContext()
 
   const { data, refetch } = useQuery(DIAGRAM_IMAGES, {
-    client: clientV2,
     variables: { orgId: organizationId!, diagramId: diagramId! },
     skip: !diagramId || !organizationId,
   })

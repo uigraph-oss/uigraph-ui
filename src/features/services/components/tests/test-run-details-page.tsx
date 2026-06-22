@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -26,7 +25,6 @@ export function TestRunDetailsPage() {
         : undefined
 
   const { data, loading } = useQuery(TEST_RUN, {
-    client: clientV2,
     variables: { orgId: orgId!, serviceId, id: testRunId ?? '' },
     skip: !orgId || !serviceId || !testRunId,
   })

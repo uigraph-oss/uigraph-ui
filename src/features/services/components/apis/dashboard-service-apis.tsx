@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
@@ -41,32 +40,27 @@ export function DashboardServiceApis() {
   const listVars = { orgId: orgId!, serviceId }
 
   const { data, loading } = useQuery(API_GROUPS, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     skip: !orgId,
     variables: listVars,
   })
 
   const [createServiceApiGroup] = useMutation(CREATE_API_GROUP, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
   const [updateServiceApiGroup] = useMutation(UPDATE_API_GROUP, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
   const [syncAPIGroup] = useMutation(SYNC_API_GROUP, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })
 
   const [deleteServiceApiGroup] = useMutation(DELETE_API_GROUP, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: API_GROUPS, variables: listVars }],
   })

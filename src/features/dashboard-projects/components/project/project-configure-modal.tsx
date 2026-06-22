@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { SuperCircleLoader } from '@/components/loader'
 import { SimpleModal } from '@/components/simple-modal'
 import { Button } from '@/components/ui/button'
@@ -51,7 +50,6 @@ export function ConfigureProjectModal({
 
   const organizationId = useCurrentOrganization()?.id
   const teamRes = useQuery(SETTINGS_TEAMS, {
-    client: clientV2,
     variables: { orgId: organizationId! },
     skip: !organizationId,
   })

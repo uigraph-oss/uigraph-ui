@@ -1,5 +1,5 @@
 import { V2 } from '@/api'
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
   Accordion,
@@ -110,7 +110,7 @@ export function FocalPointMetaSection({
     }
 
     try {
-      const { data: createDiagramData } = await clientV2.mutate({
+      const { data: createDiagramData } = await apolloClientGQL.mutate({
         mutation: CREATE_DIAGRAM,
         variables: {
           orgId: organizationId!,
@@ -148,7 +148,7 @@ export function FocalPointMetaSection({
     const [serviceId, serviceDocId] = (meta.componentLinkId ?? '').split(':')
     if (!serviceId || !serviceDocId)
       return toast.error('Invalid document link. Please try again.')
-    const { data } = await clientV2.query({
+    const { data } = await apolloClientGQL.query({
       query: SERVICE_DOCS,
       variables: { orgId: organizationId!, serviceId },
       fetchPolicy: 'cache-first',

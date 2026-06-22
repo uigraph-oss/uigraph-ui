@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
@@ -40,7 +39,6 @@ export function FlowDiagramCard({
   const listVars = { orgId: orgId!, serviceId }
 
   const [deleteServiceDiagram] = useMutation(DELETE_SERVICE_DIAGRAM, {
-    client: clientV2,
     refetchQueries: [{ query: SERVICE_DIAGRAMS, variables: listVars }],
     awaitRefetchQueries: true,
   })

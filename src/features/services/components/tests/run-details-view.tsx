@@ -1,7 +1,6 @@
 'use client'
 
 import type { TestCase, TestRunResult } from '@/api/.gql/graphql'
-import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { CrossButton } from '@/components/cross-button'
@@ -103,7 +102,6 @@ export function RunDetailsView({
   }
 
   const { data: runData, loading: runLoading } = useQuery(TEST_RUN, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     variables: runVars,
     skip: !orgId || !resolvedServiceId || !testRunId,
@@ -112,7 +110,6 @@ export function RunDetailsView({
   const { data: resultsData, loading: resultsLoading } = useQuery(
     TEST_RUN_RESULTS,
     {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: resultsVars,
       skip: !orgId || !resolvedServiceId || !testRunId,
@@ -120,7 +117,6 @@ export function RunDetailsView({
   )
 
   const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     variables: casesVars,
     skip: !orgId || !resolvedServiceId || !testPackId,

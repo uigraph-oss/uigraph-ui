@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import {
   CREATE_SERVICE_DB,
@@ -23,9 +22,8 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM, { client: clientV2 })
+  const [createDiagram] = useMutation(CREATE_DIAGRAM)
   const [createServiceDb] = useMutation(CREATE_SERVICE_DB, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICE_DBS, variables: listVars }],
   })

@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import {
   Accordion,
   AccordionContent,
@@ -34,7 +33,6 @@ function ApiGroupsSection({
   onChange: (value: string) => void
 }) {
   const { data, loading } = useQuery(API_GROUPS, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId, serviceId },
     skip: !orgId || !serviceId,
@@ -93,7 +91,6 @@ export function LinkApiSpecSelect({
   const { data: servicesData, loading: isServicesLoading } = useQuery(
     SERVICES,
     {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId! },
       skip: !orgId,
@@ -111,7 +108,6 @@ export function LinkApiSpecSelect({
 
   const { data: selectedGroupsData, loading: isSelectedGroupsLoading } =
     useQuery(API_GROUPS, {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, serviceId },
       skip: !orgId || !serviceId,

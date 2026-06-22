@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -40,7 +39,6 @@ export function useTiptapEditor({
   const organizationId = useCurrentOrganization()?.id
 
   const { data } = useQuery(MEMBERS, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
     skip: !organizationId,

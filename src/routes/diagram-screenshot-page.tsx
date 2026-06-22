@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useAuthStore } from '@/store/auth-store'
@@ -39,14 +38,12 @@ export function DiagramScreenshotPage() {
   const skip = !diagramId || !orgId
 
   const { data } = useQuery(DIAGRAM, {
-    client: clientV2,
     variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'no-cache',
     skip,
   })
 
   const { data: contentData } = useQuery(DIAGRAM_CONTENT, {
-    client: clientV2,
     variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'no-cache',
     skip,

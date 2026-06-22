@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { useMutation } from '@apollo/client'
 import { Edge, Node } from '@xyflow/react'
@@ -45,7 +45,7 @@ export function useDiagramPortalMutation({
   initialLastUpdatedAt,
 }: TUseDiagramPortalMutationProps) {
   const [loading, setLoading] = useState(false)
-  const [updateDiagram] = useMutation(UPDATE_DIAGRAM, { client: clientV2 })
+  const [updateDiagram] = useMutation(UPDATE_DIAGRAM)
 
   const serverLastUpdatedAt = useMemo(() => {
     return initialLastUpdatedAt ? new Date(initialLastUpdatedAt).getTime() : 0
@@ -251,7 +251,7 @@ async function uploadThumbnailFile(
   file: File,
   updateHash: string
 ) {
-  const { data: prepareData } = await clientV2.mutate({
+  const { data: prepareData } = await apolloClientGQL.mutate({
     mutation: PREPARE_DIAGRAM_THUMBNAIL_UPLOAD,
     variables: { orgId, diagramId },
   })
@@ -264,7 +264,7 @@ async function uploadThumbnailFile(
     withCredentials: false, // presigned URL — no cookies needed
   })
 
-  await clientV2.mutate({
+  await apolloClientGQL.mutate({
     mutation: CONFIRM_DIAGRAM_THUMBNAIL_UPLOAD,
     variables: { orgId, diagramId, contentHash: updateHash },
   })

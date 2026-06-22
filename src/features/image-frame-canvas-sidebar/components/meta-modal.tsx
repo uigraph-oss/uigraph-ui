@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import { SettingsIcon } from '@/assets/svgs'
 import { CrossButton } from '@/components/cross-button'
 import { SuperCircleLoader } from '@/components/loader'
@@ -420,7 +419,6 @@ function FocalPointMetaModalLoader({
 
   const { data: componentMetaData, loading: isLoadingComponentMetaData } =
     useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
-      client: clientV2,
       variables: { orgId: organizationId!, componentLinkId: componentMetaId! },
       skip: !componentMetaId || !organizationId,
       fetchPolicy: 'cache-first',

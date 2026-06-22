@@ -1,5 +1,5 @@
 import type { V2 } from '@/api'
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { VersionLayout } from '@/components/version-layout'
 import { useEffect, useMemo, useState } from 'react'
@@ -41,7 +41,7 @@ function CompareSide({ versions, selectedVersionId }: CompareSideProps) {
     let cancelled = false
     setLoading(true)
 
-    void clientV2
+    void apolloClientGQL
       .query({
         query: DIAGRAM_VERSION_CONTENT,
         variables: {

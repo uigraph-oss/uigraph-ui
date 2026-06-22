@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -523,7 +523,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
       setError(null)
       setParseError(null)
 
-      const { data } = await clientV2.query({
+      const { data } = await apolloClientGQL.query({
         query: API_GROUP_SPEC,
         variables: { orgId: orgId!, serviceId, apiGroupId },
         fetchPolicy: 'network-only',

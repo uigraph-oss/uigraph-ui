@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -40,7 +39,6 @@ export type FlowDiagramComponentsGroup = {
 export function useFlowDiagramComponents() {
   const organizationId = useCurrentOrganization()?.id
   const { data, loading } = useQuery(FLOW_DIAGRAM_COMPONENTS, {
-    client: clientV2,
     variables: { orgId: organizationId! },
     skip: !organizationId,
     fetchPolicy: 'cache-first',

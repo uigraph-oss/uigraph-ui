@@ -1,7 +1,6 @@
 'use client'
 
 import type { TestCase } from '@/api/.gql/graphql'
-import { clientV2 } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -155,7 +154,6 @@ export function TestRunExecutionPage() {
   const runVars = { orgId: orgId!, serviceId, id: testRunId }
 
   const { data: runData, loading: runLoading } = useQuery(TEST_RUN, {
-    client: clientV2,
     variables: runVars,
     skip: !orgId || !serviceId || !testRunId,
   })
@@ -182,7 +180,6 @@ export function TestRunExecutionPage() {
   }
 
   const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
-    client: clientV2,
     variables: casesVars,
     skip: !orgId || !serviceId || !testPackId,
   })
@@ -192,7 +189,6 @@ export function TestRunExecutionPage() {
     loading: resultsLoading,
     refetch: refetchResults,
   } = useQuery(TEST_RUN_RESULTS, {
-    client: clientV2,
     variables: resultsVars,
     skip: !orgId || !serviceId || !testRunId,
   })
@@ -209,18 +205,16 @@ export function TestRunExecutionPage() {
   )
 
   const [createTestRunResult] = useMutation(CREATE_TEST_RUN_RESULT, {
-    client: clientV2,
     refetchQueries,
   })
 
   const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT, {
-    client: clientV2,
     refetchQueries,
   })
 
   const [updateTestRun, { loading: isCompleting }] = useMutation(
     UPDATE_TEST_RUN,
-    { client: clientV2, refetchQueries }
+    { refetchQueries }
   )
 
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)

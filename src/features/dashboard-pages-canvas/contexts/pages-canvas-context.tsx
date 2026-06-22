@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { CANVAS, UPSERT_CANVAS } from '@/features/dashboard-pages/api/canvas'
 import {
@@ -39,13 +39,11 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
       const mapId = project.id
 
       const canvasRes = useQuery(CANVAS, {
-        client: clientV2,
         variables: { orgId: orgId!, mapId },
         skip: !orgId || !mapId,
       })
 
       const [upsertCanvas, upsertCanvasRes] = useMutation(UPSERT_CANVAS, {
-        client: clientV2,
         awaitRefetchQueries: true,
         refetchQueries: [
           { query: CANVAS, variables: { orgId: orgId!, mapId } },
@@ -63,17 +61,17 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
         const results = await Promise.all(
           pages.map((frame) =>
             Promise.all([
-              clientV2.query({
+              apolloClientGQL.query({
                 query: FOCAL_POINTS,
                 variables: { orgId, mapId, frameId: frame.id },
                 fetchPolicy: 'network-only',
               }),
-              clientV2.query({
+              apolloClientGQL.query({
                 query: FRAME_GROUPS,
                 variables: { orgId, mapId, frameId: frame.id },
                 fetchPolicy: 'network-only',
               }),
-              clientV2.query({
+              apolloClientGQL.query({
                 query: FRAME_LINKS,
                 variables: { orgId, mapId, frameId: frame.id },
                 fetchPolicy: 'network-only',
@@ -127,22 +125,14 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
         [frameGroups, selectedFrameGroupId]
       )
 
-      const [updateFocalPointMutation, updateFocalPointRes] = useMutation(
-        UPDATE_FOCAL_POINT,
-        { client: clientV2 }
-      )
-      const [deleteFocalPointMutation, deleteFocalPointRes] = useMutation(
-        DELETE_FOCAL_POINT,
-        { client: clientV2 }
-      )
-      const [updateFrameGroupMutation, updateFrameGroupRes] = useMutation(
-        UPDATE_FRAME_GROUP,
-        { client: clientV2 }
-      )
-      const [deleteFrameGroupMutation, deleteFrameGroupRes] = useMutation(
-        DELETE_FRAME_GROUP,
-        { client: clientV2 }
-      )
+      const [updateFocalPointMutation, updateFocalPointRes] =
+        useMutation(UPDATE_FOCAL_POINT)
+      const [deleteFocalPointMutation, deleteFocalPointRes] =
+        useMutation(DELETE_FOCAL_POINT)
+      const [updateFrameGroupMutation, updateFrameGroupRes] =
+        useMutation(UPDATE_FRAME_GROUP)
+      const [deleteFrameGroupMutation, deleteFrameGroupRes] =
+        useMutation(DELETE_FRAME_GROUP)
 
       const selectedFrameGroupPoints = useMemo(() => {
         if (!selectedFrameGroup || focalPoints.length === 0) return []

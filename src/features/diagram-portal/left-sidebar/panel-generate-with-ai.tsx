@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -26,9 +25,7 @@ export function SidebarGenerateWithAI() {
   const orgId = useCurrentOrganization()?.id
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION, {
-    client: clientV2,
-  })
+  const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION)
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()

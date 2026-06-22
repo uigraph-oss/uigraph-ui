@@ -1,4 +1,3 @@
-import { clientV2 } from '@/api/client'
 import {
   SERVICE_DB,
   serviceDBToLegacy,
@@ -185,7 +184,6 @@ function DatabaseTableNodeRemoteSource({
   const orgId = useCurrentOrganization().id
 
   const { data: serviceDbData, loading } = useQuery(SERVICE_DB, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     skip: !orgId || !serviceId || !serviceDbId,
     variables: {

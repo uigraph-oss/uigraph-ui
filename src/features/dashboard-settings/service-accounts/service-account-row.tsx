@@ -12,12 +12,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useMutation } from '@apollo/client'
 import { ChevronDown, KeyRound, Pencil, Trash2 } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  deleteServiceAccount,
-  updateServiceAccount,
+  DELETE_SERVICE_ACCOUNT,
+  SERVICE_ACCOUNTS,
+  UPDATE_SERVICE_ACCOUNT,
   type ServiceAccount,
 } from './api'
 import {
@@ -47,8 +49,8 @@ function ScopesCell({ scopes }: { scopes: string[] }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="inline-flex h-6 items-center gap-1 rounded-md border border-[#2A3242] bg-[#1E2533] px-2 text-xs font-medium whitespace-nowrap text-[#A0AABB] transition-colors hover:bg-[#1E2533]">
-          {scopes.length} {scopes.length === 1 ? 'permission' : 'permissions'}
+        <button className="inline-flex h-7 items-center gap-1 rounded-md border border-[#2A3242] bg-[#1E2533] px-2 text-xs font-medium whitespace-nowrap text-[#A0AABB] transition-colors hover:bg-[#1E2533]">
+          {scopes.length} {scopes.length === 1 ? 'Permission' : 'Permissions'}
           <ChevronDown className="size-3.5 shrink-0 text-[#586378]" />
         </button>
       </PopoverTrigger>
@@ -84,25 +86,38 @@ export function ServiceAccountRow({
   account,
   orgId,
   availableScopes,
-  onChanged,
 }: {
   account: ServiceAccount
   orgId: string
   availableScopes: string[]
-  onChanged: () => Promise<void> | void
 }) {
   const [editOpen, setEditOpen] = useState(false)
   const [tokensOpen, setTokensOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
+  const refetchAccounts = {
+    refetchQueries: [{ query: SERVICE_ACCOUNTS, variables: { orgId } }],
+    awaitRefetchQueries: true,
+  }
+  const [updateServiceAccount] = useMutation(
+    UPDATE_SERVICE_ACCOUNT,
+    refetchAccounts
+  )
+  const [deleteServiceAccount] = useMutation(
+    DELETE_SERVICE_ACCOUNT,
+    refetchAccounts
+  )
+
   async function handleEdit(values: ServiceAccountFormValues) {
     try {
-      await updateServiceAccount(orgId, account.id, {
-        ...values,
-        disabled: account.disabled,
+      await updateServiceAccount({
+        variables: {
+          orgId,
+          id: account.id,
+          input: { ...values, disabled: account.disabled },
+        },
       })
       setEditOpen(false)
-      await onChanged()
       toast.success('Service account updated')
     } catch (error) {
       toast.error((error as Error).message)
@@ -111,13 +126,34 @@ export function ServiceAccountRow({
 
   async function handleDelete() {
     try {
-      await deleteServiceAccount(orgId, account.id)
+      await deleteServiceAccount({ variables: { orgId, id: account.id } })
       setDeleteOpen(false)
-      await onChanged()
       toast.success('Service account deleted')
     } catch (error) {
       toast.error((error as Error).message)
     }
+  }
+
+  if (account.isInternal) {
+    return (
+      <tr className="border-b border-[#2A3242]">
+        <td className="w-48 px-6 py-4 align-top">
+          <div className="font-medium break-words text-[#D2D9E6]">
+            {account.name}
+          </div>
+        </td>
+        <td className="px-6 py-4 align-top">
+          <span className="text-sm leading-snug text-[#828DA3]">
+            This account is managed by UIGraph for its internal tasks and is
+            read only.
+          </span>
+        </td>
+        <td className="w-40 px-6 py-4 align-top">
+          <ScopesCell scopes={account.scopes} />
+        </td>
+        <td className="w-32 px-6 py-4 align-top" />
+      </tr>
+    )
   }
 
   return (

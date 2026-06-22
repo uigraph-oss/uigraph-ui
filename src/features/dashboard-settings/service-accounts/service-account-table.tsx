@@ -7,12 +7,10 @@ export function ServiceAccountTable({
   accounts,
   orgId,
   availableScopes,
-  onChanged,
 }: {
   accounts: ServiceAccount[]
   orgId: string
   availableScopes: string[]
-  onChanged: () => Promise<void> | void
 }) {
   return (
     <table className="w-full">
@@ -44,7 +42,6 @@ export function ServiceAccountTable({
             account={account}
             orgId={orgId}
             availableScopes={availableScopes}
-            onChanged={onChanged}
           />
         ))}
       </tbody>
