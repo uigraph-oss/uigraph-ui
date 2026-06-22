@@ -108,7 +108,7 @@ export function NodeTextStyle() {
             updateData({ fontWeight: numValue || undefined })
           }}
         >
-          <SelectTrigger className="border-stock h-[3.5rem]! w-full rounded-[1rem] border bg-white px-4 text-sm">
+          <SelectTrigger className="border-stock bg-input h-[3.5rem]! w-full rounded-[1rem] border px-4 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -129,7 +129,7 @@ export function NodeTextStyle() {
             updateData({ fontFamily: value || undefined })
           }}
         >
-          <SelectTrigger className="border-stock h-[3.5rem]! w-full rounded-[1rem] border bg-white px-4 text-sm">
+          <SelectTrigger className="border-stock bg-input h-[3.5rem]! w-full rounded-[1rem] border px-4 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

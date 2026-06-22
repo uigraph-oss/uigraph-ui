@@ -20,10 +20,11 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
       return 'bg-emerald-50 text-emerald-700 border-emerald-200'
     if (/(date|time|timestamp)/.test(t))
       return 'bg-amber-50 text-amber-700 border-amber-200'
-    if (/(uuid)/.test(t)) return 'bg-slate-100 text-slate-700 border-slate-200'
+    if (/(uuid)/.test(t))
+      return 'bg-accent/40 text-secondary-foreground border-stock'
     if (/(json|jsonb)/.test(t))
       return 'bg-teal-50 text-teal-700 border-teal-200'
-    return 'bg-gray-50 text-gray-700 border-gray-200'
+    return 'bg-accent/30 text-secondary-foreground border-stock'
   }
   return (
     <>
@@ -31,22 +32,22 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%] px-3 py-2 text-xs text-slate-500">
+              <TableHead className="text-paragraph w-[40%] px-3 py-2 text-xs">
                 Column
               </TableHead>
-              <TableHead className="w-[15%] px-3 py-2 text-xs text-slate-500">
+              <TableHead className="text-paragraph w-[15%] px-3 py-2 text-xs">
                 Type
               </TableHead>
-              <TableHead className="w-[10%] px-3 py-2 text-xs text-slate-500">
+              <TableHead className="text-paragraph w-[10%] px-3 py-2 text-xs">
                 Null
               </TableHead>
-              <TableHead className="w-[20%] px-3 py-2 text-xs text-slate-500">
+              <TableHead className="text-paragraph w-[20%] px-3 py-2 text-xs">
                 Default
               </TableHead>
-              <TableHead className="w-[7.5%] px-3 py-2 text-xs text-slate-500">
+              <TableHead className="text-paragraph w-[7.5%] px-3 py-2 text-xs">
                 Key
               </TableHead>
-              <TableHead className="w-[7.5%] px-3 py-2 text-xs text-slate-500">
+              <TableHead className="text-paragraph w-[7.5%] px-3 py-2 text-xs">
                 FK to
               </TableHead>
             </TableRow>
@@ -60,19 +61,19 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
               return (
                 <TableRow
                   key={column.name}
-                  className="odd:bg-slate-50/30 hover:bg-slate-50"
+                  className="odd:bg-accent/30/30 hover:bg-accent/30"
                 >
                   <TableCell className="px-3 py-2">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{column.name}</span>
                       {column.description ? (
-                        <span className="text-[11px] text-slate-500">
+                        <span className="text-paragraph text-[11px]">
                           {column.description}
                         </span>
                       ) : null}
                     </div>
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-slate-700">
+                  <TableCell className="text-secondary-foreground px-3 py-2">
                     <Badge
                       variant="outline"
                       className={`border px-2 py-0.5 text-xs font-medium ${getTypeBadgeClasses(column.type)}`}
@@ -93,13 +94,13 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-slate-900">
+                  <TableCell className="text-foreground px-3 py-2">
                     {column.defaultValue ? (
-                      <code className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
+                      <code className="bg-accent/40 text-secondary-foreground rounded px-2 py-0.5 text-xs">
                         {column.defaultValue}
                       </code>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </TableCell>
                   <TableCell className="px-3 py-2">
@@ -123,7 +124,7 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
                         {fk.referencedTable}.{fk.referencedColumn}
                       </Badge>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -133,10 +134,10 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
         </Table>
       </div>
 
-      <div className="grid grid-cols-1 gap-2 border-t border-slate-100 px-3 py-2">
+      <div className="border-stock grid grid-cols-1 gap-2 border-t px-3 py-2">
         {data.table.primaryKeys.length > 0 ? (
           <div>
-            <div className="mb-1 text-xs text-slate-500">Primary keys</div>
+            <div className="text-paragraph mb-1 text-xs">Primary keys</div>
             <div className="flex flex-wrap gap-1.5">
               {data.table.primaryKeys.map((pk) => (
                 <Badge
@@ -153,12 +154,12 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
 
         {data.table.foreignKeys.length > 0 ? (
           <div>
-            <div className="mb-1 text-xs text-slate-500">Foreign keys</div>
+            <div className="text-paragraph mb-1 text-xs">Foreign keys</div>
             <div className="grid gap-1">
               {data.table.foreignKeys.map((fk) => (
                 <div
                   key={`${fk.columnName}->${fk.referencedTable}.${fk.referencedColumn}`}
-                  className="text-sm text-slate-900"
+                  className="text-foreground text-sm"
                 >
                   <Badge
                     variant="outline"
@@ -166,7 +167,7 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
                   >
                     {fk.columnName}
                   </Badge>
-                  <span className="mx-1 text-slate-400">→</span>
+                  <span className="text-muted-foreground mx-1">→</span>
                   <Badge
                     variant="outline"
                     className="border border-teal-200 bg-teal-50 px-1.5 py-0 text-[11px] text-teal-700"
@@ -181,7 +182,7 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
 
         {data.table.indexes.length > 0 ? (
           <div>
-            <div className="mb-1 text-xs text-slate-500">Indexes</div>
+            <div className="text-paragraph mb-1 text-xs">Indexes</div>
             <div className="grid gap-1">
               {data.table.indexes.map((idx) => (
                 <div
@@ -201,7 +202,7 @@ export function DataTableView({ data }: { data: DataTableInterfaceNodeData }) {
                     {idx.columns.map((c) => (
                       <code
                         key={c}
-                        className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-700"
+                        className="bg-accent/40 text-secondary-foreground rounded px-1.5 py-0.5 text-xs"
                       >
                         {c}
                       </code>

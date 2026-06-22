@@ -27,7 +27,7 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
   return (
     <NodeCard
       selected={selected}
-      className="relative isolate size-full min-h-fit bg-white"
+      className="bg-card relative isolate size-full min-h-fit"
       style={{ borderRadius: data?.borderRadius || 8 }}
     >
       <NodeResizer

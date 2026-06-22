@@ -8,7 +8,7 @@ export function NodeDatabaseNosqlCode({
   setValue: (value: string) => void
 }) {
   return (
-    <div className="overflow-hidden rounded-md border bg-white">
+    <div className="bg-card overflow-hidden rounded-md border">
       <CodeMirrorRaw
         value={value}
         onChange={setValue}

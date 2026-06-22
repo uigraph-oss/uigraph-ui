@@ -92,7 +92,7 @@ export function TableProperties() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label className="text-xs text-slate-500">Table name</Label>
+        <Label className="text-paragraph text-xs">Table name</Label>
         <Input
           value={name ?? ''}
           onChange={(event) =>
@@ -111,10 +111,12 @@ export function TableProperties() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-semibold text-slate-600">
+          <Label className="text-paragraph text-xs font-semibold">
             Columns
           </Label>
-          <span className="text-[11px] text-slate-400">{columns.length}</span>
+          <span className="text-muted-foreground text-[11px]">
+            {columns.length}
+          </span>
         </div>
         <div className="space-y-1.5">
           {columns.map((column, columnIndex) => (
@@ -132,7 +134,7 @@ export function TableProperties() {
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-slate-500"
+                className="text-paragraph h-7 w-7"
                 disabled={columns.length <= 1}
                 onClick={() => handleRemoveColumn(columnIndex)}
               >
@@ -154,21 +156,23 @@ export function TableProperties() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-semibold text-slate-600">Rows</Label>
-          <span className="text-[11px] text-slate-400">{rows.length}</span>
+          <Label className="text-paragraph text-xs font-semibold">Rows</Label>
+          <span className="text-muted-foreground text-[11px]">
+            {rows.length}
+          </span>
         </div>
         <div className="space-y-2">
           {rows.map((row, rowIndex) => (
             <div
               key={`row-${rowIndex}`}
-              className="rounded-xl border border-slate-200 bg-white p-2"
+              className="border-stock bg-card rounded-xl border p-2"
             >
-              <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
+              <div className="text-paragraph mb-1 flex items-center justify-between text-[11px]">
                 <span>Row {rowIndex + 1}</span>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-6 w-6 text-slate-500"
+                  className="text-paragraph h-6 w-6"
                   disabled={rows.length <= 1}
                   onClick={() => handleRemoveRow(rowIndex)}
                 >

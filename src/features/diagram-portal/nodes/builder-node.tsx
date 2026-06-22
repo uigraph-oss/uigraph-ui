@@ -24,7 +24,7 @@ export function BuilderNode({ data, selected }: NodeProps<TBuilderNode>) {
 
     if (fcIcon)
       return (
-        <div className="flex items-center justify-center bg-white [&>svg]:size-full">
+        <div className="bg-stock/60 flex items-center justify-center [&>svg]:size-full">
           {fcIcon}
         </div>
       )

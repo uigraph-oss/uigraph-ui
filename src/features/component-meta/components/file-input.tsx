@@ -61,7 +61,7 @@ export function LinkOrFileInput({
 
             {mode === 'upload' && (
               <button
-                className="border-primary/20 flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed bg-white p-6"
+                className="border-primary/20 bg-input flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed p-6"
                 onClick={async () => {
                   const [file] = await openFileExplorer()
                   onChange(file)
@@ -111,7 +111,7 @@ export function FileInput({
     <div>
       {!isViewMode && (
         <button
-          className="border-primary/20 flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed bg-white p-6"
+          className="border-primary/20 bg-input flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed p-6"
           onClick={async () => {
             const [file] = await openFileExplorer()
             onChange(file)

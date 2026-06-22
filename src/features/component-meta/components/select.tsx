@@ -41,7 +41,7 @@ export function DropdownSelectInput({
       onValueChange={onChange}
       open={readonly ? false : undefined}
     >
-      <SelectTrigger className="border-stock text-foreground [&[data-placeholder]]:text-paragraph !h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm">
+      <SelectTrigger className="border-stock text-foreground [&[data-placeholder]]:text-paragraph bg-input !h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm">
         <SelectValue placeholder={placeholder || 'Select an option'} />
       </SelectTrigger>
 
@@ -97,14 +97,14 @@ export function DropdownSearchSelect({
       value={value}
       onValueChange={onChange}
     >
-      <SelectTrigger className="border-stock text-foreground [&[data-placeholder]]:text-paragraph !h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm">
+      <SelectTrigger className="border-stock text-foreground [&[data-placeholder]]:text-paragraph bg-input !h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm">
         <SelectValue placeholder={placeholder || 'Select an option'} />
       </SelectTrigger>
 
       <SelectContent>
         <Input
           placeholder="Search..."
-          className="bg-white/80"
+          className="bg-input/80"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -182,7 +182,7 @@ export function DropdownMultiSelect({
       <DropdownMenuTrigger asChild>
         <button
           ref={triggerRef}
-          className="border-stock text-foreground [&[data-placeholder]]:text-paragraph flex min-h-14 w-full items-center justify-between rounded-[1rem] border bg-white px-4 py-3 text-sm"
+          className="border-stock text-foreground [&[data-placeholder]]:text-paragraph bg-input flex min-h-14 w-full items-center justify-between rounded-[1rem] border px-4 py-3 text-sm"
         >
           {selectedLabels.length > 0 ? selectedLabels.join(', ') : placeholder}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

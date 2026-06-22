@@ -16,7 +16,7 @@ export function SidebarCustomComponents() {
           <div
             key={i}
             draggable
-            className="group relative flex h-10 w-[10.5rem] cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none hover:bg-[#f5f5f5] active:cursor-grabbing"
+            className="group hover:bg-accent relative flex h-10 w-[10.5rem] cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none active:cursor-grabbing"
             onDragStart={(event: React.DragEvent) => {
               componentDragDataTransfer(event.dataTransfer, 'builder', {
                 componentId: type.componentId ?? '',
@@ -49,7 +49,9 @@ export function SidebarCustomComponents() {
 
         {flowComponents.length === 0 && (
           <div className="flex items-center justify-center p-3">
-            <p className="text-sm text-gray-500">No custom components</p>
+            <p className="text-muted-foreground text-sm">
+              No custom components
+            </p>
           </div>
         )}
       </div>

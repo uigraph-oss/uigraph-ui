@@ -56,7 +56,7 @@ export function DatePicker({
           type="button"
           variant="outline"
           className={cn(
-            'border-stock text-foreground h-[3.5rem] w-full justify-between rounded-[1rem] border bg-white px-4 text-sm font-normal',
+            'border-stock text-foreground bg-input h-[3.5rem] w-full justify-between rounded-[1rem] border px-4 text-sm font-normal',
             isValidDate || 'text-muted-foreground'
           )}
         >
@@ -168,7 +168,7 @@ export function DateRangePicker({
         <Button
           type="button"
           variant="outline"
-          className="border-stock text-foreground h-auto min-h-14 w-full justify-between rounded-[1rem] border bg-white px-4 text-[0.625rem] font-normal sm:text-sm"
+          className="border-stock text-foreground bg-input h-auto min-h-14 w-full justify-between rounded-[1rem] border px-4 text-[0.625rem] font-normal sm:text-sm"
         >
           <span
             className={cn(

@@ -31,7 +31,7 @@ export function NodeBuilderCore({
   return (
     <NodeCard
       selected={selected}
-      className="max-w-sm overflow-hidden rounded-[0.5rem] bg-white text-left"
+      className="bg-card max-w-sm overflow-hidden rounded-[0.5rem] text-left"
     >
       <div className="p-5">
         <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -50,7 +50,7 @@ export function NodeBuilderCore({
           </div>
 
           <div className="flex-1 shrink-0 basis-full">
-            <p className="text-lg font-bold text-slate-900">{name}</p>
+            <p className="text-foreground text-lg font-bold">{name}</p>
 
             {label && (
               <div className="mt-1 flex items-center gap-1.5">
@@ -64,7 +64,7 @@ export function NodeBuilderCore({
         </div>
 
         {description && (
-          <div className="mt-4 text-[15px] leading-relaxed text-balance text-slate-600">
+          <div className="text-paragraph mt-4 text-[15px] leading-relaxed text-balance">
             <p>{description}</p>
           </div>
         )}

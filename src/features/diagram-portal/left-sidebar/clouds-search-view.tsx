@@ -158,8 +158,8 @@ export function CloudsSearchView({
   if (isSearching) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-        <AiOutlineLoading3Quarters className="size-5 animate-spin text-gray-500" />
-        <p className="text-sm text-gray-500">Searching services...</p>
+        <AiOutlineLoading3Quarters className="text-muted-foreground size-5 animate-spin" />
+        <p className="text-muted-foreground text-sm">Searching services...</p>
       </div>
     )
   }
@@ -167,18 +167,20 @@ export function CloudsSearchView({
   if (groupedClouds.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <FiSearch className="mb-2 size-8 text-gray-400" />
-        <p className="text-sm text-gray-500">
+        <FiSearch className="text-muted-foreground mb-2 size-8" />
+        <p className="text-muted-foreground text-sm">
           No services found for &quot;{searchQuery}&quot;
         </p>
-        <p className="text-xs text-gray-400">Try a different search term</p>
+        <p className="text-muted-foreground text-xs">
+          Try a different search term
+        </p>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs text-gray-500">
+      <p className="text-muted-foreground text-xs">
         {matches.length} result{matches.length !== 1 ? 's' : ''} in{' '}
         {groupedClouds.length} cloud provider
         {groupedClouds.length !== 1 ? 's' : ''}
@@ -210,17 +212,17 @@ export function CloudsSearchView({
               },
             }}
           >
-            <div className="w-full rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-3">
+            <div className="border-primary/20 from-primary/10 to-primary/5 w-full rounded-lg border bg-gradient-to-r p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-3xl">
                     {getCloudIcon(cloudEntry.cloud)}
                   </span>
                   <div className="text-left">
-                    <h3 className="text-sm font-semibold text-gray-900">
+                    <h3 className="text-foreground text-sm font-semibold">
                       {cloudEntry.title}
                     </h3>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-paragraph text-xs">
                       {cloudEntry.categories.reduce(
                         (sum, category) => sum + category.icons.length,
                         0
@@ -244,16 +246,16 @@ export function CloudsSearchView({
                   key={`${cloudEntry.cloud}:${categoryEntry.category}`}
                   className="flex flex-col gap-1"
                 >
-                  <div className="group flex h-8 w-full items-center justify-between rounded-md px-3 text-xs font-medium text-gray-700">
+                  <div className="group text-secondary-foreground flex h-8 w-full items-center justify-between rounded-md px-3 text-xs font-medium">
                     <span className="truncate capitalize">
                       {categoryEntry.category.replace(/-/g, ' ')}
                     </span>
-                    <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] text-gray-600">
+                    <span className="bg-accent text-paragraph rounded-full px-1.5 py-0.5 text-[10px]">
                       {categoryEntry.icons.length}
                     </span>
                   </div>
 
-                  <div className="ml-2 flex flex-col gap-1.5 border-l border-gray-200 pl-3">
+                  <div className="border-stock ml-2 flex flex-col gap-1.5 border-l pl-3">
                     {categoryEntry.icons.map((iconEntry) => (
                       <CloudIconItem
                         key={`${cloudEntry.cloud}:${categoryEntry.category}:${iconEntry.icon.name}:${iconEntry.icon.relativePath}`}

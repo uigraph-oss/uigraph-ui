@@ -176,7 +176,7 @@ export function FloatingLeftSidebar() {
               name,
               description,
               componentId: crypto.randomUUID(),
-              icon: <CgMoreO className="text-gray-500" />,
+              icon: <CgMoreO className="text-muted-foreground" />,
               componentFields: fields.map((field) => {
                 if (field.label !== 'Name') return field
 
@@ -213,8 +213,8 @@ function SidebarButton({
           <button
             onClick={onClick}
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-[0.5rem] border border-[#F2F2F2] bg-white transition-all hover:bg-[#F5F7FA] [&>svg]:!size-5',
-              isActive && 'border-[#E8ECFC] bg-[#E8ECFC] text-[#3859FF]'
+              'border-stock bg-card text-foreground hover:bg-accent flex h-10 w-10 items-center justify-center rounded-[0.5rem] border transition-all [&>svg]:!size-5',
+              isActive && 'border-primary/40 bg-primary/15 text-primary'
             )}
           >
             {icon}

@@ -749,7 +749,7 @@ export function NodeDatabaseNosqlPropertiesUI({
                   return (
                     <div
                       key={id}
-                      className="space-y-2 rounded border border-gray-200 bg-gray-50 p-2"
+                      className="border-stock bg-card space-y-2 rounded border p-2"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <button
@@ -765,7 +765,7 @@ export function NodeDatabaseNosqlPropertiesUI({
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-5 w-5 p-0 text-gray-600"
+                            className="text-paragraph h-5 w-5 p-0"
                             onClick={() =>
                               setOpenGsiId((prev) => (prev === id ? null : id))
                             }
@@ -781,7 +781,7 @@ export function NodeDatabaseNosqlPropertiesUI({
                               size="sm"
                               variant="ghost"
                               onClick={() => removeDynamoGsi(id)}
-                              className="h-5 w-5 p-0 text-gray-400 hover:text-red-600"
+                              className="text-muted-foreground h-5 w-5 p-0 hover:text-red-600"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -794,7 +794,7 @@ export function NodeDatabaseNosqlPropertiesUI({
                           <div className="space-y-2">
                             <Label className="text-xs">Index Name</Label>
                             <Input
-                              className="!h-11 w-full rounded-[0.8rem] bg-white shadow-none"
+                              className="bg-input !h-11 w-full rounded-[0.8rem] shadow-none"
                               value={name}
                               readOnly={readOnly}
                               onChange={(e) =>

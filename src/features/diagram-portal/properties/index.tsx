@@ -93,7 +93,7 @@ export function FloatingProperties() {
             className="pointer-events-none absolute inset-4 left-auto grid max-h-full w-[14.875rem] grid-rows-[auto_1fr]"
             style={{ width: panelWidth }}
           >
-            <header className="border-stock pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border bg-white px-4 py-3">
+            <header className="border-stock bg-card pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border px-4 py-3">
               <div className="border-stock flex items-center rounded-md border">
                 <Button
                   size="sm"
@@ -187,12 +187,12 @@ export function FloatingProperties() {
             className="pointer-events-none absolute inset-4 left-auto grid max-h-full grid-rows-[auto_1fr]"
             style={{ width: panelWidth }}
           >
-            <header className="pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border border-[#e5e7e9] bg-white px-4 py-3">
+            <header className="border-stock bg-card pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border px-4 py-3">
               <h3 className={'text-sm font-bold'}>Edge Properties</h3>
 
               <button
                 onClick={() => setSelectedEdgeIds([])}
-                className="hover:bg-destructive flex size-[1.375rem] items-center justify-center rounded-md bg-[#f6f6f6] text-sm text-[#6b7480] transition-all hover:text-white"
+                className="bg-accent text-paragraph hover:bg-destructive flex size-[1.375rem] items-center justify-center rounded-md text-sm transition-all hover:text-white"
               >
                 <CrossIcon />
               </button>

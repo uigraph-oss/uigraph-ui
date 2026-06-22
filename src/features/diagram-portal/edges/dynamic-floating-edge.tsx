@@ -71,7 +71,7 @@ export function DynamicFloatingEdge({
             y={labelY - bbox.height / 2 - 2}
             width={bbox.width + 8}
             height={bbox.height + 4}
-            fill="white"
+            fill="#1e2533"
             rx={4}
             ry={4}
             style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -82,7 +82,7 @@ export function DynamicFloatingEdge({
             y={labelY}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="bg-white"
+            fill="#f4f7fc"
             style={{
               pointerEvents: 'none',
               userSelect: 'none',

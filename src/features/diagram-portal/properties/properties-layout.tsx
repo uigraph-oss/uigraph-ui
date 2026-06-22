@@ -35,7 +35,7 @@ export function PropertiesLayout({
 
   return (
     <div ref={containerRef} className={'relative isolate'}>
-      <div className="pointer-events-auto absolute inset-0 h-fit max-h-full rounded-b-[0.75rem] border-r border-b border-l border-[#e5e7e9] bg-white">
+      <div className="border-stock bg-card pointer-events-auto absolute inset-0 h-fit max-h-full rounded-b-[0.75rem] border-r border-b border-l">
         <ScrollArea
           style={{ height: Math.min(contentHeight ?? 0, containerHeight ?? 0) }}
         >

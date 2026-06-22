@@ -42,7 +42,7 @@ export async function generateDiagramThumbnailCanvas(nodes: Node[]) {
   const canvas = await toCanvas(viewportElement, {
     width: viewport.width,
     height: viewport.height,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#141925',
     style: {
       transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
     },

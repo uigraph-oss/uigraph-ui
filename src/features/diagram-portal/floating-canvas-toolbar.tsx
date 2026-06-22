@@ -166,7 +166,7 @@ export function FloatingCanvasToolbar() {
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-3 flex items-center justify-center">
-      <div className="pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#E8ECFC] bg-white p-1 shadow-sm">
+      <div className="border-stock bg-card pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border p-1 shadow-sm">
         {/* <ToolbarButton onClick={() => alert('Coming soon!')}>
           <icons.HandIcon />
         </ToolbarButton>
@@ -302,7 +302,7 @@ export function FloatingCanvasToolbar() {
             </ToolbarButton>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="center" className="bg-white">
+          <DropdownMenuContent align="center">
             <DropdownMenuItem
               onClick={() => void handleImportMermaid()}
               disabled={tempDiagramState !== null}
@@ -363,11 +363,11 @@ export function ToolbarButton({
       <TooltipTrigger asChild>
         <button
           className={cn(
-            'flex size-10 items-center justify-center rounded-[0.5rem] border border-[#F2F2F2] bg-white text-[1.0625rem] transition-all',
+            'border-stock bg-card text-foreground flex size-10 items-center justify-center rounded-[0.5rem] border text-[1.0625rem] transition-all',
 
             !disabled && [
-              isActive && 'border-[#E8ECFC] bg-[#E8ECFC] text-[#3859FF]',
-              !isActive && 'hover:bg-[#F2F2F2]',
+              isActive && 'border-primary/40 bg-primary/15 text-primary',
+              !isActive && 'hover:bg-accent',
             ],
 
             disabled && 'cursor-not-allowed opacity-50',
@@ -384,5 +384,5 @@ export function ToolbarButton({
 }
 
 export function ToolbarSeparator() {
-  return <div className={'h-[1.625rem] w-[1px] bg-[#F2F2F2]'} />
+  return <div className={'bg-stock h-[1.625rem] w-[1px]'} />
 }

@@ -41,7 +41,7 @@ export function TagInput({
   }
 
   return (
-    <div className="border-stock text-foreground min-h-14 w-full rounded-[1rem] border bg-white px-4 py-3">
+    <div className="border-stock text-foreground bg-input min-h-14 w-full rounded-[1rem] border px-4 py-3">
       <div className="flex flex-wrap items-center gap-1">
         {value.map((tag, index) => (
           <div

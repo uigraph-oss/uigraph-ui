@@ -124,7 +124,7 @@ export function SidebarGenerateWithAI() {
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
           placeholder="Ex: Create a payment flow with client, API, Stripe and database"
-          className="min-h-36 resize-y bg-white"
+          className="bg-card min-h-36 resize-y"
           disabled={isGenerating}
         />
 
