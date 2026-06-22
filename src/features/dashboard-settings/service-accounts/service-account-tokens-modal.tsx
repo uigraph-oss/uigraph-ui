@@ -1,17 +1,18 @@
 'use client'
 
+import { clientV2 } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useMutation, useQuery } from '@apollo/client'
 import { Check, Copy, Plus, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import {
-  createToken,
-  listTokens,
-  revokeToken,
-  type CreatedToken,
+  CREATE_TOKEN,
+  REVOKE_TOKEN,
+  SERVICE_ACCOUNT_TOKENS,
   type ServiceAccount,
   type ServiceAccountToken,
 } from './api'
@@ -35,53 +36,62 @@ export function ServiceAccountTokensModal({
   orgId: string
   account: ServiceAccount
 }) {
-  const [tokens, setTokens] = useState<ServiceAccountToken[]>([])
   const [name, setName] = useState('')
   const [expiresAt, setExpiresAt] = useState('')
-  const [creating, setCreating] = useState(false)
-  const [created, setCreated] = useState<CreatedToken | null>(null)
+  const [created, setCreated] = useState<{ token: string } | null>(null)
   const [copied, setCopied] = useState(false)
 
-  async function refresh() {
-    try {
-      setTokens(await listTokens(orgId, account.id))
-    } catch (error) {
-      toast.error((error as Error).message)
-    }
-  }
+  const tokensQuery = useQuery(SERVICE_ACCOUNT_TOKENS, {
+    client: clientV2,
+    variables: { orgId, saId: account.id },
+    onError: (error) => toast.error(error.message),
+  })
+  const tokens = (tokensQuery.data?.serviceAccountTokens ??
+    []) as ServiceAccountToken[]
 
-  useEffect(() => {
-    void refresh()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, account.id])
+  const refetchTokens = {
+    client: clientV2,
+    refetchQueries: [
+      { query: SERVICE_ACCOUNT_TOKENS, variables: { orgId, saId: account.id } },
+    ],
+    awaitRefetchQueries: true,
+  }
+  const [createToken, { loading: creating }] = useMutation(
+    CREATE_TOKEN,
+    refetchTokens
+  )
+  const [revokeToken] = useMutation(REVOKE_TOKEN, refetchTokens)
 
   async function handleCreate() {
     if (name.trim() === '') {
       toast.error('Token name is required')
       return
     }
-    setCreating(true)
     try {
-      const result = await createToken(orgId, account.id, {
-        name: name.trim(),
-        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
+      const { data } = await createToken({
+        variables: {
+          orgId,
+          saId: account.id,
+          input: {
+            name: name.trim(),
+            expiresAt: expiresAt
+              ? new Date(expiresAt).toISOString()
+              : undefined,
+          },
+        },
       })
-      setCreated(result)
+      setCreated({ token: data!.createServiceAccountToken.token })
       setName('')
       setExpiresAt('')
-      await refresh()
       toast.success('Token created')
     } catch (error) {
       toast.error((error as Error).message)
-    } finally {
-      setCreating(false)
     }
   }
 
   async function handleRevoke(tokenId: string) {
     try {
-      await revokeToken(orgId, account.id, tokenId)
-      await refresh()
+      await revokeToken({ variables: { orgId, saId: account.id, tokenId } })
       toast.success('Token revoked')
     } catch (error) {
       toast.error((error as Error).message)

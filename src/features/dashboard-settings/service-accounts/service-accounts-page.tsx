@@ -1,16 +1,18 @@
 'use client'
 
+import { clientV2 } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation, useQuery } from '@apollo/client'
 import { Plus } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
 import {
-  createServiceAccount,
-  listScopes,
-  listServiceAccounts,
+  CREATE_SERVICE_ACCOUNT,
+  SERVICE_ACCOUNT_SCOPES,
+  SERVICE_ACCOUNTS,
   type ServiceAccount,
 } from './api'
 import {
@@ -21,37 +23,39 @@ import { ServiceAccountTable } from './service-account-table'
 
 export function ServiceAccountsPage() {
   const organizationId = useCurrentOrganization()?.id as string
-  const [accounts, setAccounts] = useState<ServiceAccount[]>([])
-  const [scopes, setScopes] = useState<string[]>([])
-  const [loading, setLoading] = useState(true)
-
   const [createOpen, setCreateOpen] = useState(false)
 
-  const refresh = useCallback(async () => {
-    if (!organizationId) return
-    try {
-      const [sa, sc] = await Promise.all([
-        listServiceAccounts(organizationId),
-        listScopes(organizationId),
-      ])
-      setAccounts(sa)
-      setScopes(sc)
-    } catch (error) {
-      toast.error((error as Error).message)
-    } finally {
-      setLoading(false)
-    }
-  }, [organizationId])
+  const accountsQuery = useQuery(SERVICE_ACCOUNTS, {
+    client: clientV2,
+    variables: { orgId: organizationId },
+    skip: !organizationId,
+    onError: (error) => toast.error(error.message),
+  })
+  const scopesQuery = useQuery(SERVICE_ACCOUNT_SCOPES, {
+    client: clientV2,
+    variables: { orgId: organizationId },
+    skip: !organizationId,
+    onError: (error) => toast.error(error.message),
+  })
 
-  useEffect(() => {
-    void refresh()
-  }, [refresh])
+  const [createServiceAccount] = useMutation(CREATE_SERVICE_ACCOUNT, {
+    client: clientV2,
+    refetchQueries: [
+      { query: SERVICE_ACCOUNTS, variables: { orgId: organizationId } },
+    ],
+    awaitRefetchQueries: true,
+  })
+
+  const accounts = (accountsQuery.data?.serviceAccounts ??
+    []) as ServiceAccount[]
+  const scopes = scopesQuery.data?.serviceAccountScopes ?? []
 
   async function handleCreate(values: ServiceAccountFormValues) {
     try {
-      await createServiceAccount(organizationId, values)
+      await createServiceAccount({
+        variables: { orgId: organizationId, input: values },
+      })
       setCreateOpen(false)
-      await refresh()
       toast.success('Service account created')
     } catch (error) {
       toast.error((error as Error).message)
@@ -76,7 +80,7 @@ export function ServiceAccountsPage() {
 
       <div className="px-6 pt-4">
         <div className="overflow-x-auto rounded-[12px] border border-[#2A3242]">
-          {loading ? (
+          {accountsQuery.loading && !accountsQuery.data ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
               Loading…
             </p>
@@ -85,7 +89,6 @@ export function ServiceAccountsPage() {
               accounts={accounts}
               orgId={organizationId}
               availableScopes={scopes}
-              onChanged={refresh}
             />
           )}
         </div>
