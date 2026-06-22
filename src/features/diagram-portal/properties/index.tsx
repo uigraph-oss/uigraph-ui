@@ -1,6 +1,6 @@
 import { SettingsIcon } from '@/assets/svgs'
 import { CrossButton } from '@/components/cross-button'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   PointerEvent as ReactPointerEvent,
@@ -30,6 +30,34 @@ import { TableStyle } from './table-style'
 const MIN_PANEL_WIDTH = 220
 const MAX_PANEL_WIDTH = 640
 const DEFAULT_PANEL_WIDTH = 238
+
+const propertiesPanelHeaderClassName =
+  'pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border border-[#2A3242] bg-[#141925] px-4 py-3'
+
+function PropertiesTabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'h-8 rounded-[0.375rem] px-3 text-sm font-normal transition-colors',
+        active
+          ? 'bg-[#141925] text-[#F4F7FC] shadow-sm'
+          : 'text-[#828DA3] hover:text-[#F4F7FC]'
+      )}
+    >
+      {children}
+    </button>
+  )
+}
 
 export function FloatingProperties() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -93,29 +121,25 @@ export function FloatingProperties() {
             className="pointer-events-none absolute inset-4 left-auto grid max-h-full w-[14.875rem] grid-rows-[auto_1fr]"
             style={{ width: panelWidth }}
           >
-            <header className="border-stock bg-card pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border px-4 py-3">
-              <div className="border-stock flex items-center rounded-md border">
-                <Button
-                  size="sm"
-                  variant={selectedTab === 'data' ? 'outline' : 'ghost'}
-                  className="rounded-r-none border-none"
+            <header className={propertiesPanelHeaderClassName}>
+              <div className="flex items-center rounded-md border border-[#2A3242] bg-[#1E2533] p-0.5">
+                <PropertiesTabButton
+                  active={selectedTab === 'data'}
                   onClick={() => setSelectedTab('data')}
                 >
                   Data
-                </Button>
-                <Button
-                  size="sm"
-                  variant={selectedTab === 'style' ? 'outline' : 'ghost'}
-                  className="rounded-l-none border-none"
+                </PropertiesTabButton>
+                <PropertiesTabButton
+                  active={selectedTab === 'style'}
                   onClick={() => setSelectedTab('style')}
                 >
                   Style
-                </Button>
+                </PropertiesTabButton>
               </div>
 
               <div className="flex items-center gap-1">
                 <button
-                  className="hover:bg-stock text-foreground/70 hover:text-foreground flex size-[1.375rem] items-center justify-center rounded-sm bg-transparent text-xs transition-all *:transition-all"
+                  className="flex size-[1.375rem] items-center justify-center rounded-sm bg-transparent text-[#828DA3] transition-all hover:bg-[#1E2533] hover:text-[#F4F7FC]"
                   onClick={() => setIsEditModalOpen(true)}
                 >
                   <SettingsIcon />
@@ -187,12 +211,14 @@ export function FloatingProperties() {
             className="pointer-events-none absolute inset-4 left-auto grid max-h-full grid-rows-[auto_1fr]"
             style={{ width: panelWidth }}
           >
-            <header className="border-stock bg-card pointer-events-auto flex h-14 items-center justify-between rounded-t-[0.75rem] border px-4 py-3">
-              <h3 className={'text-sm font-bold'}>Edge Properties</h3>
+            <header className={propertiesPanelHeaderClassName}>
+              <h3 className="text-sm font-bold text-[#F4F7FC]">
+                Edge Properties
+              </h3>
 
               <button
                 onClick={() => setSelectedEdgeIds([])}
-                className="bg-accent text-paragraph hover:bg-destructive flex size-[1.375rem] items-center justify-center rounded-md text-sm transition-all hover:text-white"
+                className="hover:bg-destructive flex size-[1.375rem] items-center justify-center rounded-md bg-[#1E2533] text-sm text-[#828DA3] transition-all hover:text-white"
               >
                 <CrossIcon />
               </button>

@@ -27,7 +27,7 @@ export function FocalPointSidebar({
   return (
     <>
       <div className="border-stock flex h-14 items-center justify-between border-b px-4 py-3">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-[#F4F7FC]">
           Focal Point Details
         </h2>
 

@@ -3,6 +3,7 @@ import { LiaHeadingSolid } from 'react-icons/lia'
 import { RxText } from 'react-icons/rx'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
+import { sidebarDragRowClassName } from './sidebar-panel-styles'
 
 const textPresets = [
   {
@@ -51,25 +52,31 @@ export function SidebarText() {
           <div
             key={i}
             draggable
-            className="hover:bg-accent flex h-10 w-full cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none active:cursor-grabbing"
+            className={sidebarDragRowClassName}
             onDragStart={(event: React.DragEvent) => {
-              componentDragDataTransfer(event.dataTransfer, 'text', {
-                color: t.color,
-                fontSize: t.fontSize,
-                fontWeight: t.fontWeight,
-                componentFields: [
-                  {
-                    componentFieldId: 'text',
-                    type: ComponentInputType.TextInput,
-                    label: 'Text',
-                    isReadonly: true,
-                  },
-                ],
-              })
+              componentDragDataTransfer(
+                event,
+                'text',
+                {
+                  color: t.color,
+                  fontSize: t.fontSize,
+                  fontWeight: t.fontWeight,
+                  componentFields: [
+                    {
+                      componentFieldId: 'text',
+                      type: ComponentInputType.TextInput,
+                      label: 'Text',
+                      isReadonly: true,
+                    },
+                  ],
+                },
+                undefined,
+                t.preview
+              )
             }}
           >
             <span className="flex items-center gap-2">
-              <span className="bg-accent text-secondary-foreground border-stock flex size-5 items-center justify-center rounded-[4px] border text-[12px]">
+              <span className="flex size-5 items-center justify-center rounded-[4px] border border-[#2A3242] bg-[#1E2533] text-[12px] text-[#F4F7FC]">
                 {t.icon}
               </span>
               <span className="text-sm font-medium">{t.preview}</span>

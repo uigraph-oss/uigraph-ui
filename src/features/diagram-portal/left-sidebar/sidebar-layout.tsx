@@ -42,7 +42,7 @@ export function SidebarLayout({
       {...props}
     >
       <ScrollArea
-        className={'border-stock bg-card rounded-[0.75rem] border'}
+        className="rounded-[0.75rem] border border-[#2A3242] bg-[#141925]"
         style={{
           height: Math.min(contentHeight ?? 0, containerHeight ?? 0) + 2,
         }}

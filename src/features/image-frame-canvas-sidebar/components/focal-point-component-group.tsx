@@ -61,7 +61,7 @@ export function FocalPointComponentsSection({
           defaultValue={group.name}
         >
           <AccordionItem value={group.name}>
-            <AccordionTrigger className="group flex w-full items-center justify-between px-4 text-base">
+            <AccordionTrigger className="group flex w-full items-center justify-between px-4 text-base text-[#F4F7FC]">
               {group.name}
             </AccordionTrigger>
 

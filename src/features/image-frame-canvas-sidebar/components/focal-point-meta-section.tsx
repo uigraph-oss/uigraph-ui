@@ -172,7 +172,7 @@ export function FocalPointMetaSection({
       <Accordion
         type="single"
         collapsible
-        className="border-stock overflow-hidden rounded-[0.8125rem] border"
+        className="overflow-hidden rounded-[0.8125rem] border border-[#2A3242] bg-[#1E2533]"
         value={componentPointMeta.length > 0 ? undefined : 'none'}
       >
         <AccordionItem value="item-1">
@@ -191,7 +191,9 @@ export function FocalPointMetaSection({
               <div className={'flex flex-col gap-1'}>
                 <h4 className="text-sm font-medium">{component.name}</h4>
 
-                <p className="text-xs text-gray-500">{component.description}</p>
+                <p className="text-paragraph text-xs">
+                  {component.description}
+                </p>
               </div>
             </div>
 
@@ -247,7 +249,7 @@ export function FocalPointMetaSection({
             </div>
           </div>
 
-          <AccordionContent className="border-stock bg-shading-gray border-t p-3">
+          <AccordionContent className="border-t border-[#2A3242] bg-[#141925] p-3">
             <div
               className={cn(
                 'flex flex-col gap-2',

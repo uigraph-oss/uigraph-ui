@@ -127,7 +127,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/dashboard" className="rounded-full bg-white">
+          <Link to="/dashboard" className="rounded-full">
             <UiGraphLogo />
           </Link>
 
@@ -148,7 +148,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
       </header>
 
       <div className={'relative isolate h-full flex-1'}>
-        <div className="border-stock absolute inset-4 top-2 isolate overflow-hidden rounded-[0.75rem] border">
+        <div className="absolute inset-4 top-2 isolate overflow-hidden rounded-[0.75rem] border border-[#2A3242]">
           {children}
           <FloatingCanvasToolbar />
           {tempDiagramState === null && <FloatingLeftSidebar />}

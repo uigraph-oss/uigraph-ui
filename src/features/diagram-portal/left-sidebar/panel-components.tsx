@@ -8,6 +8,12 @@ import { getFlowDiagramComponentIcon } from '../constants/flow-diagram-node'
 import { useFlowDiagramComponents } from '../hooks/use-flow-diagram-components'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
+import {
+  sidebarListItemClassName,
+  sidebarNestedCategoryButtonClassName,
+  sidebarNestedListClassName,
+  sidebarSectionHeaderClassName,
+} from './sidebar-panel-styles'
 
 export function SidebarComponents() {
   const { focalPointGroups, loading } = useComponents()
@@ -42,7 +48,7 @@ export function SidebarComponents() {
         <div className="flex flex-col gap-1.5">
           <button
             onClick={() => setShowBuilder((v) => !v)}
-            className="border-stock bg-popover hover:bg-accent flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm font-semibold"
+            className={sidebarSectionHeaderClassName}
           >
             <span>Flow Diagram Components</span>
             {showBuilder ? (
@@ -74,7 +80,7 @@ export function SidebarComponents() {
                       <div key={group.name} className="flex flex-col gap-1">
                         <button
                           onClick={() => toggleBuilderCategory(group.name)}
-                          className="group text-secondary-foreground hover:bg-accent flex h-8 w-full items-center justify-between rounded-md px-3 text-xs font-medium transition-colors"
+                          className={sidebarNestedCategoryButtonClassName}
                         >
                           <span className="truncate">{group.name}</span>
                           {expandedBuilderCategories.has(group.name) ? (
@@ -92,16 +98,16 @@ export function SidebarComponents() {
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.2, ease: 'easeOut' }}
-                              className="border-stock ml-2 flex flex-col gap-1.5 border-l pl-1"
+                              className={sidebarNestedListClassName}
                             >
                               {group.components.map((type) => (
                                 <div
                                   key={type.componentId}
                                   draggable
-                                  className="hover:bg-accent flex min-h-10 cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none active:cursor-grabbing"
+                                  className={sidebarListItemClassName}
                                   onDragStart={(event: React.DragEvent) => {
                                     componentDragDataTransfer(
-                                      event.dataTransfer,
+                                      event,
                                       'builder',
                                       {
                                         componentId: type.componentId ?? '',
@@ -148,7 +154,7 @@ export function SidebarComponents() {
         <div className="flex flex-col gap-1.5">
           <button
             onClick={() => setShowFocal((v) => !v)}
-            className="border-stock bg-popover hover:bg-accent flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm font-semibold"
+            className={sidebarSectionHeaderClassName}
           >
             <span>Focal Point Components</span>
             {showFocal ? (
@@ -184,7 +190,7 @@ export function SidebarComponents() {
                       <div key={group.name} className="flex flex-col gap-1">
                         <button
                           onClick={() => toggleCategory(group.name)}
-                          className="group text-secondary-foreground hover:bg-accent flex h-8 w-full items-center justify-between rounded-md px-3 text-xs font-medium transition-colors"
+                          className={sidebarNestedCategoryButtonClassName}
                         >
                           <span className="truncate">{group.name}</span>
                           {expandedCategories.has(group.name) ? (
@@ -202,16 +208,16 @@ export function SidebarComponents() {
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.2, ease: 'easeOut' }}
-                              className="border-stock ml-2 flex flex-col gap-1.5 border-l pl-1"
+                              className={sidebarNestedListClassName}
                             >
                               {group.components.map((type) => (
                                 <div
                                   key={type.componentId}
                                   draggable
-                                  className="hover:bg-accent flex min-h-10 cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none active:cursor-grabbing"
+                                  className={sidebarListItemClassName}
                                   onDragStart={(event: React.DragEvent) => {
                                     componentDragDataTransfer(
-                                      event.dataTransfer,
+                                      event,
                                       'builder',
                                       {
                                         componentId: type.componentId ?? '',

@@ -79,7 +79,7 @@ export function ComponentFieldAdd({
   setComponentFields,
 }: Pick<ComponentFieldListProps, 'setComponentFields'>) {
   return (
-    <div className="border-stock flex items-center justify-between rounded-2xl border bg-white p-2">
+    <div className="flex items-center justify-between rounded-[16px] border border-[#2A3242] bg-transparent p-2">
       <Button
         className="h-10 rounded-[0.5rem] !px-4"
         onClick={() => {
@@ -126,7 +126,7 @@ function ComponentFieldItem({
       layout="position"
       dragListener={false}
       dragControls={controls}
-      className="border-stock rounded-2xl border bg-white p-3 select-none"
+      className="rounded-[16px] border border-[#2A3242] bg-transparent p-3 select-none"
     >
       <div className="flex items-center justify-between">
         <div className="flex basis-[13.0625rem] items-center gap-1">
@@ -140,7 +140,7 @@ function ComponentFieldItem({
           <Input
             maxLength={20}
             placeholder="Field Name"
-            className="border-stock bg-shading h-10 rounded-[0.5rem]"
+            className="h-10 rounded-[0.5rem] border border-[#2A3242] bg-transparent"
             value={field.label || ''}
             disabled={field.isReadonly ?? false}
             readOnly={field.isReadonly ?? false}
@@ -159,7 +159,7 @@ function ComponentFieldItem({
             disabled={field.isReadonly ?? false}
             onValueChange={(value) => setField({ type: value })}
           >
-            <SelectTrigger className="border-stock bg-shading !h-10 w-full rounded-[0.5rem]">
+            <SelectTrigger className="!h-10 w-full rounded-[0.5rem] border border-[#2A3242] bg-transparent">
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
 
@@ -179,7 +179,7 @@ function ComponentFieldItem({
               checked={field.required || false}
               disabled={field.isReadonly ?? false}
               onCheckedChange={(checked) => setField({ required: checked })}
-              className="peer focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-[1.6rem] w-[2.88rem] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-[#e4e4e4] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="peer focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-[1.6rem] w-[2.88rem] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-[#2A3242] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               <SwitchPrimitives.Thumb className="data-[state=checked]:bg-primary pointer-events-none block h-[1.28rem] w-[1.28rem] rounded-full bg-white shadow-lg ring-0 transition-all data-[state=checked]:translate-x-full data-[state=unchecked]:translate-x-0" />
             </SwitchPrimitives.Root>
@@ -206,7 +206,7 @@ function ComponentFieldItem({
         field.type === ComponentInputType.SearchSelect ||
         field.type === ComponentInputType.MultiSelect ||
         field.type === ComponentInputType.CheckboxGroup) && (
-        <div className="border-stock mt-3 border-t pt-2">
+        <div className="mt-3 border-t border-[#2A3242] pt-2">
           <h5 className="mb-3 text-sm font-medium">Options:</h5>
 
           <div>
@@ -214,7 +214,7 @@ function ComponentFieldItem({
               <div key={index} className="mb-2 flex items-center gap-2">
                 <Input
                   placeholder="Option Label"
-                  className="border-stock/50 bg-shading/40 h-10 w-full rounded-[0.5rem]"
+                  className="h-10 w-full rounded-[0.5rem] border border-[#2A3242] bg-transparent"
                   value={option}
                   onChange={(e) => {
                     const newOptions = arrayNonNullable(field.options)

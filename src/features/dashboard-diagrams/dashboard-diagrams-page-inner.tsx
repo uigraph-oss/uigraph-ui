@@ -50,7 +50,7 @@ function DashboardDiagramsPageContent() {
             New Folder
           </Button>
 
-          <Button preset="primary" onClick={() => setIsCreateDiagramOpen(true)}>
+          <Button preset="cta" onClick={() => setIsCreateDiagramOpen(true)}>
             <CirclePlusIcon />
             Create Flow
           </Button>

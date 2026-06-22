@@ -6,6 +6,7 @@ import { useCloudIcons } from '../hooks/use-cloud-icons'
 import { CloudsListView } from './clouds-list-view'
 import { CloudsSearchView } from './clouds-search-view'
 import { SidebarLayout } from './sidebar-layout'
+import { sidebarInputClassName } from './sidebar-panel-styles'
 
 export function SidebarClouds() {
   const { isLoading, error, groupIconsByCloud } = useCloudIcons()
@@ -47,14 +48,14 @@ export function SidebarClouds() {
   return (
     <SidebarLayout className="left-18">
       <div className="flex w-96 flex-col gap-3 p-3">
-        <div className="bg-card sticky top-0 z-10 pb-1">
+        <div className="sticky top-0 z-10 bg-[#141925] pb-1">
           <div className="relative">
             <FiSearch className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <Input
               placeholder="Search services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-stock h-10 pl-10 text-sm focus:border-blue-500 focus:ring-blue-500"
+              className={sidebarInputClassName}
             />
           </div>
         </div>

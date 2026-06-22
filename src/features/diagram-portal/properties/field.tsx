@@ -33,7 +33,7 @@ export function Field({
   return (
     <div>
       <div className="mb-2 flex h-7 items-center justify-between">
-        <Label>{label}</Label>
+        <Label className="text-sm font-normal text-[#F4F7FC]">{label}</Label>
 
         <div className="flex items-center gap-2">
           {labelExtra}
@@ -45,7 +45,7 @@ export function Field({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="text-paragraph size-6"
+                    className="size-6 text-[#828DA3] hover:text-[#F4F7FC]"
                     disabled={isVisibilityDisabled}
                     onClick={() => {
                       setIsVisible((prev) => {

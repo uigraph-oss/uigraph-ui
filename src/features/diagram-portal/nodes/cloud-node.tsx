@@ -27,7 +27,7 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
   return (
     <NodeCard
       selected={selected}
-      className="bg-card relative isolate size-full min-h-fit"
+      className="relative isolate size-full min-h-fit border border-[#2A3242] bg-[#141925]"
       style={{ borderRadius: data?.borderRadius || 8 }}
     >
       <NodeResizer
@@ -47,29 +47,32 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
       />
 
       <div
-        className="flex h-full flex-col items-center justify-center gap-3 p-4"
+        className="flex h-full flex-col items-center justify-center gap-2 overflow-hidden p-3"
         style={{
-          backgroundColor: data?.fill,
+          backgroundColor:
+            data?.fill && data.fill !== 'transparent' ? data.fill : '#1E2533',
           borderRadius: data?.borderRadius,
         }}
       >
         {data.iconSrc && (
-          <img
-            alt={name ?? ''}
-            src={data.iconSrc}
-            className="size-full min-h-16 min-w-16"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.src = '/placeholder.svg'
-            }}
-          />
+          <div className="flex size-16 shrink-0 items-center justify-center">
+            <img
+              alt={name ?? ''}
+              src={data.iconSrc}
+              className="max-h-full max-w-full object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = '/placeholder.svg'
+              }}
+            />
+          </div>
         )}
 
         {name && (
           <p
-            className="text-center text-base leading-tight font-medium break-words"
+            className="text-center text-sm leading-tight font-medium break-words text-[#F4F7FC]"
             style={{
-              fontSize: (width ?? 0) / 10,
+              fontSize: Math.max(12, (width ?? 0) / 10),
             }}
           >
             {name}

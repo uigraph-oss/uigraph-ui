@@ -83,7 +83,7 @@ export function DashboardServices() {
       description="A shared view of your backend services, flows, APIs, data and dependencies"
       crumbs={[{ to: '/services', label: 'Services' }]}
       headerContent={
-        <Button preset="primary" onClick={() => setCreateServiceOpen(true)}>
+        <Button preset="cta" onClick={() => setCreateServiceOpen(true)}>
           <CirclePlus />
           Create Service
         </Button>

@@ -13,3 +13,19 @@ export const DIAGRAM_IMAGES = graphql(`
     }
   }
 `)
+
+export const CREATE_DIAGRAM_IMAGE = graphql(`
+  mutation CreateDiagramImageV2(
+    $orgId: ID!
+    $diagramId: ID!
+    $input: CreateDiagramImageInput!
+  ) {
+    createDiagramImage(orgId: $orgId, diagramId: $diagramId, input: $input) {
+      diagramImageId
+      assetId
+      imageUrl
+      fileName
+      order
+    }
+  }
+`)

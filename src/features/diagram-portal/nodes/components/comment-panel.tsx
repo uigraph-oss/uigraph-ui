@@ -60,7 +60,7 @@ export function CommentPanel({
 }: CommentPanelProps) {
   return (
     <motion.div
-      className="border-border bg-popover absolute top-8 left-6 z-50 w-72 rounded-lg border shadow-lg"
+      className="absolute top-8 left-6 z-50 w-72 overflow-hidden rounded-lg border border-[#2A3242] bg-[#141925] shadow-lg"
       initial={{ opacity: 0, y: -20, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -71,19 +71,18 @@ export function CommentPanel({
         duration: 0.1,
       }}
     >
-      <div className="border-border border-b px-3 py-2.5">
+      <div className="border-b border-[#2A3242] px-3 py-2.5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Comment</h3>
-          <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-[#F4F7FC]">Comment</h3>
+          <div className="flex items-center gap-1">
             <Button
-              size="sm"
-              variant={isResolved ? 'secondary' : 'ghost'}
+              preset="ghost"
               onClick={onToggleResolved}
               title={isResolved ? 'Reopen comment' : 'Mark as resolved'}
               aria-label={isResolved ? 'Reopen comment' : 'Mark as resolved'}
               className={cn(
-                'h-6 px-2 text-xs font-medium',
-                isResolved && 'text-green-700'
+                'h-7 px-2 text-xs font-medium text-[#828DA3] hover:text-[#F4F7FC]',
+                isResolved && 'text-emerald-400 hover:text-emerald-300'
               )}
             >
               <CheckIcon className="size-3" />
@@ -92,14 +91,13 @@ export function CommentPanel({
               </span>
             </Button>
             <Button
-              size="sm"
-              variant="ghost"
+              preset="ghost"
               onClick={onClose}
               title="Deselect comment"
               aria-label="Deselect comment"
-              className="h-6 w-6 p-0"
+              className="size-7 p-0 text-[#828DA3] hover:text-[#F4F7FC]"
             >
-              <XIcon className="size-3" />
+              <XIcon className="size-3.5" />
             </Button>
           </div>
         </div>
@@ -109,9 +107,9 @@ export function CommentPanel({
         onWheelCapture={(e) => e.stopPropagation()}
         className="max-h-96 overflow-x-hidden overflow-y-auto"
       >
-        <div className="divide-border divide-y">
+        <div className="divide-y divide-[#2A3242]">
           {comments.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center text-sm">
+            <div className="py-8 text-center text-sm text-[#828DA3]">
               No comments yet. Start the conversation!
             </div>
           ) : (
@@ -141,19 +139,18 @@ export function CommentPanel({
         </div>
       </div>
 
-      <div className="border-border border-t px-3 py-2.5">
+      <div className="border-t border-[#2A3242] px-3 py-2.5">
         <div className="space-y-2">
           {!!replyToName && (
-            <div className="bg-accent/30 text-paragraph flex items-center justify-between gap-2 rounded-md px-2.5 py-2 text-xs">
+            <div className="flex items-center justify-between gap-2 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 py-2 text-xs text-[#828DA3]">
               <div className="min-w-0 flex-1 truncate">
                 Replying to{' '}
-                <span className="text-foreground font-medium">
+                <span className="font-medium text-[#F4F7FC]">
                   {replyToName}
                 </span>
               </div>
               <Button
-                size="sm"
-                variant="outline"
+                preset="outline"
                 disabled={isCreating}
                 onClick={onCancelReply}
                 className="h-7 px-2 text-xs"
@@ -167,6 +164,7 @@ export function CommentPanel({
             <div className="flex-1">
               <InputEditor
                 forceFocus
+                theme="dark"
                 value={replyText}
                 setValue={onReplyTextChange}
                 className="break-all"

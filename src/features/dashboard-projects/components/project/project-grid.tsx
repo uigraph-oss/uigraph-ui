@@ -26,6 +26,81 @@ import { Link } from 'react-router-dom'
 import { DashboardMap, DELETE_MAP, MAPS, UPDATE_MAP } from '../../api'
 import { ConfigureProjectModal } from './project-configure-modal'
 
+function MapPreview({ urls, name }: { urls: string[]; name?: string | null }) {
+  const [imageError, setImageError] = useState(false)
+  const [isPortraitImage, setIsPortraitImage] = useState(true)
+
+  const previewUrls = urls.filter(Boolean)
+  const hasPreview = previewUrls.length > 0 && !imageError
+
+  function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
+    const { naturalWidth, naturalHeight } = e.currentTarget
+    if (naturalHeight > 0) {
+      setIsPortraitImage(naturalWidth / naturalHeight < 1.4)
+    }
+  }
+
+  return (
+    <div
+      className={cn(
+        'relative aspect-[16/10] w-full transition-colors duration-300',
+        hasPreview ? 'bg-[#1E2533] group-hover:bg-[#252D3E]' : 'bg-[#1A2030]'
+      )}
+    >
+      {hasPreview ? (
+        previewUrls.length === 1 ? (
+          <img
+            src={previewUrls[0]}
+            alt={name ?? 'Map preview'}
+            onLoad={handleImageLoad}
+            onError={() => setImageError(true)}
+            className={cn(
+              'h-full w-full',
+              isPortraitImage
+                ? 'object-cover object-top group-hover:object-bottom'
+                : 'object-contain'
+            )}
+            style={
+              isPortraitImage
+                ? { transition: 'object-position 2.5s ease-in-out' }
+                : undefined
+            }
+          />
+        ) : (
+          <div
+            className={cn(
+              'grid h-full w-full gap-px bg-[#2A3242]',
+              previewUrls.length === 2
+                ? 'grid-cols-2'
+                : 'grid-cols-2 grid-rows-2'
+            )}
+          >
+            {previewUrls.slice(0, 4).map((url, i) => (
+              <img
+                key={`${url}-${i}`}
+                src={url}
+                alt={`${name ?? 'Map'} frame ${i + 1}`}
+                onError={() => setImageError(true)}
+                className="h-full w-full object-cover object-top"
+              />
+            ))}
+          </div>
+        )
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          <div className="flex size-10 items-center justify-center rounded-full bg-[#2A3242]/70">
+            <LuCloudUpload className="size-4 text-[#586378]" />
+          </div>
+          <span className="text-[11px] font-medium text-[#586378]">
+            No images available
+          </span>
+        </div>
+      )}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#141925]/40 to-transparent" />
+    </div>
+  )
+}
+
 export function ProjectGrid({ projects }: { projects: DashboardMap[] }) {
   if (projects.length === 0) {
     return <SectionNotFound label="No maps found" />
@@ -73,18 +148,7 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
         onDragStart={(e) => e.preventDefault()}
       >
         {/* Preview area — flush to card edges */}
-        <div className="relative aspect-[16/10] w-full bg-[#1E2533] transition-colors duration-300">
-          <div className="flex h-full flex-col items-center justify-center gap-2">
-            <div className="flex size-10 items-center justify-center rounded-full bg-[#2A3242]">
-              <LuCloudUpload className="size-4 text-[#586378]" />
-            </div>
-            <span className="text-[11px] font-medium text-[#586378]">
-              No images available
-            </span>
-          </div>
-          {/* Bottom fade for smooth transition into content */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#141925]/40 to-transparent" />
-        </div>
+        <MapPreview urls={project.previewImgUrls ?? []} name={project.name} />
 
         {/* Thin divider */}
         <div className="h-px bg-[#2A3242]" />

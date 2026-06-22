@@ -2,6 +2,7 @@ import { ComponentInputType } from '@/features/component-meta'
 import animatedNodes from '../../../../public/animated-nodes.json'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
+import { sidebarDragRowClassName } from './sidebar-panel-styles'
 
 type AnimatedNode = {
   category: string
@@ -21,10 +22,10 @@ export function SidebarAnimatedNodes() {
             <div
               key={i}
               draggable
-              className="hover:bg-accent flex cursor-grab items-center gap-2 rounded-[0.5rem] bg-transparent p-2 transition-all select-none active:cursor-grabbing"
+              className={sidebarDragRowClassName}
               onDragStart={(event: React.DragEvent) => {
                 componentDragDataTransfer(
-                  event.dataTransfer,
+                  event,
                   'gif',
                   {
                     src,
@@ -55,9 +56,7 @@ export function SidebarAnimatedNodes() {
                 alt={node.name}
                 className="h-8 w-8 flex-shrink-0 rounded-md"
               />
-              <span className="text-secondary-foreground truncate text-sm">
-                {node.name}
-              </span>
+              <span className="truncate text-sm">{node.name}</span>
             </div>
           )
         })}

@@ -12,6 +12,7 @@ export type DashboardMap = {
   updatedBy?: string | null
   createdAt?: string | null
   updatedAt?: string | null
+  previewImgUrls?: string[] | null
 }
 
 export const MAPS = graphql(`
@@ -28,6 +29,7 @@ export const MAPS = graphql(`
       updatedBy
       createdAt
       updatedAt
+      previewImgUrls
     }
   }
 `)

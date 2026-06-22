@@ -1,6 +1,7 @@
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Delta } from 'quill'
 import { lazy, Suspense } from 'react'
+import { useComponentMetaClasses } from './theme'
 
 export * from './components/basic-input'
 export * from './components/check-input'
@@ -11,6 +12,7 @@ export * from './components/number-input'
 export * from './components/select'
 export * from './components/tag-input'
 export * from './constants/component-type'
+export * from './theme'
 
 const QuillRichTextEditor = lazy(() =>
   import('./components/quill-rte/editor').then((mod) => ({
@@ -45,12 +47,16 @@ export function CodeMirrorWrapped({
   readonly?: boolean
   setValue: (value: string) => void
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
-    <CodeMirrorRaw
-      height={height}
-      value={value ?? ''}
-      onChange={setValue}
-      readOnly={readonly}
-    />
+    <div className={classes.codeEditorWrapper}>
+      <CodeMirrorRaw
+        height={height}
+        value={value ?? ''}
+        onChange={setValue}
+        readOnly={readonly}
+      />
+    </div>
   )
 }

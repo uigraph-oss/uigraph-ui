@@ -90,10 +90,10 @@ export function CommentItem({
 
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-foreground text-[13px] font-medium">
+            <span className="text-[13px] font-medium text-[#F4F7FC]">
               {displayName}
             </span>
-            <span className="text-muted-foreground text-[11px]">
+            <span className="text-[11px] text-[#828DA3]">
               {comment.createdAt ? formatTimeAgo(comment.createdAt) : ''}
             </span>
           </div>
@@ -102,11 +102,17 @@ export function CommentItem({
             <div className="space-y-2">
               <InputEditor
                 forceFocus
+                theme="dark"
                 value={editText}
                 setValue={onEditTextChange}
               />
               <div className="flex gap-2">
-                <Button size="sm" onClick={onSaveEdit} disabled={isUpdating}>
+                <Button
+                  preset="primary"
+                  className="h-8 px-3 text-xs"
+                  onClick={onSaveEdit}
+                  disabled={isUpdating}
+                >
                   {isUpdating ? (
                     <SuperCircleLoader className="size-4!" />
                   ) : (
@@ -114,8 +120,8 @@ export function CommentItem({
                   )}
                 </Button>
                 <Button
-                  size="sm"
-                  variant="outline"
+                  preset="outline"
+                  className="h-8 px-3 text-xs"
                   onClick={onCancelEdit}
                   disabled={isUpdating}
                 >
@@ -126,22 +132,21 @@ export function CommentItem({
           ) : (
             <>
               {!!comment.parentCommentId && (
-                <div className="text-muted-foreground text-[11px]">
+                <div className="text-[11px] text-[#828DA3]">
                   Replying to{' '}
-                  <span className="text-foreground/80 font-medium">
+                  <span className="font-medium text-[#F4F7FC]">
                     {parentName || 'a comment'}
                   </span>
                 </div>
               )}
-              <div className="text-foreground text-sm leading-snug">
-                <InputRenderer value={comment.text ?? ''} />
+              <div className="text-sm leading-snug text-[#F4F7FC]">
+                <InputRenderer theme="dark" value={comment.text ?? ''} />
               </div>
 
-              <div className="text-muted-foreground flex items-center gap-1">
+              <div className="flex items-center gap-1 text-[#828DA3]">
                 <Button
-                  size="sm"
-                  variant="ghost"
-                  className="hover:text-foreground -ml-3 h-7 px-2! text-[11px] font-medium"
+                  preset="ghost"
+                  className="-ml-3 h-7 px-2! text-[11px] font-medium text-[#828DA3] hover:text-[#F4F7FC]"
                   onClick={() => {
                     if (!comment.commentId) return
                     onReply(comment.commentId, displayName)
@@ -155,9 +160,8 @@ export function CommentItem({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        size="sm"
-                        variant="ghost"
-                        className="hover:text-foreground h-7 px-2! text-[11px] font-medium"
+                        preset="ghost"
+                        className="h-7 px-2! text-[11px] font-medium text-[#828DA3] hover:text-[#F4F7FC]"
                       >
                         <MoreHorizontalIcon className="size-3" />
                       </Button>

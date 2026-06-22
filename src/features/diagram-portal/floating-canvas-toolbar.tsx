@@ -27,6 +27,9 @@ import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
 import { downloadFlowDiagramImage } from './helpers/download-image'
 
+export const diagramToolbarContainerClassName =
+  'pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
+
 export function FloatingCanvasToolbar() {
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -166,7 +169,7 @@ export function FloatingCanvasToolbar() {
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-3 flex items-center justify-center">
-      <div className="border-stock bg-card pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border p-1 shadow-sm">
+      <div className={diagramToolbarContainerClassName}>
         {/* <ToolbarButton onClick={() => alert('Coming soon!')}>
           <icons.HandIcon />
         </ToolbarButton>
@@ -302,7 +305,10 @@ export function FloatingCanvasToolbar() {
             </ToolbarButton>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="center">
+          <DropdownMenuContent
+            align="center"
+            className="border border-[#2A3242] bg-[#141925] text-[#F4F7FC]"
+          >
             <DropdownMenuItem
               onClick={() => void handleImportMermaid()}
               disabled={tempDiagramState !== null}
@@ -363,11 +369,11 @@ export function ToolbarButton({
       <TooltipTrigger asChild>
         <button
           className={cn(
-            'border-stock bg-card text-foreground flex size-10 items-center justify-center rounded-[0.5rem] border text-[1.0625rem] transition-all',
+            'flex size-10 items-center justify-center rounded-[0.5rem] border border-[#2A3242] bg-transparent text-[1.0625rem] text-[#F4F7FC] transition-all',
 
             !disabled && [
-              isActive && 'border-primary/40 bg-primary/15 text-primary',
-              !isActive && 'hover:bg-accent',
+              isActive && 'border-primary/30 bg-primary/10 text-primary',
+              !isActive && 'hover:bg-[#1E2533]',
             ],
 
             disabled && 'cursor-not-allowed opacity-50',
@@ -384,5 +390,5 @@ export function ToolbarButton({
 }
 
 export function ToolbarSeparator() {
-  return <div className={'bg-stock h-[1.625rem] w-[1px]'} />
+  return <div className="h-[1.625rem] w-[1px] bg-[#2A3242]" />
 }

@@ -118,8 +118,8 @@ export const STANDARD_TOOLS: StandardTool[] = [
     icon: <Frame className="h-4 w-4" />,
     nodeType: 'group',
     dragData: {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#000000',
+      backgroundColor: 'rgba(20, 25, 37, 0.35)',
+      borderColor: '#828DA3',
       componentFields: [
         {
           componentFieldId: 'name',

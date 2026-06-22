@@ -6,11 +6,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+
+const inputClassName =
+  'h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none'
+const textareaClassName =
+  'min-h-[80px] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-6 py-4 text-sm focus:outline-none'
 
 interface ConfigurePageModalProps {
   editMode?: boolean
@@ -152,9 +158,7 @@ export function ConfigurePageModal({
                 autoComplete="off"
                 autoCapitalize="off"
                 placeholder="e.g. Checkout Flow"
-                className={`h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none${
-                  errors.name ? 'border-red-500' : ''
-                }`}
+                className={cn(inputClassName, errors.name && 'border-red-500')}
               />
             )}
           />
@@ -181,9 +185,10 @@ export function ConfigurePageModal({
                 autoComplete="off"
                 autoCapitalize="off"
                 placeholder="Describe what happens in this frame"
-                className={`min-h-[80px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 py-4 focus:outline-none resize-none${
-                  errors.description ? 'border-red-500' : ''
-                }`}
+                className={cn(
+                  textareaClassName,
+                  errors.description && 'border-red-500'
+                )}
               />
             )}
           />
@@ -194,25 +199,27 @@ export function ConfigurePageModal({
         {!editMode && (
           <>
             <div className="space-y-2">
-              <Label>Upload UI Screenshot/Design</Label>
+              <Label className="text-sm font-normal">
+                Upload UI Screenshot/Design
+              </Label>
               <Controller
                 name="imageFile"
                 control={control}
                 render={({ field }) =>
                   !imagePreview ? (
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center gap-3">
                       <Button
                         type="button"
-                        variant="outline"
+                        preset="outline"
                         onClick={() => fileInputRef.current?.click()}
                         className="h-10 px-4 text-sm"
                       >
                         Choose File
                       </Button>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-muted-foreground text-sm">
                         {imageFile ? imageFile.name : 'No file chosen'}
                       </span>
-                      <Upload className="h-4 w-4 text-gray-400" />
+                      <Upload className="text-muted-foreground h-4 w-4" />
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -232,21 +239,21 @@ export function ConfigurePageModal({
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center gap-3">
                         <Button
                           type="button"
-                          variant="outline"
+                          preset="outline"
                           onClick={() => fileInputRef.current?.click()}
                           className="h-10 px-4 text-sm"
                         >
                           Change File
                         </Button>
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-[#F4F7FC]">
                           {imageFile?.name}
                         </span>
                         <Button
                           type="button"
-                          variant="ghost"
+                          preset="ghost"
                           size="icon"
                           onClick={() => {
                             field.onChange(null)
@@ -254,23 +261,23 @@ export function ConfigurePageModal({
                             if (fileInputRef.current)
                               fileInputRef.current.value = ''
                           }}
-                          className="h-6 w-6 text-gray-400 hover:text-red-500"
+                          className="text-muted-foreground h-6 w-6 hover:text-red-500"
                         >
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="rounded-lg border bg-gray-50 p-3">
+                      <div className="rounded-[16px] border border-[#2A3242] bg-transparent p-3">
                         <img
                           src={imagePreview || '/placeholder.svg'}
                           alt="Preview"
-                          className="mx-auto block h-48 w-full rounded border object-contain"
+                          className="mx-auto block h-48 w-full rounded-[12px] border border-[#2A3242] object-contain"
                         />
                       </div>
                     </div>
                   )
                 }
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-muted-foreground text-xs">
                 Tip: Use a clear, high-resolution image of the UI you want to
                 document
               </p>
@@ -340,18 +347,13 @@ export function ConfigurePageModal({
         <div className="flex justify-end gap-3">
           <Button
             type="button"
-            variant="outline"
+            preset="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
-            className="bg-shading text-paragraph border-stock h-11 rounded-[12.85px] text-sm leading-[1.33] font-normal"
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="h-11 rounded-[12.85px] bg-[#015AEB] text-sm leading-[1.33] font-normal hover:bg-blue-700"
-          >
+          <Button type="submit" preset="primary" disabled={isLoading}>
             {isLoading && <SuperCircleLoader />}
             {ctaLabel}
           </Button>

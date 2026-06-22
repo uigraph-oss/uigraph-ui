@@ -21,6 +21,7 @@ import {
   TextInput,
   URLInput,
 } from '@/features/component-meta'
+import { useComponentMetaClasses } from '@/features/component-meta/theme'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
@@ -102,6 +103,7 @@ function NodeConfigureField({
   setIsVisible: (isVisible: boolean) => void
 }) {
   const [isExpandedOpen, setIsExpandedOpen] = useState(false)
+  const { codeEditorWrapper } = useComponentMetaClasses()
 
   const isVisibilityDisabled = useMemo(
     () => !nodeVisibleInputFields.includes(field.type as ComponentInputType),
@@ -126,7 +128,7 @@ function NodeConfigureField({
             <Button
               size="icon"
               variant="ghost"
-              className="text-muted-foreground size-6"
+              className="size-6 text-[#828DA3] hover:text-[#F4F7FC]"
               onClick={() => setIsExpandedOpen(true)}
             >
               <Maximize2 className="size-3" />
@@ -171,7 +173,7 @@ function NodeConfigureField({
         )}
 
         {field.type === ComponentInputType.CodeEditor && (
-          <div className="border-stock bg-card w-full overflow-hidden rounded-[0.75rem] border">
+          <div className={codeEditorWrapper}>
             <CodeMirrorWrapped value={value ?? ''} setValue={setValue} />
           </div>
         )}

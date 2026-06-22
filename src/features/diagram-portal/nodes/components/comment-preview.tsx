@@ -19,7 +19,7 @@ export function CommentPreview({
 }: CommentPreviewProps) {
   return (
     <motion.div
-      className="border-border bg-popover absolute top-8 left-6 z-50 rounded-lg border p-3 shadow-lg"
+      className="absolute top-8 left-6 z-50 rounded-lg border border-[#2A3242] bg-[#141925] p-3 shadow-lg"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       initial={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -35,9 +35,7 @@ export function CommentPreview({
       {comments.length > 0 ? (
         <CommentContent comments={comments} totalComments={totalComments} />
       ) : (
-        <div className="text-muted-foreground w-max text-xs">
-          No comments yet
-        </div>
+        <div className="w-max text-xs text-[#828DA3]">No comments yet</div>
       )}
     </motion.div>
   )
@@ -62,20 +60,21 @@ function CommentContent({
             {(displayName.charAt(0) || 'A').toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <span className="text-foreground text-xs font-medium">
+        <span className="text-xs font-medium text-[#F4F7FC]">
           {displayName}
         </span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-[#828DA3]">
           {comments[0]?.createdAt ? formatTimeAgo(comments[0].createdAt) : ''}
         </span>
       </div>
-      <div className="text-foreground line-clamp-2 text-xs">
-        <InputRenderer value={comments[0]?.text || 'No comments yet'} />
+      <div className="line-clamp-2 text-xs text-[#F4F7FC]">
+        <InputRenderer
+          theme="dark"
+          value={comments[0]?.text || 'No comments yet'}
+        />
       </div>
       {totalComments > 1 && (
-        <div className="text-muted-foreground text-xs">
-          +{totalComments - 1} more
-        </div>
+        <div className="text-xs text-[#828DA3]">+{totalComments - 1} more</div>
       )}
     </div>
   )

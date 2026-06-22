@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import {
   ComponentField,
   ComponentFieldAdd,
@@ -47,22 +48,25 @@ export function FocalPointMetaLayoutModalContent({
       </DialogHeader>
 
       <div className="max-h-full overflow-auto p-6">
-        <ComponentFieldList
-          componentFields={localFields}
-          setComponentFields={setLocalFields}
-        />
+        <ComponentMetaThemeProvider theme="modal">
+          <ComponentFieldList
+            componentFields={localFields}
+            setComponentFields={setLocalFields}
+          />
 
-        <div className="mt-6">
-          <ComponentFieldAdd setComponentFields={setLocalFields} />
-        </div>
+          <div className="mt-6">
+            <ComponentFieldAdd setComponentFields={setLocalFields} />
+          </div>
+        </ComponentMetaThemeProvider>
       </div>
 
-      <DialogFooter className="p-6 pt-2">
-        <Button variant={'outline'} className={'h-11 rounded-[0.8125rem]'}>
+      <DialogFooter className="border-stock border-t p-6 pt-2">
+        <Button preset="outline" className={'h-11 rounded-[0.8125rem]'}>
           Cancel
         </Button>
 
         <Button
+          preset="cta"
           className={'h-11 rounded-[0.8125rem] !px-5'}
           onClick={() => {
             setFields(localFields)

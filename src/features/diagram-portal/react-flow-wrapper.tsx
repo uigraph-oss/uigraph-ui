@@ -580,10 +580,21 @@ export function ReactFlowWrapper({
     >
       <EdgeMarkerDefs />
 
-      {showMinimap && <MiniMap />}
+      {showMinimap && (
+        <MiniMap
+          className="!border !border-[#2A3242] !bg-[#141925] !shadow-sm"
+          maskColor="rgb(11 14 22 / 0.75)"
+          nodeColor="#3859FF"
+        />
+      )}
 
       {!forceNoBackground && showGrid && (
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={12}
+          size={1}
+          color="#2A3242"
+        />
       )}
 
       <DrawingOverlay isDrawing={drawingMode} onDrawComplete={onDrawComplete} />

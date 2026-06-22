@@ -8,11 +8,11 @@ export function DefaultNode() {
 
   return (
     <div>
-      <Label className="mb-2 text-sm leading-[1.333]">Label</Label>
+      <Label className="mb-2 text-sm font-normal text-[#F4F7FC]">Label</Label>
       <Input
         value={data?.label || ''}
         placeholder="Label"
-        className="!h-12 w-full rounded-[0.5rem] border px-4 text-sm"
+        className="!h-12 w-full rounded-[0.5rem] border border-[#2A3242] bg-transparent px-4 text-sm text-[#F4F7FC] placeholder:text-[#828DA3] focus:outline-none"
         onChange={(e) => updateData({ label: e.target.value })}
       />
     </div>

@@ -1,5 +1,6 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { cn } from '@/lib/utils'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 
@@ -35,7 +36,7 @@ export function PropertiesLayout({
 
   return (
     <div ref={containerRef} className={'relative isolate'}>
-      <div className="border-stock bg-card pointer-events-auto absolute inset-0 h-fit max-h-full rounded-b-[0.75rem] border-r border-b border-l">
+      <div className="pointer-events-auto absolute inset-0 h-fit max-h-full rounded-b-[0.75rem] border border-t-0 border-[#2A3242] bg-[#141925]">
         <ScrollArea
           style={{ height: Math.min(contentHeight ?? 0, containerHeight ?? 0) }}
         >
@@ -44,7 +45,9 @@ export function PropertiesLayout({
             ref={contentRef}
             className={cn('w-[14.875rem] space-y-4 p-4 pt-2', className)}
           >
-            <TooltipProvider>{children}</TooltipProvider>
+            <ComponentMetaThemeProvider theme="modal">
+              <TooltipProvider>{children}</TooltipProvider>
+            </ComponentMetaThemeProvider>
           </div>
         </ScrollArea>
       </div>

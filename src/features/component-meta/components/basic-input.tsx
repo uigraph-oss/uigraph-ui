@@ -11,6 +11,7 @@ import * as SliderPrimitive from '@radix-ui/react-slider'
 import { useRef } from 'react'
 import { HexColorInput, HexColorPicker } from 'react-colorful'
 import { BsTrash3 } from 'react-icons/bs'
+import { useComponentMetaClasses } from '../theme'
 
 export function TextInput({
   value,
@@ -23,6 +24,8 @@ export function TextInput({
   readonly?: boolean
   placeholder?: string | null
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
     <Input
       type="text"
@@ -30,7 +33,7 @@ export function TextInput({
       readOnly={readonly}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || 'Enter text here'}
-      className="border-stock text-foreground bg-input h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
+      className={classes.input}
       autoCorrect="off"
       autoComplete="off"
       autoCapitalize="off"
@@ -49,13 +52,15 @@ export function TextAreaInput({
   readonly?: boolean
   placeholder?: string | null
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
     <Textarea
       value={value}
       readOnly={readonly}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || 'Enter text here'}
-      className="border-stock text-foreground bg-input h-[6.75rem] w-full resize-none rounded-[1rem] border p-4 px-4 text-sm leading-normal break-all"
+      className={classes.textarea}
       autoCorrect="off"
       autoComplete="off"
       autoCapitalize="off"
@@ -74,6 +79,8 @@ export function URLInput({
   readonly?: boolean
   placeholder?: string | null
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
     <Input
       type="url"
@@ -81,7 +88,7 @@ export function URLInput({
       readOnly={readonly}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || 'Enter URL here'}
-      className="border-stock text-foreground bg-input h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
+      className={classes.input}
       autoCorrect="off"
       autoComplete="off"
       autoCapitalize="off"
@@ -173,6 +180,7 @@ export function ColorPickerInput({
   className?: string
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   return (
@@ -210,10 +218,7 @@ export function ColorPickerInput({
           if (!value.trim()) onChange('')
         }}
         placeholder="- - -"
-        className={cn(
-          'text-foreground ring-ring/50 bg-input h-[3.5rem] w-full rounded-[1rem] border-none px-4 pl-11 text-sm uppercase ring-0 transition-all outline-none focus:ring-[3px]',
-          className
-        )}
+        className={cn(classes.colorInput, className)}
       />
     </div>
   )
@@ -234,11 +239,10 @@ export function SliderInput({
   onChange: (value: number) => void
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
-    <div
-      title={String(value)}
-      className="bg-input flex h-14 items-center gap-3 rounded-[1rem] px-4"
-    >
+    <div title={String(value)} className={classes.slider}>
       <span className="text-muted-foreground text-sm">{min}</span>
 
       <SliderPrimitive.Root

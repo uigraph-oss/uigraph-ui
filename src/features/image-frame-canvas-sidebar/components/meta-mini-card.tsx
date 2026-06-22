@@ -55,7 +55,7 @@ export function FocalPointMetaMiniCard({
   return (
     <>
       <button
-        className="group relative flex w-full items-center justify-between gap-3 overflow-hidden rounded-lg bg-white px-4 py-3 text-left transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
+        className="group relative flex w-full items-center justify-between gap-3 overflow-hidden rounded-lg border border-[#2A3242] bg-[#1E2533] px-4 py-3 text-left transition-all hover:border-[#3B6BFF]/40"
         onClick={() => {
           if (component.componentId === COMPONENT_FLOW_DIAGRAM_ID) {
             startFlowDiagram()
@@ -85,7 +85,7 @@ export function FocalPointMetaMiniCard({
           </div>
 
           {pointMeta.updatedAt && (
-            <span className="mt-0.5 block text-[10px] tracking-wide text-gray-400">
+            <span className="text-paragraph mt-0.5 block text-[10px] tracking-wide">
               Updated{' '}
               {formatDistanceToNowStrict(new Date(pointMeta.updatedAt), {
                 addSuffix: true,
