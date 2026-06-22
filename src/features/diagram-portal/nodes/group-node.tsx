@@ -149,10 +149,20 @@ export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
   useEffect(() => {
     if (!autoLayout) return
 
-    const updated = computeGroupAutoLayout(getNodes(), id)
-    if (!updated) return
+    const nodes = getNodes()
+    const children = nodes.filter((node) => node.parentId === id)
 
-    setNodes(updated)
+    if (children.some((child) => child.measured?.width === undefined)) return
+
+    const updated = computeGroupAutoLayout(nodes, id)
+
+    setNodes(
+      (updated ?? nodes).map((node) =>
+        node.id === id
+          ? { ...node, data: { ...node.data, autoLayout: undefined } }
+          : node
+      )
+    )
   }, [autoLayout, childrenSignature, id, getNodes, setNodes])
 
   const frameStyles = resolveGroupFrameStyles(data)
