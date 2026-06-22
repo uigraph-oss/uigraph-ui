@@ -199,6 +199,7 @@ export function ServerOrgsPage() {
             defaultValues={{
               name: editOrg.name,
               disabled: editOrg.disabled,
+              autoJoin: editOrg.autoJoin,
             }}
             onUploadLogo={async (file) => {
               await setServerOrgLogo(editOrg.id, file)
@@ -220,6 +221,7 @@ export function ServerOrgsPage() {
                     input: {
                       name: values.name,
                       disabled: values.disabled,
+                      autoJoin: values.autoJoin,
                     },
                   },
                 })

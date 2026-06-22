@@ -5,6 +5,7 @@ export type ServerOrg = {
   name: string
   logoUrl?: string | null
   disabled: boolean
+  autoJoin: boolean
   createdAt: string
   updatedAt: string
 }
@@ -16,6 +17,7 @@ export const SERVER_ORGS = graphql(`
       name
       logoUrl
       disabled
+      autoJoin
       createdAt
       updatedAt
     }
@@ -46,11 +48,12 @@ export async function removeServerOrgLogo(orgId: string) {
 }
 
 export const CREATE_SERVER_ORG = graphql(`
-  mutation CreateServerOrg($input: CreateOrgInput!) {
-    createOrg(input: $input) {
+  mutation CreateServerOrg($input: CreateServerOrgInput!) {
+    createServerOrg(input: $input) {
       id
       name
       disabled
+      autoJoin
       createdAt
       updatedAt
     }
@@ -58,11 +61,12 @@ export const CREATE_SERVER_ORG = graphql(`
 `)
 
 export const UPDATE_SERVER_ORG = graphql(`
-  mutation UpdateServerOrg($id: ID!, $input: UpdateOrgInput!) {
-    updateOrg(id: $id, input: $input) {
+  mutation UpdateServerOrg($id: ID!, $input: UpdateServerOrgInput!) {
+    updateServerOrg(id: $id, input: $input) {
       id
       name
       disabled
+      autoJoin
       createdAt
       updatedAt
     }
@@ -71,6 +75,6 @@ export const UPDATE_SERVER_ORG = graphql(`
 
 export const DELETE_SERVER_ORG = graphql(`
   mutation DeleteServerOrg($id: ID!) {
-    deleteOrg(id: $id)
+    deleteServerOrg(id: $id)
   }
 `)
