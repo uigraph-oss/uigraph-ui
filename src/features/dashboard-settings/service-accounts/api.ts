@@ -8,6 +8,7 @@ export type ServiceAccount = {
   description?: string
   scopes: string[]
   disabled: boolean
+  isInternal: boolean
   createdAt: string
   updatedAt: string
 }

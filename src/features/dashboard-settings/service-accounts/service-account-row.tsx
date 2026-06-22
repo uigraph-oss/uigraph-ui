@@ -12,7 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ChevronDown, KeyRound, Pencil, Trash2 } from 'lucide-react'
+import { ChevronDown, Info, KeyRound, Pencil, Trash2 } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -118,6 +118,42 @@ export function ServiceAccountRow({
     } catch (error) {
       toast.error((error as Error).message)
     }
+  }
+
+  if (account.isInternal) {
+    return (
+      <tr className="border-b border-[#2A3242]">
+        <td className="w-48 px-6 py-4 align-top">
+          <div className="font-medium break-words text-[#D2D9E6]">
+            {account.name}
+          </div>
+        </td>
+        <td className="px-6 py-4 align-top">
+          <span className="text-sm leading-snug text-[#828DA3]">
+            This account is managed by UIGraph for its internal tasks and is
+            read only.
+          </span>
+        </td>
+        <td className="w-40 px-6 py-4 align-top">
+          <ScopesCell scopes={account.scopes} />
+        </td>
+        <td className="w-32 px-6 py-4 align-top">
+          <div className="flex items-center justify-end">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex h-6 items-center gap-1 rounded-md border border-[#2A3242] bg-[#1E2533] px-2 text-xs font-medium whitespace-nowrap text-[#D2D9E6]">
+                  <Info className="size-3.5 text-[#586378]" />
+                  Internal
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                Used for UIGraph&apos;s internal tasks — read only
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </td>
+      </tr>
+    )
   }
 
   return (
