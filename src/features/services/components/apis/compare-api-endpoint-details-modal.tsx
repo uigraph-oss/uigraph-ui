@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
-} from '@/features/services/api/api-v2-adapters'
+} from '@/features/services/api/api-adapters'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'

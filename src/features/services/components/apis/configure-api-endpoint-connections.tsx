@@ -10,7 +10,7 @@ import {
   FOCAL_POINT_META_BY_COMPONENT_LINK,
   toPointMeta,
 } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
-import { LegacyApiEndpoint } from '@/features/services/api/api-v2-adapters'
+import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 
 import { SectionLoader } from '@/components/section-loader'

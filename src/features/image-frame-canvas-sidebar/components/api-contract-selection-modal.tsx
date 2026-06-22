@@ -2,13 +2,13 @@ import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
 import {
+  apiGroupToLegacy,
+  endpointToLegacyWithMeta,
+} from '@/features/services/api/api-adapters'
+import {
   API_ENDPOINTS,
   API_GROUPS,
 } from '@/features/services/api/api-endpoints'
-import {
-  apiGroupToLegacy,
-  endpointToLegacyWithMeta,
-} from '@/features/services/api/api-v2-adapters'
 import { SERVICES } from '@/features/services/api/services'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'

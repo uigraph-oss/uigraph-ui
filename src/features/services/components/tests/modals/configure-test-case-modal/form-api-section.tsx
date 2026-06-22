@@ -9,8 +9,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { CodeMirrorWrapped } from '@/features/component-meta'
+import { endpointsToLegacyWithMeta } from '@/features/services/api/api-adapters'
 import { API_ENDPOINTS } from '@/features/services/api/api-endpoints'
-import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'

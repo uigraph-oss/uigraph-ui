@@ -3,7 +3,7 @@
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
-import { LegacyApiEndpoint } from '@/features/services/api/api-v2-adapters'
+import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
 import { arrayNonNullable } from 'daily-code'
 import { Code } from 'lucide-react'
 import { useMemo, useState } from 'react'

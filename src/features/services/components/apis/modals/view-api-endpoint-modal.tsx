@@ -3,7 +3,7 @@ import { useComponentField } from '@/features/diagram-portal/hooks/use-component
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
-} from '@/features/services/api/api-v2-adapters'
+} from '@/features/services/api/api-adapters'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo } from 'react'

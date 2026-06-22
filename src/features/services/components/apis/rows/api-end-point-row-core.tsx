@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import { TableCell, TableRow } from '@/components/ui/table'
-import { LegacyComponentMeta } from '@/features/services/api/api-v2-adapters'
+import { LegacyComponentMeta } from '@/features/services/api/api-adapters'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'

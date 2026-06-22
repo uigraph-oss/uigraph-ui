@@ -5,8 +5,8 @@ import type { TestCase } from '@/api/.gql/graphql'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
+import { endpointsToLegacyWithMeta } from '@/features/services/api/api-adapters'
 import { API_ENDPOINTS } from '@/features/services/api/api-endpoints'
-import { endpointsToLegacyWithMeta } from '@/features/services/api/api-v2-adapters'
 import {
   deriveRestEndpointOptions,
   parseApiSpecValue,

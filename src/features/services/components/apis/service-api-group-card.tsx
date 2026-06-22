@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import type { LegacyAPIGroupView } from '@/features/services/api/api-v2-adapters'
+import type { LegacyAPIGroupView } from '@/features/services/api/api-adapters'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { Network, Share2 } from 'lucide-react'

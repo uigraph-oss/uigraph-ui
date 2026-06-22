@@ -16,6 +16,14 @@ import { ArrowLeft } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
+  apiGroupToLegacy,
+  apiGroupVersionToLegacy,
+  endpointsToLegacyWithMeta,
+  type LegacyAPIGroupVersion,
+  type LegacyAPIGroupView,
+  type LegacyEndpointWithMeta,
+} from '../api/api-adapters'
+import {
   API_ENDPOINTS,
   CREATE_API_ENDPOINT,
   DELETE_API_ENDPOINT,
@@ -23,14 +31,6 @@ import {
   UPDATE_API_ENDPOINT,
 } from '../api/api-endpoints'
 import { API_GROUP_AND_VERSIONS } from '../api/api-group-version'
-import {
-  apiGroupToLegacy,
-  apiGroupVersionToLegacy,
-  endpointsToLegacyWithMeta,
-  type LegacyAPIGroupVersion,
-  type LegacyAPIGroupView,
-  type LegacyEndpointWithMeta,
-} from '../api/api-v2-adapters'
 
 type ServiceApiEndpointsContextProps = {
   serviceId: string

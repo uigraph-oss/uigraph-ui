@@ -32,7 +32,7 @@ import { SaveIcon } from '@/features/component-meta/assets'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
-} from '@/features/services/api/api-v2-adapters'
+} from '@/features/services/api/api-adapters'
 import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'

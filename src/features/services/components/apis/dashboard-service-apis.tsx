@@ -9,6 +9,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { apiGroupToLegacy } from '@/features/services/api/api-adapters'
 import {
   API_GROUPS,
   CREATE_API_GROUP,
@@ -18,7 +19,6 @@ import {
   protocolToV2,
   readSpecFile,
 } from '@/features/services/api/api-endpoints'
-import { apiGroupToLegacy } from '@/features/services/api/api-v2-adapters'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'

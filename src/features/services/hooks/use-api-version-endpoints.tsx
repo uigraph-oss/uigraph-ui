@@ -2,8 +2,8 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
+import { endpointsToLegacyWithMeta } from '../api/api-adapters'
 import { API_ENDPOINTS } from '../api/api-endpoints'
-import { endpointsToLegacyWithMeta } from '../api/api-v2-adapters'
 
 export function useVersionEndpoints(
   serviceId: string,

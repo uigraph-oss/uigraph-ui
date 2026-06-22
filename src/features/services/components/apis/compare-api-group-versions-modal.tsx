@@ -10,7 +10,7 @@ import { VersionLayout } from '@/components/version-layout'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
-} from '@/features/services/api/api-v2-adapters'
+} from '@/features/services/api/api-adapters'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'

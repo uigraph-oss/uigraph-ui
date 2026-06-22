@@ -11,7 +11,7 @@ import {
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
-} from '@/features/services/api/api-v2-adapters'
+} from '@/features/services/api/api-adapters'
 import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'

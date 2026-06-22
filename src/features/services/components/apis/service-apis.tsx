@@ -21,11 +21,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody } from '@/components/ui/table'
-import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
-} from '@/features/services/api/api-v2-adapters'
+} from '@/features/services/api/api-adapters'
+import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
