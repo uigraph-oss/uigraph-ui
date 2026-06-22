@@ -208,7 +208,7 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
                       <Button
                         variant="ghost"
                         onClick={() => handleRemoveColumn(columnIndex)}
-                        className="hover:bg-destructive/10 hover:text-destructive absolute top-1.5 right-0.5 size-6 text-red-800/70 [&_svg]:size-3!"
+                        className="hover:bg-destructive/10 hover:text-destructive absolute top-1.5 right-0.5 size-6 text-[#828DA3] [&_svg]:size-3!"
                       >
                         <HiOutlineTrash />
                       </Button>
@@ -264,7 +264,7 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
                         <Button
                           variant="ghost"
                           onClick={() => handleRemoveRow(rowIndex)}
-                          className="text-destructive/70 hover:bg-destructive/10 hover:text-destructive absolute top-0.5 right-0.5 z-10 size-8 px-1! [&_svg]:size-3!"
+                          className="hover:bg-destructive/10 hover:text-destructive absolute top-0.5 right-0.5 z-10 size-8 px-1! text-[#828DA3] [&_svg]:size-3!"
                         >
                           <HiOutlineTrash />
                         </Button>
@@ -297,7 +297,7 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
             >
               <Button
                 preset="outline"
-                className="h-8 w-full shadow-none"
+                className="h-8 w-full text-xs shadow-none [&_svg]:size-3.5!"
                 onClick={handleAddRow}
               >
                 <CirclePlusIcon /> Add Row
