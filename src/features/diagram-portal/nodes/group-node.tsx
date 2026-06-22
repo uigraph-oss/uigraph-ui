@@ -1,7 +1,14 @@
 import { cn } from '@/lib/utils'
 import { buildMetaData } from '@uigraph/sdk'
 import type { Node, NodeProps } from '@xyflow/react'
-import { Handle, NodeResizer, Position, useReactFlow } from '@xyflow/react'
+import {
+  Handle,
+  NodeResizer,
+  Position,
+  useReactFlow,
+  useStore,
+} from '@xyflow/react'
+import { useEffect } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { useComponentField } from '../hooks/use-component-field'
@@ -11,12 +18,93 @@ export type GroupNodeData = NodeDataGenerator<{
   backgroundColor?: string
   borderColor?: string
   childNodes?: string[]
+  autoLayout?: boolean
 }>
 
 export type TGroupNode = Node<GroupNodeData, 'group'>
 
 const DEFAULT_GROUP_BACKGROUND = 'rgba(20, 25, 37, 0.35)'
 const DEFAULT_GROUP_BORDER = '#828DA3'
+
+const AUTO_LAYOUT_PAD_X = 16
+const AUTO_LAYOUT_PAD_TOP = 36
+const AUTO_LAYOUT_PAD_BOTTOM = 16
+
+function computeGroupAutoLayout(nodes: Node[], groupId: string) {
+  const group = nodes.find((node) => node.id === groupId)
+  if (!group) return null
+
+  const children = nodes.filter((node) => node.parentId === groupId)
+  if (children.length === 0) return null
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  for (const child of children) {
+    const width = child.measured?.width ?? child.width ?? 0
+    const height = child.measured?.height ?? child.height ?? 0
+    minX = Math.min(minX, child.position.x)
+    minY = Math.min(minY, child.position.y)
+    maxX = Math.max(maxX, child.position.x + width)
+    maxY = Math.max(maxY, child.position.y + height)
+  }
+
+  const shiftX = AUTO_LAYOUT_PAD_X - minX
+  const shiftY = AUTO_LAYOUT_PAD_TOP - minY
+
+  const nextWidth = maxX - minX + AUTO_LAYOUT_PAD_X * 2
+  const nextHeight = maxY - minY + AUTO_LAYOUT_PAD_TOP + AUTO_LAYOUT_PAD_BOTTOM
+
+  const currentWidth =
+    group.width ??
+    group.measured?.width ??
+    (group.style?.width as number | undefined) ??
+    0
+  const currentHeight =
+    group.height ??
+    group.measured?.height ??
+    (group.style?.height as number | undefined) ??
+    0
+
+  const isConverged =
+    Math.abs(shiftX) < 0.5 &&
+    Math.abs(shiftY) < 0.5 &&
+    Math.abs(nextWidth - currentWidth) < 0.5 &&
+    Math.abs(nextHeight - currentHeight) < 0.5
+
+  if (isConverged) return null
+
+  const childIds = new Set(children.map((child) => child.id))
+
+  return nodes.map((node) => {
+    if (node.id === groupId) {
+      return {
+        ...node,
+        position: {
+          x: node.position.x - shiftX,
+          y: node.position.y - shiftY,
+        },
+        width: nextWidth,
+        height: nextHeight,
+        style: { ...node.style, width: nextWidth, height: nextHeight },
+      }
+    }
+
+    if (childIds.has(node.id)) {
+      return {
+        ...node,
+        position: {
+          x: node.position.x + shiftX,
+          y: node.position.y + shiftY,
+        },
+      }
+    }
+
+    return node
+  })
+}
 
 function resolveGroupFrameStyles(data: GroupNodeData) {
   const backgroundColor = data.backgroundColor
@@ -39,11 +127,33 @@ function resolveGroupFrameStyles(data: GroupNodeData) {
 }
 
 export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
-  const { updateNodeData } = useReactFlow()
+  const { updateNodeData, getNodes, setNodes } = useReactFlow()
   const { isEdgeConnecting } = useFlowDiagramContext()
   const name = useComponentField<string>(data.componentFields, {
     componentFieldId: 'name',
   })
+
+  const autoLayout = data.autoLayout ?? false
+
+  const childrenSignature = useStore((store) => {
+    let signature = ''
+    store.nodeLookup.forEach((node) => {
+      if (node.parentId !== id) return
+      const width = node.measured?.width ?? node.width ?? 0
+      const height = node.measured?.height ?? node.height ?? 0
+      signature += `${node.id},${node.position.x},${node.position.y},${width},${height};`
+    })
+    return signature
+  })
+
+  useEffect(() => {
+    if (!autoLayout) return
+
+    const updated = computeGroupAutoLayout(getNodes(), id)
+    if (!updated) return
+
+    setNodes(updated)
+  }, [autoLayout, childrenSignature, id, getNodes, setNodes])
 
   const frameStyles = resolveGroupFrameStyles(data)
 
@@ -56,7 +166,7 @@ export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
       }}
     >
       <NodeResizer
-        isVisible={selected}
+        isVisible={selected && !autoLayout}
         minWidth={200}
         minHeight={150}
         keepAspectRatio={false}
