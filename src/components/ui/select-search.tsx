@@ -50,7 +50,7 @@ export function SelectSearch({
     >
       <SelectTrigger
         className={cn(
-          'border-stock text-foreground [&[data-placeholder]]:text-paragraph !h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm',
+          'border-stock text-foreground [&[data-placeholder]]:text-paragraph bg-input !h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm',
           className
         )}
       >
@@ -60,7 +60,7 @@ export function SelectSearch({
       <SelectContent>
         <Input
           placeholder="Search..."
-          className="bg-white/80"
+          className="bg-input/80"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {

@@ -257,7 +257,7 @@ export function FloatingSelectionToolbar() {
           transition={{ duration: 0.1, ease: 'easeOut' }}
           className="pointer-events-none absolute inset-x-0 bottom-3 flex items-center justify-center"
         >
-          <div className="pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#E8ECFC] bg-white p-1 shadow-sm">
+          <div className="border-stock bg-card pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border p-1 shadow-sm">
             {hasSelection && (
               <>
                 <ToolbarButton

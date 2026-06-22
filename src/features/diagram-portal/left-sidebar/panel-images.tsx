@@ -62,9 +62,9 @@ export function SidebarImages() {
         <div className="flex flex-col gap-1.5">
           {images.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-6 text-center">
-              <ImageIcon className="h-8 w-8 text-gray-400" />
-              <p className="text-xs text-gray-500">No images</p>
-              <p className="text-[10px] text-gray-400">
+              <ImageIcon className="text-muted-foreground h-8 w-8" />
+              <p className="text-muted-foreground text-xs">No images</p>
+              <p className="text-muted-foreground text-[10px]">
                 Upload an image to get started
               </p>
             </div>

@@ -21,7 +21,7 @@ export function SidebarAnimatedNodes() {
             <div
               key={i}
               draggable
-              className="flex cursor-grab items-center gap-2 rounded-[0.5rem] bg-transparent p-2 transition-all select-none hover:bg-gray-50 active:cursor-grabbing"
+              className="hover:bg-accent flex cursor-grab items-center gap-2 rounded-[0.5rem] bg-transparent p-2 transition-all select-none active:cursor-grabbing"
               onDragStart={(event: React.DragEvent) => {
                 componentDragDataTransfer(
                   event.dataTransfer,
@@ -55,7 +55,7 @@ export function SidebarAnimatedNodes() {
                 alt={node.name}
                 className="h-8 w-8 flex-shrink-0 rounded-md"
               />
-              <span className="truncate text-sm text-gray-700">
+              <span className="text-secondary-foreground truncate text-sm">
                 {node.name}
               </span>
             </div>

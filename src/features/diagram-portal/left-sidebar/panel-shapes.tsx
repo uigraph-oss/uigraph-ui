@@ -45,7 +45,7 @@ export function SidebarShapes() {
           <div className="flex flex-col gap-1">
             <button
               onClick={() => toggleCategory('standard')}
-              className="group flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="group text-secondary-foreground hover:bg-accent flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium transition-colors"
             >
               <span className="truncate">Standard</span>
               {expandedCategories.has('standard') ? (
@@ -72,7 +72,7 @@ export function SidebarShapes() {
                           <TooltipTrigger>
                             <div
                               draggable
-                              className="flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border border-neutral-200 bg-white p-2 transition-all select-none hover:bg-[#f5f5f5] active:cursor-grabbing"
+                              className="bg-accent hover:bg-popover border-stock flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border p-2 transition-all select-none active:cursor-grabbing"
                               onDragStart={(event: React.DragEvent) => {
                                 componentDragDataTransfer(
                                   event.dataTransfer,
@@ -82,7 +82,7 @@ export function SidebarShapes() {
                                 )
                               }}
                             >
-                              <div className="flex items-center justify-center text-gray-700">
+                              <div className="text-secondary-foreground flex items-center justify-center">
                                 {tool.icon}
                               </div>
                             </div>
@@ -110,7 +110,7 @@ export function SidebarShapes() {
                 <div key={categoryKey} className="flex flex-col gap-1">
                   <button
                     onClick={() => toggleCategory(categoryKey)}
-                    className="group flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                    className="group text-secondary-foreground hover:bg-accent flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium transition-colors"
                   >
                     <span className="truncate">{category.label}</span>
                     {isExpanded ? (
@@ -137,7 +137,7 @@ export function SidebarShapes() {
                                 <TooltipTrigger>
                                   <div
                                     draggable
-                                    className="flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border border-neutral-200 bg-white p-2 transition-all select-none hover:bg-[#f5f5f5] active:cursor-grabbing [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
+                                    className="bg-accent hover:bg-popover border-stock flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border p-2 transition-all select-none active:cursor-grabbing [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
                                     onDragStart={(event: React.DragEvent) => {
                                       componentDragDataTransfer(
                                         event.dataTransfer,
@@ -161,7 +161,7 @@ export function SidebarShapes() {
                                       )
                                     }}
                                   >
-                                    {<s.Component />}
+                                    {<s.Component stroke="#d2d9e6" />}
                                   </div>
                                 </TooltipTrigger>
 

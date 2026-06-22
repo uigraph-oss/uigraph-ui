@@ -51,6 +51,8 @@ export default defineConfig(({ mode }) => {
     },
 
     server: {
+      host: true,
+      allowedHosts: ['host.docker.internal', 'localhost'],
       port: process.env.PORT || 3000,
 
       proxy: {

@@ -39,6 +39,7 @@ import { DashboardServices } from '@/features/services/components/services-list/
 import { ServiceTestsPage } from '@/features/services/components/tests/service-tests-page'
 import { DashboardServiceDocs } from '@/features/services/dashboard-service-docs'
 import { DiagramPreviewPage } from '@/routes/diagram-preview-page'
+import { DiagramScreenshotPage } from '@/routes/diagram-screenshot-page'
 import {
   ApiGroupEndpointsPage,
   DiagramPortalPage,
@@ -108,6 +109,10 @@ export function AppRoutes() {
       <Route
         path="/diagram-preview/:diagramId"
         element={<DiagramPreviewPage />}
+      />
+      <Route
+        path="/diagram-screenshot/:diagramId"
+        element={<DiagramScreenshotPage />}
       />
 
       <Route element={<ProtectedServerAdminLayout />}>

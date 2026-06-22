@@ -51,7 +51,7 @@ export function SidebarText() {
           <div
             key={i}
             draggable
-            className="flex h-10 w-full cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none hover:bg-[#f5f5f5] active:cursor-grabbing"
+            className="hover:bg-accent flex h-10 w-full cursor-grab items-center justify-between gap-2 rounded-[0.5rem] bg-transparent px-3 py-2 transition-all select-none active:cursor-grabbing"
             onDragStart={(event: React.DragEvent) => {
               componentDragDataTransfer(event.dataTransfer, 'text', {
                 color: t.color,
@@ -69,7 +69,7 @@ export function SidebarText() {
             }}
           >
             <span className="flex items-center gap-2">
-              <span className="flex size-5 items-center justify-center rounded-[4px] border border-neutral-200 bg-white text-[12px] text-gray-700">
+              <span className="bg-accent text-secondary-foreground border-stock flex size-5 items-center justify-center rounded-[4px] border text-[12px]">
                 {t.icon}
               </span>
               <span className="text-sm font-medium">{t.preview}</span>
