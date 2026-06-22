@@ -3,7 +3,7 @@
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { FRAME_BY_ID } from '@/features/dashboard-projects/api/frame'
 import { MAP } from '@/features/dashboard-projects/api/map'
 import {
@@ -39,7 +39,7 @@ function uniq<T>(arr: T[]) {
 async function fetchPages(pageIds: string[], organizationId: string) {
   const results = await Promise.all(
     pageIds.map((pageId) =>
-      clientV2.query({
+      apolloClientGQL.query({
         query: FRAME_BY_ID,
         variables: { orgId: organizationId, id: pageId },
         fetchPolicy: 'cache-first',
@@ -66,7 +66,7 @@ async function fetchPages(pageIds: string[], organizationId: string) {
 async function fetchProjects(projectIds: string[], organizationId: string) {
   const results = await Promise.all(
     projectIds.map((projectId) =>
-      clientV2.query({
+      apolloClientGQL.query({
         query: MAP,
         variables: { orgId: organizationId, id: projectId },
         fetchPolicy: 'cache-first',
@@ -98,7 +98,7 @@ export function ConfigureApiEndpointConnections({
     error: focalPointsError,
     refetch,
   } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: {
       orgId: organizationId!,
       componentLinkId: componentLinkId!,

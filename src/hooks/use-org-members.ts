@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -10,13 +10,13 @@ export function useOrgMembers() {
   const org = useCurrentOrganization()
 
   const membersQuery = useQuery(MEMBERS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: org.id },
   })
 
   const teamsQuery = useQuery(TEAMS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: org.id },
   })

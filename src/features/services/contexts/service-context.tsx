@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
@@ -19,7 +19,7 @@ export const [ServiceContextProvider, useServiceContext] = createContext(
       )
 
       if (!fetchedService) {
-        const cachedServices = clientV2.readQuery({
+        const cachedServices = apolloClientGQL.readQuery({
           query: SERVICES,
           variables: { orgId },
         })

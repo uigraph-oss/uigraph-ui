@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { DynamoDBIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -36,7 +36,7 @@ export function ServiceDatabaseListPage() {
   const listVars = { orgId: orgId!, serviceId }
 
   const { data, loading } = useQuery(SERVICE_DBS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: listVars,
     skip: !orgId || !serviceId,

@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
@@ -49,7 +49,7 @@ export function ApiContractSelectionModal({
   const selectedApiGroupId = form.watch('apiGroupId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(SERVICES, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: orgId! },
     fetchPolicy: 'cache-first',
     skip: !orgId,
@@ -58,7 +58,7 @@ export function ApiContractSelectionModal({
   const { data: apiGroupsData, loading: apiGroupsLoading } = useQuery(
     API_GROUPS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       variables: { orgId: orgId!, serviceId: selectedServiceId },
       fetchPolicy: 'cache-first',
       skip: !orgId || !selectedServiceId,
@@ -68,7 +68,7 @@ export function ApiContractSelectionModal({
   const { data: apiEndpointsData, loading: apiEndpointsLoading } = useQuery(
     API_ENDPOINTS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       variables: {
         orgId: orgId!,
         serviceId: selectedServiceId,

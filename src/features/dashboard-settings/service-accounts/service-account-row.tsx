@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
@@ -97,7 +97,7 @@ export function ServiceAccountRow({
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   const refetchAccounts = {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: [{ query: SERVICE_ACCOUNTS, variables: { orgId } }],
     awaitRefetchQueries: true,
   }

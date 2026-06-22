@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -27,7 +27,7 @@ async function fetchSpecContent(
   content: string
   fileName: string | null
 }> {
-  const { data } = await clientV2.query({
+  const { data } = await apolloClientGQL.query({
     query: API_GROUP_SPEC,
     variables: { orgId, serviceId, apiGroupId },
     fetchPolicy: 'network-only',

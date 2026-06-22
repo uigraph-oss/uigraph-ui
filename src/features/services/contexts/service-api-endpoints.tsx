@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -71,7 +71,7 @@ export const [
     }
 
     const groupsRes = useQuery(API_GROUP_AND_VERSIONS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       skip: !orgId,
       variables: listVars,
@@ -107,7 +107,7 @@ export const [
     }, [apiGroupVersions, selectedVersionId])
 
     const endpointsRes = useQuery(API_ENDPOINTS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       skip: !orgId,
       variables: listVars,
@@ -127,25 +127,25 @@ export const [
     }
 
     const [createServiceApiEndpointMut] = useMutation(CREATE_API_ENDPOINT, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries: [endpointListVars],
     })
 
     const [updateServiceApiEndpointMut] = useMutation(UPDATE_API_ENDPOINT, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries: [endpointListVars],
     })
 
     const [deleteServiceApiEndpointMut] = useMutation(DELETE_API_ENDPOINT, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries: [endpointListVars],
     })
 
     const [syncAPIGroupMut] = useMutation(SYNC_API_GROUP, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries: [
         endpointListVars,

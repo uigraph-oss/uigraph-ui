@@ -12,7 +12,7 @@ import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { PlusIcon } from '../../../assets/svgs/component-icons'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -53,7 +53,7 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
   })
 
   const mapsQuery = useQuery(MAPS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },
     skip: !orgId,
@@ -61,7 +61,7 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
 
   const targetMapId = form.watch('targetMapId')
   const framesQuery = useQuery(FRAMES, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId!, mapId: targetMapId },
     skip: !orgId || !targetMapId,

@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
@@ -21,7 +21,7 @@ export function SelectedDatabaseDiagramSection({
   const skip = !diagramId || !orgId
 
   const { data, loading } = useQuery(DIAGRAM, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'cache-first',
     skip,
@@ -30,7 +30,7 @@ export function SelectedDatabaseDiagramSection({
   const { data: contentData, loading: contentLoading } = useQuery(
     DIAGRAM_CONTENT,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       variables: { orgId: orgId!, id: diagramId! },
       fetchPolicy: 'cache-first',
       skip,

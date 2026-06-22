@@ -1,7 +1,7 @@
 'use client'
 
 import type { TestCase, TestRun, TestRunResult } from '@/api/.gql/graphql'
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import {
   BetterDialogCloseButton,
   BetterDialogContent,
@@ -948,7 +948,7 @@ export function TestRunReportDialog({
 }: TestRunReportDialogProps) {
   const orgId = useCurrentOrganization().id
   const { data: serviceData } = useQuery(SERVICES, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },
     skip: !orgId,

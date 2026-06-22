@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -26,20 +26,20 @@ export function ServiceAccountsPage() {
   const [createOpen, setCreateOpen] = useState(false)
 
   const accountsQuery = useQuery(SERVICE_ACCOUNTS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: organizationId },
     skip: !organizationId,
     onError: (error) => toast.error(error.message),
   })
   const scopesQuery = useQuery(SERVICE_ACCOUNT_SCOPES, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: organizationId },
     skip: !organizationId,
     onError: (error) => toast.error(error.message),
   })
 
   const [createServiceAccount] = useMutation(CREATE_SERVICE_ACCOUNT, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: [
       { query: SERVICE_ACCOUNTS, variables: { orgId: organizationId } },
     ],

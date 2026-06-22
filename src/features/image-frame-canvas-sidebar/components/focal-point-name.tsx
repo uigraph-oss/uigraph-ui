@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { FOCAL_POINTS } from '@/features/dashboard-pages/api/focal-point'
 import { FRAME_BY_ID } from '@/features/dashboard-projects/api'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -15,7 +15,7 @@ export function FocalPointName({
   const orgId = useCurrentOrganization()?.id
 
   const frameQuery = useQuery(FRAME_BY_ID, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId!, id: pageId },
     skip: !orgId || !pageId,
@@ -24,7 +24,7 @@ export function FocalPointName({
   const mapId = frameQuery.data?.frameById?.mapId ?? ''
 
   const { data } = useQuery(FOCAL_POINTS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId!, mapId, frameId: pageId },
     skip: !orgId || !mapId || !pageId,

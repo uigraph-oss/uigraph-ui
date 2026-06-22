@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { useQuery } from '@apollo/client'
 import { useEffect } from 'react'
@@ -10,7 +10,7 @@ import { ServerSectionHeader } from './server-section-header'
 
 export function ServerOverviewPage() {
   const { data, loading, error } = useQuery(SERVER_OVERVIEW, {
-    client: clientV2,
+    client: apolloClientGQL,
   })
 
   useEffect(() => {

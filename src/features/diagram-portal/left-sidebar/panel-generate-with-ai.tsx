@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -27,7 +27,7 @@ export function SidebarGenerateWithAI() {
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [createVersion] = useMutation(CREATE_DIAGRAM_VERSION, {
-    client: clientV2,
+    client: apolloClientGQL,
   })
 
   async function onSubmit(event: FormEvent) {

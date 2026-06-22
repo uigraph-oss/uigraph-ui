@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { DIAGRAMS } from '@/features/dashboard-diagrams/api/diagrams'
@@ -20,7 +20,7 @@ export function DiagramSelectionModal({
   const [selectedDiagramId, setSelectedDiagramId] = useState<string>('')
 
   const { data: diagramsData, loading: diagramsLoading } = useQuery(DIAGRAMS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: organizationId! },
     skip: !organizationId,
     fetchPolicy: 'cache-first',

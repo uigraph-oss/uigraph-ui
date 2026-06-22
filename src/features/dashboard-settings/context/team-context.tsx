@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -24,7 +24,7 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
   const orgId = useCurrentOrganization()?.id
 
   const teamsData = useQuery(SETTINGS_TEAMS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: orgId! },
     skip: !orgId,
     fetchPolicy: 'cache-first',
@@ -34,37 +34,37 @@ export const [TeamContextProvider, useTeamContext] = createContext(() => {
   const memberRefetch = [MEMBERS]
 
   const [createTeam] = useMutation(CREATE_TEAM, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: teamRefetch,
     awaitRefetchQueries: true,
   })
 
   const [updateTeam] = useMutation(UPDATE_TEAM, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: teamRefetch,
     awaitRefetchQueries: true,
   })
 
   const [deleteTeam] = useMutation(DELETE_TEAM, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: teamRefetch,
     awaitRefetchQueries: true,
   })
 
   const [addMember] = useMutation(ADD_MEMBER, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
   })
 
   const [updateMember] = useMutation(UPDATE_MEMBER, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
   })
 
   const [removeMember] = useMutation(REMOVE_MEMBER, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: memberRefetch,
     awaitRefetchQueries: true,
   })

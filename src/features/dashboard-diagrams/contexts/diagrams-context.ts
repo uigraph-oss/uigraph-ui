@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -36,14 +36,14 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     const selectedTeamId = searchParams.team
 
     const foldersQuery = useQuery(FOLDERS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-and-network',
       skip: !orgId,
       variables: { orgId: orgId!, type: 'diagram' },
     })
 
     const diagramsV2Query = useQuery(DIAGRAMS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-and-network',
       skip: !orgId,
       variables: {
@@ -53,7 +53,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     })
 
     const folderData = useQuery(FOLDER, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: selectedFolderId! },
       skip: !orgId || !selectedFolderId,
@@ -66,21 +66,21 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
 
     const selectedFolderParentId = selectedFolder?.parentId
     const parentFolderData = useQuery(FOLDER, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: selectedFolderParentId! },
       skip: !orgId || !selectedFolderParentId,
     })
 
     const teamsData = useQuery(TEAMS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId! },
       skip: !orgId,
     })
 
     const orgUsersData = useQuery(MEMBERS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId! },
       skip: !orgId,
@@ -99,19 +99,19 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     const folderListVariables = { orgId: orgId!, type: 'diagram' as const }
 
     const [createFolder] = useMutation(CREATE_FOLDER, {
-      client: clientV2,
+      client: apolloClientGQL,
       refetchQueries: [{ query: FOLDERS, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
     const [updateFolder] = useMutation(UPDATE_FOLDER, {
-      client: clientV2,
+      client: apolloClientGQL,
       refetchQueries: [{ query: FOLDERS, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
 
     const [deleteFolder] = useMutation(DELETE_FOLDER, {
-      client: clientV2,
+      client: apolloClientGQL,
       refetchQueries: [{ query: FOLDERS, variables: folderListVariables }],
       awaitRefetchQueries: true,
     })
@@ -121,17 +121,17 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     }
 
     const [createDiagram] = useMutation(CREATE_DIAGRAM, {
-      client: clientV2,
+      client: apolloClientGQL,
       onCompleted: refetchDiagrams,
     })
 
     const [updateDiagram] = useMutation(UPDATE_DIAGRAM_META, {
-      client: clientV2,
+      client: apolloClientGQL,
       onCompleted: refetchDiagrams,
     })
 
     const [deleteDiagram] = useMutation(DELETE_DIAGRAM, {
-      client: clientV2,
+      client: apolloClientGQL,
       onCompleted: refetchDiagrams,
     })
 

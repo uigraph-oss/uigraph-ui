@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -26,7 +26,7 @@ export function useServiceApiOperationsForTestCase(serviceId: string | null) {
   )
 
   const { data: groupsData, loading: groupsLoading } = useQuery(API_GROUPS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: orgId!, serviceId: serviceId! },
     skip: !orgId || !serviceId,
     fetchPolicy: 'cache-first',
@@ -44,7 +44,7 @@ export function useServiceApiOperationsForTestCase(serviceId: string | null) {
   const { data: endpointsData, loading: endpointsLoading } = useQuery(
     API_ENDPOINTS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       variables: {
         orgId: orgId!,
         serviceId: serviceId!,

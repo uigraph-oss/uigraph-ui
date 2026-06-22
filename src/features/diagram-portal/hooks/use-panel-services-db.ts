@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import {
   SERVICE_DBS,
   serviceDBToLegacy,
@@ -16,7 +16,7 @@ export function usePanelServicesDb() {
   )
 
   const servicesResult = useQuery(SERVICES, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: {
       orgId: orgId!,
@@ -25,7 +25,7 @@ export function usePanelServicesDb() {
   })
 
   const servicesDbResult = useQuery(SERVICE_DBS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     skip: !orgId || !selectedServiceId,
     variables: {

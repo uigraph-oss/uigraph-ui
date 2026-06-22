@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import {
   Accordion,
   AccordionContent,
@@ -49,7 +49,7 @@ function FocalPointSection({
   onChange: (value: SelectionType) => void
 }) {
   const { data, loading } = useQuery(FOCAL_POINTS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId, mapId: projectId, frameId: pageId },
   })
@@ -110,7 +110,7 @@ function MapScreensSection({
   onChange: (value: SelectionType) => void
 }) {
   const { data, loading } = useQuery(FRAMES, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId, mapId: projectId },
   })
@@ -176,7 +176,7 @@ export function LinkUiMapNodeSelect({
   const [open, setOpen] = useState(false)
 
   const { data: projectsData, loading: isProjectsLoading } = useQuery(MAPS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
     skip: !organizationId,
@@ -190,7 +190,7 @@ export function LinkUiMapNodeSelect({
   )
 
   const { data: screensData, loading: isScreensLoading } = useQuery(FRAMES, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId!, mapId },
     skip: !organizationId || !mapId,
@@ -199,7 +199,7 @@ export function LinkUiMapNodeSelect({
   const { data: focalPointsData, loading: isFocalPointsLoading } = useQuery(
     FOCAL_POINTS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: organizationId!, mapId, frameId: screenId },
       skip: !organizationId || !mapId || !screenId,

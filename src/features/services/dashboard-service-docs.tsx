@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -32,7 +32,7 @@ export function DashboardServiceDocs() {
   const listVars = { orgId: orgId!, serviceId }
 
   const { data, loading: isLoadingServiceDocs } = useQuery(SERVICE_DOCS, {
-    client: clientV2,
+    client: apolloClientGQL,
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
     variables: listVars,
@@ -40,7 +40,7 @@ export function DashboardServiceDocs() {
   })
 
   const [createServiceDoc] = useMutation(CREATE_SERVICE_DOC, {
-    client: clientV2,
+    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
   })

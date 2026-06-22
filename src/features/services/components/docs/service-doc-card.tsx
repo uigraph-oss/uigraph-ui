@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
@@ -145,13 +145,13 @@ export function ServiceDocCard({
   const listVars = { orgId: orgId!, serviceId }
 
   const [updateServiceDoc] = useMutation(UPDATE_SERVICE_DOC, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
     awaitRefetchQueries: true,
   })
 
   const [deleteServiceDoc] = useMutation(DELETE_SERVICE_DOC, {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
     awaitRefetchQueries: true,
   })

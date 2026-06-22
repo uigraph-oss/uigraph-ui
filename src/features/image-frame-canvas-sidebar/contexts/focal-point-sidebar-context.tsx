@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -30,14 +30,14 @@ export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
       const skip = !orgId || !mapId || !frameId
 
       const metaRes = useQuery(FOCAL_POINT_META, {
-        client: clientV2,
+        client: apolloClientGQL,
         variables: vars,
         skip,
       })
 
       const refetch = [{ query: FOCAL_POINT_META, variables: vars }]
       const mutationBase = {
-        client: clientV2,
+        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries: refetch,
       }

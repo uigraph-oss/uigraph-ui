@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
@@ -34,23 +34,23 @@ import { ServerOrgsTable } from './server-orgs-table'
 
 export function ServerOrgsPage() {
   const { data, loading, error, refetch } = useQuery(SERVER_ORGS, {
-    client: clientV2,
+    client: apolloClientGQL,
   })
 
   const refetchQueries = [{ query: SERVER_ORGS }]
 
   const [createOrg] = useMutation(CREATE_SERVER_ORG, {
-    client: clientV2,
+    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries,
   })
   const [updateOrg] = useMutation(UPDATE_SERVER_ORG, {
-    client: clientV2,
+    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries,
   })
   const [deleteOrg] = useMutation(DELETE_SERVER_ORG, {
-    client: clientV2,
+    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries,
   })

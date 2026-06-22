@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { FRAME_BY_ID, MAP } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
@@ -38,7 +38,7 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
     const orgId = useCurrentOrganization()?.id
 
     const frameQuery = useQuery(FRAME_BY_ID, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: frameId },
       skip: !orgId || !frameIdParam,
@@ -48,7 +48,7 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
     const mapId = frame?.mapId ?? ''
 
     const mapQuery = useQuery(MAP, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, id: mapId },
       skip: !orgId || !mapId,
@@ -60,21 +60,21 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
     const listSkip = { skip: !orgId || !mapId }
 
     const focalPointsQuery = useQuery(FOCAL_POINTS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-and-network',
       variables: listVars,
       ...listSkip,
     })
 
     const groupsQuery = useQuery(FRAME_GROUPS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-and-network',
       variables: listVars,
       ...listSkip,
     })
 
     const linksQuery = useQuery(FRAME_LINKS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-and-network',
       variables: listVars,
       ...listSkip,
@@ -102,7 +102,7 @@ export const [FocalPointContextProvider, useFocalPointContext] = createContext(
     const refetchGroups = [{ query: FRAME_GROUPS, variables: listVars }]
     const refetchLinks = [{ query: FRAME_LINKS, variables: listVars }]
 
-    const mutationBase = { client: clientV2, awaitRefetchQueries: true }
+    const mutationBase = { client: apolloClientGQL, awaitRefetchQueries: true }
 
     const [createFocalPointMutation] = useMutation(CREATE_FOCAL_POINT, {
       ...mutationBase,

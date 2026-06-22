@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -89,7 +89,7 @@ export function FormApiSection({ form }: { form: FormType }) {
   const { data: endpointsData, loading: isEndpointsLoading } = useQuery(
     API_ENDPOINTS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: {
         orgId: orgId!,

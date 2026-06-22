@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
@@ -53,7 +53,7 @@ export function DashboardServiceDiagrams() {
   const { data, loading: isLoadingServiceDiagrams } = useQuery(
     SERVICE_DIAGRAMS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       errorPolicy: 'ignore',
       fetchPolicy: 'cache-first',
       variables: listVars,
@@ -63,7 +63,7 @@ export function DashboardServiceDiagrams() {
 
   const [createServiceDiagram, { loading: isCreatingServiceDiagram }] =
     useMutation(CREATE_SERVICE_DIAGRAM, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries: [{ query: SERVICE_DIAGRAMS, variables: listVars }],
     })

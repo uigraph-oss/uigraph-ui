@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -14,7 +14,7 @@ export function useVersionEndpoints(
   const orgId = useCurrentOrganization().id
 
   const { data, loading } = useQuery(API_ENDPOINTS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: {
       orgId: orgId!,
       serviceId,

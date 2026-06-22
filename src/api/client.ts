@@ -34,7 +34,7 @@ const defaultOptions: DefaultOptions = {
   },
 }
 
-export const clientV2 = new ApolloClient({
+export const apolloClientGQL = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
   defaultOptions,

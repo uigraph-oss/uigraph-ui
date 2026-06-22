@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
@@ -41,7 +41,7 @@ export function ServiceDocSelectionModal({
   const selectedServiceId = form.watch('serviceId')
 
   const { data: servicesData, loading: servicesLoading } = useQuery(SERVICES, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: orgId! },
     fetchPolicy: 'cache-first',
     skip: !orgId,
@@ -50,7 +50,7 @@ export function ServiceDocSelectionModal({
   const { data: serviceDocsData, loading: serviceDocsLoading } = useQuery(
     SERVICE_DOCS,
     {
-      client: clientV2,
+      client: apolloClientGQL,
       variables: { orgId: orgId!, serviceId: selectedServiceId },
       fetchPolicy: 'cache-first',
       skip: !orgId || !selectedServiceId,

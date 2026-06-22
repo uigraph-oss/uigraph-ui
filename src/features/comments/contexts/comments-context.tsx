@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -20,7 +20,7 @@ export const [CommentsContextProvider, useCommentsContext] = createContext(
     )
 
     const { data, loading } = useQuery(COMMENTS, {
-      client: clientV2,
+      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: { orgId: orgId!, resourceId },
       skip: !orgId,
@@ -31,19 +31,19 @@ export const [CommentsContextProvider, useCommentsContext] = createContext(
     ]
 
     const [createCommentMutation] = useMutation(CREATE_COMMENT, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
     const [updateCommentMutation] = useMutation(UPDATE_COMMENT, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
     const [deleteCommentMutation] = useMutation(DELETE_COMMENT, {
-      client: clientV2,
+      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries,
     })

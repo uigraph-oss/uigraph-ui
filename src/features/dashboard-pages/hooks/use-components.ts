@@ -1,5 +1,5 @@
 import { V2 } from '@/api'
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { GET_COMPONENTS } from '@/features/components/api/components'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -10,7 +10,7 @@ import { ComponentsGroup } from '../types'
 export function useComponents() {
   const organizationId = useCurrentOrganization()?.id
   const { data, loading } = useQuery(GET_COMPONENTS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId: organizationId! },
     skip: !organizationId,
     fetchPolicy: 'cache-first',

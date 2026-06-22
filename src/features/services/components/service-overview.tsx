@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { cn } from '@/lib/utils'
@@ -74,7 +74,7 @@ export function ServiceOverview() {
   const orgId = useCurrentOrganization().id
 
   const teamsRes = useQuery(TEAMS, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },
     skip: !orgId,

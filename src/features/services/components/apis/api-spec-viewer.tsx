@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
 import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
@@ -1610,7 +1610,7 @@ export function RestApiSpecViewer({
     try {
       setIsLoading(true)
       setError(null)
-      const { data } = await clientV2.query({
+      const { data } = await apolloClientGQL.query({
         query: API_GROUP_SPEC,
         variables: { orgId: orgId!, serviceId, apiGroupId },
         fetchPolicy: 'network-only',

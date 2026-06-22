@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -70,7 +70,7 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
   const [pageSize, setPageSize] = useState(10)
 
   const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS_SUMMARY, {
-    client: clientV2,
+    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: {
       orgId: orgId!,

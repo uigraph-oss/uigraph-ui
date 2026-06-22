@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,7 +42,7 @@ export function ServiceAccountTokensModal({
   const [copied, setCopied] = useState(false)
 
   const tokensQuery = useQuery(SERVICE_ACCOUNT_TOKENS, {
-    client: clientV2,
+    client: apolloClientGQL,
     variables: { orgId, saId: account.id },
     onError: (error) => toast.error(error.message),
   })
@@ -50,7 +50,7 @@ export function ServiceAccountTokensModal({
     []) as ServiceAccountToken[]
 
   const refetchTokens = {
-    client: clientV2,
+    client: apolloClientGQL,
     refetchQueries: [
       { query: SERVICE_ACCOUNT_TOKENS, variables: { orgId, saId: account.id } },
     ],
