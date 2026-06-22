@@ -2,10 +2,17 @@
 
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { useMutation, useQuery } from '@apollo/client'
-import { Check, Copy, Plus, Trash2 } from 'lucide-react'
+import { format } from 'date-fns'
+import { CalendarIcon, Check, Copy, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -37,6 +44,7 @@ export function ServiceAccountTokensModal({
 }) {
   const [name, setName] = useState('')
   const [expiresAt, setExpiresAt] = useState('')
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [created, setCreated] = useState<{ token: string } | null>(null)
   const [copied, setCopied] = useState(false)
 
@@ -111,15 +119,15 @@ export function ServiceAccountTokensModal({
     >
       <div className="space-y-6">
         {created && (
-          <div className="space-y-2 rounded-lg border border-amber-200 bg-amber-50 p-4">
-            <Label className="text-sm font-medium text-amber-900">
+          <div className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+            <Label className="text-sm font-medium text-amber-300">
               New token (copy it now — it won&apos;t be shown again)
             </Label>
             <div className="flex items-center gap-2">
               <Input
                 value={created.token}
                 readOnly
-                className="h-11 rounded-[12px] border border-amber-200 bg-white px-4 font-mono text-xs"
+                className="h-11 rounded-[12px] border border-[#2A3242] bg-transparent px-4 font-mono text-xs text-[#D2D9E6]"
               />
               <Button
                 type="button"
@@ -140,7 +148,10 @@ export function ServiceAccountTokensModal({
 
         <div className="flex items-end gap-2">
           <div className="flex-1 space-y-2">
-            <Label htmlFor="token-name" className="text-sm font-medium">
+            <Label
+              htmlFor="token-name"
+              className="text-sm font-medium text-[#D2D9E6]"
+            >
               Token Name
             </Label>
             <Input
@@ -148,21 +159,56 @@ export function ServiceAccountTokensModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., deploy-bot"
-              className="h-11 rounded-[12px] border border-[#E5E7E9] bg-white px-4"
+              className="h-11 rounded-[12px] border border-[#2A3242] bg-transparent px-4"
               autoComplete="off"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="token-expires" className="text-sm font-medium">
+            <Label className="text-sm font-medium text-[#D2D9E6]">
               Expires (Optional)
             </Label>
-            <Input
-              id="token-expires"
-              type="datetime-local"
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
-              className="h-11 rounded-[12px] border border-[#E5E7E9] bg-white px-4"
-            />
+            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="flex h-11 w-[220px] items-center justify-between gap-2 rounded-[12px] border border-[#2A3242] bg-transparent px-4 text-sm transition-colors hover:border-[#3A4254]"
+                >
+                  <span
+                    className={expiresAt ? 'text-[#D2D9E6]' : 'text-[#586378]'}
+                  >
+                    {expiresAt
+                      ? format(new Date(expiresAt), 'MMM d, yyyy')
+                      : 'No expiry'}
+                  </span>
+                  {expiresAt ? (
+                    <X
+                      className="size-4 shrink-0 text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setExpiresAt('')
+                      }}
+                    />
+                  ) : (
+                    <CalendarIcon className="size-4 shrink-0 text-[#586378]" />
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={expiresAt ? new Date(expiresAt) : undefined}
+                  onSelect={(date) => {
+                    if (!date) return
+                    setExpiresAt(date.toISOString())
+                    setDatePickerOpen(false)
+                  }}
+                  disabled={{ before: new Date() }}
+                  defaultMonth={expiresAt ? new Date(expiresAt) : undefined}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           <Button
             type="button"
@@ -175,10 +221,10 @@ export function ServiceAccountTokensModal({
           </Button>
         </div>
 
-        <div className="rounded-lg border border-[#E5E7E9]">
+        <div className="rounded-lg border border-[#2A3242]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs text-gray-500">
+              <tr className="border-b border-[#2A3242] text-left text-xs text-[#586378]">
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Prefix</th>
                 <th className="px-4 py-3">Expires</th>
@@ -191,37 +237,37 @@ export function ServiceAccountTokensModal({
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-4 py-6 text-center text-gray-500"
+                    className="px-4 py-6 text-center text-[#586378]"
                   >
                     No tokens yet
                   </td>
                 </tr>
               )}
               {tokens.map((token) => (
-                <tr key={token.id} className="border-b border-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-700">
+                <tr key={token.id} className="border-b border-[#2A3242]">
+                  <td className="px-4 py-3 font-medium text-[#D2D9E6]">
                     {token.name}
                     {token.revoked && (
-                      <span className="ml-2 text-xs text-red-600">
+                      <span className="ml-2 text-xs text-red-500">
                         (revoked)
                       </span>
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <code className="rounded bg-gray-50 px-2 py-1 text-xs text-gray-600">
+                    <code className="rounded bg-[#2A3242] px-2 py-1 text-xs text-[#A0AABB]">
                       {token.prefix}
                     </code>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-[#828DA3]">
                     {formatDate(token.expiresAt)}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-[#828DA3]">
                     {formatDate(token.lastUsedAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     {!token.revoked && (
                       <button
-                        className="flex size-8 items-center justify-center rounded-md border border-red-200 text-red-600 transition-colors hover:bg-red-50"
+                        className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10"
                         onClick={() => handleRevoke(token.id)}
                       >
                         <Trash2 className="size-4" />
