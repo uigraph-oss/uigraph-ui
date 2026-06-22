@@ -166,7 +166,7 @@ export function UserDropdownMenu() {
                     key={organization.id}
                     className={cn(
                       'h-[2.75rem] cursor-pointer gap-3 rounded-lg px-2 transition-colors hover:bg-white/[0.06]',
-                      isActive && 'bg-black/[0.04]'
+                      isActive && 'bg-primary/10 hover:bg-primary/15'
                     )}
                     onClick={() => {
                       if (!isActive) {
@@ -175,12 +175,7 @@ export function UserDropdownMenu() {
                       }
                     }}
                   >
-                    <Avatar
-                      className={cn(
-                        'size-8 shrink-0 rounded-md',
-                        isActive && 'ring-primary/40 ring-2 ring-offset-1'
-                      )}
-                    >
+                    <Avatar className="size-8 shrink-0 rounded-md">
                       <AvatarImage
                         src={organization.logoUrl || ''}
                         alt={organization.name}
