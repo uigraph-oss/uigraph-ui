@@ -110,6 +110,15 @@ export const STANDARD_TOOLS: StandardTool[] = [
     dragData: {
       rows: DEFAULT_TABLE_ROWS,
       columns: DEFAULT_TABLE_COLUMNS,
+      componentFields: [
+        {
+          componentFieldId: 'name',
+          type: ComponentInputType.TextInput,
+          label: 'Name',
+          isReadonly: false,
+          data: [{ value: 'My Table' }],
+        },
+      ],
     } satisfies TableNodeData,
   },
   {

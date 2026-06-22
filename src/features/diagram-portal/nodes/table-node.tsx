@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ComponentInputType } from '@/features/component-meta'
 import { cn } from '@/lib/utils'
 import { buildMetaData } from '@uigraph/sdk'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
@@ -140,13 +141,28 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
               value={localName}
               onChange={(value) => {
                 setLocalName(value)
+                const existingFields =
+                  localData?.componentFields ?? data.componentFields ?? []
+                const hasNameField = existingFields.some(
+                  (field) => field?.componentFieldId === 'name'
+                )
+                const fields = hasNameField
+                  ? existingFields
+                  : [
+                      ...existingFields,
+                      {
+                        componentFieldId: 'name',
+                        type: ComponentInputType.TextInput,
+                        label: 'Name',
+                        isReadonly: false,
+                        data: [{ value: '' }],
+                      },
+                    ]
+
                 update({
-                  componentFields: buildMetaData(
-                    localData?.componentFields ?? data.componentFields ?? [],
-                    {
-                      name: value,
-                    }
-                  ),
+                  componentFields: buildMetaData(fields, {
+                    name: value,
+                  }),
                 })
               }}
               placeholder="Untitled table"

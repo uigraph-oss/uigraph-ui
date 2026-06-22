@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ComponentInputType } from '@/features/component-meta'
 import { buildMetaData } from '@uigraph/sdk'
 import { useEffectState } from 'daily-code/react'
 import { Plus, Trash2 } from 'lucide-react'
@@ -101,16 +102,31 @@ export function TableProperties() {
         <Label className="text-xs text-[#828DA3]">Table name</Label>
         <Input
           value={name ?? ''}
-          onChange={(event) =>
+          onChange={(event) => {
+            const existingFields =
+              localData?.componentFields ?? data?.componentFields ?? []
+            const hasNameField = existingFields.some(
+              (field) => field?.componentFieldId === 'name'
+            )
+            const fields = hasNameField
+              ? existingFields
+              : [
+                  ...existingFields,
+                  {
+                    componentFieldId: 'name',
+                    type: ComponentInputType.TextInput,
+                    label: 'Name',
+                    isReadonly: false,
+                    data: [{ value: '' }],
+                  },
+                ]
+
             updateLocalData({
-              componentFields: buildMetaData(
-                localData?.componentFields ?? data?.componentFields ?? [],
-                {
-                  name: event.target.value,
-                }
-              ),
+              componentFields: buildMetaData(fields, {
+                name: event.target.value,
+              }),
             })
-          }
+          }}
           className={inputClassName}
         />
       </div>
