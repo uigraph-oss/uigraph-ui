@@ -19,7 +19,6 @@ import {
   DashboardProjects,
 } from '@/features/dashboard-projects'
 import {
-  OrganizationSettings,
   ProfileSettings,
   SecuritySettings,
 } from '@/features/dashboard-settings'
@@ -188,7 +187,6 @@ export function AppRoutes() {
               element={<Navigate to="/settings/profile" replace />}
             />
             <Route path="profile" element={<ProfileSettings />} />
-            <Route path="organization" element={<OrganizationSettings />} />
             <Route path="teams" element={<TeamManagementPage />} />
             <Route path="users" element={<UsersManagementPage />} />
             <Route path="service-accounts" element={<ServiceAccountsPage />} />

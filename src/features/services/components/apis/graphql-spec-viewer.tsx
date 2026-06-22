@@ -826,7 +826,7 @@ export function GraphqlSpecViewer({
                           </div>
 
                           <div>
-                            <div className="text-xl font-semibold text-slate-950">
+                            <div className="text-foreground text-xl font-semibold">
                               {selectedType.name}
                             </div>
                             <div className="mt-2 text-sm text-[#828DA3]">
@@ -891,12 +891,12 @@ export function GraphqlSpecViewer({
 
       <style>{`
         .graphql-spec-viewer-shell .viewer-header {
-          border-bottom: 1px solid #e5e7e9;
-          background: #f9fbfc;
+          border-bottom: 1px solid var(--border);
+          background: var(--card);
         }
 
         .graphql-spec-viewer-shell .viewer-title {
-          color: #111110;
+          color: var(--foreground);
         }
 
         .graphql-spec-viewer-shell .viewer-description,
@@ -906,37 +906,37 @@ export function GraphqlSpecViewer({
         .graphql-spec-viewer-shell .text-[#586378],
         .graphql-spec-viewer-shell .text-[#828DA3],
         .graphql-spec-viewer-shell .text-[#828DA3] {
-          color: #939395 !important;
+          color: var(--muted-foreground) !important;
         }
 
         .graphql-spec-viewer-shell .text-[#D2D9E6],
         .graphql-spec-viewer-shell .text-[#F4F7FC],
         .graphql-spec-viewer-shell .text-[#F4F7FC],
         .graphql-spec-viewer-shell .text-slate-950 {
-          color: #111110 !important;
+          color: var(--foreground) !important;
         }
 
         .graphql-spec-viewer-shell .border-[#2A3242],
         .graphql-spec-viewer-shell .border-[#2A3242]\/80 {
-          border-color: #e5e7e9 !important;
+          border-color: var(--border) !important;
         }
 
         .graphql-spec-viewer-shell
           .divide-[#2A3242]
           > :not([hidden])
           ~ :not([hidden]) {
-          border-color: #e5e7e9 !important;
+          border-color: var(--border) !important;
         }
 
         .graphql-spec-viewer-shell .bg-[#1E2533],
         .graphql-spec-viewer-shell .bg-sky-50,
         .graphql-spec-viewer-shell .bg-[#141925]\/70,
         .graphql-spec-viewer-shell .bg-[#141925]\/80 {
-          background: #f9fafb !important;
+          background: var(--secondary) !important;
         }
 
         .graphql-spec-viewer-shell .bg-[#1E2533] {
-          background: #f4f6f7 !important;
+          background: var(--accent) !important;
         }
 
         .graphql-spec-viewer-shell .rounded-2xl,
@@ -945,8 +945,8 @@ export function GraphqlSpecViewer({
         }
 
         .graphql-spec-viewer-shell .viewer-sidebar {
-          border-right: 1px solid #e5e7e9;
-          background: #ffffff;
+          border-right: 1px solid var(--border);
+          background: var(--card);
         }
 
         .graphql-spec-viewer-shell .viewer-nav-button {
@@ -954,17 +954,17 @@ export function GraphqlSpecViewer({
         }
 
         .graphql-spec-viewer-shell .viewer-nav-button-active {
-          background: #f4f6f7;
-          box-shadow: inset 0 0 0 1px #e5e7e9;
-          color: #111110;
+          background: var(--accent);
+          box-shadow: inset 0 0 0 1px var(--border);
+          color: var(--foreground);
         }
 
         .graphql-spec-viewer-shell .viewer-nav-button-inactive {
-          color: #111110;
+          color: var(--foreground);
         }
 
         .graphql-spec-viewer-shell .viewer-nav-button-inactive:hover {
-          background: #f9fafb;
+          background: var(--secondary);
         }
 
         .graphql-spec-viewer-shell .viewer-hero-card,
@@ -972,8 +972,8 @@ export function GraphqlSpecViewer({
         .graphql-spec-viewer-shell .viewer-stat-card,
         .graphql-spec-viewer-shell .viewer-empty,
         .graphql-spec-viewer-shell .raw-card {
-          border: 1px solid #e5e7e9;
-          background: #ffffff;
+          border: 1px solid var(--border);
+          background: var(--card);
         }
 
         .graphql-spec-viewer-shell .viewer-hero-card {
@@ -990,16 +990,16 @@ export function GraphqlSpecViewer({
 
         .graphql-spec-viewer-shell .viewer-stat-card,
         .graphql-spec-viewer-shell .raw-card-header {
-          background: #f9fafb;
+          background: var(--secondary);
         }
 
         .graphql-spec-viewer-shell .raw-card-header {
-          border-bottom: 1px solid #e5e7e9;
+          border-bottom: 1px solid var(--border);
         }
 
         .graphql-spec-viewer-shell .raw-card pre {
           margin: 0 !important;
-          background: #fafafa !important;
+          background: transparent !important;
         }
       `}</style>
     </div>

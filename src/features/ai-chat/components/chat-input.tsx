@@ -17,7 +17,7 @@ export function ChatInput() {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="px-4 py-3 pt-0">
-      <div className="border-stock has-focus:border-primary/30 has-focus:ring-primary/10 mx-auto flex max-w-[52rem] items-end gap-2 rounded-xl border bg-white p-2 shadow-[0_-4px_6px_0_rgba(0,0,0,0.035)] ring-0 ring-transparent transition-all has-focus:ring-[3px]">
+      <div className="border-stock has-focus:border-primary/30 has-focus:ring-primary/10 bg-card mx-auto flex max-w-[52rem] items-end gap-2 rounded-xl border p-2 shadow-[0_-4px_6px_0_rgba(0,0,0,0.035)] ring-0 ring-transparent transition-all has-focus:ring-[3px]">
         <textarea
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus

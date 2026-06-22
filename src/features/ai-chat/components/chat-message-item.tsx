@@ -86,7 +86,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="text-[15px] leading-[1.75] text-[#111110]">
+        <div className="text-foreground text-[15px] leading-[1.75]">
           {message.content.trim().length > 0 ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -151,7 +151,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
             {message.sources &&
               message.sources.length > 0 &&
               message.status !== 'streaming' && (
-                <div className="mx-1 h-3 w-px bg-black/10" />
+                <div className="bg-border mx-1 h-3 w-px" />
               )}
           </div>
 
@@ -192,7 +192,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
                       {sourcesList.slice(0, 3).map((source, i, { length }) => (
                         <span
                           key={i}
-                          className="relative -ml-1 flex size-5 items-center justify-center rounded-full border border-gray-200 bg-gray-100 p-1"
+                          className="border-border bg-muted relative -ml-1 flex size-5 items-center justify-center rounded-full border p-1"
                           style={{ zIndex: length - i }}
                         >
                           {source.icon}
@@ -206,7 +206,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
                 <HoverCardContent
                   side="top"
                   align="start"
-                  className="flex w-auto max-w-[260px] min-w-[140px] flex-col rounded-lg border border-black/10 bg-white p-1 shadow-lg"
+                  className="border-border bg-popover flex w-auto max-w-[260px] min-w-[140px] flex-col rounded-lg border p-1 shadow-lg"
                 >
                   {sourcesList.map((source, i) => (
                     <a
@@ -214,9 +214,9 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
                       href={source.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-[#111110] transition-colors hover:bg-black/5"
+                      className="text-popover-foreground hover:bg-accent flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] transition-colors"
                     >
-                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-black/[0.05] text-[11px]">
+                      <span className="bg-muted flex size-5 shrink-0 items-center justify-center rounded-full text-[11px]">
                         {source.icon}
                       </span>
 

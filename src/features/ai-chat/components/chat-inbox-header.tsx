@@ -6,7 +6,7 @@ export function ChatInboxHeader() {
 
   return (
     <div className="border-stock bg-shading flex items-center justify-between border-b px-4 py-3">
-      <p className="text-sm font-semibold text-[#111110]">
+      <p className="text-foreground text-sm font-semibold">
         {chatSession.title}
       </p>
 

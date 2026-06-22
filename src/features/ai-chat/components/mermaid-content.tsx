@@ -88,7 +88,7 @@ export function MermaidContent({ code }: { code: string }) {
   }
 
   return (
-    <div className="group relative my-2 overflow-hidden rounded-lg border border-[#e6e6e6] bg-[#f8fafc] p-4">
+    <div className="group border-border bg-card relative my-2 overflow-hidden rounded-lg border p-4">
       <div
         ref={containerRef}
         className="flex items-center justify-center"
@@ -105,7 +105,7 @@ export function MermaidContent({ code }: { code: string }) {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="bg-white">
+        <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={handleDownloadSvg}>
             <PiFileSvgLight />
             Download as SVG
