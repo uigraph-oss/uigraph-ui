@@ -51,6 +51,20 @@ export function ShapeNode({
     )
   }, [data.shape])
 
+  const textColor = useMemo(() => {
+    if (data?.textColor) return data.textColor
+    const fill = data?.fill
+    if (typeof fill !== 'string') return undefined
+    const hex = fill.trim().replace('#', '')
+    if (hex.length !== 6) return undefined
+    const r = parseInt(hex.slice(0, 2), 16)
+    const g = parseInt(hex.slice(2, 4), 16)
+    const b = parseInt(hex.slice(4, 6), 16)
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    if (luminance > 0.6) return '#0f172a'
+    return undefined
+  }, [data?.textColor, data?.fill])
+
   const textInset = useMemo(() => {
     if (!shapeComponent?.getTextInset || !width || !height) {
       return {
@@ -144,7 +158,7 @@ export function ShapeNode({
           marginRight: textInset.right,
           marginBottom: textInset.bottom,
           fontSize: data?.textFontSize || 14,
-          color: data?.textColor,
+          color: textColor,
         }}
         onChange={(e) => {
           const newValue = e.target.value

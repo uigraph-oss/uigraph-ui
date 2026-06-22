@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { ConnectionLineType, Edge } from '@xyflow/react'
+import { SliderInput } from '../components'
 import { CustomSwitch } from '../components/ui'
 import { EDGE_TYPES_LIST } from '../edges'
 import { useSingleSelectedEdge } from '../hooks/use-single-selected-edge'
@@ -31,6 +32,10 @@ export function EdgeConfigure() {
     String(edge?.label || '')
   )
 
+  const [localLabelFontSize, setLocalLabelFontSize] = useEffectState(
+    Number(edge?.data?.labelFontSize) || 12
+  )
+
   return (
     <div className="space-y-4">
       <div>
@@ -42,6 +47,32 @@ export function EdgeConfigure() {
           onChange={(e) => {
             setLocalEdgeLabel(e.target.value)
             updateEdge({ label: e.target.value ? e.target.value : undefined })
+          }}
+        />
+      </div>
+
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <Label className="text-sm leading-[1.333]">Label Size</Label>
+
+          <span className="text-muted-foreground block w-6 text-center text-xs">
+            {localLabelFontSize}
+          </span>
+        </div>
+
+        <SliderInput
+          min={8}
+          max={40}
+          step={1}
+          value={localLabelFontSize}
+          onChange={(val) => {
+            setLocalLabelFontSize(val)
+            updateEdge({
+              data: {
+                ...edge?.data,
+                labelFontSize: val,
+              },
+            })
           }}
         />
       </div>

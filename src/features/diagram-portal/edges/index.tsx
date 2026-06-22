@@ -1,27 +1,20 @@
-import {
-  BezierEdge,
-  EdgeMarker,
-  MarkerType,
-  SimpleBezierEdge,
-  SmoothStepEdge,
-  StepEdge,
-  StraightEdge,
-} from '@xyflow/react'
+import { EdgeMarker, MarkerType } from '@xyflow/react'
 import { Prettify } from 'daily-code'
 import { BiSolidLeftArrow } from 'react-icons/bi'
 import { IoIosArrowBack } from 'react-icons/io'
 import { DynamicFloatingEdge } from './dynamic-floating-edge'
+import { createLabeledEdge } from './labeled-edge'
 
 export type TEdgeType = keyof typeof CUSTOM_EDGE_TYPES
 
 export const CUSTOM_EDGE_TYPES = {
-  default: BezierEdge,
-  straight: StraightEdge,
+  default: createLabeledEdge('bezier'),
+  straight: createLabeledEdge('straight'),
 
-  step: StepEdge,
-  smoothstep: SmoothStepEdge,
+  step: createLabeledEdge('step'),
+  smoothstep: createLabeledEdge('smoothstep'),
 
-  simplebezier: SimpleBezierEdge,
+  simplebezier: createLabeledEdge('simplebezier'),
 
   dynamic: DynamicFloatingEdge,
 }
