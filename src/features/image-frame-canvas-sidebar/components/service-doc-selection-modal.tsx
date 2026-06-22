@@ -16,6 +16,11 @@ import { useMemo } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
 
+const selectClassName =
+  '!h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-[#F4F7FC] focus:outline-none'
+const loadingClassName =
+  'flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none'
+
 type ServiceDocSelectionModalProps = {
   onSelect: SubmitHandler<z.infer<typeof serviceDocSchema>>
 }
@@ -82,9 +87,9 @@ export function ServiceDocSelectionModal({
           <Label className="text-foreground text-sm font-medium">Service</Label>
 
           {servicesLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading services...
               </span>
             </div>
@@ -99,7 +104,7 @@ export function ServiceDocSelectionModal({
                 form.setValue('serviceId', value)
                 form.setValue('serviceDocId', '')
               }}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>
@@ -110,9 +115,9 @@ export function ServiceDocSelectionModal({
           </Label>
 
           {serviceDocsLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading documents...
               </span>
             </div>
@@ -125,7 +130,7 @@ export function ServiceDocSelectionModal({
               }))}
               disabled={serviceDocsLoading || !selectedServiceId}
               onChange={(value) => form.setValue('serviceDocId', value)}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>

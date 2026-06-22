@@ -8,9 +8,18 @@ import ReactCodeMirror, { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
 
-const meGutterTheme = EditorView.theme({
+const meEditorTheme = EditorView.theme({
+  '&': {
+    backgroundColor: '#1E2533',
+  },
+
+  '.cm-scroller': {
+    backgroundColor: '#1E2533',
+  },
+
   '.cm-gutters': {
     backgroundColor: '#141925',
+    borderRight: '1px solid #2A3242',
     fontFamily: "'Fira Code', monospace",
   },
 
@@ -18,6 +27,10 @@ const meGutterTheme = EditorView.theme({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'end',
+  },
+
+  '.cm-activeLineGutter': {
+    backgroundColor: '#1E2533',
   },
 })
 
@@ -40,7 +53,7 @@ const defaultExtensions = [
   go(),
   css(),
   html(),
-  meGutterTheme,
+  meEditorTheme,
   vscodeDark,
   meFontFamilyTheme,
 ]
@@ -69,6 +82,7 @@ export function CodeMirrorRaw({
 
   return (
     <ReactCodeMirror
+      theme="none"
       width="100%"
       onKeyDown={(e) => e.stopPropagation()}
       extensions={codeMirrorExtensions}

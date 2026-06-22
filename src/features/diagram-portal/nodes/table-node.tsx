@@ -126,13 +126,13 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
   return (
     <NodeCard
       selected={selected}
-      className="relative isolate rounded-[0.5rem] bg-white"
+      className="relative isolate rounded-[0.5rem] bg-[#141925]"
       style={{ borderRadius: data?.borderRadius ?? 8 }}
     >
-      <div className="flex h-full flex-col rounded-[inherit] border border-slate-200 bg-white text-xs text-slate-700">
-        <div className="flex items-center gap-2 p-2">
+      <div className="flex h-full flex-col rounded-[inherit] border border-[#2A3242] bg-[#141925] text-xs text-[#F4F7FC]">
+        <div className="flex items-center gap-2 border-b border-[#2A3242] p-2">
           <div className="pl-2">
-            <RxTable className="size-4 text-slate-400" />
+            <RxTable className="size-4 text-[#828DA3]" />
           </div>
 
           <div className="mr-auto">
@@ -164,17 +164,17 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
         </div>
 
         <div className="relative">
-          <Table className="border-stock border-t text-xs">
+          <Table className="border-stock border-t text-xs [&_tr:hover]:bg-[#1E2533]/60">
             <TableHeader>
               <TableRow>
-                <TableHead className="h-9 w-10 p-0 px-2 text-center text-[11px] text-slate-400">
+                <TableHead className="h-9 w-10 p-0 px-2 text-center text-[11px] text-[#828DA3]">
                   #
                 </TableHead>
 
                 {localData?.columns?.map((column, columnIndex) => (
                   <TableHead
                     key={`col-${columnIndex}`}
-                    className="relative h-auto p-0 pr-7 text-[11px] text-slate-500"
+                    className="relative h-auto p-0 pr-7 text-[11px] text-[#828DA3]"
                   >
                     <FakeFloatingInput
                       value={String(column)}
@@ -221,7 +221,7 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
                     key={`row-${rowIndex}`}
                     className="relative isolate last:border-none [&_td]:align-middle"
                   >
-                    <TableCell className="w-10 px-2 py-1 text-center text-[11px] text-slate-400">
+                    <TableCell className="w-10 px-2 py-1 text-center text-[11px] text-[#828DA3]">
                       {rowIndex + 1}
                     </TableCell>
 
@@ -260,7 +260,7 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
                 <TableRow>
                   <TableCell
                     colSpan={Math.max((localData?.columns?.length ?? 0) + 1, 1)}
-                    className="px-2 py-3 text-center text-[12px] text-slate-400"
+                    className="px-2 py-3 text-center text-[12px] text-[#828DA3]"
                   >
                     No rows yet
                   </TableCell>
@@ -280,8 +280,8 @@ export function TableNode({ id, data, selected }: NodeProps<TTableNode>) {
               className="border-stock flex w-full items-center justify-center overflow-hidden border-t px-2"
             >
               <Button
-                variant="outline"
-                className="h-8 w-full bg-transparent shadow-none"
+                preset="outline"
+                className="h-8 w-full shadow-none"
                 onClick={handleAddRow}
               >
                 <CirclePlusIcon /> Add Row

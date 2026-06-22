@@ -14,6 +14,7 @@ import { PlusIcon } from '../../../assets/svgs/component-icons'
 
 import { clientV2 } from '@/api/client'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -22,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FRAMES, MAPS } from '@/features/dashboard-projects/api'
+import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -32,6 +34,12 @@ type AddLinkModalProps = {
   x: number
   y: number
 }
+
+const inputClassName =
+  'h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none'
+
+const selectTriggerClassName =
+  '!h-14 w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none'
 
 const createLinkModalSchema = z.object({
   targetMapId: z.string().min(1, 'Map is required'),
@@ -91,10 +99,12 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
         align={'start'}
         sideOffset={40}
         alignOffset={40}
-        className="border-stock bg-shading w-[24.0625rem] rounded-2xl border p-0"
+        className="w-[24.0625rem] rounded-2xl border border-[#2A3242] bg-[#141925] p-0"
       >
-        <header className="border-stock flex h-14 items-center justify-between border-b p-3">
-          <h3 className="font-semibold">Add External Link</h3>
+        <header className="flex h-14 items-center justify-between border-b border-[#2A3242] p-3">
+          <h3 className="text-sm font-semibold text-[#F4F7FC]">
+            Add External Link
+          </h3>
           <CrossButton
             onClick={() => {
               setNewPoint(null)
@@ -130,15 +140,23 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
             name="targetMapId"
             control={form.control}
             render={({ field }) => (
-              <label className="block">
-                <span className="mb-3 block">Map</span>
+              <div className="space-y-2">
+                <Label htmlFor="link-map" className="text-sm font-normal">
+                  Map
+                </Label>
 
                 <Select
                   {...field}
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="!h-14 w-full rounded-2xl bg-white">
+                  <SelectTrigger
+                    id="link-map"
+                    className={cn(
+                      selectTriggerClassName,
+                      form.formState.errors.targetMapId && 'border-red-500'
+                    )}
+                  >
                     <SelectValue placeholder="Select map" />
                   </SelectTrigger>
                   <SelectContent>
@@ -151,11 +169,11 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
                 </Select>
 
                 {form.formState.errors.targetMapId?.message && (
-                  <p className="text-destructive mt-2 text-xs">
+                  <p className="text-destructive text-xs">
                     {form.formState.errors.targetMapId.message}
                   </p>
                 )}
-              </label>
+              </div>
             )}
           />
 
@@ -163,15 +181,23 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
             name="targetFrameId"
             control={form.control}
             render={({ field }) => (
-              <label className="block">
-                <span className="mb-3 block">Frame</span>
+              <div className="space-y-2">
+                <Label htmlFor="link-frame" className="text-sm font-normal">
+                  Frame
+                </Label>
 
                 <Select
                   {...field}
                   value={field.value ?? ''}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="!h-14 w-full rounded-2xl bg-white">
+                  <SelectTrigger
+                    id="link-frame"
+                    className={cn(
+                      selectTriggerClassName,
+                      form.formState.errors.targetFrameId && 'border-red-500'
+                    )}
+                  >
                     <SelectValue placeholder="Select frame" />
                   </SelectTrigger>
                   <SelectContent>
@@ -184,11 +210,11 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
                 </Select>
 
                 {form.formState.errors.targetFrameId?.message && (
-                  <p className="text-destructive mt-2 text-xs">
+                  <p className="text-destructive text-xs">
                     {form.formState.errors.targetFrameId.message}
                   </p>
                 )}
-              </label>
+              </div>
             )}
           />
 
@@ -196,35 +222,41 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
             name="label"
             control={form.control}
             render={({ field }) => (
-              <label className="block">
-                <span className="mb-3 block">Label</span>
+              <div className="space-y-2">
+                <Label htmlFor="link-label" className="text-sm font-normal">
+                  Label
+                </Label>
                 <Input
                   {...field}
+                  id="link-label"
                   value={field.value}
                   onChange={field.onChange}
-                  className="!h-14 rounded-2xl bg-white"
+                  className={cn(
+                    inputClassName,
+                    form.formState.errors.label && 'border-red-500'
+                  )}
                   placeholder="Enter link label"
                 />
                 {form.formState.errors.label?.message && (
-                  <p className="text-destructive mt-2 text-xs">
+                  <p className="text-destructive text-xs">
                     {form.formState.errors.label.message}
                   </p>
                 )}
-              </label>
+              </div>
             )}
           />
 
           <div className="flex items-center justify-end gap-3">
             <Button
-              variant="ghost"
-              className="border-stock !h-11 rounded-[0.8125rem] border"
+              type="button"
+              preset="outline"
               onClick={() => setNewPoint(null)}
             >
               Cancel
             </Button>
 
             <Button
-              className="!h-11 rounded-[0.8125rem]"
+              preset="primary"
               type="submit"
               disabled={form.formState.isSubmitting}
             >

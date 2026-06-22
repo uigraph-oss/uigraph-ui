@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Camera, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
@@ -20,12 +19,10 @@ import { z } from 'zod'
 
 const createSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  autoJoin: z.boolean(),
 })
 
 const editSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  autoJoin: z.boolean(),
   disabled: z.boolean(),
 })
 
@@ -73,26 +70,6 @@ const inputClassName =
   'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6'
 const selectTriggerClassName =
   '!h-[56px] !w-full rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-4 capitalize'
-
-function AutoJoinField({
-  value,
-  onChange,
-}: {
-  value: boolean
-  onChange: (value: boolean) => void
-}) {
-  return (
-    <div className="flex items-center justify-between rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6 py-4">
-      <div className="space-y-1">
-        <Label className="text-sm font-medium text-[#D2D9E6]">Auto Join</Label>
-        <p className="text-xs text-[#828DA3]">
-          New SSO users are added to this organization automatically.
-        </p>
-      </div>
-      <Switch checked={value} onCheckedChange={onChange} />
-    </div>
-  )
-}
 
 function LogoField({
   logoUrl,
@@ -190,7 +167,7 @@ function CreateServerOrgModal({
 }) {
   const form = useForm<CreateServerOrgValues>({
     resolver: zodResolver(createSchema),
-    defaultValues: { name: '', autoJoin: false },
+    defaultValues: { name: '' },
   })
 
   return (
@@ -217,14 +194,6 @@ function CreateServerOrgModal({
               />
               <FieldError message={form.formState.errors.name?.message} />
             </div>
-          )}
-        />
-
-        <Controller
-          name="autoJoin"
-          control={form.control}
-          render={({ field }) => (
-            <AutoJoinField value={field.value} onChange={field.onChange} />
           )}
         />
       </form>
@@ -281,14 +250,6 @@ function EditServerOrgModal({
               />
               <FieldError message={form.formState.errors.name?.message} />
             </div>
-          )}
-        />
-
-        <Controller
-          name="autoJoin"
-          control={form.control}
-          render={({ field }) => (
-            <AutoJoinField value={field.value} onChange={field.onChange} />
           )}
         />
 

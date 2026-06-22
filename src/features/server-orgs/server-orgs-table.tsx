@@ -66,29 +66,6 @@ function buildColumns(
         </div>
       ),
     }),
-    columnHelper.accessor('autoJoin', {
-      header: 'Auto Join',
-      cell: ({ getValue }) => {
-        if (getValue()) {
-          return (
-            <Badge
-              variant="secondary"
-              className="h-6 rounded-md border border-blue-500/30 bg-blue-500/10 px-2.5 text-xs font-medium text-blue-400"
-            >
-              Enabled
-            </Badge>
-          )
-        }
-        return (
-          <Badge
-            variant="secondary"
-            className="h-6 rounded-md border border-[#2A3242] bg-[#1E2533] px-2.5 text-xs font-medium text-[#D2D9E6]"
-          >
-            Disabled
-          </Badge>
-        )
-      },
-    }),
     columnHelper.accessor('disabled', {
       header: 'Status',
       cell: ({ getValue }) => {

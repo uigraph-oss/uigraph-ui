@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { format, parse, parseISO } from 'date-fns'
 import { useState } from 'react'
 import { IoCalendarOutline } from 'react-icons/io5'
+import { useComponentMetaClasses } from '../theme'
 
 function parseDateOnly(value: string): Date | undefined {
   let d: Date
@@ -35,6 +36,7 @@ export function DatePicker({
   onChange: (value: string) => void
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const [isOpen, setIsOpen] = useState(false)
 
   const dateValue = value ? parseDateOnly(value) : undefined
@@ -56,8 +58,8 @@ export function DatePicker({
           type="button"
           variant="outline"
           className={cn(
-            'border-stock text-foreground h-[3.5rem] w-full justify-between rounded-[1rem] border bg-white px-4 text-sm font-normal',
-            isValidDate || 'text-muted-foreground'
+            classes.dateButton,
+            !isValidDate && 'text-muted-foreground'
           )}
         >
           <span>{displayValue}</span>
@@ -89,6 +91,7 @@ export function DateRangePicker({
   enableMinified?: boolean
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const [isOpen, setIsOpen] = useState(false)
 
   const fromDate = value?.from ? parseDateOnly(value.from) : undefined
@@ -168,14 +171,16 @@ export function DateRangePicker({
         <Button
           type="button"
           variant="outline"
-          className="border-stock text-foreground h-auto min-h-14 w-full justify-between rounded-[1rem] border bg-white px-4 text-[0.625rem] font-normal sm:text-sm"
+          className={cn(
+            classes.dateRangeButton,
+            !isValidRange && 'text-muted-foreground'
+          )}
         >
           <span
             className={cn(
               enableMinified
                 ? 'flex items-center gap-2 truncate overflow-hidden whitespace-nowrap'
-                : 'flex flex-wrap',
-              isValidRange || 'text-muted-foreground'
+                : 'flex flex-wrap'
             )}
             title={typeof displayValue === 'string' ? displayValue : undefined}
           >

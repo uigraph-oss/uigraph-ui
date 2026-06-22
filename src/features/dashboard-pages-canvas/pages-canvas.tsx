@@ -107,7 +107,7 @@ function PagesReactFlowCanvas() {
           : 'grid-cols-[1fr_0] gap-0'
       )}
     >
-      <div className="bg-shading-gray relative isolate size-full flex-1 overflow-hidden rounded-3xl border border-[#E5E5E5]">
+      <div className="bg-shading-gray relative isolate size-full flex-1 overflow-hidden rounded-3xl border border-[#2A3242]">
         <ReactFlow
           nodes={nodes}
           nodeTypes={nodeTypes}
@@ -162,7 +162,7 @@ function PagesReactFlowCanvas() {
 
       {!selectedFrameGroup && selectedFocalPoint && (
         <div className="mt-[-66px]">
-          <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
+          <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border border-[#2A3242] bg-[#141925]">
             <FocalPointSidebarContextProvider
               focalPoint={selectedFocalPoint}
               mapId={project.id}
@@ -183,7 +183,7 @@ function PagesReactFlowCanvas() {
 
       {!selectedFocalPoint && selectedFrameGroup && (
         <div className="mt-[-66px]">
-          <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
+          <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border border-[#2A3242] bg-[#141925]">
             <GroupSidebar
               frame={pages.find((p) => p.id === selectedFrameGroup.frameId)!}
               frameGroup={selectedFrameGroup}

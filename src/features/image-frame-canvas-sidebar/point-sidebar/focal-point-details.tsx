@@ -18,6 +18,9 @@ import { FocalPointComponentsSection } from '../components/focal-point-component
 import { useFocalPointSidebarContext } from '../contexts/focal-point-sidebar-context'
 import { DeleteFocalPointConfirmationModal } from './delete-focal-point-confirm-modal'
 
+const inputClassName =
+  '!h-14 w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-[#F4F7FC] placeholder:text-[#828DA3] focus:outline-none'
+
 export type FocalPointDetailsApi = {
   updateFocalPoint: (
     pointId: string,
@@ -66,13 +69,15 @@ export function FocalPointDetails({
         defaultValue="basics"
       >
         <AccordionItem value="basics">
-          <AccordionTrigger className="group flex w-full items-center justify-between px-4 text-base">
+          <AccordionTrigger className="group flex w-full items-center justify-between px-4 text-base text-[#F4F7FC]">
             Basics
           </AccordionTrigger>
 
           <AccordionContent className="space-y-4 px-4 pt-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" className="text-[#F4F7FC]">
+                Name
+              </Label>
               <Input
                 id="name"
                 value={localName}
@@ -82,7 +87,7 @@ export function FocalPointDetails({
                 disabled={isUpdatingFocalPoint}
                 onChange={(e) => setLocalName(e.target.value)}
                 placeholder="Enter focal point name"
-                className="!h-14 w-full !rounded-[0.75rem]"
+                className={inputClassName}
               />
             </div>
 
@@ -129,9 +134,8 @@ export function FocalPointDetails({
 
       <div className="mt-6 px-4 pb-2">
         <Button
-          size="lg"
-          variant="destructive"
-          className="text-destructive ring-destructive w-full rounded-lg bg-white ring hover:text-white"
+          preset="outline"
+          className="text-destructive border-destructive/30 hover:bg-destructive w-full rounded-lg hover:text-white"
           disabled={isDeletingFocalPoint}
           onClick={async () => setIsDeleteConfirmModalOpen(true)}
         >

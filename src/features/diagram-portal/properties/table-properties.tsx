@@ -13,6 +13,12 @@ import {
   TTableNode,
 } from '../nodes/table-node'
 
+const inputClassName =
+  'h-8 w-full rounded-[0.5rem] border border-[#2A3242] bg-transparent px-3 text-sm text-[#F4F7FC] placeholder:text-[#828DA3] focus:outline-none'
+
+const cellInputClassName =
+  'h-7 w-full rounded-[0.5rem] border border-[#2A3242] bg-transparent px-2 text-xs text-[#F4F7FC] placeholder:text-[#828DA3] focus:outline-none'
+
 export function TableProperties() {
   const { data, updateData } = useSingleSelectedNode<TTableNode>()
   const [localData, setLocalData] = useEffectState(data)
@@ -92,7 +98,7 @@ export function TableProperties() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label className="text-xs text-slate-500">Table name</Label>
+        <Label className="text-xs text-[#828DA3]">Table name</Label>
         <Input
           value={name ?? ''}
           onChange={(event) =>
@@ -105,16 +111,16 @@ export function TableProperties() {
               ),
             })
           }
-          className="h-8 text-sm"
+          className={inputClassName}
         />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-semibold text-slate-600">
+          <Label className="text-xs font-semibold text-[#F4F7FC]">
             Columns
           </Label>
-          <span className="text-[11px] text-slate-400">{columns.length}</span>
+          <span className="text-[11px] text-[#828DA3]">{columns.length}</span>
         </div>
         <div className="space-y-1.5">
           {columns.map((column, columnIndex) => (
@@ -127,12 +133,12 @@ export function TableProperties() {
                 onChange={(event) =>
                   handleColumnLabelChange(columnIndex, event.target.value)
                 }
-                className="h-8 flex-1 text-xs"
+                className={`${inputClassName} flex-1 text-xs`}
               />
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-slate-500"
+                preset="ghost"
+                className="size-7 text-[#828DA3] hover:text-[#F4F7FC]"
                 disabled={columns.length <= 1}
                 onClick={() => handleRemoveColumn(columnIndex)}
               >
@@ -142,8 +148,7 @@ export function TableProperties() {
           ))}
         </div>
         <Button
-          size="sm"
-          variant="secondary"
+          preset="outline"
           className="h-8 w-full"
           onClick={handleAddColumn}
         >
@@ -154,21 +159,21 @@ export function TableProperties() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-semibold text-slate-600">Rows</Label>
-          <span className="text-[11px] text-slate-400">{rows.length}</span>
+          <Label className="text-xs font-semibold text-[#F4F7FC]">Rows</Label>
+          <span className="text-[11px] text-[#828DA3]">{rows.length}</span>
         </div>
         <div className="space-y-2">
           {rows.map((row, rowIndex) => (
             <div
               key={`row-${rowIndex}`}
-              className="rounded-xl border border-slate-200 bg-white p-2"
+              className="rounded-xl border border-[#2A3242] bg-[#1E2533] p-2"
             >
-              <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
+              <div className="mb-1 flex items-center justify-between text-[11px] text-[#828DA3]">
                 <span>Row {rowIndex + 1}</span>
                 <Button
                   size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 text-slate-500"
+                  preset="ghost"
+                  className="size-6 text-[#828DA3] hover:text-[#F4F7FC]"
                   disabled={rows.length <= 1}
                   onClick={() => handleRemoveRow(rowIndex)}
                 >
@@ -188,19 +193,14 @@ export function TableProperties() {
                         event.target.value
                       )
                     }
-                    className="h-7 text-xs"
+                    className={cellInputClassName}
                   />
                 ))}
               </div>
             </div>
           ))}
         </div>
-        <Button
-          size="sm"
-          variant="secondary"
-          className="h-8 w-full"
-          onClick={handleAddRow}
-        >
+        <Button preset="outline" className="h-8 w-full" onClick={handleAddRow}>
           <Plus className="mr-1 h-3 w-3" />
           Add row
         </Button>

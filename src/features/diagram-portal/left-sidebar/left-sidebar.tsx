@@ -213,8 +213,8 @@ function SidebarButton({
           <button
             onClick={onClick}
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-[0.5rem] border border-[#F2F2F2] bg-white transition-all hover:bg-[#F5F7FA] [&>svg]:!size-5',
-              isActive && 'border-[#E8ECFC] bg-[#E8ECFC] text-[#3859FF]'
+              'flex h-10 w-10 items-center justify-center rounded-[0.5rem] border border-[#2A3242] bg-transparent text-[#F4F7FC] transition-all hover:bg-[#1E2533] [&>svg]:!size-5',
+              isActive && 'border-primary/30 bg-primary/10 text-primary'
             )}
           >
             {icon}

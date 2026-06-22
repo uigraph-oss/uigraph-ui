@@ -10,6 +10,9 @@ import { LuFullscreen } from 'react-icons/lu'
 import { useFocalPointContext } from '../context/focal-point-context'
 import { FocalPointCanvas } from './focal-point-canvas'
 
+const presetButtonClassName =
+  'flex size-10 items-center justify-center rounded-[0.8125rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-4'
+
 export function FocalPointEditor() {
   const {
     frame,
@@ -41,20 +44,20 @@ export function FocalPointEditor() {
         )}
       >
         <div className="relative grid">
-          <GridScrollBody className="border-stock flex-1 rounded-[0.75rem] border bg-[#f2f2f2] p-4 transition-opacity duration-200">
+          <GridScrollBody className="border-stock bg-shading-gray flex-1 rounded-[0.75rem] border border-[#2A3242] p-4 transition-opacity duration-200">
             <div className="p-4">
               <FocalPointCanvas />
             </div>
           </GridScrollBody>
 
-          <div className="absolute top-3 right-3 flex h-12 items-center gap-1 rounded-2xl border border-[#E5E5E5] bg-white p-1">
+          <div className="absolute top-3 right-3 flex h-12 items-center gap-1 rounded-2xl border border-[#2A3242] bg-[#141925] p-1 shadow-sm">
             <button
               onClick={() => setPreset(preset === 'mobile' ? null : 'mobile')}
               className={cn(
-                'border-stock flex size-10 items-center justify-center rounded-[0.8125rem] border transition-colors [&>svg]:size-4',
+                presetButtonClassName,
                 preset === 'mobile'
-                  ? 'bg-primary/10 text-primary border-none'
-                  : 'hover:bg-stock'
+                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  : 'hover:bg-[#1E2533]'
               )}
             >
               <FaMobileAlt />
@@ -63,10 +66,10 @@ export function FocalPointEditor() {
             <button
               onClick={() => setPreset(preset === 'tablet' ? null : 'tablet')}
               className={cn(
-                'border-stock flex size-10 items-center justify-center rounded-[0.8125rem] border transition-colors [&>svg]:size-4',
+                presetButtonClassName,
                 preset === 'tablet'
-                  ? 'bg-primary/10 text-primary border-none'
-                  : 'hover:bg-stock'
+                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  : 'hover:bg-[#1E2533]'
               )}
             >
               <FaTabletAlt />
@@ -75,10 +78,10 @@ export function FocalPointEditor() {
             <button
               onClick={() => setPreset(preset === 'desktop' ? null : 'desktop')}
               className={cn(
-                'border-stock flex size-10 items-center justify-center rounded-[0.8125rem] border transition-colors [&>svg]:size-4',
+                presetButtonClassName,
                 preset === 'desktop'
-                  ? 'bg-primary/10 text-primary border-none'
-                  : 'hover:bg-stock'
+                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  : 'hover:bg-[#1E2533]'
               )}
             >
               <LuFullscreen className="scale-125" />
@@ -88,7 +91,7 @@ export function FocalPointEditor() {
 
         <div className="h-full overflow-hidden">
           {selectedFocalPoint && (
-            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
+            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border border-[#2A3242] bg-[#141925]">
               <FocalPointSidebarContextProvider
                 focalPoint={selectedFocalPoint}
                 mapId={mapId}
@@ -103,7 +106,7 @@ export function FocalPointEditor() {
           )}
 
           {selectedFrameGroup && (
-            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-white">
+            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border border-[#2A3242] bg-[#141925]">
               <GroupSidebar
                 frame={frame!}
                 frameGroup={selectedFrameGroup}

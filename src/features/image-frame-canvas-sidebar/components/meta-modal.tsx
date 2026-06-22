@@ -20,6 +20,7 @@ import {
   ColorPickerInput,
   ComponentInputType,
   ComponentMetaField,
+  ComponentMetaThemeProvider,
   DatePicker,
   DateRangePicker,
   DropdownMultiSelect,
@@ -143,152 +144,161 @@ function FocalPointMetaModalContent({
           if (isViewMode) e.target.blur()
         }}
       >
-        <div className={cn(isViewMode && 'pointer-events-none')}>
-          {fields.map((field, i) => (
-            <Controller
-              key={field.componentFieldId ?? i}
-              control={control}
-              name={field.componentFieldId!}
-              render={({ field: controllerField }) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const value = controllerField.value as any | null
-                const setValue = controllerField.onChange
+        <ComponentMetaThemeProvider theme="modal">
+          <div className={cn(isViewMode && 'pointer-events-none')}>
+            {fields.map((field, i) => (
+              <Controller
+                key={field.componentFieldId ?? i}
+                control={control}
+                name={field.componentFieldId!}
+                render={({ field: controllerField }) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const value = controllerField.value as any | null
+                  const setValue = controllerField.onChange
 
-                return (
-                  <ComponentMetaField
-                    label={field.label ?? 'Label'}
-                    required={!isReadOnly && (field.required ?? false)}
-                    componentType={field.type ?? 'unknown'}
-                    error={formState.errors[
-                      field.componentFieldId!
-                    ]?.message?.toString()}
-                  >
-                    {field.type === ComponentInputType.NumberInput && (
-                      <NumberInput value={value ?? ''} onChange={setValue} />
-                    )}
+                  return (
+                    <ComponentMetaField
+                      label={field.label ?? 'Label'}
+                      required={!isReadOnly && (field.required ?? false)}
+                      componentType={field.type ?? 'unknown'}
+                      error={formState.errors[
+                        field.componentFieldId!
+                      ]?.message?.toString()}
+                    >
+                      {field.type === ComponentInputType.NumberInput && (
+                        <NumberInput value={value ?? ''} onChange={setValue} />
+                      )}
 
-                    {field.type === ComponentInputType.TextInput && (
-                      <TextInput value={value ?? ''} onChange={setValue} />
-                    )}
+                      {field.type === ComponentInputType.TextInput && (
+                        <TextInput value={value ?? ''} onChange={setValue} />
+                      )}
 
-                    {field.type === ComponentInputType.TextBox && (
-                      <TextAreaInput value={value ?? ''} onChange={setValue} />
-                    )}
+                      {field.type === ComponentInputType.TextBox && (
+                        <TextAreaInput
+                          value={value ?? ''}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.URLInput && (
-                      <URLInput value={value ?? ''} onChange={setValue} />
-                    )}
+                      {field.type === ComponentInputType.URLInput && (
+                        <URLInput value={value ?? ''} onChange={setValue} />
+                      )}
 
-                    {field.type === ComponentInputType.FileUpload && (
-                      <FileInput
-                        file={value ?? null}
-                        isViewMode={isViewMode}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.FileUpload && (
+                        <FileInput
+                          file={value ?? null}
+                          isViewMode={isViewMode}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.LinkOrFileUpload && (
-                      <LinkOrFileInput
-                        value={value ?? null}
-                        isViewMode={isViewMode}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.LinkOrFileUpload && (
+                        <LinkOrFileInput
+                          value={value ?? null}
+                          isViewMode={isViewMode}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.DropdownSelect && (
-                      <DropdownSelectInput
-                        options={arrayNonNullable(field.options)}
-                        value={value ?? ''}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.DropdownSelect && (
+                        <DropdownSelectInput
+                          options={arrayNonNullable(field.options)}
+                          value={value ?? ''}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.RichTextEditor && (
-                      <RichTextEditor value={value ?? ''} setValue={setValue} />
-                    )}
+                      {field.type === ComponentInputType.RichTextEditor && (
+                        <RichTextEditor
+                          value={value ?? ''}
+                          setValue={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.CodeEditor && (
-                      <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-white">
+                      {field.type === ComponentInputType.CodeEditor && (
                         <CodeMirrorWrapped
                           height={'10rem'}
                           value={value ?? ''}
                           setValue={setValue}
                         />
-                      </div>
-                    )}
+                      )}
 
-                    {field.type === ComponentInputType.KeyValueList && (
-                      <KeyValuePairInput
-                        value={value ?? []}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.KeyValueList && (
+                        <KeyValuePairInput
+                          value={value ?? []}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.BooleanToggle && (
-                      <BooleanToggleInput
-                        checked={Boolean(value)}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.BooleanToggle && (
+                        <BooleanToggleInput
+                          checked={Boolean(value)}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.MultiSelect && (
-                      <DropdownMultiSelect
-                        options={arrayNonNullable(field.options)}
-                        value={value ?? []}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.MultiSelect && (
+                        <DropdownMultiSelect
+                          options={arrayNonNullable(field.options)}
+                          value={value ?? []}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.SearchSelect && (
-                      <DropdownSearchSelect
-                        options={arrayNonNullable(field.options)}
-                        value={value ?? ''}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.SearchSelect && (
+                        <DropdownSearchSelect
+                          options={arrayNonNullable(field.options)}
+                          value={value ?? ''}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.CheckboxGroup && (
-                      <CheckboxGroupInput
-                        value={value ?? []}
-                        onChange={setValue}
-                        options={arrayNonNullable(field.options)}
-                      />
-                    )}
+                      {field.type === ComponentInputType.CheckboxGroup && (
+                        <CheckboxGroupInput
+                          value={value ?? []}
+                          onChange={setValue}
+                          options={arrayNonNullable(field.options)}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.TagInput && (
-                      <TagInput value={value ?? []} onChange={setValue} />
-                    )}
+                      {field.type === ComponentInputType.TagInput && (
+                        <TagInput value={value ?? []} onChange={setValue} />
+                      )}
 
-                    {field.type === ComponentInputType.DatePicker && (
-                      <DatePicker value={value ?? null} onChange={setValue} />
-                    )}
+                      {field.type === ComponentInputType.DatePicker && (
+                        <DatePicker value={value ?? null} onChange={setValue} />
+                      )}
 
-                    {field.type === ComponentInputType.DateRangePicker && (
-                      <DateRangePicker
-                        value={value ?? null}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.DateRangePicker && (
+                        <DateRangePicker
+                          value={value ?? null}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.ColorPicker && (
-                      <ColorPickerInput
-                        value={value ?? null}
-                        onChange={setValue}
-                      />
-                    )}
+                      {field.type === ComponentInputType.ColorPicker && (
+                        <ColorPickerInput
+                          value={value ?? null}
+                          onChange={setValue}
+                        />
+                      )}
 
-                    {field.type === ComponentInputType.Slider && (
-                      <SliderInput value={value ?? null} onChange={setValue} />
-                    )}
-                  </ComponentMetaField>
-                )
-              }}
-            />
-          ))}
-        </div>
+                      {field.type === ComponentInputType.Slider && (
+                        <SliderInput
+                          value={value ?? null}
+                          onChange={setValue}
+                        />
+                      )}
+                    </ComponentMetaField>
+                  )
+                }}
+              />
+            ))}
+          </div>
+        </ComponentMetaThemeProvider>
       </div>
 
-      <DialogFooter className="border-stock flex-row items-center justify-end p-6 pt-2 pb-3 sm:pb-6">
+      <DialogFooter className="border-stock flex-row items-center justify-end border-t p-6 pt-2 pb-3 sm:pb-6">
         {isReadOnly && (
           <p className="text-paragraph mr-auto text-sm">
             This component is linked to a service and cannot be edited here.
@@ -299,7 +309,7 @@ function FocalPointMetaModalContent({
 
         <DialogClose asChild>
           <Button
-            variant={'outline'}
+            preset="outline"
             disabled={isLoading}
             className={'h-11 rounded-[0.8125rem]'}
           >
@@ -309,6 +319,7 @@ function FocalPointMetaModalContent({
 
         {!isReadOnly && (
           <Button
+            preset="cta"
             disabled={isLoading || isReadOnly}
             className={'h-11 rounded-[0.8125rem]'}
             onClick={() => {
@@ -461,7 +472,7 @@ export function FocalPointMetaModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
         showCloseButton={false}
-        className="bg-shading border-stock h-full max-h-full w-full max-w-full grid-rows-[auto_1fr_auto] gap-0 rounded-none border p-0 sm:h-auto sm:max-h-[95%] sm:max-w-[min(43rem,95%)] sm:rounded-[1rem]"
+        className="h-full max-h-full w-full max-w-full grid-rows-[auto_1fr_auto] gap-0 rounded-none border border-[#2A3242] bg-[#141925] p-0 sm:h-auto sm:max-h-[95%] sm:max-w-[min(43rem,95%)] sm:rounded-[1rem]"
       >
         <FocalPointMetaModalLoader
           isOpen={isOpen}

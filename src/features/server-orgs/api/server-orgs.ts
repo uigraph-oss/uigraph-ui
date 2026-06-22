@@ -5,19 +5,17 @@ export type ServerOrg = {
   name: string
   logoUrl?: string | null
   disabled: boolean
-  autoJoin: boolean
   createdAt: string
   updatedAt: string
 }
 
 export const SERVER_ORGS = graphql(`
   query ServerOrgsV2 {
-    serverOrgs {
+    orgs {
       id
       name
       logoUrl
       disabled
-      autoJoin
       createdAt
       updatedAt
     }
@@ -27,7 +25,7 @@ export const SERVER_ORGS = graphql(`
 export async function setServerOrgLogo(orgId: string, file: File) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`/api/v1/server/orgs/${orgId}/logo`, {
+  const res = await fetch(`/api/v1/orgs/${orgId}/logo`, {
     method: 'PUT',
     credentials: 'include',
     body: form,
@@ -38,7 +36,7 @@ export async function setServerOrgLogo(orgId: string, file: File) {
 }
 
 export async function removeServerOrgLogo(orgId: string) {
-  const res = await fetch(`/api/v1/server/orgs/${orgId}/logo`, {
+  const res = await fetch(`/api/v1/orgs/${orgId}/logo`, {
     method: 'DELETE',
     credentials: 'include',
   })
@@ -48,12 +46,11 @@ export async function removeServerOrgLogo(orgId: string) {
 }
 
 export const CREATE_SERVER_ORG = graphql(`
-  mutation CreateServerOrgV2($input: CreateServerOrgInput!) {
-    createServerOrg(input: $input) {
+  mutation CreateServerOrgV2($input: CreateOrgInput!) {
+    createOrg(input: $input) {
       id
       name
       disabled
-      autoJoin
       createdAt
       updatedAt
     }
@@ -61,12 +58,11 @@ export const CREATE_SERVER_ORG = graphql(`
 `)
 
 export const UPDATE_SERVER_ORG = graphql(`
-  mutation UpdateServerOrgV2($id: ID!, $input: UpdateServerOrgInput!) {
-    updateServerOrg(id: $id, input: $input) {
+  mutation UpdateServerOrgV2($id: ID!, $input: UpdateOrgInput!) {
+    updateOrg(id: $id, input: $input) {
       id
       name
       disabled
-      autoJoin
       createdAt
       updatedAt
     }
@@ -75,6 +71,6 @@ export const UPDATE_SERVER_ORG = graphql(`
 
 export const DELETE_SERVER_ORG = graphql(`
   mutation DeleteServerOrgV2($id: ID!) {
-    deleteServerOrg(id: $id)
+    deleteOrg(id: $id)
   }
 `)

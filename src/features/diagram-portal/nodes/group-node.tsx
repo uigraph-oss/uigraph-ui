@@ -15,6 +15,29 @@ export type GroupNodeData = NodeDataGenerator<{
 
 export type TGroupNode = Node<GroupNodeData, 'group'>
 
+const DEFAULT_GROUP_BACKGROUND = 'rgba(20, 25, 37, 0.35)'
+const DEFAULT_GROUP_BORDER = '#828DA3'
+
+function resolveGroupFrameStyles(data: GroupNodeData) {
+  const backgroundColor = data.backgroundColor
+  const borderColor = data.borderColor
+
+  const isLegacyLightFrame =
+    backgroundColor === '#FFFFFF' && (!borderColor || borderColor === '#000000')
+
+  if (isLegacyLightFrame) {
+    return {
+      backgroundColor: DEFAULT_GROUP_BACKGROUND,
+      borderColor: DEFAULT_GROUP_BORDER,
+    }
+  }
+
+  return {
+    backgroundColor: backgroundColor || DEFAULT_GROUP_BACKGROUND,
+    borderColor: borderColor || DEFAULT_GROUP_BORDER,
+  }
+}
+
 export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
   const { updateNodeData } = useReactFlow()
   const { isEdgeConnecting } = useFlowDiagramContext()
@@ -22,14 +45,14 @@ export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
     componentFieldId: 'name',
   })
 
+  const frameStyles = resolveGroupFrameStyles(data)
+
   return (
     <div
       className="size-full rounded-[0.5rem]"
       style={{
-        backgroundColor: data.backgroundColor || '#FFFFFF',
-        border: data.borderColor
-          ? `2px dashed ${data.borderColor}`
-          : '2px dashed #000000',
+        backgroundColor: frameStyles.backgroundColor,
+        border: `2px dashed ${frameStyles.borderColor}`,
       }}
     >
       <NodeResizer
@@ -104,7 +127,7 @@ export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
         placeholder=""
         onKeyDown={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
-        className="pointer-events-auto absolute top-2 left-2 h-auto w-auto resize-none overflow-hidden border-none bg-transparent text-sm font-medium break-words text-gray-900 outline-none"
+        className="pointer-events-auto absolute top-2 left-2 h-auto w-auto resize-none overflow-hidden border-none bg-transparent text-sm font-medium break-words text-[#F4F7FC] outline-none placeholder:text-[#828DA3]"
         onChange={(e) => {
           const value = e.currentTarget.value
           updateNodeData(id, {

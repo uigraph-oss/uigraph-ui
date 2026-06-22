@@ -33,6 +33,9 @@ const buttonVariants = cva(
         primary:
           "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-[1.125rem] [&_[role='svg']]:size-[1.125rem] rounded-[0.80315625rem] px-4 has-[>svg]:px-4 font-normal shadow-none leading-[1.33] bg-primary text-primary-foreground hover:bg-primary/90",
 
+        cta:
+          "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-4 rounded-[10px] px-4 has-[>svg]:px-4 gap-2 border-none text-[15px] font-semibold tracking-[-0.01em] leading-[1.33] bg-[#3B6BFF] text-white shadow-none hover:bg-[#3259E0] animate-[ug-glow-pulse_3s_ease-in-out_infinite] disabled:opacity-60",
+
         outline:
           "h-[2.7938125rem] [&_svg:not([class*='size-'])]:size-[1.125rem] [&_[role='svg']]:size-[1.125rem] rounded-[0.80315625rem] px-4 has-[>svg]:px-4 font-normal shadow-none leading-[1.33] border border-stock bg-transparent text-foreground/80 hover:text-foreground hover:bg-stock",
 

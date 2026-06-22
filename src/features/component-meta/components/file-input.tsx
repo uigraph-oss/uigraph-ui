@@ -4,6 +4,7 @@ import { openFileExplorer } from 'daily-code/browser'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { UploadTopIcon } from '../assets'
+import { useComponentMetaClasses } from '../theme'
 import { TextInput } from './basic-input'
 
 export function LinkOrFileInput({
@@ -17,6 +18,7 @@ export function LinkOrFileInput({
   defaultMode?: 'link' | 'upload'
   isViewMode?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const [mode, setMode] = useState<'link' | 'upload'>(defaultMode ?? 'upload')
 
   const imageUrl =
@@ -61,7 +63,7 @@ export function LinkOrFileInput({
 
             {mode === 'upload' && (
               <button
-                className="border-primary/20 flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed bg-white p-6"
+                className={classes.uploadZone}
                 onClick={async () => {
                   const [file] = await openFileExplorer()
                   onChange(file)
@@ -104,6 +106,7 @@ export function FileInput({
   onChange: (file: File) => void
   isViewMode?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const fileUrl =
     file instanceof File ? URL.createObjectURL(file) : (file ?? null)
 
@@ -111,7 +114,7 @@ export function FileInput({
     <div>
       {!isViewMode && (
         <button
-          className="border-primary/20 flex h-[8.75rem] w-full flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed bg-white p-6"
+          className={classes.uploadZone}
           onClick={async () => {
             const [file] = await openFileExplorer()
             onChange(file)

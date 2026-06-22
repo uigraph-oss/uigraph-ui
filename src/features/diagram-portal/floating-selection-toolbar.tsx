@@ -4,7 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ClipboardPaste, Copy, Files, Scissors, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
-import { ToolbarButton, ToolbarSeparator } from './floating-canvas-toolbar'
+import {
+  ToolbarButton,
+  ToolbarSeparator,
+  diagramToolbarContainerClassName,
+} from './floating-canvas-toolbar'
 import { generateUUID } from './utils/uuid'
 
 type ClipBoard = {
@@ -257,13 +261,12 @@ export function FloatingSelectionToolbar() {
           transition={{ duration: 0.1, ease: 'easeOut' }}
           className="pointer-events-none absolute inset-x-0 bottom-3 flex items-center justify-center"
         >
-          <div className="pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#E8ECFC] bg-white p-1 shadow-sm">
+          <div className={diagramToolbarContainerClassName}>
             {hasSelection && (
               <>
                 <ToolbarButton
                   tooltip="Cut Selection"
                   tooltipPosition="bottom"
-                  className="text-black/70"
                   onClick={() => handleCopy('cut')}
                 >
                   <Scissors size={18} />
@@ -272,7 +275,6 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Copy Selection"
                   tooltipPosition="bottom"
-                  className="text-black/70"
                   onClick={() => handleCopy('copy')}
                 >
                   <Copy size={18} />
@@ -286,7 +288,6 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Paste"
                   tooltipPosition="bottom"
-                  className="text-black/70"
                   onClick={() => handlePaste()}
                 >
                   <ClipboardPaste size={18} />
@@ -300,7 +301,6 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Duplicate Selection"
                   tooltipPosition="bottom"
-                  className="text-black/70"
                   onClick={() => handleDuplicate()}
                 >
                   <Files size={18} />
@@ -309,7 +309,7 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Delete Selection"
                   tooltipPosition="bottom"
-                  className="hover:text-destructive text-black/70"
+                  className="hover:text-destructive"
                   onClick={handleDelete}
                 >
                   <Trash2 size={18} />

@@ -71,3 +71,22 @@
     overflow: initial !important;
   }
 }
+
+.modal {
+  :global(.ql-toolbar) {
+    background-color: transparent;
+    border: 1px solid #2a3242;
+    border-radius: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.ql-container) {
+    background-color: transparent;
+    border: 1px solid #2a3242;
+    border-radius: 1rem;
+  }
+
+  :global(.ql-formats > *) {
+    border: 1px solid #2a3242 !important;
+  }
+}

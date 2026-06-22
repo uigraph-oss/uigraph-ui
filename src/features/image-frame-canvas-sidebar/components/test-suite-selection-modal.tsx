@@ -13,6 +13,11 @@ import { useMemo } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
 
+const selectClassName =
+  '!h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-[#F4F7FC] focus:outline-none'
+const loadingClassName =
+  'flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none'
+
 type TestSuiteSelectionModalProps = {
   onSelect: SubmitHandler<z.infer<typeof testSuiteSchema>>
 }
@@ -78,9 +83,9 @@ export function TestSuiteSelectionModal({
           <Label className="text-foreground text-sm font-medium">Service</Label>
 
           {servicesLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading services...
               </span>
             </div>
@@ -95,7 +100,7 @@ export function TestSuiteSelectionModal({
                 form.setValue('serviceId', value)
                 form.setValue('testPackId', '')
               }}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>
@@ -106,9 +111,9 @@ export function TestSuiteSelectionModal({
           </Label>
 
           {testPacksLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading test packs...
               </span>
             </div>
@@ -121,7 +126,7 @@ export function TestSuiteSelectionModal({
               }))}
               disabled={testPacksLoading || !selectedServiceId}
               onChange={(value) => form.setValue('testPackId', value)}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>

@@ -9,6 +9,10 @@ import {
 import { AWSIcon, AzureIcon, GoogleCloudIcon } from '../components/icons/brands'
 import { CloudIconSection } from '../types/cloud-icons.types'
 import { CloudIconItem } from './cloud-icon-item'
+import {
+  sidebarNestedCategoryButtonClassName,
+  sidebarNestedListClassName,
+} from './sidebar-panel-styles'
 
 function getCloudIcon(cloud: string) {
   const iconMap: { [key: string]: React.ReactNode } = {
@@ -45,14 +49,14 @@ function CloudCategoryList({
     <div className="flex flex-col gap-1">
       <button
         onClick={onToggle}
-        className="group flex h-8 w-full items-center justify-between rounded-md px-3 text-xs font-medium text-gray-700 transition-all hover:bg-blue-50 hover:text-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+        className={sidebarNestedCategoryButtonClassName}
       >
         <span className="flex items-center gap-2">
-          <LuZap className="size-3 text-gray-400 group-hover:text-blue-500" />
+          <LuZap className="text-muted-foreground size-3" />
           <span className="truncate capitalize">
             {category.replace(/-/g, ' ')}
           </span>
-          <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] text-gray-600">
+          <span className="rounded-full bg-[#232b3a] px-1.5 py-0.5 text-[10px] text-[#828DA3]">
             {icons.length}
           </span>
         </span>
@@ -66,7 +70,7 @@ function CloudCategoryList({
       </button>
 
       {isExpanded && (
-        <div className="ml-2 flex flex-col gap-1.5 border-l border-gray-200 pl-3">
+        <div className={sidebarNestedListClassName}>
           {visibleIcons.map((icon) => (
             <CloudIconItem
               key={`${cloud}:${category}:${icon.name}:${icon.relativePath}`}
@@ -109,16 +113,16 @@ export function CloudsListView({
               else next.add(section.cloud)
               setExpandedSections(next)
             }}
-            className="w-full rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-3 transition-all hover:from-blue-100 hover:to-indigo-100 hover:shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+            className="w-full rounded-lg border border-[#2A3242] bg-[#1E2533] p-3 transition-all hover:bg-[#232b3a] focus:outline-none"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-3xl">{getCloudIcon(section.cloud)}</span>
                 <div className="text-left">
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-[#F4F7FC]">
                     {section.title}
                   </h3>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-muted-foreground text-xs">
                     {Object.values(section.categories).flat().length} services
                     available
                   </p>
@@ -126,9 +130,9 @@ export function CloudsListView({
               </div>
               <div className="transition-transform duration-200">
                 {expandedSections.has(section.cloud) ? (
-                  <LuChevronUp className="size-4 text-gray-500" />
+                  <LuChevronUp className="text-muted-foreground size-4" />
                 ) : (
-                  <LuChevronDown className="size-4 text-gray-500" />
+                  <LuChevronDown className="text-muted-foreground size-4" />
                 )}
               </div>
             </div>

@@ -2,6 +2,7 @@ import { getNodesBounds, getViewportForBounds, Node } from '@xyflow/react'
 import { toCanvas } from 'html-to-image'
 
 const IMAGE_PADDING = 60
+const DIAGRAM_THUMBNAIL_BACKGROUND = '#0b0e16'
 
 function getImageViewport(nodes: Node[]) {
   const nodesBounds = getNodesBounds(nodes)
@@ -42,7 +43,7 @@ export async function generateDiagramThumbnailCanvas(nodes: Node[]) {
   const canvas = await toCanvas(viewportElement, {
     width: viewport.width,
     height: viewport.height,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: DIAGRAM_THUMBNAIL_BACKGROUND,
     style: {
       transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
     },

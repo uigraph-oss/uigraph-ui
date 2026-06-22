@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import hljs from 'highlight.js'
 import Quill, { Delta } from 'quill'
 import { useEffect, useRef } from 'react'
+import { useComponentMetaTheme } from '../../theme'
 import styles from './editor.module.scss'
 
 type QuillRichTextEditorProps = {
@@ -25,6 +26,7 @@ export function QuillRichTextEditor({
   noOverflow = false,
 }: Omit<QuillRichTextEditorProps, 'className'> & { className?: string }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const theme = useComponentMetaTheme()
 
   const helpersRef = useAutoRef({ setValue, value })
 
@@ -93,7 +95,12 @@ export function QuillRichTextEditor({
 
   return (
     <div
-      className={cn(styles.root, noOverflow && styles.noOverflow, className)}
+      className={cn(
+        styles.root,
+        noOverflow && styles.noOverflow,
+        theme === 'modal' && styles.modal,
+        className
+      )}
     >
       <div ref={containerRef} />
     </div>

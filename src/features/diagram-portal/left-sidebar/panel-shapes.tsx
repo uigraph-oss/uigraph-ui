@@ -18,6 +18,10 @@ import { STANDARD_TOOLS } from '../constants/standard-tools'
 import { SHAPE_COMPONENTS_LIST } from '../nodes'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
+import {
+  sidebarCategoryButtonClassName,
+  sidebarTileClassName,
+} from './sidebar-panel-styles'
 
 export function SidebarShapes() {
   const [expandedCategories, setExpandedCategories] = useState<
@@ -45,7 +49,7 @@ export function SidebarShapes() {
           <div className="flex flex-col gap-1">
             <button
               onClick={() => toggleCategory('standard')}
-              className="group flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className={sidebarCategoryButtonClassName}
             >
               <span className="truncate">Standard</span>
               {expandedCategories.has('standard') ? (
@@ -72,17 +76,18 @@ export function SidebarShapes() {
                           <TooltipTrigger>
                             <div
                               draggable
-                              className="flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border border-neutral-200 bg-white p-2 transition-all select-none hover:bg-[#f5f5f5] active:cursor-grabbing"
+                              className={sidebarTileClassName}
                               onDragStart={(event: React.DragEvent) => {
                                 componentDragDataTransfer(
-                                  event.dataTransfer,
+                                  event,
                                   tool.nodeType,
                                   tool.dragData,
-                                  tool.recommendedSize
+                                  tool.recommendedSize,
+                                  tool.label
                                 )
                               }}
                             >
-                              <div className="flex items-center justify-center text-gray-700">
+                              <div className="flex items-center justify-center">
                                 {tool.icon}
                               </div>
                             </div>
@@ -110,7 +115,7 @@ export function SidebarShapes() {
                 <div key={categoryKey} className="flex flex-col gap-1">
                   <button
                     onClick={() => toggleCategory(categoryKey)}
-                    className="group flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                    className={sidebarCategoryButtonClassName}
                   >
                     <span className="truncate">{category.label}</span>
                     {isExpanded ? (
@@ -137,10 +142,10 @@ export function SidebarShapes() {
                                 <TooltipTrigger>
                                   <div
                                     draggable
-                                    className="flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border border-neutral-200 bg-white p-2 transition-all select-none hover:bg-[#f5f5f5] active:cursor-grabbing [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
+                                    className={sidebarTileClassName}
                                     onDragStart={(event: React.DragEvent) => {
                                       componentDragDataTransfer(
-                                        event.dataTransfer,
+                                        event,
                                         'shape',
                                         {
                                           shape: s.id,
@@ -157,7 +162,8 @@ export function SidebarShapes() {
                                         {
                                           width: s.recommendedWidth,
                                           height: s.recommendedHeight,
-                                        }
+                                        },
+                                        s.label
                                       )
                                     }}
                                   >

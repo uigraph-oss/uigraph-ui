@@ -6,6 +6,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ColorPickerInput } from '@/features/component-meta'
+import { useComponentMetaClasses } from '@/features/component-meta/theme'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { Node } from '@xyflow/react'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
@@ -41,6 +42,7 @@ const fontWeights = [
 
 export function NodeTextStyle() {
   const { data, updateData } = useSingleSelectedNode<Node<TextNodeData>>()
+  const { select } = useComponentMetaClasses()
 
   const [localFill, setLocalFill] = useEffectState<string>(String(data?.fill))
 
@@ -108,7 +110,7 @@ export function NodeTextStyle() {
             updateData({ fontWeight: numValue || undefined })
           }}
         >
-          <SelectTrigger className="border-stock h-[3.5rem]! w-full rounded-[1rem] border bg-white px-4 text-sm">
+          <SelectTrigger className={select}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -129,7 +131,7 @@ export function NodeTextStyle() {
             updateData({ fontFamily: value || undefined })
           }}
         >
-          <SelectTrigger className="border-stock h-[3.5rem]! w-full rounded-[1rem] border bg-white px-4 text-sm">
+          <SelectTrigger className={select}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -1,6 +1,7 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { CustomSwitch } from '@/features/diagram-portal/components/ui'
 import { cn } from '@/lib/utils'
+import { useComponentMetaClasses } from '../theme'
 
 export function BooleanToggleInput({
   checked,
@@ -11,8 +12,10 @@ export function BooleanToggleInput({
   onChange: (value: boolean) => void
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
-    <div className="flex h-14 items-center gap-2 rounded-[1rem] bg-white px-4 py-3">
+    <div className={classes.surfaceRow}>
       <CustomSwitch
         checked={checked}
         onCheckedChange={onChange}
@@ -34,8 +37,10 @@ export function CheckboxGroupInput({
   onChange: (value: string[]) => void
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
-    <div className="flex min-h-14 flex-wrap items-center gap-4 rounded-[1rem] bg-white px-4 py-3">
+    <div className={classes.surfaceWrap}>
       {options.map((option) => (
         <div key={option} className="flex items-center gap-2">
           <Checkbox

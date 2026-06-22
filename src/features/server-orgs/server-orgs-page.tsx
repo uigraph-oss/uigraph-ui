@@ -55,7 +55,7 @@ export function ServerOrgsPage() {
     refetchQueries,
   })
 
-  const orgs = useMemo<ServerOrg[]>(() => data?.serverOrgs ?? [], [data])
+  const orgs = useMemo<ServerOrg[]>(() => data?.orgs ?? [], [data])
 
   const [searchTerm, setSearchTerm] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(20)
@@ -204,19 +204,18 @@ export function ServerOrgsPage() {
             logoUrl={editOrg.logoUrl}
             defaultValues={{
               name: editOrg.name,
-              autoJoin: editOrg.autoJoin,
               disabled: editOrg.disabled,
             }}
             onUploadLogo={async (file) => {
               await setServerOrgLogo(editOrg.id, file)
               const { data } = await refetch()
-              const updated = data.serverOrgs.find((o) => o.id === editOrg.id)
+              const updated = data.orgs.find((o) => o.id === editOrg.id)
               if (updated) setEditOrg(updated)
             }}
             onRemoveLogo={async () => {
               await removeServerOrgLogo(editOrg.id)
               const { data } = await refetch()
-              const updated = data.serverOrgs.find((o) => o.id === editOrg.id)
+              const updated = data.orgs.find((o) => o.id === editOrg.id)
               if (updated) setEditOrg(updated)
             }}
             onSubmit={async (values) => {
@@ -226,7 +225,6 @@ export function ServerOrgsPage() {
                     id: editOrg.id,
                     input: {
                       name: values.name,
-                      autoJoin: values.autoJoin,
                       disabled: values.disabled,
                     },
                   },

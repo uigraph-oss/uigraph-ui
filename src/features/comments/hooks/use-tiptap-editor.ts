@@ -20,8 +20,31 @@ type TiptapMentionOptions = Partial<
 type UseTiptapEditorProps = {
   value: string
   setValue: (value: string) => void
-
   editable?: boolean
+  theme?: 'default' | 'dark'
+}
+
+function getMentionPopupClasses(theme: 'default' | 'dark') {
+  if (theme === 'dark') {
+    return {
+      list: 'w-[260px] overflow-hidden rounded-md border border-[#2A3242] bg-[#141925] shadow-lg',
+      itemBase:
+        'flex w-full items-center px-3 py-2 text-left text-sm text-[#F4F7FC]',
+      itemSelected: 'bg-[#1E2533]',
+      itemDefault: 'bg-[#141925] hover:bg-[#1E2533]',
+      mentionClass:
+        'rounded bg-[#3B6BFF]/20 px-1 py-0.5 font-medium text-[#93B4FF]',
+    }
+  }
+
+  return {
+    list: 'w-[260px] overflow-hidden rounded-md border border-gray-200 bg-white shadow-md',
+    itemBase:
+      'flex w-full items-center px-3 py-2 text-left text-sm text-gray-900',
+    itemSelected: 'bg-gray-100',
+    itemDefault: 'bg-white hover:bg-gray-100',
+    mentionClass: 'rounded bg-blue-50 px-1 py-0.5 font-medium text-blue-700',
+  }
 }
 
 function safeParse(value: string) {
@@ -36,8 +59,10 @@ export function useTiptapEditor({
   value,
   setValue,
   editable = true,
+  theme = 'default',
 }: UseTiptapEditorProps) {
   const organizationId = useCurrentOrganization()?.id
+  const mentionPopupClasses = getMentionPopupClasses(theme)
 
   const { data } = useQuery(MEMBERS, {
     client: clientV2,
@@ -54,160 +79,163 @@ export function useTiptapEditor({
     })) as MentionItem[]
   }, [data?.members])
 
-  const editor = useEditor({
-    editable,
-    immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-        blockquote: false,
-        code: false,
-        codeBlock: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
-        horizontalRule: false,
-      }),
+  const editor = useEditor(
+    {
+      editable,
+      immediatelyRender: false,
+      extensions: [
+        StarterKit.configure({
+          heading: false,
+          blockquote: false,
+          code: false,
+          codeBlock: false,
+          bulletList: false,
+          orderedList: false,
+          listItem: false,
+          horizontalRule: false,
+        }),
 
-      ...(!editable
-        ? []
-        : [
-            Placeholder.configure({
-              placeholder: 'Add a comment...',
-            }),
-          ]),
+        ...(!editable
+          ? []
+          : [
+              Placeholder.configure({
+                placeholder: 'Add a comment...',
+              }),
+            ]),
 
-      Mention.configure({
-        HTMLAttributes: {
-          class: 'rounded bg-blue-50 px-1 py-0.5 font-medium text-blue-700',
-        },
-        suggestion: {
-          items({ query }) {
-            const q = query.trim().toLowerCase()
-            return q
-              ? users.filter((user) => user.label.toLowerCase().includes(q))
-              : users
+        Mention.configure({
+          HTMLAttributes: {
+            class: mentionPopupClasses.mentionClass,
           },
+          suggestion: {
+            items({ query }) {
+              const q = query.trim().toLowerCase()
+              return q
+                ? users.filter((user) => user.label.toLowerCase().includes(q))
+                : users
+            },
 
-          render() {
-            let popup: HTMLDivElement | null = null
-            let selectedIndex = 0
-            let currentItems: MentionItem[] = []
-            let currentCommand: ((item: MentionItem) => void) | null = null
-            let currentClientRect: (() => DOMRect | null) | null = null
+            render() {
+              let popup: HTMLDivElement | null = null
+              let selectedIndex = 0
+              let currentItems: MentionItem[] = []
+              let currentCommand: ((item: MentionItem) => void) | null = null
+              let currentClientRect: (() => DOMRect | null) | null = null
 
-            function update(props: {
-              items: MentionItem[]
-              command: (item: MentionItem) => void
-              clientRect?: (() => DOMRect | null) | null
-            }) {
-              if (!popup) return
+              function update(props: {
+                items: MentionItem[]
+                command: (item: MentionItem) => void
+                clientRect?: (() => DOMRect | null) | null
+              }) {
+                if (!popup) return
 
-              currentItems = props.items
-              currentCommand = props.command
-              currentClientRect = props.clientRect ?? null
+                currentItems = props.items
+                currentCommand = props.command
+                currentClientRect = props.clientRect ?? null
 
-              const rect = currentClientRect?.()
-              if (rect) {
-                popup.style.left = `${rect.left}px`
-                popup.style.top = `${rect.bottom + 6}px`
-              }
-
-              popup.textContent = ''
-              if (!currentItems.length) return
-
-              const list = document.createElement('div')
-              list.className =
-                'w-[260px] overflow-hidden rounded-md border bg-white shadow-md'
-
-              if (selectedIndex >= currentItems.length) selectedIndex = 0
-
-              for (let index = 0; index < currentItems.length; index++) {
-                const item = currentItems[index]
-                const button = document.createElement('button')
-                button.type = 'button'
-                button.className =
-                  'flex w-full items-center px-3 py-2 text-left text-sm ' +
-                  (index === selectedIndex
-                    ? 'bg-gray-100'
-                    : 'bg-white hover:bg-gray-100')
-                button.textContent = item.label
-                button.onmousedown = (event) => {
-                  event.preventDefault()
-                  currentCommand?.(item)
+                const rect = currentClientRect?.()
+                if (rect) {
+                  popup.style.left = `${rect.left}px`
+                  popup.style.top = `${rect.bottom + 6}px`
                 }
-                list.appendChild(button)
+
+                popup.textContent = ''
+                if (!currentItems.length) return
+
+                const list = document.createElement('div')
+                list.className = mentionPopupClasses.list
+
+                if (selectedIndex >= currentItems.length) selectedIndex = 0
+
+                for (let index = 0; index < currentItems.length; index++) {
+                  const item = currentItems[index]
+                  const button = document.createElement('button')
+                  button.type = 'button'
+                  button.className =
+                    mentionPopupClasses.itemBase +
+                    ' ' +
+                    (index === selectedIndex
+                      ? mentionPopupClasses.itemSelected
+                      : mentionPopupClasses.itemDefault)
+                  button.textContent = item.label
+                  button.onmousedown = (event) => {
+                    event.preventDefault()
+                    currentCommand?.(item)
+                  }
+                  list.appendChild(button)
+                }
+
+                popup.appendChild(list)
               }
 
-              popup.appendChild(list)
-            }
+              return {
+                onStart: (props) => {
+                  selectedIndex = 0
+                  popup = document.createElement('div')
+                  popup.className = 'fixed z-50'
+                  document.body.appendChild(popup)
+                  update(props)
+                },
+                onUpdate: (props) => {
+                  update(props)
+                },
+                onKeyDown: (props) => {
+                  if (props.event.key === 'Escape') {
+                    popup?.remove()
+                    popup = null
+                    return true
+                  }
 
-            return {
-              onStart: (props) => {
-                selectedIndex = 0
-                popup = document.createElement('div')
-                popup.className = 'fixed z-50'
-                document.body.appendChild(popup)
-                update(props)
-              },
-              onUpdate: (props) => {
-                update(props)
-              },
-              onKeyDown: (props) => {
-                if (props.event.key === 'Escape') {
+                  if (props.event.key === 'ArrowDown') {
+                    if (!currentItems.length) return true
+                    selectedIndex = (selectedIndex + 1) % currentItems.length
+                    update({
+                      items: currentItems,
+                      command: currentCommand || (() => {}),
+                      clientRect: currentClientRect,
+                    })
+                    return true
+                  }
+
+                  if (props.event.key === 'ArrowUp') {
+                    if (!currentItems.length) return true
+                    selectedIndex =
+                      (selectedIndex - 1 + currentItems.length) %
+                      currentItems.length
+                    update({
+                      items: currentItems,
+                      command: currentCommand || (() => {}),
+                      clientRect: currentClientRect,
+                    })
+                    return true
+                  }
+
+                  if (props.event.key === 'Enter') {
+                    const item = currentItems[selectedIndex]
+                    if (!item) return true
+                    currentCommand?.(item)
+                    return true
+                  }
+
+                  return false
+                },
+                onExit: () => {
                   popup?.remove()
                   popup = null
-                  return true
-                }
-
-                if (props.event.key === 'ArrowDown') {
-                  if (!currentItems.length) return true
-                  selectedIndex = (selectedIndex + 1) % currentItems.length
-                  update({
-                    items: currentItems,
-                    command: currentCommand || (() => {}),
-                    clientRect: currentClientRect,
-                  })
-                  return true
-                }
-
-                if (props.event.key === 'ArrowUp') {
-                  if (!currentItems.length) return true
-                  selectedIndex =
-                    (selectedIndex - 1 + currentItems.length) %
-                    currentItems.length
-                  update({
-                    items: currentItems,
-                    command: currentCommand || (() => {}),
-                    clientRect: currentClientRect,
-                  })
-                  return true
-                }
-
-                if (props.event.key === 'Enter') {
-                  const item = currentItems[selectedIndex]
-                  if (!item) return true
-                  currentCommand?.(item)
-                  return true
-                }
-
-                return false
-              },
-              onExit: () => {
-                popup?.remove()
-                popup = null
-              },
-            }
+                },
+              }
+            },
           },
-        },
-      } satisfies TiptapMentionOptions),
-    ],
-    content: safeParse(value),
-    onUpdate: ({ editor }) => {
-      const json = JSON.stringify(editor.getJSON(), null, 2)
-      setValue(json)
+        } satisfies TiptapMentionOptions),
+      ],
+      content: safeParse(value),
+      onUpdate: ({ editor }) => {
+        const json = JSON.stringify(editor.getJSON(), null, 2)
+        setValue(json)
+      },
     },
-  })
+    [theme, users, editable]
+  )
 
   useEffect(() => {
     if (!editor) return

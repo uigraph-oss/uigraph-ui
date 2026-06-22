@@ -1246,7 +1246,7 @@ export function PanelDataSourcesUnified() {
                                   className="flex cursor-grab items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm transition-all hover:bg-gray-100 active:cursor-grabbing"
                                   onDragStart={(event: React.DragEvent) => {
                                     componentDragDataTransfer(
-                                      event.dataTransfer,
+                                      event,
                                       'databaseTableSQL',
                                       {
                                         localTable: {
@@ -1260,7 +1260,8 @@ export function PanelDataSourcesUnified() {
                                           source.id,
                                           table.id
                                         ),
-                                      }
+                                      },
+                                      table.name ?? 'Table'
                                     )
                                   }}
                                 >
@@ -1365,7 +1366,7 @@ export function PanelDataSourcesUnified() {
                               className="flex cursor-grab items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm transition-all hover:bg-gray-100 active:cursor-grabbing"
                               onDragStart={(event: React.DragEvent) => {
                                 componentDragDataTransfer(
-                                  event.dataTransfer,
+                                  event,
                                   'databaseTableSQL',
                                   {
                                     serviceTable: {
@@ -1374,7 +1375,8 @@ export function PanelDataSourcesUnified() {
                                       tableName: entry.name,
                                     },
                                   },
-                                  { width: 400 }
+                                  { width: 400 },
+                                  entry.name
                                 )
                               }}
                             >
@@ -1402,7 +1404,7 @@ export function PanelDataSourcesUnified() {
                                 className="flex cursor-grab items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm transition-all hover:bg-gray-100 active:cursor-grabbing"
                                 onDragStart={(event: React.DragEvent) => {
                                   componentDragDataTransfer(
-                                    event.dataTransfer,
+                                    event,
                                     'databaseTableSQL',
                                     {
                                       serviceTable: {
@@ -1411,7 +1413,8 @@ export function PanelDataSourcesUnified() {
                                         tableName: table.name!,
                                       },
                                     },
-                                    { width: 400 }
+                                    { width: 400 },
+                                    table.name ?? 'Table'
                                   )
                                 }}
                               >

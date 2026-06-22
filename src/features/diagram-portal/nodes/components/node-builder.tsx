@@ -31,11 +31,11 @@ export function NodeBuilderCore({
   return (
     <NodeCard
       selected={selected}
-      className="max-w-sm overflow-hidden rounded-[0.5rem] bg-white text-left"
+      className="max-w-sm overflow-hidden rounded-[0.5rem] border border-[#2A3242] bg-[#141925] text-left"
     >
       <div className="p-5">
         <div className="grid grid-cols-[auto_1fr] gap-4">
-          <div className="size-12 overflow-hidden rounded-xl text-white [&>*]:size-full [&>*]:max-h-full [&>*]:min-h-full [&>*]:max-w-full [&>*]:min-w-full">
+          <div className="size-12 overflow-hidden rounded-xl bg-[#1E2533] text-white [&>*]:size-full [&>*]:max-h-full [&>*]:min-h-full [&>*]:max-w-full [&>*]:min-w-full">
             {icon ? (
               typeof icon === 'string' ? (
                 <img src={icon} alt={name} className="block object-cover" />
@@ -43,14 +43,14 @@ export function NodeBuilderCore({
                 icon
               )
             ) : (
-              <div className="flex h-6 w-6 items-center justify-center bg-black">
-                <Component className="h-6 w-6" />
+              <div className="flex h-full w-full items-center justify-center bg-[#1E2533]">
+                <Component className="h-6 w-6 text-[#F4F7FC]" />
               </div>
             )}
           </div>
 
           <div className="flex-1 shrink-0 basis-full">
-            <p className="text-lg font-bold text-slate-900">{name}</p>
+            <p className="text-lg font-bold text-[#F4F7FC]">{name}</p>
 
             {label && (
               <div className="mt-1 flex items-center gap-1.5">
@@ -64,7 +64,7 @@ export function NodeBuilderCore({
         </div>
 
         {description && (
-          <div className="mt-4 text-[15px] leading-relaxed text-balance text-slate-600">
+          <div className="mt-4 text-[15px] leading-relaxed text-balance text-[#828DA3]">
             <p>{description}</p>
           </div>
         )}

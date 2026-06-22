@@ -46,8 +46,8 @@ export function StepTwoComponent({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="outline"
-                  className="border-stock text-paragraph h-14 w-[12.25rem] justify-between rounded-2xl bg-white !px-6 text-base"
+                  preset="outline"
+                  className="h-14 w-[12.25rem] justify-between px-6 text-base"
                 >
                   Apply Template
                   <IoChevronDownOutline />
@@ -84,7 +84,7 @@ export function StepTwoComponent({
         {componentFields.length === 0 && (
           <div
             className={cn(
-              'border-stock/40 flex items-center justify-center rounded-2xl border bg-white/50 p-3',
+              'flex items-center justify-center rounded-[16px] border border-[#2A3242] bg-transparent p-3',
               largeEmptyState && 'py-8'
             )}
           >

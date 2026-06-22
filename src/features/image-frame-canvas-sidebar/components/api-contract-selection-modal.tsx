@@ -21,6 +21,11 @@ import { useMemo } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
 
+const selectClassName =
+  '!h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-[#F4F7FC] focus:outline-none'
+const loadingClassName =
+  'flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none'
+
 type ApiContractSelectionModalProps = {
   onSelect: SubmitHandler<z.infer<typeof apiContactSchema>>
 }
@@ -129,9 +134,9 @@ export function ApiContractSelectionModal({
           <Label className="text-foreground text-sm font-medium">Service</Label>
 
           {servicesLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading services...
               </span>
             </div>
@@ -147,7 +152,7 @@ export function ApiContractSelectionModal({
                 form.setValue('apiGroupId', '')
                 form.setValue('apiEndpointId', '')
               }}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>
@@ -158,9 +163,9 @@ export function ApiContractSelectionModal({
           </Label>
 
           {apiGroupsLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading API groups...
               </span>
             </div>
@@ -173,7 +178,7 @@ export function ApiContractSelectionModal({
               }))}
               disabled={apiGroupsLoading || !selectedServiceId}
               onChange={(value) => form.setValue('apiGroupId', value)}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>
@@ -184,9 +189,9 @@ export function ApiContractSelectionModal({
           </Label>
 
           {apiEndpointsLoading ? (
-            <div className="flex !h-[56px] w-full items-center gap-2 rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none">
+            <div className={loadingClassName}>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-[#6B7480]">
+              <span className="text-sm text-[#828DA3]">
                 Loading API endpoints...
               </span>
             </div>
@@ -196,7 +201,7 @@ export function ApiContractSelectionModal({
               options={apiEndpointOptions}
               disabled={apiEndpointsLoading || !selectedApiGroupId}
               onChange={(value) => form.setValue('apiEndpointId', value)}
-              className="!h-[56px] w-full rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus:outline-none"
+              className={selectClassName}
             />
           )}
         </div>

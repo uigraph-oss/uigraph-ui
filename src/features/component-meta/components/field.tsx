@@ -1,3 +1,5 @@
+import { useComponentMetaClasses } from '../theme'
+
 export function ComponentMetaField({
   error,
   label,
@@ -11,12 +13,14 @@ export function ComponentMetaField({
   children: React.ReactNode
   error: string | undefined | null
 }) {
+  const classes = useComponentMetaClasses()
+
   return (
     <div className="mb-6">
       <label
         data-component-type={componentType}
         data-has-error={error ? 'true' : null}
-        className="text-foreground mb-3 block text-sm font-medium capitalize"
+        className={classes.fieldLabel}
       >
         {label} {required && <span className="text-destructive">*</span>}
       </label>

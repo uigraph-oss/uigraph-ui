@@ -1,6 +1,7 @@
 import { ComponentInputType } from '@/features/component-meta'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { CloudIcon } from '../types/cloud-icons.types'
+import { sidebarCloudItemClassName } from './sidebar-panel-styles'
 
 export function CloudIconItem({
   cloud,
@@ -16,10 +17,10 @@ export function CloudIconItem({
     <div
       key={iconId}
       draggable
-      className="group flex h-11 w-full cursor-grab items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-all hover:border-blue-300 hover:bg-blue-50 hover:shadow-sm active:scale-[0.98] active:cursor-grabbing"
+      className={sidebarCloudItemClassName}
       onDragStart={(event: React.DragEvent) => {
         componentDragDataTransfer(
-          event.dataTransfer,
+          event,
           'cloud',
           {
             cloud,
@@ -42,7 +43,7 @@ export function CloudIconItem({
         )
       }}
     >
-      <div className="flex size-8 items-center justify-center rounded-md bg-gray-100 transition-colors group-hover:bg-blue-100">
+      <div className="flex size-8 items-center justify-center rounded-md bg-[#141925] transition-colors group-hover:bg-[#232b3a]">
         <img
           src={iconPath}
           alt={icon.name}
@@ -54,7 +55,7 @@ export function CloudIconItem({
         />
       </div>
       <div className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium text-gray-900 group-hover:text-blue-900">
+        <span className="group-hover:text-primary block truncate text-sm font-medium text-[#F4F7FC]">
           {icon.name}
         </span>
       </div>

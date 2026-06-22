@@ -1,4 +1,5 @@
 import { SuperCircleLoader } from '@/components/loader'
+import { cn } from '@/lib/utils'
 import {
   ResetLayoutViewIcon,
   SaveLayoutIcon,
@@ -20,6 +21,12 @@ type CanvasToolbarProps = {
   isResetLayoutLoading?: boolean
 }
 
+const toolbarButtonClassName =
+  'flex h-full items-center gap-1.5 rounded-[0.8125rem] border border-[#2A3242] px-[0.803125rem] text-sm text-[#F4F7FC] transition-colors hover:bg-[#1E2533] disabled:cursor-not-allowed disabled:text-[#828DA3] disabled:opacity-60'
+
+const iconButtonClassName =
+  'flex size-10 items-center justify-center rounded-[0.8125rem] border border-[#2A3242] text-[#F4F7FC] transition-colors hover:bg-[#1E2533]'
+
 export function CanvasToolbar({
   zoom,
   onZoomIn,
@@ -32,11 +39,11 @@ export function CanvasToolbar({
   isResetLayoutLoading,
 }: CanvasToolbarProps) {
   return (
-    <div className="absolute top-6 right-6 flex h-12 gap-6 rounded-2xl border border-[#E5E5E5] bg-white p-1">
+    <div className="absolute top-6 right-6 flex h-12 gap-4 rounded-2xl border border-[#2A3242] bg-[#141925] p-1 shadow-sm">
       <button
         onClick={onSaveLayout}
         disabled={isSaveLayoutDisabled || isSaveLayoutLoading}
-        className="text-foreground disabled:text-paragraph flex h-full items-center gap-1.5 rounded-[0.8125rem] border border-[#F2F2F2] px-[0.803125rem] text-sm"
+        className={toolbarButtonClassName}
       >
         {isSaveLayoutLoading ? (
           <SuperCircleLoader className="text-base" />
@@ -46,22 +53,16 @@ export function CanvasToolbar({
         Save Layout
       </button>
 
-      <div className="text-paragraph flex h-full items-center gap-3">
-        <button
-          onClick={onZoomIn}
-          className="flex size-10 items-center justify-center rounded-[0.8125rem] border border-[#F2F2F2]"
-        >
+      <div className="flex h-full items-center gap-3">
+        <button onClick={onZoomIn} className={iconButtonClassName}>
           <ZoomInIcon className="text-base" />
         </button>
 
-        <span className="text-foreground flex w-9 items-center justify-center text-sm">
+        <span className="flex w-9 items-center justify-center text-sm text-[#F4F7FC]">
           {Math.round(zoom * 100)}%
         </span>
 
-        <button
-          onClick={onZoomOut}
-          className="flex size-10 items-center justify-center rounded-[0.8125rem] border border-[#F2F2F2]"
-        >
+        <button onClick={onZoomOut} className={iconButtonClassName}>
           <ZoomOutIcon className="text-base" />
         </button>
       </div>
@@ -69,7 +70,7 @@ export function CanvasToolbar({
       <button
         onClick={onResetLayout}
         disabled={isResetLayoutDisabled || isResetLayoutLoading}
-        className="text-foreground disabled:text-paragraph flex h-full items-center gap-1.5 rounded-[0.8125rem] border border-[#F2F2F2] px-[0.803125rem] text-sm"
+        className={cn(toolbarButtonClassName, 'disabled:hover:bg-transparent')}
       >
         {isResetLayoutLoading ? (
           <SuperCircleLoader className="text-base" />

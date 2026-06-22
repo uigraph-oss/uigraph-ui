@@ -1,4 +1,5 @@
 import { Node } from '@xyflow/react'
+import { DragEvent } from 'react'
 import {
   AnimatedNodeData,
   BuilderNodeData,
@@ -12,6 +13,7 @@ import {
 import { TComponentField } from '../../types/component-fields'
 import { generateUUID } from '../../utils/uuid'
 import { TableNodeData } from '../table-node'
+import { setDiagramDragPreview } from './drag-preview'
 
 type BuilderNodeShell = Omit<Node, 'position'>
 
@@ -37,11 +39,13 @@ type NodeData<T extends TNodeTypes> = {
                 : never
 
 export function componentDragDataTransfer<T extends TNodeTypes>(
-  dataTransfer: DataTransfer,
+  event: DragEvent,
   type: T,
   data: NodeData<T>,
-  node?: Partial<Node>
+  node?: Partial<Node>,
+  previewLabel?: string
 ) {
+  const dataTransfer = event.dataTransfer
   const builderNode: BuilderNodeShell = {
     type: type,
     id: generateUUID(),
@@ -51,6 +55,32 @@ export function componentDragDataTransfer<T extends TNodeTypes>(
 
   dataTransfer.setData('application/react-flow', JSON.stringify(builderNode))
   dataTransfer.effectAllowed = 'move'
+
+  setDiagramDragPreview(
+    event.nativeEvent,
+    previewLabel ?? resolveDragPreviewLabel(data)
+  )
+}
+
+function resolveDragPreviewLabel(data: Record<string, unknown>) {
+  if (typeof data.componentName === 'string' && data.componentName) {
+    return data.componentName
+  }
+
+  if (typeof data.name === 'string' && data.name) {
+    return data.name
+  }
+
+  const fields = data.componentFields as TComponentField[] | undefined
+  const nameField = fields?.find((field) => field.label === 'Name')
+  const nameValue = (nameField?.data?.[0] as { value?: string } | undefined)
+    ?.value
+
+  if (nameValue) {
+    return nameValue
+  }
+
+  return 'Component'
 }
 
 export function componentDropDataTransfer(

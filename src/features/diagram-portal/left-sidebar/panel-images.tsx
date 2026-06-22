@@ -3,13 +3,15 @@
 import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
-import { useQuery } from '@apollo/client'
-import axios from 'axios'
+import { uploadFileV2 } from '@/features/uploads/api/uploads'
+import { cn } from '@/lib/utils'
+import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { openFileExplorer } from 'daily-code/browser'
 import { ImageIcon, Upload } from 'lucide-react'
 import { useMemo } from 'react'
-import { DIAGRAM_IMAGES } from '../api/images'
+import { toast } from 'sonner'
+import { CREATE_DIAGRAM_IMAGE, DIAGRAM_IMAGES } from '../api/images'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
@@ -23,6 +25,11 @@ export function SidebarImages() {
     skip: !diagramId || !organizationId,
   })
 
+  const [createDiagramImage, { loading: isUploading }] = useMutation(
+    CREATE_DIAGRAM_IMAGE,
+    { client: clientV2 }
+  )
+
   const images = useMemo(() => {
     return arrayNonNullable(data?.diagramImages)
   }, [data?.diagramImages])
@@ -34,40 +41,71 @@ export function SidebarImages() {
       const [file] = await openFileExplorer({ accept: 'image/*' })
       if (!file) return
 
-      const form = new FormData()
-      form.append('file', file)
-      form.append('fileName', file.name)
-      form.append('order', String(images.length))
+      const assetId = await uploadFileV2(organizationId, file)
 
-      await axios.post(
-        `/api/v1/orgs/${organizationId}/diagrams/${diagramId}/images`,
-        form,
-        { withCredentials: true }
-      )
+      await createDiagramImage({
+        variables: {
+          orgId: organizationId,
+          diagramId,
+          input: {
+            assetId,
+            fileName: file.name,
+            order: images.length,
+          },
+        },
+      })
 
       await refetch()
     } catch (error) {
       console.error('Error uploading image:', error)
+      toast.error('Failed to upload image')
     }
   }
 
   return (
     <SidebarLayout className="left-18">
-      <div className="flex w-[10.5rem] flex-col gap-2 p-1">
-        <Button preset="primary" onClick={handleUploadImage} className="w-full">
-          <Upload className="mr-2 h-4 w-4" />
-          Upload
+      <div className="flex w-[10.5rem] flex-col gap-3 p-2">
+        <Button
+          preset="outline"
+          onClick={handleUploadImage}
+          disabled={isUploading}
+          className="h-9 w-full gap-2 text-sm"
+        >
+          <Upload className="size-4 shrink-0" />
+          {isUploading ? 'Uploading...' : 'Upload image'}
         </Button>
 
-        <div className="flex flex-col gap-1.5">
+        {images.length > 0 && (
+          <div className="flex items-center justify-between px-0.5">
+            <span className="text-xs font-medium text-[#828DA3]">
+              Your images
+            </span>
+            <span className="rounded-md bg-[#1E2533] px-1.5 py-0.5 text-[10px] font-medium text-[#828DA3]">
+              {images.length}
+            </span>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-2">
           {images.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-6 text-center">
-              <ImageIcon className="h-8 w-8 text-gray-400" />
-              <p className="text-xs text-gray-500">No images</p>
-              <p className="text-[10px] text-gray-400">
-                Upload an image to get started
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={handleUploadImage}
+              disabled={isUploading}
+              className="hover:border-primary/30 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-[#2A3242] bg-[#1E2533]/50 px-3 py-8 text-center transition-colors hover:bg-[#1E2533]"
+            >
+              <div className="flex size-10 items-center justify-center rounded-full bg-[#2A3242]/70">
+                <ImageIcon className="size-4 text-[#586378]" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-[#F4F7FC]">
+                  No images yet
+                </p>
+                <p className="mt-1 text-[10px] leading-relaxed text-[#828DA3]">
+                  Upload PNG, JPG, or SVG to drag onto the canvas
+                </p>
+              </div>
+            </button>
           ) : (
             images.map(
               (image) =>
@@ -75,10 +113,14 @@ export function SidebarImages() {
                   <div
                     key={image.diagramImageId}
                     draggable
-                    className="flex cursor-grab items-center justify-center rounded-[0.5rem] bg-transparent transition-all select-none active:cursor-grabbing"
+                    title={image.fileName ?? 'Diagram image'}
+                    className={cn(
+                      'group cursor-grab overflow-hidden rounded-lg border border-[#2A3242] bg-[#1E2533]',
+                      'hover:border-primary/40 transition-all select-none hover:bg-[#232b3a] active:cursor-grabbing'
+                    )}
                     onDragStart={(event: React.DragEvent) => {
                       componentDragDataTransfer(
-                        event.dataTransfer,
+                        event,
                         'image',
                         {
                           src: image.imageUrl ?? '',
@@ -88,6 +130,7 @@ export function SidebarImages() {
                               type: ComponentInputType.TextInput,
                               label: 'Name',
                               isReadonly: true,
+                              data: [{ value: image.fileName ?? 'Image' }],
                             },
                             {
                               componentFieldId: 'description',
@@ -102,11 +145,20 @@ export function SidebarImages() {
                       )
                     }}
                   >
-                    <img
-                      src={image.imageUrl ?? ''}
-                      alt={image.fileName || ''}
-                      className="w-[9.5rem] rounded-md"
-                    />
+                    <div className="flex aspect-square items-center justify-center bg-[#141925] p-2">
+                      <img
+                        src={image.imageUrl ?? ''}
+                        alt={image.fileName || 'Diagram image'}
+                        className="max-h-full max-w-full object-contain"
+                        draggable={false}
+                      />
+                    </div>
+
+                    {image.fileName && (
+                      <p className="truncate border-t border-[#2A3242] px-2 py-1.5 text-[10px] text-[#828DA3] group-hover:text-[#F4F7FC]">
+                        {image.fileName}
+                      </p>
+                    )}
                   </div>
                 )
             )

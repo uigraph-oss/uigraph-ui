@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { FocusEvent, KeyboardEvent, useState } from 'react'
 import { LuX } from 'react-icons/lu'
+import { useComponentMetaClasses } from '../theme'
 
 export function TagInput({
   value,
@@ -14,6 +15,7 @@ export function TagInput({
   placeholder?: string | null
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const [inputValue, setInputValue] = useState('')
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -41,7 +43,7 @@ export function TagInput({
   }
 
   return (
-    <div className="border-stock text-foreground min-h-14 w-full rounded-[1rem] border bg-white px-4 py-3">
+    <div className={classes.surface}>
       <div className="flex flex-wrap items-center gap-1">
         {value.map((tag, index) => (
           <div

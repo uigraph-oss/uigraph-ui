@@ -17,6 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Check, ChevronDown } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useComponentMetaClasses } from '../theme'
 
 export function DropdownSelectInput({
   value,
@@ -33,6 +34,7 @@ export function DropdownSelectInput({
   className?: string
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const validOptions = options.filter(Boolean)
 
   return (
@@ -41,7 +43,7 @@ export function DropdownSelectInput({
       onValueChange={onChange}
       open={readonly ? false : undefined}
     >
-      <SelectTrigger className="border-stock text-foreground [&[data-placeholder]]:text-paragraph !h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm">
+      <SelectTrigger className={classes.select}>
         <SelectValue placeholder={placeholder || 'Select an option'} />
       </SelectTrigger>
 
@@ -75,6 +77,7 @@ export function DropdownSearchSelect({
   options: string[]
   readonly?: boolean
 }) {
+  const classes = useComponentMetaClasses()
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -97,14 +100,14 @@ export function DropdownSearchSelect({
       value={value}
       onValueChange={onChange}
     >
-      <SelectTrigger className="border-stock text-foreground [&[data-placeholder]]:text-paragraph !h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm">
+      <SelectTrigger className={classes.select}>
         <SelectValue placeholder={placeholder || 'Select an option'} />
       </SelectTrigger>
 
       <SelectContent>
         <Input
           placeholder="Search..."
-          className="bg-white/80"
+          className={classes.input}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -146,6 +149,7 @@ export function DropdownMultiSelect({
   onChange: (value: string[]) => void
   placeholder?: string | null
 }) {
+  const classes = useComponentMetaClasses()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [triggerWidth, setTriggerWidth] = useState(0)
 
@@ -182,7 +186,10 @@ export function DropdownMultiSelect({
       <DropdownMenuTrigger asChild>
         <button
           ref={triggerRef}
-          className="border-stock text-foreground [&[data-placeholder]]:text-paragraph flex min-h-14 w-full items-center justify-between rounded-[1rem] border bg-white px-4 py-3 text-sm"
+          className={cn(
+            classes.surface,
+            'flex items-center justify-between text-left text-sm'
+          )}
         >
           {selectedLabels.length > 0 ? selectedLabels.join(', ') : placeholder}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
