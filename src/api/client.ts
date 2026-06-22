@@ -6,8 +6,7 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
-const graphqlEndpoint =
-  process.env.NEXT_PUBLIC_V2_GRAPHQL_ENDPOINT ?? '/graphql'
+const graphqlEndpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? '/graphql'
 
 const httpLink = new HttpLink({
   uri: graphqlEndpoint,
