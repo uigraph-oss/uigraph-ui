@@ -69,7 +69,7 @@ export function DiagramScreenshotPage() {
   if (!diagramData) return null
 
   return (
-    <div id="diagram-screenshot" className="h-screen w-full bg-white">
+    <div id="diagram-screenshot" className="h-screen w-full bg-[#141925]">
       <Suspense fallback={null}>
         <FlowDiagramPreview
           data={diagramData}
