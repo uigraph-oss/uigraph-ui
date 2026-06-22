@@ -109,7 +109,7 @@ function ConfigurePropertiesContent({
           <Button
             type="button"
             variant="outline"
-            className="text-paragraph border-stock h-11 w-[4.5rem] rounded-[0.8125rem] bg-white"
+            className="text-paragraph border-stock bg-input h-11 w-[4.5rem] rounded-[0.8125rem]"
             onClick={() => onOpenChange(false)}
           >
             Cancel

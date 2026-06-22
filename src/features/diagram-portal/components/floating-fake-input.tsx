@@ -19,7 +19,7 @@ export function FakeFloatingInput({
           className
         )}
       >
-        {value || <span className="text-slate-400">{placeholder}</span>}
+        {value || <span className="text-muted-foreground">{placeholder}</span>}
       </p>
 
       <input
@@ -28,7 +28,7 @@ export function FakeFloatingInput({
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={(event) => event.stopPropagation()}
         className={cn(
-          'text-foreground border-primary absolute inset-0 size-full border bg-white px-1 text-[12px] leading-[1.5] font-normal opacity-0 transition-all duration-100 outline-none focus:opacity-100',
+          'text-foreground border-primary bg-input absolute inset-0 size-full border px-1 text-[12px] leading-[1.5] font-normal opacity-0 transition-all duration-100 outline-none focus:opacity-100',
           className
         )}
       />

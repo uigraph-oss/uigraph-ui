@@ -161,7 +161,7 @@ export function SidebarShapes() {
                                       )
                                     }}
                                   >
-                                    {<s.Component stroke="#d2d9e6" />}
+                                    {<s.Component />}
                                   </div>
                                 </TooltipTrigger>
 

@@ -44,7 +44,7 @@ export function NodeBuilderExpandDialog({
       )}
 
       {field.type === ComponentInputType.CodeEditor && (
-        <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-white">
+        <div className="border-stock bg-card w-full overflow-hidden rounded-[0.75rem] border">
           <CodeMirrorWrapped
             height="60vh"
             value={typeof value === 'string' ? value : ''}
@@ -57,7 +57,7 @@ export function NodeBuilderExpandDialog({
         <Textarea
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => setValue(e.target.value)}
-          className="border-stock text-foreground h-[60vh] w-full resize-none rounded-[1rem] border bg-white p-4 text-sm leading-normal break-all"
+          className="border-stock text-foreground bg-input h-[60vh] w-full resize-none rounded-[1rem] border p-4 text-sm leading-normal break-all"
           autoCorrect="off"
           autoComplete="off"
           autoCapitalize="off"

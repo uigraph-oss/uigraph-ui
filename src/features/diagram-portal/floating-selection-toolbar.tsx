@@ -263,7 +263,7 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Cut Selection"
                   tooltipPosition="bottom"
-                  className="text-black/70"
+                  className="text-foreground"
                   onClick={() => handleCopy('cut')}
                 >
                   <Scissors size={18} />
@@ -272,7 +272,7 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Copy Selection"
                   tooltipPosition="bottom"
-                  className="text-black/70"
+                  className="text-foreground"
                   onClick={() => handleCopy('copy')}
                 >
                   <Copy size={18} />
@@ -286,7 +286,7 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Paste"
                   tooltipPosition="bottom"
-                  className="text-black/70"
+                  className="text-foreground"
                   onClick={() => handlePaste()}
                 >
                   <ClipboardPaste size={18} />
@@ -300,7 +300,7 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Duplicate Selection"
                   tooltipPosition="bottom"
-                  className="text-black/70"
+                  className="text-foreground"
                   onClick={() => handleDuplicate()}
                 >
                   <Files size={18} />
@@ -309,7 +309,7 @@ export function FloatingSelectionToolbar() {
                 <ToolbarButton
                   tooltip="Delete Selection"
                   tooltipPosition="bottom"
-                  className="hover:text-destructive text-black/70"
+                  className="hover:text-destructive text-foreground"
                   onClick={handleDelete}
                 >
                   <Trash2 size={18} />

@@ -126,7 +126,7 @@ function NodeConfigureField({
             <Button
               size="icon"
               variant="ghost"
-              className="size-6 text-gray-500"
+              className="text-muted-foreground size-6"
               onClick={() => setIsExpandedOpen(true)}
             >
               <Maximize2 className="size-3" />
@@ -171,7 +171,7 @@ function NodeConfigureField({
         )}
 
         {field.type === ComponentInputType.CodeEditor && (
-          <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-white">
+          <div className="border-stock bg-card w-full overflow-hidden rounded-[0.75rem] border">
             <CodeMirrorWrapped value={value ?? ''} setValue={setValue} />
           </div>
         )}

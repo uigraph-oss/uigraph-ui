@@ -60,7 +60,7 @@ export function CommentPanel({
 }: CommentPanelProps) {
   return (
     <motion.div
-      className="border-border absolute top-8 left-6 z-50 w-72 rounded-lg border bg-white shadow-lg"
+      className="border-border bg-popover absolute top-8 left-6 z-50 w-72 rounded-lg border shadow-lg"
       initial={{ opacity: 0, y: -20, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -144,10 +144,12 @@ export function CommentPanel({
       <div className="border-border border-t px-3 py-2.5">
         <div className="space-y-2">
           {!!replyToName && (
-            <div className="flex items-center justify-between gap-2 rounded-md bg-gray-50 px-2.5 py-2 text-xs text-gray-600">
+            <div className="bg-accent/30 text-paragraph flex items-center justify-between gap-2 rounded-md px-2.5 py-2 text-xs">
               <div className="min-w-0 flex-1 truncate">
                 Replying to{' '}
-                <span className="font-medium text-gray-800">{replyToName}</span>
+                <span className="text-foreground font-medium">
+                  {replyToName}
+                </span>
               </div>
               <Button
                 size="sm"

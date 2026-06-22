@@ -296,7 +296,7 @@ function NodeDatabaseTablePropertiesLocalSource() {
                     <span className="font-mono text-blue-700">
                       {columnName}
                     </span>
-                    <span className="text-gray-500"> → </span>
+                    <span className="text-muted-foreground"> → </span>
                     <span className="font-mono text-blue-700">
                       {fk.referencedTable}.
                       {fk.referencedColumns[colIndex] ??
@@ -413,7 +413,7 @@ function NodeDatabaseTablePropertiesRemoteSource() {
       <div className="relative">
         <div
           className={cn(
-            'flex items-center justify-between gap-2 bg-white pt-2 pb-3',
+            'bg-card flex items-center justify-between gap-2 pt-2 pb-3',
             isCodeMode && 'sticky top-0 z-50'
           )}
         >
@@ -426,7 +426,7 @@ function NodeDatabaseTablePropertiesRemoteSource() {
             onClick={() => setIsCodeMode((prev) => !prev)}
             className={cn(
               'size-9 border-none! px-3!',
-              !isCodeMode && 'bg-gray-200/60 hover:bg-gray-300/60'
+              !isCodeMode && 'bg-accent/60 hover:bg-accent'
             )}
           >
             <Code2 className="size-5" />
@@ -477,15 +477,15 @@ function NodeDatabaseTablePropertiesRemoteSource() {
             {columns.map((column) => (
               <div
                 key={column.name}
-                className="flex items-center justify-between rounded bg-slate-100 px-3 py-1 text-xs text-slate-800"
+                className="bg-accent/40 text-foreground flex items-center justify-between rounded px-3 py-1 text-xs"
               >
                 <span className="font-mono">{column.name}</span>
-                <span className="text-slate-500">{column.type}</span>
+                <span className="text-paragraph">{column.type}</span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-center text-xs text-gray-500">
+          <p className="text-muted-foreground text-center text-xs">
             No column information is available.
           </p>
         )}

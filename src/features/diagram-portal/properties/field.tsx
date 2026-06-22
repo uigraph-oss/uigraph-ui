@@ -45,7 +45,7 @@ export function Field({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="size-6 text-gray-500"
+                    className="text-paragraph size-6"
                     disabled={isVisibilityDisabled}
                     onClick={() => {
                       setIsVisible((prev) => {

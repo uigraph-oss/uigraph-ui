@@ -57,7 +57,7 @@ export function NumberInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder || 'Enter number here'}
-        className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+        className="border-stock text-foreground bg-input h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
         value={Number.isNaN(Number(value)) ? '' : String(value)}
         onChange={(e) => {
           const numVal = Number(e.target.value)

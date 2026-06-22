@@ -165,24 +165,24 @@ export function DataNodeNoSQLContent({
               <button
                 type="button"
                 onClick={() => toggleNode(node.id)}
-                className="block w-full border-b border-gray-200 px-4 py-2 text-left transition-colors hover:bg-gray-50"
+                className="border-stock hover:bg-accent/30 block w-full border-b px-4 py-2 text-left transition-colors"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div
                     className="flex min-w-0 flex-1 items-center gap-2"
                     style={{ paddingLeft: leftPadding }}
                   >
-                    <span className="truncate font-mono text-sm font-medium text-gray-900">
+                    <span className="text-foreground truncate font-mono text-sm font-medium">
                       {node.name}
                     </span>
                   </div>
                   <div className="flex flex-shrink-0 items-center gap-2">
-                    <span className="font-mono text-xs text-gray-600">
+                    <span className="text-paragraph font-mono text-xs">
                       {node.type}
                     </span>
                     <ChevronRight
                       className={cn(
-                        'h-3.5 w-3.5 text-gray-500 transition-transform',
+                        'text-muted-foreground h-3.5 w-3.5 transition-transform',
                         isOpen && 'rotate-90'
                       )}
                     />
@@ -193,17 +193,17 @@ export function DataNodeNoSQLContent({
               {isOpen ? renderTree(children, depth + 1) : null}
             </>
           ) : (
-            <div className="border-b border-gray-200 px-4 py-2 transition-colors hover:bg-gray-50">
+            <div className="border-stock hover:bg-accent/30 border-b px-4 py-2 transition-colors">
               <div className="flex items-center justify-between gap-2">
                 <div
                   className="flex min-w-0 flex-1 items-center gap-2"
                   style={{ paddingLeft: leftPadding }}
                 >
-                  <span className="truncate font-mono text-sm font-medium text-gray-900">
+                  <span className="text-foreground truncate font-mono text-sm font-medium">
                     {node.name}
                   </span>
                 </div>
-                <span className="flex-shrink-0 font-mono text-xs text-gray-600">
+                <span className="text-paragraph flex-shrink-0 font-mono text-xs">
                   {node.type}
                 </span>
               </div>
@@ -231,33 +231,33 @@ export function DataNodeNoSQLContent({
 
     return (
       <div>
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-700">
+        <div className="border-stock bg-accent/30 text-secondary-foreground border-b px-4 py-2 text-xs font-semibold">
           Keys
         </div>
 
-        <div className="border-b border-gray-200 px-4 py-2 transition-colors hover:bg-gray-50">
+        <div className="border-stock hover:bg-accent/30 border-b px-4 py-2 transition-colors">
           <div className="flex items-center justify-between gap-2">
-            <span className="truncate font-mono text-sm font-medium text-gray-900">
+            <span className="text-foreground truncate font-mono text-sm font-medium">
               PK
             </span>
-            <span className="flex-shrink-0 font-mono text-xs text-gray-600">
+            <span className="text-paragraph flex-shrink-0 font-mono text-xs">
               {pk ? `${pk}${pkType ? ` (${pkType})` : ''}` : '—'}
             </span>
           </div>
         </div>
 
-        <div className="border-b border-gray-200 px-4 py-2 transition-colors hover:bg-gray-50">
+        <div className="border-stock hover:bg-accent/30 border-b px-4 py-2 transition-colors">
           <div className="flex items-center justify-between gap-2">
-            <span className="truncate font-mono text-sm font-medium text-gray-900">
+            <span className="text-foreground truncate font-mono text-sm font-medium">
               SK
             </span>
-            <span className="flex-shrink-0 font-mono text-xs text-gray-600">
+            <span className="text-paragraph flex-shrink-0 font-mono text-xs">
               {sk ? `${sk}${skType ? ` (${skType})` : ''}` : '—'}
             </span>
           </div>
         </div>
 
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-700">
+        <div className="border-stock bg-accent/30 text-secondary-foreground border-b px-4 py-2 text-xs font-semibold">
           GSIs ({gsis.length})
         </div>
 
@@ -280,19 +280,19 @@ export function DataNodeNoSQLContent({
             return (
               <div
                 key={`${name ?? 'gsi'}-${idx}`}
-                className="border-b border-gray-200 px-4 py-2 transition-colors hover:bg-gray-50"
+                className="border-stock hover:bg-accent/30 border-b px-4 py-2 transition-colors"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span
                     title={name ?? `gsi_${idx + 1}`}
-                    className="max-w-[16ch] shrink-0 truncate font-mono text-sm font-medium text-gray-900"
+                    className="text-foreground max-w-[16ch] shrink-0 truncate font-mono text-sm font-medium"
                   >
                     {name ?? `gsi_${idx + 1}`}
                   </span>
 
                   <span
                     title={right}
-                    className="flex-1 flex-shrink-0 truncate font-mono text-xs text-gray-600"
+                    className="text-paragraph flex-1 flex-shrink-0 truncate font-mono text-xs"
                   >
                     {right || '—'}
                   </span>
@@ -301,19 +301,19 @@ export function DataNodeNoSQLContent({
             )
           })
         ) : (
-          <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-600">
+          <div className="border-stock text-paragraph border-b px-4 py-2 text-sm">
             No GSIs
           </div>
         )}
 
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-700">
+        <div className="border-stock bg-accent/30 text-secondary-foreground border-b px-4 py-2 text-xs font-semibold">
           Attributes
         </div>
 
         {attributeNodes.length > 0 ? (
           renderTree(attributeNodes, 0)
         ) : (
-          <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-600">
+          <div className="border-stock text-paragraph border-b px-4 py-2 text-sm">
             No attributes
           </div>
         )}
@@ -327,7 +327,7 @@ export function DataNodeNoSQLContent({
         {collectionNodes.length > 0 ? (
           renderTree(collectionNodes, 0)
         ) : (
-          <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-600">
+          <div className="border-stock text-paragraph border-b px-4 py-2 text-sm">
             No fields
           </div>
         )}
@@ -337,7 +337,7 @@ export function DataNodeNoSQLContent({
 
   return (
     <div className="h-[200px]">
-      <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-600">
+      <div className="border-stock text-paragraph border-b px-4 py-2 text-sm">
         Unsupported schema
       </div>
     </div>

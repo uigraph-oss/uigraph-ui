@@ -104,7 +104,7 @@ export function GroupNode({ id, data, selected }: NodeProps<TGroupNode>) {
         placeholder=""
         onKeyDown={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
-        className="pointer-events-auto absolute top-2 left-2 h-auto w-auto resize-none overflow-hidden border-none bg-transparent text-sm font-medium break-words text-gray-900 outline-none"
+        className="text-foreground pointer-events-auto absolute top-2 left-2 h-auto w-auto resize-none overflow-hidden border-none bg-transparent text-sm font-medium break-words outline-none"
         onChange={(e) => {
           const value = e.currentTarget.value
           updateNodeData(id, {

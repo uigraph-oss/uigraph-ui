@@ -52,15 +52,15 @@ export function NodeBuilderFields({ fields }: NodeBuilderFieldsProps) {
     <>
       {mainItems.length > 0 && (
         <>
-          <div className="bg-slate-50/50 p-5">
+          <div className="bg-accent/30 p-5">
             <div className="grid grid-cols-2 gap-x-4 gap-y-3">
               {mainItems.map(({ name, value }, i) => {
                 return (
                   <Fragment key={name + i}>
-                    <div className="text-sm font-medium text-slate-500 capitalize">
+                    <div className="text-paragraph text-sm font-medium capitalize">
                       {name}
                     </div>
-                    <p className="justify-self-end font-mono text-sm font-medium text-slate-800">
+                    <p className="text-foreground justify-self-end font-mono text-sm font-medium">
                       {String(value)}
                     </p>
                   </Fragment>
@@ -82,10 +82,10 @@ export function NodeBuilderFields({ fields }: NodeBuilderFieldsProps) {
                     {extraItems.map(({ name, value }, i) => {
                       return (
                         <Fragment key={name + i}>
-                          <div className="text-sm font-medium text-slate-500 capitalize">
+                          <div className="text-paragraph text-sm font-medium capitalize">
                             {name}
                           </div>
-                          <p className="justify-self-end font-mono text-sm font-medium text-slate-800">
+                          <p className="text-foreground justify-self-end font-mono text-sm font-medium">
                             {String(value)}
                           </p>
                         </Fragment>
@@ -99,15 +99,15 @@ export function NodeBuilderFields({ fields }: NodeBuilderFieldsProps) {
 
           {extraItems.length > 0 && (
             <>
-              <div className="border-t border-slate-100 text-center">
+              <div className="border-stock border-t text-center">
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="group/button inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
+                  className="group/button text-paragraph hover:text-foreground inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-colors"
                 >
                   <span>{isExpanded ? 'Hide' : 'View'} Details</span>
                   <ChevronDown
                     className={cn(
-                      'h-4 w-4 transition-transform duration-300 group-hover/button:text-slate-900',
+                      'group-hover/button:text-foreground h-4 w-4 transition-transform duration-300',
                       isExpanded && 'rotate-180'
                     )}
                   />

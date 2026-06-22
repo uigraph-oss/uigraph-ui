@@ -30,7 +30,7 @@ export function TextInput({
       readOnly={readonly}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || 'Enter text here'}
-      className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+      className="border-stock text-foreground bg-input h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
       autoCorrect="off"
       autoComplete="off"
       autoCapitalize="off"
@@ -55,7 +55,7 @@ export function TextAreaInput({
       readOnly={readonly}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || 'Enter text here'}
-      className="border-stock text-foreground h-[6.75rem] w-full resize-none rounded-[1rem] border bg-white p-4 px-4 text-sm leading-normal break-all"
+      className="border-stock text-foreground bg-input h-[6.75rem] w-full resize-none rounded-[1rem] border p-4 px-4 text-sm leading-normal break-all"
       autoCorrect="off"
       autoComplete="off"
       autoCapitalize="off"
@@ -81,7 +81,7 @@ export function URLInput({
       readOnly={readonly}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || 'Enter URL here'}
-      className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+      className="border-stock text-foreground bg-input h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
       autoCorrect="off"
       autoComplete="off"
       autoCapitalize="off"
@@ -211,7 +211,7 @@ export function ColorPickerInput({
         }}
         placeholder="- - -"
         className={cn(
-          'text-foreground ring-ring/50 h-[3.5rem] w-full rounded-[1rem] border-none bg-white px-4 pl-11 text-sm uppercase ring-0 transition-all outline-none focus:ring-[3px]',
+          'text-foreground ring-ring/50 bg-input h-[3.5rem] w-full rounded-[1rem] border-none px-4 pl-11 text-sm uppercase ring-0 transition-all outline-none focus:ring-[3px]',
           className
         )}
       />
@@ -237,7 +237,7 @@ export function SliderInput({
   return (
     <div
       title={String(value)}
-      className="flex h-14 items-center gap-3 rounded-[1rem] bg-white px-4"
+      className="bg-input flex h-14 items-center gap-3 rounded-[1rem] px-4"
     >
       <span className="text-muted-foreground text-sm">{min}</span>
 

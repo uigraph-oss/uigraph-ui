@@ -12,7 +12,7 @@ export function BooleanToggleInput({
   readonly?: boolean
 }) {
   return (
-    <div className="flex h-14 items-center gap-2 rounded-[1rem] bg-white px-4 py-3">
+    <div className="bg-input flex h-14 items-center gap-2 rounded-[1rem] px-4 py-3">
       <CustomSwitch
         checked={checked}
         onCheckedChange={onChange}
@@ -35,7 +35,7 @@ export function CheckboxGroupInput({
   readonly?: boolean
 }) {
   return (
-    <div className="flex min-h-14 flex-wrap items-center gap-4 rounded-[1rem] bg-white px-4 py-3">
+    <div className="bg-input flex min-h-14 flex-wrap items-center gap-4 rounded-[1rem] px-4 py-3">
       {options.map((option) => (
         <div key={option} className="flex items-center gap-2">
           <Checkbox

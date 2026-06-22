@@ -19,7 +19,7 @@ export function CommentPreview({
 }: CommentPreviewProps) {
   return (
     <motion.div
-      className="border-border absolute top-8 left-6 z-50 rounded-lg border bg-white p-3 shadow-lg"
+      className="border-border bg-popover absolute top-8 left-6 z-50 rounded-lg border p-3 shadow-lg"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       initial={{ opacity: 0, y: -10, scale: 0.95 }}
