@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 export interface AuthProvider {
   name: string
   displayName: string
+  iconUrl: string
   loginUrl: string
 }
 

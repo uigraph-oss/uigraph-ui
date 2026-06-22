@@ -78,10 +78,8 @@ export function SignInForm() {
     )
   }
 
-  function handleSSO() {
-    const provider = oAuthProviders[0]
-    if (!provider) return
-    window.location.href = provider.loginUrl
+  function handleSSO(loginUrl: string) {
+    window.location.href = loginUrl
   }
 
   return (
@@ -327,27 +325,42 @@ export function SignInForm() {
               <div style={{ flex: 1, height: 1, background: '#2A3242' }} />
             </div>
 
-            {/* SSO button */}
-            <button
-              type="button"
-              onClick={handleSSO}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 transition-colors hover:border-[#3B4658] hover:bg-[#1E2533] hover:text-[#F4F7FC]"
-              style={{
-                padding: '11px 16px',
-                background: 'transparent',
-                border: '1px solid #3B4658',
-                borderRadius: 10,
-                color: '#D2D9E6',
-                fontFamily:
-                  'var(--font-jakarta, var(--font-poppins), sans-serif)',
-                fontSize: 14,
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              <Lock size={15} style={{ color: '#828DA3' }} />
-              Continue with SSO
-            </button>
+            {/* SSO buttons */}
+            <div className="flex flex-col gap-2.5">
+              {oAuthProviders.map((provider) => (
+                <button
+                  key={provider.name}
+                  type="button"
+                  onClick={() => handleSSO(provider.loginUrl)}
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 transition-colors hover:border-[#3B4658] hover:bg-[#1E2533] hover:text-[#F4F7FC]"
+                  style={{
+                    padding: '11px 16px',
+                    background: 'transparent',
+                    border: '1px solid #3B4658',
+                    borderRadius: 10,
+                    color: '#D2D9E6',
+                    fontFamily:
+                      'var(--font-jakarta, var(--font-poppins), sans-serif)',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {provider.iconUrl ? (
+                    <img
+                      src={provider.iconUrl}
+                      alt=""
+                      width={16}
+                      height={16}
+                      style={{ objectFit: 'contain' }}
+                    />
+                  ) : (
+                    <Lock size={15} style={{ color: '#828DA3' }} />
+                  )}
+                  Continue with {provider.displayName}
+                </button>
+              ))}
+            </div>
           </>
         )}
       </div>

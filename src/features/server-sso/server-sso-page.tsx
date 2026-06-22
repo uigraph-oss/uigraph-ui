@@ -14,9 +14,11 @@ import {
   DELETE_OAUTH_PROVIDER,
   LDAP_STATUS,
   OAUTH_PROVIDERS,
+  removeOAuthProviderIcon,
   SAML_STATUS,
+  SCIM_STATUS,
+  setOAuthProviderIcon,
   UPSERT_OAUTH_PROVIDER,
-  getScimStatus,
   type OAuthProvider,
   type ProviderStatus,
 } from './api/server-sso'
@@ -29,8 +31,7 @@ export function ServerSSOPage() {
   const providersQuery = useQuery(OAUTH_PROVIDERS)
   const ldapQuery = useQuery(LDAP_STATUS)
   const samlQuery = useQuery(SAML_STATUS)
-
-  const [scimStatus, setScimStatus] = useState<ProviderStatus | null>(null)
+  const scimQuery = useQuery(SCIM_STATUS)
 
   const refetchQueries = [{ query: OAUTH_PROVIDERS }]
   const [upsertProvider] = useMutation(UPSERT_OAUTH_PROVIDER, {
@@ -50,33 +51,26 @@ export function ServerSSOPage() {
   const statuses = {
     ldap: ldapQuery.data?.ldap ? 'configured' : 'not-configured',
     saml: samlQuery.data?.saml ? 'configured' : 'not-configured',
-    scim: scimStatus,
+    scim: scimQuery.data?.scim ? 'configured' : 'not-configured',
   } as const
 
   const error =
-    providersQuery.error ?? ldapQuery.error ?? samlQuery.error ?? null
+    providersQuery.error ??
+    ldapQuery.error ??
+    samlQuery.error ??
+    scimQuery.error ??
+    null
   const isLoading =
     providersQuery.loading ||
     ldapQuery.loading ||
     samlQuery.loading ||
-    scimStatus === null
+    scimQuery.loading
 
   useEffect(() => {
     if (error) {
       toast.error(error.message)
     }
   }, [error])
-
-  useEffect(() => {
-    getScimStatus()
-      .then(setScimStatus)
-      .catch((err: unknown) => {
-        toast.error(
-          err instanceof Error ? err.message : 'Failed to load SCIM status'
-        )
-        setScimStatus('not-configured')
-      })
-  }, [])
 
   return (
     <>
@@ -114,13 +108,22 @@ export function ServerSSOPage() {
                     key={provider.providerName}
                     className="flex items-center justify-between rounded-[12px] border border-[#2A3242] px-6 py-4"
                   >
-                    <div>
-                      <p className="font-medium text-[#F4F7FC]">
-                        {provider.displayName || provider.providerName}
-                      </p>
-                      <p className="text-xs text-[#828DA3]">
-                        {provider.providerName} · {provider.type || 'generic'}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      {provider.iconUrl && (
+                        <img
+                          src={provider.iconUrl}
+                          alt=""
+                          className="size-9 shrink-0 rounded-md object-contain"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium text-[#F4F7FC]">
+                          {provider.displayName || provider.providerName}
+                        </p>
+                        <p className="text-xs text-[#828DA3]">
+                          {provider.providerName} · {provider.type || 'generic'}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -188,6 +191,23 @@ export function ServerSSOPage() {
         {editProvider && (
           <ConfigureOAuthProviderModal
             mode="edit"
+            iconUrl={editProvider.iconUrl}
+            onUploadIcon={async (file) => {
+              await setOAuthProviderIcon(editProvider.providerName, file)
+              const { data } = await providersQuery.refetch()
+              const updated = data?.oauthProviders.find(
+                (p) => p.providerName === editProvider.providerName
+              )
+              if (updated) setEditProvider(updated)
+            }}
+            onRemoveIcon={async () => {
+              await removeOAuthProviderIcon(editProvider.providerName)
+              const { data } = await providersQuery.refetch()
+              const updated = data?.oauthProviders.find(
+                (p) => p.providerName === editProvider.providerName
+              )
+              if (updated) setEditProvider(updated)
+            }}
             defaultValues={{
               providerName: editProvider.providerName,
               displayName: editProvider.displayName,
