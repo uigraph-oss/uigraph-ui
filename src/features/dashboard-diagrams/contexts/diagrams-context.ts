@@ -40,7 +40,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       variables: { orgId: orgId!, type: 'diagram' },
     })
 
-    const diagramsV2Query = useQuery(DIAGRAMS, {
+    const diagramsQuery = useQuery(DIAGRAMS, {
       fetchPolicy: 'cache-and-network',
       skip: !orgId,
       variables: {
@@ -107,7 +107,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     })
 
     function refetchDiagrams() {
-      return diagramsV2Query.refetch()
+      return diagramsQuery.refetch()
     }
 
     const [createDiagram] = useMutation(CREATE_DIAGRAM, {
@@ -145,8 +145,8 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     )
 
     const allDiagrams = useMemo(
-      () => arrayNonNullable(diagramsV2Query.data?.diagrams ?? []),
-      [diagramsV2Query.data?.diagrams]
+      () => arrayNonNullable(diagramsQuery.data?.diagrams ?? []),
+      [diagramsQuery.data?.diagrams]
     )
 
     const diagrams = useMemo(() => {
@@ -159,7 +159,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
 
     const isFolderAndDiagramsDataLoading =
       (foldersQuery.loading && !foldersQuery.data?.folders) ||
-      (diagramsV2Query.loading && !diagramsV2Query.data?.diagrams)
+      (diagramsQuery.loading && !diagramsQuery.data?.diagrams)
 
     return {
       folders,

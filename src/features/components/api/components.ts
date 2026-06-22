@@ -1,7 +1,7 @@
 import { graphql } from '@/api'
 
 export const GET_COMPONENTS = graphql(`
-  query ComponentsV2($orgId: ID!) {
+  query Components($orgId: ID!) {
     components(orgId: $orgId) {
       components {
         componentId
@@ -54,7 +54,7 @@ export const GET_COMPONENTS = graphql(`
 `)
 
 export const CREATE_CUSTOM_COMPONENT = graphql(`
-  mutation CreateCustomComponentV2($orgId: ID!, $input: CustomComponentInput!) {
+  mutation CreateCustomComponent($orgId: ID!, $input: CustomComponentInput!) {
     createCustomComponent(orgId: $orgId, input: $input) {
       componentId
     }
@@ -62,7 +62,7 @@ export const CREATE_CUSTOM_COMPONENT = graphql(`
 `)
 
 export const UPDATE_CUSTOM_COMPONENT = graphql(`
-  mutation UpdateCustomComponentV2(
+  mutation UpdateCustomComponent(
     $orgId: ID!
     $id: ID!
     $input: CustomComponentInput!
@@ -74,7 +74,7 @@ export const UPDATE_CUSTOM_COMPONENT = graphql(`
 `)
 
 export const DELETE_CUSTOM_COMPONENT = graphql(`
-  mutation DeleteCustomComponentV2($orgId: ID!, $id: ID!) {
+  mutation DeleteCustomComponent($orgId: ID!, $id: ID!) {
     deleteCustomComponent(orgId: $orgId, id: $id)
   }
 `)

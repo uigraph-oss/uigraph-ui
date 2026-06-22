@@ -1,7 +1,7 @@
 import { graphql } from '@/api'
 
 export const SERVICE_DIAGRAMS = graphql(`
-  query ServiceDiagramsV2($orgId: ID!, $serviceId: ID!) {
+  query ServiceDiagrams($orgId: ID!, $serviceId: ID!) {
     serviceDiagrams(orgId: $orgId, serviceId: $serviceId) {
       serviceId
       diagramId
@@ -35,7 +35,7 @@ export const SERVICE_DIAGRAMS = graphql(`
 `)
 
 export const CREATE_SERVICE_DIAGRAM = graphql(`
-  mutation CreateServiceDiagramV2(
+  mutation CreateServiceDiagram(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateServiceDiagramInput!
@@ -48,11 +48,7 @@ export const CREATE_SERVICE_DIAGRAM = graphql(`
 `)
 
 export const DELETE_SERVICE_DIAGRAM = graphql(`
-  mutation DeleteServiceDiagramV2(
-    $orgId: ID!
-    $serviceId: ID!
-    $diagramId: ID!
-  ) {
+  mutation DeleteServiceDiagram($orgId: ID!, $serviceId: ID!, $diagramId: ID!) {
     deleteServiceDiagram(
       orgId: $orgId
       serviceId: $serviceId

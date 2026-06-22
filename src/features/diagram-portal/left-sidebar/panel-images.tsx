@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
-import { uploadFileV2 } from '@/features/uploads/api/uploads'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -37,7 +37,7 @@ export function SidebarImages() {
       const [file] = await openFileExplorer({ accept: 'image/*' })
       if (!file) return
 
-      const assetId = await uploadFileV2(organizationId, file)
+      const assetId = await uploadFile(organizationId, file)
 
       await createDiagramImage({
         variables: {

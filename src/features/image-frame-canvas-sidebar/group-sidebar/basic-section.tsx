@@ -10,13 +10,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group'
+import { FrameGroup } from '@/features/dashboard-pages/api/frame-group'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 type BasicSectionProps = {
-  frameGroup: FrameGroupV2
+  frameGroup: FrameGroup
   updateFrameGroup: (input: {
     name?: string
     locationX?: number

@@ -2,7 +2,7 @@ import { graphql } from '@/api'
 import { DbTable, serviceDBToLegacy } from './service-db'
 
 export const SERVICE_DB_VERSIONS = graphql(`
-  query ServiceDBVersionsV2($orgId: ID!, $serviceId: ID!, $serviceDbId: ID!) {
+  query ServiceDBVersions($orgId: ID!, $serviceId: ID!, $serviceDbId: ID!) {
     serviceDBVersions(
       orgId: $orgId
       serviceId: $serviceId
@@ -50,7 +50,7 @@ export const SERVICE_DB_VERSIONS = graphql(`
 `)
 
 export const CREATE_SERVICE_DB_VERSION = graphql(`
-  mutation CreateServiceDBVersionV2(
+  mutation CreateServiceDBVersion(
     $orgId: ID!
     $serviceId: ID!
     $serviceDbId: ID!
@@ -69,7 +69,7 @@ export const CREATE_SERVICE_DB_VERSION = graphql(`
 `)
 
 export const RESTORE_SERVICE_DB_VERSION = graphql(`
-  mutation RestoreServiceDBVersionV2(
+  mutation RestoreServiceDBVersion(
     $orgId: ID!
     $serviceId: ID!
     $serviceDbId: ID!

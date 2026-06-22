@@ -38,7 +38,7 @@ export type UpsertOAuthInput = {
 export type ProviderStatus = 'configured' | 'not-configured'
 
 export const OAUTH_PROVIDERS = graphql(`
-  query OAuthProvidersV2 {
+  query OAuthProviders {
     oauthProviders {
       id
       providerName
@@ -61,22 +61,19 @@ export const OAUTH_PROVIDERS = graphql(`
 `)
 
 export const UPSERT_OAUTH_PROVIDER = graphql(`
-  mutation UpsertOAuthProviderV2(
-    $provider: String!
-    $input: UpsertOAuthInput!
-  ) {
+  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {
     upsertOAuthProvider(provider: $provider, input: $input)
   }
 `)
 
 export const DELETE_OAUTH_PROVIDER = graphql(`
-  mutation DeleteOAuthProviderV2($provider: String!) {
+  mutation DeleteOAuthProvider($provider: String!) {
     deleteOAuthProvider(provider: $provider)
   }
 `)
 
 export const LDAP_STATUS = graphql(`
-  query LdapStatusV2 {
+  query LdapStatus {
     ldap {
       id
     }
@@ -84,7 +81,7 @@ export const LDAP_STATUS = graphql(`
 `)
 
 export const SAML_STATUS = graphql(`
-  query SamlStatusV2 {
+  query SamlStatus {
     saml {
       id
     }

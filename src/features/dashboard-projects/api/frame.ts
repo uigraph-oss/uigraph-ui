@@ -29,7 +29,7 @@ export type DashboardFrame = {
 }
 
 export const FRAMES = graphql(`
-  query FramesV2($orgId: ID!, $mapId: ID!) {
+  query Frames($orgId: ID!, $mapId: ID!) {
     frames(orgId: $orgId, mapId: $mapId) {
       id
       mapId
@@ -63,7 +63,7 @@ export const FRAMES = graphql(`
 `)
 
 export const FRAME = graphql(`
-  query FrameV2($orgId: ID!, $mapId: ID!, $id: ID!) {
+  query Frame($orgId: ID!, $mapId: ID!, $id: ID!) {
     frame(orgId: $orgId, mapId: $mapId, id: $id) {
       id
       mapId
@@ -97,7 +97,7 @@ export const FRAME = graphql(`
 `)
 
 export const FRAME_BY_ID = graphql(`
-  query FrameByIdV2($orgId: ID!, $id: ID!) {
+  query FrameById($orgId: ID!, $id: ID!) {
     frameById(orgId: $orgId, id: $id) {
       id
       mapId
@@ -131,7 +131,7 @@ export const FRAME_BY_ID = graphql(`
 `)
 
 export const CREATE_FRAME = graphql(`
-  mutation CreateFrameV2($orgId: ID!, $mapId: ID!, $input: CreateFrameInput!) {
+  mutation CreateFrame($orgId: ID!, $mapId: ID!, $input: CreateFrameInput!) {
     createFrame(orgId: $orgId, mapId: $mapId, input: $input) {
       id
     }
@@ -139,7 +139,7 @@ export const CREATE_FRAME = graphql(`
 `)
 
 export const UPDATE_FRAME = graphql(`
-  mutation UpdateFrameV2(
+  mutation UpdateFrame(
     $orgId: ID!
     $mapId: ID!
     $id: ID!
@@ -152,7 +152,7 @@ export const UPDATE_FRAME = graphql(`
 `)
 
 export const DELETE_FRAME = graphql(`
-  mutation DeleteFrameV2($orgId: ID!, $mapId: ID!, $id: ID!) {
+  mutation DeleteFrame($orgId: ID!, $mapId: ID!, $id: ID!) {
     deleteFrame(orgId: $orgId, mapId: $mapId, id: $id)
   }
 `)

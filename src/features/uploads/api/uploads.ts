@@ -4,7 +4,7 @@ import { env } from '@/env'
 import axios from 'axios'
 
 export const CREATE_ASSET_UPLOAD = graphql(`
-  mutation CreateAssetUploadV2($orgId: ID!) {
+  mutation CreateAssetUpload($orgId: ID!) {
     createAssetUpload(orgId: $orgId) {
       assetId
       uploadUrl
@@ -12,11 +12,11 @@ export const CREATE_ASSET_UPLOAD = graphql(`
   }
 `)
 
-export function assetUrlV2(assetId: string) {
+export function assetUrl(assetId: string) {
   return `${env.assetsOrigin}/assets/${assetId}`
 }
 
-export async function uploadFileV2(orgId: string, file: File): Promise<string> {
+export async function uploadFile(orgId: string, file: File): Promise<string> {
   const { data } = await apolloClientGQL.mutate({
     mutation: CREATE_ASSET_UPLOAD,
     variables: { orgId },

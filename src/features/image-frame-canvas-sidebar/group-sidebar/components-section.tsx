@@ -1,6 +1,6 @@
 import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
+import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -14,7 +14,7 @@ import {
 import { FocalPointComponentsSection } from '../components/focal-point-component-group'
 
 type ComponentsSectionProps = {
-  focalPoints: FocalPointV2[]
+  focalPoints: FocalPoint[]
   mapId: string
 }
 

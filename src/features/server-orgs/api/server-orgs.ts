@@ -10,7 +10,7 @@ export type ServerOrg = {
 }
 
 export const SERVER_ORGS = graphql(`
-  query ServerOrgsV2 {
+  query ServerOrgs {
     orgs {
       id
       name
@@ -46,7 +46,7 @@ export async function removeServerOrgLogo(orgId: string) {
 }
 
 export const CREATE_SERVER_ORG = graphql(`
-  mutation CreateServerOrgV2($input: CreateOrgInput!) {
+  mutation CreateServerOrg($input: CreateOrgInput!) {
     createOrg(input: $input) {
       id
       name
@@ -58,7 +58,7 @@ export const CREATE_SERVER_ORG = graphql(`
 `)
 
 export const UPDATE_SERVER_ORG = graphql(`
-  mutation UpdateServerOrgV2($id: ID!, $input: UpdateOrgInput!) {
+  mutation UpdateServerOrg($id: ID!, $input: UpdateOrgInput!) {
     updateOrg(id: $id, input: $input) {
       id
       name
@@ -70,7 +70,7 @@ export const UPDATE_SERVER_ORG = graphql(`
 `)
 
 export const DELETE_SERVER_ORG = graphql(`
-  mutation DeleteServerOrgV2($id: ID!) {
+  mutation DeleteServerOrg($id: ID!) {
     deleteOrg(id: $id)
   }
 `)

@@ -1,7 +1,7 @@
 import { graphql } from '@/api'
 
 export const FLOW_DIAGRAM_COMPONENTS = graphql(`
-  query FlowDiagramComponentsV2($orgId: ID!) {
+  query FlowDiagramComponents($orgId: ID!) {
     flowDiagramComponents(orgId: $orgId) {
       components {
         componentId

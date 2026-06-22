@@ -1,4 +1,4 @@
-import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group'
+import { FrameGroup } from '@/features/dashboard-pages/api/frame-group'
 import { DashboardFrame } from '@/features/dashboard-projects/api'
 import { cn } from '@/lib/utils'
 import { getViewPointPositionStyle, getViewPointSizeStyle } from '../helpers'
@@ -6,7 +6,7 @@ import { getViewPointPositionStyle, getViewPointSizeStyle } from '../helpers'
 type FrameGroupRectProps = {
   contentSize: 'sm' | 'md'
   frame: DashboardFrame
-  frameGroup: FrameGroupV2
+  frameGroup: FrameGroup
   isSelected: boolean
   onClick: () => void
 }

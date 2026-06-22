@@ -7,7 +7,7 @@ export type ServerOverview = {
 }
 
 export const SERVER_OVERVIEW = graphql(`
-  query ServerOverviewV2 {
+  query ServerOverview {
     serverOverview {
       totalUsers
       activeUsers

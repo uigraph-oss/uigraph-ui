@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
+import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -37,7 +37,7 @@ export type FocalPointDetailsApi = {
 }
 
 type FocalPointDetailsProps = FocalPointDetailsApi & {
-  focalPoint: FocalPointV2
+  focalPoint: FocalPoint
   unselectFocalPoint: () => void
 }
 

@@ -38,7 +38,7 @@ import {
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
 import { ComponentField } from '@/features/components/components/configure-component/component-field-list'
-import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads'
+import { assetUrl, uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -101,9 +101,9 @@ function FocalPointMetaModalContent({
       for (const file in metaDataFiles) {
         const fileData = metaDataFiles[file]
 
-        const assetId = await uploadFileV2(organizationId!, fileData)
+        const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = assetUrlV2(assetId)
+        duplicatedMetaData[file] = assetUrl(assetId)
       }
 
       setIsUploading(false)

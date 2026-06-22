@@ -3,7 +3,7 @@
 import { CommentIcon, NoteIcon } from '@/assets/svgs/component-icons'
 import { CrossButton } from '@/components/cross-button'
 import { SuperLogoLoader } from '@/components/loader'
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
+import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
 import { useState } from 'react'
 import { CommentsContextProvider } from '../../comments/contexts/comments-context'
@@ -12,7 +12,7 @@ import { useFocalPointSidebarContext } from '../contexts/focal-point-sidebar-con
 import { FocalPointDetails, FocalPointDetailsApi } from './focal-point-details'
 
 type FocalPointDrawerProps = FocalPointDetailsApi & {
-  focalPoint: FocalPointV2
+  focalPoint: FocalPoint
 }
 
 export function FocalPointSidebar({

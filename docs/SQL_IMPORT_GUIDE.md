@@ -260,5 +260,5 @@ See `src/features/services/utils/sql-parser/README.md` for technical details.
 For issues or feature requests, please check:
 
 - Parser implementation: `src/features/services/utils/sql-parser/`
-- UI components: `src/features/flow-diagram/left-sidebar/panel-sql-import-v2.tsx`
+- UI components: `src/features/flow-diagram/left-sidebar/panel-sql-import.tsx`
 - Properties panel: `src/features/flow-diagram/properties/node-database-table-properties.tsx`

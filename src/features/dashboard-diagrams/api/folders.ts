@@ -13,7 +13,7 @@ export type DashboardFolder = {
 }
 
 export const FOLDERS = graphql(`
-  query FoldersV2($orgId: ID!, $type: String) {
+  query Folders($orgId: ID!, $type: String) {
     folders(orgId: $orgId, type: $type) {
       id
       orgId
@@ -29,7 +29,7 @@ export const FOLDERS = graphql(`
 `)
 
 export const FOLDER = graphql(`
-  query FolderV2($orgId: ID!, $id: ID!) {
+  query Folder($orgId: ID!, $id: ID!) {
     folder(orgId: $orgId, id: $id) {
       id
       orgId
@@ -45,7 +45,7 @@ export const FOLDER = graphql(`
 `)
 
 export const CREATE_FOLDER = graphql(`
-  mutation CreateFolderV2($orgId: ID!, $input: CreateFolderInput!) {
+  mutation CreateFolder($orgId: ID!, $input: CreateFolderInput!) {
     createFolder(orgId: $orgId, input: $input) {
       id
       orgId
@@ -59,7 +59,7 @@ export const CREATE_FOLDER = graphql(`
 `)
 
 export const UPDATE_FOLDER = graphql(`
-  mutation UpdateFolderV2($orgId: ID!, $id: ID!, $input: UpdateFolderInput!) {
+  mutation UpdateFolder($orgId: ID!, $id: ID!, $input: UpdateFolderInput!) {
     updateFolder(orgId: $orgId, id: $id, input: $input) {
       id
       name
@@ -71,7 +71,7 @@ export const UPDATE_FOLDER = graphql(`
 `)
 
 export const DELETE_FOLDER = graphql(`
-  mutation DeleteFolderV2($orgId: ID!, $id: ID!) {
+  mutation DeleteFolder($orgId: ID!, $id: ID!) {
     deleteFolder(orgId: $orgId, id: $id)
   }
 `)

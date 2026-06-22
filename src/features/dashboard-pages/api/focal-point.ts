@@ -1,6 +1,6 @@
 import { graphql } from '@/api'
 
-export type FocalPointV2 = {
+export type FocalPoint = {
   id: string
   frameId?: string | null
   orgId?: string | null
@@ -12,7 +12,7 @@ export type FocalPointV2 = {
 }
 
 export const FOCAL_POINTS = graphql(`
-  query FocalPointsV2($orgId: ID!, $mapId: ID!, $frameId: ID!) {
+  query FocalPoints($orgId: ID!, $mapId: ID!, $frameId: ID!) {
     focalPoints(orgId: $orgId, mapId: $mapId, frameId: $frameId) {
       id
       frameId
@@ -31,7 +31,7 @@ export const FOCAL_POINTS = graphql(`
 `)
 
 export const CREATE_FOCAL_POINT = graphql(`
-  mutation CreateFocalPointV2(
+  mutation CreateFocalPoint(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -49,7 +49,7 @@ export const CREATE_FOCAL_POINT = graphql(`
 `)
 
 export const UPDATE_FOCAL_POINT = graphql(`
-  mutation UpdateFocalPointV2(
+  mutation UpdateFocalPoint(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -69,12 +69,7 @@ export const UPDATE_FOCAL_POINT = graphql(`
 `)
 
 export const DELETE_FOCAL_POINT = graphql(`
-  mutation DeleteFocalPointV2(
-    $orgId: ID!
-    $mapId: ID!
-    $frameId: ID!
-    $id: ID!
-  ) {
+  mutation DeleteFocalPoint($orgId: ID!, $mapId: ID!, $frameId: ID!, $id: ID!) {
     deleteFocalPoint(orgId: $orgId, mapId: $mapId, frameId: $frameId, id: $id)
   }
 `)

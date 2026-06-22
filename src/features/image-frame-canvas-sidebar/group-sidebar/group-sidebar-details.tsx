@@ -1,7 +1,7 @@
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
-import { FrameGroupV2 } from '@/features/dashboard-pages/api/frame-group'
+import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
+import { FrameGroup } from '@/features/dashboard-pages/api/frame-group'
 import { DashboardFrame } from '@/features/dashboard-projects/api'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -21,8 +21,8 @@ export type FrameGroupUpdateInput = {
 
 export type GroupSidebarDetailsProps = {
   frame: DashboardFrame
-  frameGroup: FrameGroupV2
-  frameGroupPoints: FocalPointV2[]
+  frameGroup: FrameGroup
+  frameGroupPoints: FocalPoint[]
   updateFrameGroup: (input: FrameGroupUpdateInput) => Promise<void>
   deleteFrameGroup: () => Promise<void>
 }

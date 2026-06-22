@@ -11,7 +11,7 @@ export type OrgMemberRow = {
 }
 
 export const MEMBERS = graphql(`
-  query MembersV2($orgId: ID!) {
+  query Members($orgId: ID!) {
     members(orgId: $orgId) {
       userId
       email
@@ -23,7 +23,7 @@ export const MEMBERS = graphql(`
 `)
 
 export const ADD_MEMBER = graphql(`
-  mutation AddMemberV2($orgId: ID!, $input: AddMemberInput!) {
+  mutation AddMember($orgId: ID!, $input: AddMemberInput!) {
     addMember(orgId: $orgId, input: $input) {
       userId
     }
@@ -31,11 +31,7 @@ export const ADD_MEMBER = graphql(`
 `)
 
 export const UPDATE_MEMBER = graphql(`
-  mutation UpdateMemberV2(
-    $orgId: ID!
-    $userId: ID!
-    $input: UpdateMemberInput!
-  ) {
+  mutation UpdateMember($orgId: ID!, $userId: ID!, $input: UpdateMemberInput!) {
     updateMember(orgId: $orgId, userId: $userId, input: $input) {
       userId
     }
@@ -43,7 +39,7 @@ export const UPDATE_MEMBER = graphql(`
 `)
 
 export const REMOVE_MEMBER = graphql(`
-  mutation RemoveMemberV2($orgId: ID!, $userId: ID!) {
+  mutation RemoveMember($orgId: ID!, $userId: ID!) {
     removeMember(orgId: $orgId, userId: $userId)
   }
 `)

@@ -12,7 +12,7 @@ export type UIComment = {
 }
 
 export const COMMENTS = graphql(`
-  query CommentsV2($orgId: ID!, $resourceId: ID!) {
+  query Comments($orgId: ID!, $resourceId: ID!) {
     comments(orgId: $orgId, resourceId: $resourceId) {
       id
       resourceId
@@ -30,7 +30,7 @@ export const COMMENTS = graphql(`
 `)
 
 export const CREATE_COMMENT = graphql(`
-  mutation CreateCommentV2($orgId: ID!, $input: CreateCommentInput!) {
+  mutation CreateComment($orgId: ID!, $input: CreateCommentInput!) {
     createComment(orgId: $orgId, input: $input) {
       id
     }
@@ -38,7 +38,7 @@ export const CREATE_COMMENT = graphql(`
 `)
 
 export const UPDATE_COMMENT = graphql(`
-  mutation UpdateCommentV2($orgId: ID!, $id: ID!, $input: UpdateCommentInput!) {
+  mutation UpdateComment($orgId: ID!, $id: ID!, $input: UpdateCommentInput!) {
     updateComment(orgId: $orgId, id: $id, input: $input) {
       id
     }
@@ -46,7 +46,7 @@ export const UPDATE_COMMENT = graphql(`
 `)
 
 export const DELETE_COMMENT = graphql(`
-  mutation DeleteCommentV2($orgId: ID!, $id: ID!) {
+  mutation DeleteComment($orgId: ID!, $id: ID!) {
     deleteComment(orgId: $orgId, id: $id)
   }
 `)

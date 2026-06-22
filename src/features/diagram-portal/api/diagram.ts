@@ -1,7 +1,7 @@
 import { graphql } from '@/api'
 
 export const DIAGRAM = graphql(`
-  query DiagramV2($orgId: ID!, $id: ID!) {
+  query Diagram($orgId: ID!, $id: ID!) {
     diagram(orgId: $orgId, id: $id) {
       id
       orgId
@@ -18,7 +18,7 @@ export const DIAGRAM = graphql(`
 `)
 
 export const DIAGRAM_CONTENT = graphql(`
-  query DiagramContentV2($orgId: ID!, $id: ID!) {
+  query DiagramContent($orgId: ID!, $id: ID!) {
     diagramContent(orgId: $orgId, id: $id) {
       diagramId
       content
@@ -27,7 +27,7 @@ export const DIAGRAM_CONTENT = graphql(`
 `)
 
 export const UPDATE_DIAGRAM = graphql(`
-  mutation UpdateDiagramV2($orgId: ID!, $id: ID!, $input: UpdateDiagramInput!) {
+  mutation UpdateDiagram($orgId: ID!, $id: ID!, $input: UpdateDiagramInput!) {
     updateDiagram(orgId: $orgId, id: $id, input: $input) {
       id
       updatedAt

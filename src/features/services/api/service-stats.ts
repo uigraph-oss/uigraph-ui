@@ -11,7 +11,7 @@ export type ServiceStatsRow = {
 }
 
 export const SERVICE_STATS = graphql(`
-  query ServiceStatsV2($orgId: ID!, $serviceId: ID) {
+  query ServiceStats($orgId: ID!, $serviceId: ID) {
     serviceStats(orgId: $orgId, serviceId: $serviceId) {
       serviceId
       endpointCount

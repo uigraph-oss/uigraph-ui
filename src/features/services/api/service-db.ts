@@ -48,7 +48,7 @@ export type LegacyServiceDb = ServiceDbSchema & {
 }
 
 export const SERVICE_DBS = graphql(`
-  query ServiceDBsV2($orgId: ID!, $serviceId: ID!) {
+  query ServiceDBs($orgId: ID!, $serviceId: ID!) {
     serviceDBs(orgId: $orgId, serviceId: $serviceId) {
       id
       serviceId
@@ -99,7 +99,7 @@ export const SERVICE_DBS = graphql(`
 `)
 
 export const SERVICE_DB = graphql(`
-  query ServiceDBV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  query ServiceDB($orgId: ID!, $serviceId: ID!, $id: ID!) {
     serviceDB(orgId: $orgId, serviceId: $serviceId, id: $id) {
       id
       serviceId
@@ -150,7 +150,7 @@ export const SERVICE_DB = graphql(`
 `)
 
 export const CREATE_SERVICE_DB = graphql(`
-  mutation CreateServiceDBV2(
+  mutation CreateServiceDB(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateServiceDBInput!
@@ -163,7 +163,7 @@ export const CREATE_SERVICE_DB = graphql(`
 `)
 
 export const UPDATE_SERVICE_DB = graphql(`
-  mutation UpdateServiceDBV2(
+  mutation UpdateServiceDB(
     $orgId: ID!
     $serviceId: ID!
     $id: ID!
@@ -182,7 +182,7 @@ export const UPDATE_SERVICE_DB = graphql(`
 `)
 
 export const DELETE_SERVICE_DB = graphql(`
-  mutation DeleteServiceDBV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  mutation DeleteServiceDB($orgId: ID!, $serviceId: ID!, $id: ID!) {
     deleteServiceDB(orgId: $orgId, serviceId: $serviceId, id: $id)
   }
 `)

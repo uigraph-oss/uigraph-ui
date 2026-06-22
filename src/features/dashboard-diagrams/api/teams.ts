@@ -6,7 +6,7 @@ export type DashboardTeam = {
 }
 
 export const TEAMS = graphql(`
-  query TeamsV2($orgId: ID!) {
+  query Teams($orgId: ID!) {
     teams(orgId: $orgId) {
       id
       name

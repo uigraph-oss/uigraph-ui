@@ -38,7 +38,7 @@ export type DashboardAPIEndpoint = {
 }
 
 export const API_GROUPS = graphql(`
-  query APIGroupsV2($orgId: ID!, $serviceId: ID!) {
+  query APIGroups($orgId: ID!, $serviceId: ID!) {
     apiGroups(orgId: $orgId, serviceId: $serviceId) {
       id
       serviceId
@@ -58,7 +58,7 @@ export const API_GROUPS = graphql(`
 `)
 
 export const API_GROUP = graphql(`
-  query APIGroupV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  query APIGroup($orgId: ID!, $serviceId: ID!, $id: ID!) {
     apiGroup(orgId: $orgId, serviceId: $serviceId, id: $id) {
       id
       serviceId
@@ -78,7 +78,7 @@ export const API_GROUP = graphql(`
 `)
 
 export const API_ENDPOINTS = graphql(`
-  query APIEndpointsV2($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {
+  query APIEndpoints($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {
     apiEndpoints(
       orgId: $orgId
       serviceId: $serviceId
@@ -107,7 +107,7 @@ export const API_ENDPOINTS = graphql(`
 `)
 
 export const CREATE_API_GROUP = graphql(`
-  mutation CreateAPIGroupV2(
+  mutation CreateAPIGroup(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateAPIGroupInput!
@@ -121,7 +121,7 @@ export const CREATE_API_GROUP = graphql(`
 `)
 
 export const UPDATE_API_GROUP = graphql(`
-  mutation UpdateAPIGroupV2(
+  mutation UpdateAPIGroup(
     $orgId: ID!
     $serviceId: ID!
     $id: ID!
@@ -140,13 +140,13 @@ export const UPDATE_API_GROUP = graphql(`
 `)
 
 export const DELETE_API_GROUP = graphql(`
-  mutation DeleteAPIGroupV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  mutation DeleteAPIGroup($orgId: ID!, $serviceId: ID!, $id: ID!) {
     deleteAPIGroup(orgId: $orgId, serviceId: $serviceId, id: $id)
   }
 `)
 
 export const SYNC_API_GROUP = graphql(`
-  mutation SyncAPIGroupV2(
+  mutation SyncAPIGroup(
     $orgId: ID!
     $serviceId: ID!
     $input: SyncAPIGroupInput!
@@ -159,7 +159,7 @@ export const SYNC_API_GROUP = graphql(`
 `)
 
 export const CREATE_API_ENDPOINT = graphql(`
-  mutation CreateAPIEndpointV2(
+  mutation CreateAPIEndpoint(
     $orgId: ID!
     $serviceId: ID!
     $apiGroupId: ID!
@@ -177,7 +177,7 @@ export const CREATE_API_ENDPOINT = graphql(`
 `)
 
 export const UPDATE_API_ENDPOINT = graphql(`
-  mutation UpdateAPIEndpointV2(
+  mutation UpdateAPIEndpoint(
     $orgId: ID!
     $serviceId: ID!
     $apiGroupId: ID!
@@ -197,7 +197,7 @@ export const UPDATE_API_ENDPOINT = graphql(`
 `)
 
 export const DELETE_API_ENDPOINT = graphql(`
-  mutation DeleteAPIEndpointV2(
+  mutation DeleteAPIEndpoint(
     $orgId: ID!
     $serviceId: ID!
     $apiGroupId: ID!
@@ -212,7 +212,7 @@ export const DELETE_API_ENDPOINT = graphql(`
   }
 `)
 
-export function protocolToV2(source: 'openapi' | 'graphql' | 'grpc'): string {
+export function protocolTo(source: 'openapi' | 'graphql' | 'grpc'): string {
   switch (source) {
     case 'graphql':
       return 'GraphQL'
@@ -223,7 +223,7 @@ export function protocolToV2(source: 'openapi' | 'graphql' | 'grpc'): string {
   }
 }
 
-export function protocolFromV2(protocol?: string | null): string {
+export function protocolFrom(protocol?: string | null): string {
   return (protocol ?? 'REST').toLowerCase()
 }
 

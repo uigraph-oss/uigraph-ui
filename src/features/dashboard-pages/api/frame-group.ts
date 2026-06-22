@@ -1,6 +1,6 @@
 import { graphql } from '@/api'
 
-export type FrameGroupV2 = {
+export type FrameGroup = {
   id: string
   frameId?: string | null
   orgId?: string | null
@@ -15,7 +15,7 @@ export type FrameGroupV2 = {
 }
 
 export const FRAME_GROUPS = graphql(`
-  query FrameGroupsV2($orgId: ID!, $mapId: ID!, $frameId: ID!) {
+  query FrameGroups($orgId: ID!, $mapId: ID!, $frameId: ID!) {
     frameGroups(orgId: $orgId, mapId: $mapId, frameId: $frameId) {
       id
       frameId
@@ -35,7 +35,7 @@ export const FRAME_GROUPS = graphql(`
 `)
 
 export const CREATE_FRAME_GROUP = graphql(`
-  mutation CreateFrameGroupV2(
+  mutation CreateFrameGroup(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -53,7 +53,7 @@ export const CREATE_FRAME_GROUP = graphql(`
 `)
 
 export const UPDATE_FRAME_GROUP = graphql(`
-  mutation UpdateFrameGroupV2(
+  mutation UpdateFrameGroup(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -73,12 +73,7 @@ export const UPDATE_FRAME_GROUP = graphql(`
 `)
 
 export const DELETE_FRAME_GROUP = graphql(`
-  mutation DeleteFrameGroupV2(
-    $orgId: ID!
-    $mapId: ID!
-    $frameId: ID!
-    $id: ID!
-  ) {
+  mutation DeleteFrameGroup($orgId: ID!, $mapId: ID!, $frameId: ID!, $id: ID!) {
     deleteFrameGroup(orgId: $orgId, mapId: $mapId, frameId: $frameId, id: $id)
   }
 `)

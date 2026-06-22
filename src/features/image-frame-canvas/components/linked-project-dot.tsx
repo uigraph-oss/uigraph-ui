@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { FrameLinkV2 } from '@/features/dashboard-pages/api/links'
+import { FrameLink } from '@/features/dashboard-pages/api/links'
 import { cn } from '@/lib/utils'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
@@ -18,7 +18,7 @@ import { SvgDot } from './svg-dot'
 
 type LinkedProjectDotProps = {
   contentSize: 'sm' | 'md'
-  projectLink: FrameLinkV2
+  projectLink: FrameLink
 
   deleteProjectLink: () => Promise<void>
   updateProjectLink: (data: { label: string }) => Promise<void>

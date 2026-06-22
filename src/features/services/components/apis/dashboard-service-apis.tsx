@@ -16,7 +16,7 @@ import {
   DELETE_API_GROUP,
   SYNC_API_GROUP,
   UPDATE_API_GROUP,
-  protocolToV2,
+  protocolTo,
   readSpecFile,
 } from '@/features/services/api/api-endpoints'
 import { cn } from '@/lib/utils'
@@ -111,7 +111,7 @@ export function DashboardServiceApis() {
           <ConfigureApiGroupModal
             mode="create"
             onSubmit={async (data) => {
-              const protocol = protocolToV2(data.importSource ?? 'openapi')
+              const protocol = protocolTo(data.importSource ?? 'openapi')
               if (data.specFile) {
                 const spec = await readSpecFile(data.specFile)
                 await syncAPIGroup({
@@ -220,7 +220,7 @@ export function DashboardServiceApis() {
                             input: {
                               apiGroupId: group.serviceApiGroupId,
                               name: input.name ?? group.name ?? '',
-                              protocol: protocolToV2(
+                              protocol: protocolTo(
                                 input.importSource ?? 'openapi'
                               ),
                               spec,

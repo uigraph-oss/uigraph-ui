@@ -41,7 +41,7 @@ export function toPointMeta(m: FocalPointMetaResult): PointMeta {
 }
 
 export const FOCAL_POINT_META = graphql(`
-  query FocalPointMetaV2(
+  query FocalPointMeta(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -78,7 +78,7 @@ export const FOCAL_POINT_META = graphql(`
 `)
 
 export const FOCAL_POINT_META_BY_COMPONENT_LINK = graphql(`
-  query FocalPointMetaByComponentLinkV2($orgId: ID!, $componentLinkId: ID!) {
+  query FocalPointMetaByComponentLink($orgId: ID!, $componentLinkId: ID!) {
     focalPointMetaByComponentLink(
       orgId: $orgId
       componentLinkId: $componentLinkId
@@ -108,7 +108,7 @@ export const FOCAL_POINT_META_BY_COMPONENT_LINK = graphql(`
 `)
 
 export const CREATE_FOCAL_POINT_META = graphql(`
-  mutation CreateFocalPointMetaV2(
+  mutation CreateFocalPointMeta(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -128,7 +128,7 @@ export const CREATE_FOCAL_POINT_META = graphql(`
 `)
 
 export const UPDATE_FOCAL_POINT_META = graphql(`
-  mutation UpdateFocalPointMetaV2(
+  mutation UpdateFocalPointMeta(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -150,7 +150,7 @@ export const UPDATE_FOCAL_POINT_META = graphql(`
 `)
 
 export const DELETE_FOCAL_POINT_META = graphql(`
-  mutation DeleteFocalPointMetaV2(
+  mutation DeleteFocalPointMeta(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!

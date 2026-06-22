@@ -33,7 +33,7 @@ import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
 } from '@/features/services/api/api-adapters'
-import { assetUrlV2, uploadFileV2 } from '@/features/uploads/api/uploads'
+import { assetUrl, uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -142,9 +142,9 @@ export function ConfigureApiEndpointMeta({
       for (const file in metaDataFiles) {
         const fileData = metaDataFiles[file]
 
-        const assetId = await uploadFileV2(organizationId!, fileData)
+        const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = assetUrlV2(assetId)
+        duplicatedMetaData[file] = assetUrl(assetId)
       }
 
       setIsUploading(false)

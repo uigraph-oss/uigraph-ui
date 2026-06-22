@@ -4,16 +4,16 @@ import { CANVAS, UPSERT_CANVAS } from '@/features/dashboard-pages/api/canvas'
 import {
   DELETE_FOCAL_POINT,
   FOCAL_POINTS,
-  FocalPointV2,
+  FocalPoint,
   UPDATE_FOCAL_POINT,
 } from '@/features/dashboard-pages/api/focal-point'
 import {
   DELETE_FRAME_GROUP,
   FRAME_GROUPS,
-  FrameGroupV2,
+  FrameGroup,
   UPDATE_FRAME_GROUP,
 } from '@/features/dashboard-pages/api/frame-group'
-import { FRAME_LINKS, FrameLinkV2 } from '@/features/dashboard-pages/api/links'
+import { FRAME_LINKS, FrameLink } from '@/features/dashboard-pages/api/links'
 import { DashboardFrame, DashboardMap } from '@/features/dashboard-projects/api'
 import { isPointWithinRect } from '@/features/image-frame-canvas/helpers'
 import { useCanvasTarget } from '@/features/image-frame-canvas/hooks/use-canvas-target'
@@ -50,10 +50,10 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
         ],
       })
 
-      const [focalPoints, setFocalPoints] = useState<FocalPointV2[]>([])
-      const [frameGroups, setFrameGroups] = useState<FrameGroupV2[]>([])
-      const [pageLinks, setPageLinks] = useState<FrameLinkV2[]>([])
-      const [projectLinks, setProjectLinks] = useState<FrameLinkV2[]>([])
+      const [focalPoints, setFocalPoints] = useState<FocalPoint[]>([])
+      const [frameGroups, setFrameGroups] = useState<FrameGroup[]>([])
+      const [pageLinks, setPageLinks] = useState<FrameLink[]>([])
+      const [projectLinks, setProjectLinks] = useState<FrameLink[]>([])
 
       const loadCanvasPoints = useCallback(async () => {
         if (!orgId || !mapId) return

@@ -1,6 +1,6 @@
 import { graphql } from '@/api'
 
-export type FrameLinkV2 = {
+export type FrameLink = {
   id: string
   frameId?: string | null
   orgId?: string | null
@@ -14,7 +14,7 @@ export type FrameLinkV2 = {
 }
 
 export const FRAME_LINKS = graphql(`
-  query FrameLinksV2($orgId: ID!, $mapId: ID!, $frameId: ID!) {
+  query FrameLinks($orgId: ID!, $mapId: ID!, $frameId: ID!) {
     frameLinks(orgId: $orgId, mapId: $mapId, frameId: $frameId) {
       id
       frameId
@@ -33,7 +33,7 @@ export const FRAME_LINKS = graphql(`
 `)
 
 export const CREATE_FRAME_LINK = graphql(`
-  mutation CreateFrameLinkV2(
+  mutation CreateFrameLink(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -51,7 +51,7 @@ export const CREATE_FRAME_LINK = graphql(`
 `)
 
 export const UPDATE_FRAME_LINK = graphql(`
-  mutation UpdateFrameLinkV2(
+  mutation UpdateFrameLink(
     $orgId: ID!
     $mapId: ID!
     $frameId: ID!
@@ -71,12 +71,7 @@ export const UPDATE_FRAME_LINK = graphql(`
 `)
 
 export const DELETE_FRAME_LINK = graphql(`
-  mutation DeleteFrameLinkV2(
-    $orgId: ID!
-    $mapId: ID!
-    $frameId: ID!
-    $id: ID!
-  ) {
+  mutation DeleteFrameLink($orgId: ID!, $mapId: ID!, $frameId: ID!, $id: ID!) {
     deleteFrameLink(orgId: $orgId, mapId: $mapId, frameId: $frameId, id: $id)
   }
 `)

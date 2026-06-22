@@ -1,7 +1,7 @@
 import { graphql } from '@/api'
 
 export const UPDATE_ORG = graphql(`
-  mutation UpdateOrgV2($id: ID!, $input: UpdateOrgInput!) {
+  mutation UpdateOrg($id: ID!, $input: UpdateOrgInput!) {
     updateOrg(id: $id, input: $input) {
       id
       name

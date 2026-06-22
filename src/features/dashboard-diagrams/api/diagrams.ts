@@ -21,7 +21,7 @@ export type DashboardDiagram = {
 }
 
 export const DIAGRAMS = graphql(`
-  query DiagramsV2($orgId: ID!, $folderId: ID) {
+  query Diagrams($orgId: ID!, $folderId: ID) {
     diagrams(orgId: $orgId, folderId: $folderId) {
       id
       orgId
@@ -54,7 +54,7 @@ export const DIAGRAMS = graphql(`
 `)
 
 export const CREATE_DIAGRAM = graphql(`
-  mutation CreateDiagramV2($orgId: ID!, $input: CreateDiagramInput!) {
+  mutation CreateDiagram($orgId: ID!, $input: CreateDiagramInput!) {
     createDiagram(orgId: $orgId, input: $input) {
       id
     }
@@ -62,7 +62,7 @@ export const CREATE_DIAGRAM = graphql(`
 `)
 
 export const UPDATE_DIAGRAM_META = graphql(`
-  mutation UpdateDiagramMetaV2(
+  mutation UpdateDiagramMeta(
     $orgId: ID!
     $id: ID!
     $input: UpdateDiagramInput!
@@ -74,7 +74,7 @@ export const UPDATE_DIAGRAM_META = graphql(`
 `)
 
 export const DELETE_DIAGRAM = graphql(`
-  mutation DeleteDiagramV2($orgId: ID!, $id: ID!) {
+  mutation DeleteDiagram($orgId: ID!, $id: ID!) {
     deleteDiagram(orgId: $orgId, id: $id)
   }
 `)

@@ -1,12 +1,11 @@
 import { graphql, type GT } from '@/api'
 
-export type ServiceAccount =
-  GT.ServiceAccountsV2Query['serviceAccounts'][number]
+export type ServiceAccount = GT.ServiceAccountsQuery['serviceAccounts'][number]
 export type ServiceAccountToken =
-  GT.ServiceAccountTokensV2Query['serviceAccountTokens'][number]
+  GT.ServiceAccountTokensQuery['serviceAccountTokens'][number]
 
 export const SERVICE_ACCOUNTS = graphql(`
-  query ServiceAccountsV2($orgId: ID!) {
+  query ServiceAccounts($orgId: ID!) {
     serviceAccounts(orgId: $orgId) {
       id
       orgId
@@ -22,13 +21,13 @@ export const SERVICE_ACCOUNTS = graphql(`
 `)
 
 export const SERVICE_ACCOUNT_SCOPES = graphql(`
-  query ServiceAccountScopesV2($orgId: ID!) {
+  query ServiceAccountScopes($orgId: ID!) {
     serviceAccountScopes(orgId: $orgId)
   }
 `)
 
 export const SERVICE_ACCOUNT_TOKENS = graphql(`
-  query ServiceAccountTokensV2($orgId: ID!, $saId: ID!) {
+  query ServiceAccountTokens($orgId: ID!, $saId: ID!) {
     serviceAccountTokens(orgId: $orgId, saId: $saId) {
       id
       serviceAccountId
@@ -43,7 +42,7 @@ export const SERVICE_ACCOUNT_TOKENS = graphql(`
 `)
 
 export const CREATE_SERVICE_ACCOUNT = graphql(`
-  mutation CreateServiceAccountV2(
+  mutation CreateServiceAccount(
     $orgId: ID!
     $input: CreateServiceAccountInput!
   ) {
@@ -54,7 +53,7 @@ export const CREATE_SERVICE_ACCOUNT = graphql(`
 `)
 
 export const UPDATE_SERVICE_ACCOUNT = graphql(`
-  mutation UpdateServiceAccountV2(
+  mutation UpdateServiceAccount(
     $orgId: ID!
     $id: ID!
     $input: UpdateServiceAccountInput!
@@ -66,13 +65,13 @@ export const UPDATE_SERVICE_ACCOUNT = graphql(`
 `)
 
 export const DELETE_SERVICE_ACCOUNT = graphql(`
-  mutation DeleteServiceAccountV2($orgId: ID!, $id: ID!) {
+  mutation DeleteServiceAccount($orgId: ID!, $id: ID!) {
     deleteServiceAccount(orgId: $orgId, id: $id)
   }
 `)
 
 export const CREATE_TOKEN = graphql(`
-  mutation CreateServiceAccountTokenV2(
+  mutation CreateServiceAccountToken(
     $orgId: ID!
     $saId: ID!
     $input: CreateTokenInput!
@@ -86,7 +85,7 @@ export const CREATE_TOKEN = graphql(`
 `)
 
 export const REVOKE_TOKEN = graphql(`
-  mutation RevokeServiceAccountTokenV2($orgId: ID!, $saId: ID!, $tokenId: ID!) {
+  mutation RevokeServiceAccountToken($orgId: ID!, $saId: ID!, $tokenId: ID!) {
     revokeServiceAccountToken(orgId: $orgId, saId: $saId, tokenId: $tokenId)
   }
 `)

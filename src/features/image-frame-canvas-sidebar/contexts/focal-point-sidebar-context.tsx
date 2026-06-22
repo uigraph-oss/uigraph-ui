@@ -1,4 +1,4 @@
-import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
+import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
@@ -20,7 +20,7 @@ type PointMetaInput = {
 
 export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
   createContext(
-    ({ focalPoint, mapId }: { focalPoint: FocalPointV2; mapId: string }) => {
+    ({ focalPoint, mapId }: { focalPoint: FocalPoint; mapId: string }) => {
       const orgId = useCurrentOrganization()?.id
       const frameId = focalPoint.frameId ?? ''
       const focalPointId = focalPoint.id

@@ -8,7 +8,7 @@ export type SettingsTeam = {
 }
 
 export const SETTINGS_TEAMS = graphql(`
-  query SettingsTeamsV2($orgId: ID!) {
+  query SettingsTeams($orgId: ID!) {
     teams(orgId: $orgId) {
       id
       name
@@ -19,7 +19,7 @@ export const SETTINGS_TEAMS = graphql(`
 `)
 
 export const CREATE_TEAM = graphql(`
-  mutation CreateTeamV2($orgId: ID!, $input: CreateTeamInput!) {
+  mutation CreateTeam($orgId: ID!, $input: CreateTeamInput!) {
     createTeam(orgId: $orgId, input: $input) {
       id
     }
@@ -27,7 +27,7 @@ export const CREATE_TEAM = graphql(`
 `)
 
 export const UPDATE_TEAM = graphql(`
-  mutation UpdateTeamV2($orgId: ID!, $teamId: ID!, $input: UpdateTeamInput!) {
+  mutation UpdateTeam($orgId: ID!, $teamId: ID!, $input: UpdateTeamInput!) {
     updateTeam(orgId: $orgId, teamId: $teamId, input: $input) {
       id
     }
@@ -35,7 +35,7 @@ export const UPDATE_TEAM = graphql(`
 `)
 
 export const DELETE_TEAM = graphql(`
-  mutation DeleteTeamV2($orgId: ID!, $teamId: ID!) {
+  mutation DeleteTeam($orgId: ID!, $teamId: ID!) {
     deleteTeam(orgId: $orgId, teamId: $teamId)
   }
 `)

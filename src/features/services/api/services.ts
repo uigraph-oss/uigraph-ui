@@ -25,7 +25,7 @@ export type DashboardService = {
 }
 
 export const SERVICES = graphql(`
-  query ServicesV2($orgId: ID!, $folderId: ID) {
+  query Services($orgId: ID!, $folderId: ID) {
     services(orgId: $orgId, folderId: $folderId) {
       id
       orgId
@@ -53,7 +53,7 @@ export const SERVICES = graphql(`
 `)
 
 export const SERVICE = graphql(`
-  query ServiceV2($orgId: ID!, $id: ID!) {
+  query Service($orgId: ID!, $id: ID!) {
     service(orgId: $orgId, id: $id) {
       id
       orgId
@@ -81,7 +81,7 @@ export const SERVICE = graphql(`
 `)
 
 export const CREATE_SERVICE = graphql(`
-  mutation CreateServiceV2($orgId: ID!, $input: CreateServiceInput!) {
+  mutation CreateService($orgId: ID!, $input: CreateServiceInput!) {
     createService(orgId: $orgId, input: $input) {
       id
       name
@@ -91,7 +91,7 @@ export const CREATE_SERVICE = graphql(`
 `)
 
 export const UPDATE_SERVICE = graphql(`
-  mutation UpdateServiceV2($orgId: ID!, $id: ID!, $input: UpdateServiceInput!) {
+  mutation UpdateService($orgId: ID!, $id: ID!, $input: UpdateServiceInput!) {
     updateService(orgId: $orgId, id: $id, input: $input) {
       id
       name
@@ -100,7 +100,7 @@ export const UPDATE_SERVICE = graphql(`
 `)
 
 export const DELETE_SERVICE = graphql(`
-  mutation DeleteServiceV2($orgId: ID!, $id: ID!) {
+  mutation DeleteService($orgId: ID!, $id: ID!) {
     deleteService(orgId: $orgId, id: $id)
   }
 `)

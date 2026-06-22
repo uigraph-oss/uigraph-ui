@@ -15,7 +15,7 @@ export type ServerUser = {
 export const SERVER_USER_ROLES = ['user', 'server_admin'] as const
 
 export const SERVER_USERS = graphql(`
-  query ServerUsersV2 {
+  query ServerUsers {
     users {
       id
       email
@@ -31,7 +31,7 @@ export const SERVER_USERS = graphql(`
 `)
 
 export const CREATE_SERVER_USER = graphql(`
-  mutation CreateServerUserV2($input: CreateUserInput!) {
+  mutation CreateServerUser($input: CreateUserInput!) {
     createUser(input: $input) {
       id
       email
@@ -47,7 +47,7 @@ export const CREATE_SERVER_USER = graphql(`
 `)
 
 export const UPDATE_SERVER_USER = graphql(`
-  mutation UpdateServerUserV2($id: ID!, $input: UpdateUserInput!) {
+  mutation UpdateServerUser($id: ID!, $input: UpdateUserInput!) {
     updateUser(id: $id, input: $input) {
       id
       email
@@ -63,7 +63,7 @@ export const UPDATE_SERVER_USER = graphql(`
 `)
 
 export const DISABLE_SERVER_USER = graphql(`
-  mutation DisableServerUserV2($id: ID!) {
+  mutation DisableServerUser($id: ID!) {
     disableUser(id: $id)
   }
 `)

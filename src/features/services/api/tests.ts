@@ -1,7 +1,7 @@
 import { graphql } from '@/api'
 
 export const TEST_PACKS = graphql(`
-  query TestPacksV2($orgId: ID!, $serviceId: ID!) {
+  query TestPacks($orgId: ID!, $serviceId: ID!) {
     testPacks(orgId: $orgId, serviceId: $serviceId) {
       testPackId
       serviceId
@@ -17,7 +17,7 @@ export const TEST_PACKS = graphql(`
 `)
 
 export const CREATE_TEST_PACK = graphql(`
-  mutation CreateTestPackV2(
+  mutation CreateTestPack(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateTestPackInput!
@@ -37,7 +37,7 @@ export const CREATE_TEST_PACK = graphql(`
 `)
 
 export const UPDATE_TEST_PACK = graphql(`
-  mutation UpdateTestPackV2(
+  mutation UpdateTestPack(
     $orgId: ID!
     $serviceId: ID!
     $id: ID!
@@ -63,13 +63,13 @@ export const UPDATE_TEST_PACK = graphql(`
 `)
 
 export const DELETE_TEST_PACK = graphql(`
-  mutation DeleteTestPackV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  mutation DeleteTestPack($orgId: ID!, $serviceId: ID!, $id: ID!) {
     deleteTestPack(orgId: $orgId, serviceId: $serviceId, id: $id)
   }
 `)
 
 export const TEST_CASES = graphql(`
-  query TestCasesV2($orgId: ID!, $serviceId: ID!, $testPackId: ID!) {
+  query TestCases($orgId: ID!, $serviceId: ID!, $testPackId: ID!) {
     testCases(orgId: $orgId, serviceId: $serviceId, testPackId: $testPackId) {
       testCaseId
       testPackId
@@ -147,7 +147,7 @@ export const TEST_CASES = graphql(`
 `)
 
 export const CREATE_TEST_CASE = graphql(`
-  mutation CreateTestCaseV2(
+  mutation CreateTestCase(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateTestCaseInput!
@@ -229,7 +229,7 @@ export const CREATE_TEST_CASE = graphql(`
 `)
 
 export const UPDATE_TEST_CASE = graphql(`
-  mutation UpdateTestCaseV2(
+  mutation UpdateTestCase(
     $orgId: ID!
     $serviceId: ID!
     $id: ID!
@@ -317,13 +317,13 @@ export const UPDATE_TEST_CASE = graphql(`
 `)
 
 export const DELETE_TEST_CASE = graphql(`
-  mutation DeleteTestCaseV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  mutation DeleteTestCase($orgId: ID!, $serviceId: ID!, $id: ID!) {
     deleteTestCase(orgId: $orgId, serviceId: $serviceId, id: $id)
   }
 `)
 
 export const TEST_RUNS = graphql(`
-  query TestRunsV2($orgId: ID!, $serviceId: ID!, $testPackId: ID!) {
+  query TestRuns($orgId: ID!, $serviceId: ID!, $testPackId: ID!) {
     testRuns(orgId: $orgId, serviceId: $serviceId, testPackId: $testPackId) {
       testRunId
       testPackId
@@ -343,7 +343,7 @@ export const TEST_RUNS = graphql(`
 `)
 
 export const TEST_RUN = graphql(`
-  query TestRunV2($orgId: ID!, $serviceId: ID!, $id: ID!) {
+  query TestRun($orgId: ID!, $serviceId: ID!, $id: ID!) {
     testRun(orgId: $orgId, serviceId: $serviceId, id: $id) {
       testRunId
       testPackId
@@ -363,7 +363,7 @@ export const TEST_RUN = graphql(`
 `)
 
 export const TEST_RUNS_SUMMARY = graphql(`
-  query TestRunsSummaryV2($orgId: ID!, $serviceId: ID!, $testPackId: ID) {
+  query TestRunsSummary($orgId: ID!, $serviceId: ID!, $testPackId: ID) {
     testRunsSummary(
       orgId: $orgId
       serviceId: $serviceId
@@ -390,7 +390,7 @@ export const TEST_RUNS_SUMMARY = graphql(`
 `)
 
 export const CREATE_TEST_RUN = graphql(`
-  mutation CreateTestRunV2(
+  mutation CreateTestRun(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateTestRunInput!
@@ -405,7 +405,7 @@ export const CREATE_TEST_RUN = graphql(`
 `)
 
 export const UPDATE_TEST_RUN = graphql(`
-  mutation UpdateTestRunV2(
+  mutation UpdateTestRun(
     $orgId: ID!
     $serviceId: ID!
     $id: ID!
@@ -425,7 +425,7 @@ export const UPDATE_TEST_RUN = graphql(`
 `)
 
 export const TEST_RUN_RESULTS = graphql(`
-  query TestRunResultsV2($orgId: ID!, $serviceId: ID!, $testRunId: ID!) {
+  query TestRunResults($orgId: ID!, $serviceId: ID!, $testRunId: ID!) {
     testRunResults(
       orgId: $orgId
       serviceId: $serviceId
@@ -450,7 +450,7 @@ export const TEST_RUN_RESULTS = graphql(`
 `)
 
 export const CREATE_TEST_RUN_RESULT = graphql(`
-  mutation CreateTestRunResultV2(
+  mutation CreateTestRunResult(
     $orgId: ID!
     $serviceId: ID!
     $input: CreateTestRunResultInput!
@@ -465,7 +465,7 @@ export const CREATE_TEST_RUN_RESULT = graphql(`
 `)
 
 export const UPDATE_TEST_RUN_RESULT = graphql(`
-  mutation UpdateTestRunResultV2(
+  mutation UpdateTestRunResult(
     $orgId: ID!
     $serviceId: ID!
     $id: ID!

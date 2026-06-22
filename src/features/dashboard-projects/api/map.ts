@@ -16,7 +16,7 @@ export type DashboardMap = {
 }
 
 export const MAPS = graphql(`
-  query MapsV2($orgId: ID!, $folderId: ID) {
+  query Maps($orgId: ID!, $folderId: ID) {
     maps(orgId: $orgId, folderId: $folderId) {
       id
       orgId
@@ -35,7 +35,7 @@ export const MAPS = graphql(`
 `)
 
 export const MAP = graphql(`
-  query MapV2($orgId: ID!, $id: ID!) {
+  query Map($orgId: ID!, $id: ID!) {
     map(orgId: $orgId, id: $id) {
       id
       orgId
@@ -53,7 +53,7 @@ export const MAP = graphql(`
 `)
 
 export const CREATE_MAP = graphql(`
-  mutation CreateMapV2($orgId: ID!, $input: CreateMapInput!) {
+  mutation CreateMap($orgId: ID!, $input: CreateMapInput!) {
     createMap(orgId: $orgId, input: $input) {
       id
     }
@@ -61,7 +61,7 @@ export const CREATE_MAP = graphql(`
 `)
 
 export const UPDATE_MAP = graphql(`
-  mutation UpdateMapV2($orgId: ID!, $id: ID!, $input: UpdateMapInput!) {
+  mutation UpdateMap($orgId: ID!, $id: ID!, $input: UpdateMapInput!) {
     updateMap(orgId: $orgId, id: $id, input: $input) {
       id
     }
@@ -69,7 +69,7 @@ export const UPDATE_MAP = graphql(`
 `)
 
 export const DELETE_MAP = graphql(`
-  mutation DeleteMapV2($orgId: ID!, $id: ID!) {
+  mutation DeleteMap($orgId: ID!, $id: ID!) {
     deleteMap(orgId: $orgId, id: $id)
   }
 `)
