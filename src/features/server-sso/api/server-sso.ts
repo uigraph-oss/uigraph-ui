@@ -5,6 +5,7 @@ export type OAuthProvider = {
   providerName: string
   type: string
   displayName: string
+  iconUrl: string
   clientId: string
   clientSecret: string
   authUrl: string
@@ -44,6 +45,7 @@ export const OAUTH_PROVIDERS = graphql(`
       providerName
       type
       displayName
+      iconUrl
       clientId
       clientSecret
       authUrl
@@ -59,6 +61,29 @@ export const OAUTH_PROVIDERS = graphql(`
     }
   }
 `)
+
+export async function setOAuthProviderIcon(provider: string, file: File) {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`/api/v1/sso/oauth/${provider}/icon`, {
+    method: 'PUT',
+    credentials: 'include',
+    body: form,
+  })
+  if (!res.ok) {
+    throw new Error(`upload icon failed (${res.status})`)
+  }
+}
+
+export async function removeOAuthProviderIcon(provider: string) {
+  const res = await fetch(`/api/v1/sso/oauth/${provider}/icon`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    throw new Error(`remove icon failed (${res.status})`)
+  }
+}
 
 export const UPSERT_OAUTH_PROVIDER = graphql(`
   mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {
@@ -88,13 +113,10 @@ export const SAML_STATUS = graphql(`
   }
 `)
 
-export async function getScimStatus(): Promise<ProviderStatus> {
-  const res = await fetch('/api/v1/sso/scim', { credentials: 'include' })
-  if (res.ok) {
-    return 'configured'
+export const SCIM_STATUS = graphql(`
+  query ScimStatus {
+    scim {
+      id
+    }
   }
-  if (res.status === 404) {
-    return 'not-configured'
-  }
-  throw new Error(`Request failed (${res.status})`)
-}
+`)

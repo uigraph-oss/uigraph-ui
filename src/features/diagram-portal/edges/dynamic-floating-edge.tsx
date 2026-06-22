@@ -4,6 +4,7 @@ import { getEdgeParams } from '../helpers/floating-edge'
 
 export function DynamicFloatingEdge({
   id,
+  data,
   label,
   style,
   source,
@@ -14,6 +15,8 @@ export function DynamicFloatingEdge({
   const sourceNode = useInternalNode(source)
   const targetNode = useInternalNode(target)
 
+  const labelFontSize = (data?.labelFontSize as number | undefined) ?? 12
+
   const textRef = useRef<SVGTextElement>(null)
   const [bbox, setBbox] = useState({ width: 0, height: 0 })
 
@@ -22,7 +25,7 @@ export function DynamicFloatingEdge({
       const { width, height } = textRef.current.getBBox()
       setBbox({ width, height })
     }
-  }, [label])
+  }, [label, labelFontSize])
 
   if (!sourceNode || !targetNode) {
     return null
@@ -86,7 +89,7 @@ export function DynamicFloatingEdge({
             style={{
               pointerEvents: 'none',
               userSelect: 'none',
-              fontSize: 12,
+              fontSize: labelFontSize,
             }}
           >
             {label}

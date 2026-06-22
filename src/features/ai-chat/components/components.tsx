@@ -12,7 +12,7 @@ import {
 import { FiCheck, FiCopy } from 'react-icons/fi'
 import { Components } from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { getAnchorSourceHref } from '../helpers/parse-source'
 import { getCodeLanguage, isKvBlock, KvBlock } from './code-block'
 import { ImageBlock } from './image-block'
@@ -22,7 +22,7 @@ const OrderedListContext = createContext(false)
 
 export const MARKDOWN_COMPONENTS: Components = {
   blockquote: ({ children }) => (
-    <blockquote className="my-2 border-l-2 border-black/15 bg-black/3 py-1.5 pl-4 text-black/75">
+    <blockquote className="border-border bg-muted/40 text-muted-foreground my-2 border-l-2 py-1.5 pl-4">
       {children}
     </blockquote>
   ),
@@ -39,7 +39,7 @@ export const MARKDOWN_COMPONENTS: Components = {
           'mr-0.5 -mb-[2.5px] inline-block size-4 rounded-[4px] border p-0.5 transition-colors',
           checked
             ? 'bg-primary border-none text-white'
-            : 'border-black/20 bg-transparent'
+            : 'border-border bg-transparent'
         )}
       >
         {checked && <FiCheck className="size-full" strokeWidth={3} />}
@@ -77,7 +77,7 @@ export const MARKDOWN_COMPONENTS: Components = {
     if (isOrdered) {
       return (
         <li className="step-item flex items-start gap-2.5">
-          <div className="step-num mt-[2px] flex size-[19px] shrink-0 items-center justify-center rounded-[4px] bg-black/[0.06] font-mono text-[10px] font-semibold text-black/40" />
+          <div className="step-num bg-muted text-muted-foreground mt-[2px] flex size-[19px] shrink-0 items-center justify-center rounded-[4px] font-mono text-[10px] font-semibold" />
           <div className="step-body min-w-0 flex-1">{children}</div>
         </li>
       )
@@ -101,7 +101,7 @@ export const MARKDOWN_COMPONENTS: Components = {
 
     return (
       <li className="flex items-start gap-2">
-        <span className="mt-[9px] size-1.5 shrink-0 rounded-full bg-black/25" />
+        <span className="bg-muted-foreground mt-[9px] size-1.5 shrink-0 rounded-full" />
         <span className="flex-1">{children}</span>
       </li>
     )
@@ -110,7 +110,7 @@ export const MARKDOWN_COMPONENTS: Components = {
   p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
 
   strong: ({ children }) => (
-    <strong className="font-medium text-[#111110]">{children}</strong>
+    <strong className="text-foreground font-medium">{children}</strong>
   ),
 
   code: ({ className, children }) => {
@@ -123,7 +123,7 @@ export const MARKDOWN_COMPONENTS: Components = {
 
     if (!isBlock) {
       return (
-        <code className="rounded-[4px] bg-black/[0.06] px-1.5 py-0.5 font-mono text-[0.82em] text-[#111110]">
+        <code className="bg-muted text-foreground rounded-[4px] px-1.5 py-0.5 font-mono text-[0.82em]">
           {children}
         </code>
       )
@@ -140,7 +140,7 @@ export const MARKDOWN_COMPONENTS: Components = {
     }
 
     return (
-      <div className="my-2 overflow-hidden rounded-lg border border-[#e6e6e6] bg-[#f8fafc]">
+      <div className="border-border bg-card my-2 overflow-hidden rounded-lg border">
         <div className="border-stock flex items-center justify-between border-b px-3 py-2">
           <span className="text-paragraph text-[11px] font-medium tracking-wide uppercase">
             {codeLanguage}
@@ -171,7 +171,7 @@ export const MARKDOWN_COMPONENTS: Components = {
         </div>
         <div className="better-scrollbar max-h-[22rem] overflow-auto px-3 py-2">
           <SyntaxHighlighter
-            style={oneLight}
+            style={oneDark}
             language={codeLanguage}
             PreTag="div"
             customStyle={{ margin: 0, padding: 0, background: 'transparent' }}
@@ -204,41 +204,39 @@ export const MARKDOWN_COMPONENTS: Components = {
   },
 
   table: ({ children }) => (
-    <div className="my-4 overflow-hidden rounded-lg border border-black/10">
-      <table className="w-full border-collapse text-sm text-[#111110]">
+    <div className="border-border my-4 overflow-hidden rounded-lg border">
+      <table className="text-foreground w-full border-collapse text-sm">
         {children}
       </table>
     </div>
   ),
 
   thead: ({ children }) => (
-    <thead className="border-b border-black/10 bg-black/[0.03]">
-      {children}
-    </thead>
+    <thead className="border-border bg-muted/40 border-b">{children}</thead>
   ),
 
   tbody: ({ children }) => (
-    <tbody className="divide-y divide-black/[0.06]">{children}</tbody>
+    <tbody className="divide-border divide-y">{children}</tbody>
   ),
 
   tr: ({ children }) => (
-    <tr className="transition-colors hover:bg-black/[0.02]">{children}</tr>
+    <tr className="hover:bg-muted/30 transition-colors">{children}</tr>
   ),
 
   th: ({ children, style }) => (
     <th
-      className="px-4 py-3 text-left text-[13px] font-semibold text-black/70"
+      className="text-muted-foreground px-4 py-3 text-left text-[13px] font-semibold"
       style={style}
     >
       {children}
     </th>
   ),
 
-  hr: () => <hr className="my-3 border-0 border-t border-black/10" />,
+  hr: () => <hr className="border-border my-3 border-0 border-t" />,
 
   td: ({ children, style }) => (
     <td
-      className="px-4 py-3 text-left text-[14px] leading-relaxed text-black/80"
+      className="text-foreground/80 px-4 py-3 text-left text-[14px] leading-relaxed"
       style={style}
     >
       {children}

@@ -1,5 +1,7 @@
+import { Label } from '@/components/ui/label'
 import { ColorPickerInput } from '@/features/component-meta'
 import { useEffectState } from '../../../hooks/use-effect-state'
+import { CustomSwitch } from '../components/ui'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import { TGroupNode } from '../nodes'
 import { Field } from './field'
@@ -41,6 +43,18 @@ export function NodeGroupStyle() {
           }}
         />
       </Field>
+
+      <div className="flex items-center justify-between gap-3">
+        <Label className="text-sm font-normal text-[#F4F7FC]">
+          Auto Layout
+        </Label>
+        <CustomSwitch
+          checked={data.autoLayout ?? false}
+          onCheckedChange={(checked) => {
+            updateData({ autoLayout: checked })
+          }}
+        />
+      </div>
     </>
   )
 }

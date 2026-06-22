@@ -24,7 +24,7 @@ import {
   useAuthStore,
   useCurrentOrganization,
 } from '@/store/auth-store'
-import { Check, Shield } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { LogoutIcon } from './assets/icons'
@@ -206,18 +206,6 @@ export function UserDropdownMenu() {
         )}
 
         <div className="border-stock space-y-0.5 border-t px-2 py-2">
-          {user?.isServerAdmin && (
-            <DropdownMenuItem
-              asChild
-              className="h-[2.5rem] cursor-pointer rounded-lg px-2 transition-colors hover:bg-white/[0.06]"
-            >
-              <Link to="/server">
-                <Shield className="size-4" />
-                Manage Server
-              </Link>
-            </DropdownMenuItem>
-          )}
-
           <DropdownMenuItem
             onClick={async () => {
               await signOut()

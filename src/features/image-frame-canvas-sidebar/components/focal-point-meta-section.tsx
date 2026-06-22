@@ -98,12 +98,9 @@ export function FocalPointMetaSection({
 
   async function startFlowDiagram(meta: PointMeta | null) {
     if (meta) {
-      if (meta.componentFlowDiagram?.startsWith('diagram_')) {
-        return window.open(`/diagram/${meta.componentFlowDiagram}`)
-      }
-
-      if (meta.componentLinkId?.startsWith('diagram_')) {
-        return window.open(`/diagram/${meta.componentLinkId}`)
+      const linkedDiagramId = meta.componentFlowDiagram || meta.componentLinkId
+      if (linkedDiagramId) {
+        return window.open(`/diagram/${linkedDiagramId}`)
       }
 
       return toast.error('Invalid diagram ID. Please try again.')

@@ -750,7 +750,7 @@ export function TestRunExecutionPage() {
               <Button
                 preset="primary"
                 onClick={() => setIsAbortDialogOpen(true)}
-                className="border border-amber-200 bg-[#141925] text-amber-700 hover:bg-amber-50"
+                className="border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
               >
                 <FiStopCircle className="h-4 w-4" />
                 Abort Run

@@ -170,7 +170,7 @@ export function ServiceAccountRow({
               {account.description}
             </span>
           ) : (
-            <span className="text-sm text-gray-300">—</span>
+            <span className="text-sm text-[#586378]">—</span>
           )}
         </td>
         <td className="w-40 px-6 py-4 align-top">
@@ -203,7 +203,7 @@ export function ServiceAccountRow({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex size-8 items-center justify-center rounded-md border border-red-200 text-red-600 transition-colors hover:border-red-300 hover:bg-red-50"
+                  className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10"
                   onClick={() => setDeleteOpen(true)}
                 >
                   <Trash2 className="size-4" />

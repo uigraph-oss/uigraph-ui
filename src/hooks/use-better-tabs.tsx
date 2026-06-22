@@ -36,7 +36,7 @@ export function BetterTabController({
   return (
     <div
       className={cn(
-        'relative mx-auto w-fit rounded-full bg-[#f3f4f6] p-1',
+        'bg-muted relative mx-auto w-fit rounded-full p-1',
         className
       )}
     >
@@ -65,7 +65,7 @@ export function BetterTabController({
             {...props}
             className={cn(
               props.className,
-              'rounded-full bg-white shadow-sm',
+              'bg-accent rounded-full shadow-sm',
               overlayClassName
             )}
           />

@@ -83,13 +83,13 @@ export function ServiceAccountModal({
       <div className="space-y-6">
         {account && (
           <div className="flex items-center gap-4">
-            <Avatar className="size-16 bg-[#F0F0F2]">
+            <Avatar className="size-16 bg-[#1E2533]">
               <AvatarImage
                 src={avatarPreview ?? undefined}
                 alt={account.name}
                 className="object-cover"
               />
-              <AvatarFallback className="text-sm font-medium text-[#A0A0A2]">
+              <AvatarFallback className="text-sm font-medium text-[#A0AABB]">
                 {account.name.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>

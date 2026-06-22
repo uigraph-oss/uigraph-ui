@@ -18,16 +18,16 @@ export function KvBlock({ text }: { text: string }) {
     })
 
   return (
-    <div className="my-2 overflow-hidden rounded-lg border border-black/8 bg-white">
+    <div className="border-border bg-card my-2 overflow-hidden rounded-lg border">
       {pairs.map(({ key, value }, i) => (
         <div
           key={i}
-          className="flex items-baseline gap-6 border-b border-black/6 px-3.5 py-2 last:border-b-0"
+          className="border-border flex items-baseline gap-6 border-b px-3.5 py-2 last:border-b-0"
         >
           <span className="text-paragraph w-16 shrink-0 text-[12px]">
             {key}
           </span>
-          <code className="font-mono text-[12px] text-[#111110]">{value}</code>
+          <code className="text-foreground font-mono text-[12px]">{value}</code>
         </div>
       ))}
     </div>

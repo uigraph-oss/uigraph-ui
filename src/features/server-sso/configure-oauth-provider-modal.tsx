@@ -5,7 +5,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ImageIcon, Trash2, Upload } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -35,10 +38,12 @@ const inputClassName =
 function Field({
   label,
   message,
+  hint,
   children,
 }: {
   label: string
   message?: string
+  hint?: string
   children: React.ReactNode
 }) {
   return (
@@ -46,6 +51,98 @@ function Field({
       <Label className="text-sm font-medium text-[#D2D9E6]">{label}</Label>
       {children}
       {message && <p className="text-destructive text-sm">{message}</p>}
+      {!message && hint && <p className="text-sm text-[#828DA3]">{hint}</p>}
+    </div>
+  )
+}
+
+function IconUploadField({
+  iconUrl,
+  displayName,
+  onUploadIcon,
+  onRemoveIcon,
+}: {
+  iconUrl?: string | null
+  displayName: string
+  onUploadIcon: (file: File) => Promise<void>
+  onRemoveIcon: () => Promise<void>
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isBusy, setIsBusy] = useState(false)
+
+  async function handleSelected(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setIsBusy(true)
+    try {
+      await onUploadIcon(file)
+      toast.success('Icon updated')
+    } catch {
+      toast.error('Failed to upload icon')
+    } finally {
+      setIsBusy(false)
+    }
+  }
+
+  async function handleRemove() {
+    setIsBusy(true)
+    try {
+      await onRemoveIcon()
+      toast.success('Icon removed')
+    } catch {
+      toast.error('Failed to remove icon')
+    } finally {
+      setIsBusy(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium text-[#D2D9E6]">Icon</Label>
+      <div className="flex items-center gap-4">
+        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#1E2533]">
+          {iconUrl ? (
+            <img
+              src={iconUrl}
+              alt={displayName}
+              className="size-full object-contain"
+            />
+          ) : (
+            <ImageIcon className="size-6 text-[#828DA3]" />
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isBusy}
+            className="flex h-10 items-center gap-2 rounded-[10px] border border-[#2A3242] bg-[#1E2533] px-4 text-sm font-medium text-[#D2D9E6] transition-colors hover:border-[#3A4252] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Upload className="size-4" />
+            {iconUrl ? 'Replace' : 'Upload'}
+          </button>
+          {iconUrl && (
+            <button
+              type="button"
+              onClick={handleRemove}
+              disabled={isBusy}
+              className="flex items-center gap-1.5 text-sm text-red-600 transition-colors hover:text-red-700 disabled:cursor-not-allowed disabled:text-gray-400"
+            >
+              <Trash2 className="size-3.5" />
+              Remove
+            </button>
+          )}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleSelected}
+        />
+      </div>
+      <p className="text-sm text-[#828DA3]">Logo shown on the login button</p>
     </div>
   )
 }
@@ -53,11 +150,17 @@ function Field({
 export function ConfigureOAuthProviderModal({
   mode,
   defaultValues,
+  iconUrl,
   onSubmit,
+  onUploadIcon,
+  onRemoveIcon,
 }: {
   mode: 'create' | 'edit'
   defaultValues?: Partial<OAuthProviderFormValues>
+  iconUrl?: string | null
   onSubmit: SubmitHandler<OAuthProviderFormValues>
+  onUploadIcon?: (file: File) => Promise<void>
+  onRemoveIcon?: () => Promise<void>
 }) {
   const form = useForm({
     resolver: zodResolver(schema),
@@ -121,6 +224,15 @@ export function ConfigureOAuthProviderModal({
           )}
         />
 
+        {mode === 'edit' && onUploadIcon && onRemoveIcon && (
+          <IconUploadField
+            iconUrl={iconUrl}
+            displayName={form.watch('displayName')}
+            onUploadIcon={onUploadIcon}
+            onRemoveIcon={onRemoveIcon}
+          />
+        )}
+
         <Controller
           name="clientId"
           control={form.control}
@@ -138,9 +250,12 @@ export function ConfigureOAuthProviderModal({
             <Field
               label="Client Secret"
               message={
+                mode === 'edit' ? undefined : errors.clientSecret?.message
+              }
+              hint={
                 mode === 'edit'
                   ? 'Leave blank to keep the existing secret'
-                  : errors.clientSecret?.message
+                  : undefined
               }
             >
               <Input

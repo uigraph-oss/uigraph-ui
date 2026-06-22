@@ -96,12 +96,6 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     icon: <UserIcon />,
   },
   {
-    id: '/settings/organization',
-    label: 'Organization',
-    icon: <GoOrganization />,
-    adminOnly: true,
-  },
-  {
     id: '/settings/teams',
     label: 'Teams',
     icon: <AiOutlineTeam />,
