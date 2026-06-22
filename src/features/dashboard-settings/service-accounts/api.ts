@@ -1,9 +1,9 @@
-import { graphql, type V2 } from '@/api'
+import { graphql, type GT } from '@/api'
 
 export type ServiceAccount =
-  V2.ServiceAccountsV2Query['serviceAccounts'][number]
+  GT.ServiceAccountsV2Query['serviceAccounts'][number]
 export type ServiceAccountToken =
-  V2.ServiceAccountTokensV2Query['serviceAccountTokens'][number]
+  GT.ServiceAccountTokensV2Query['serviceAccountTokens'][number]
 
 export const SERVICE_ACCOUNTS = graphql(`
   query ServiceAccountsV2($orgId: ID!) {

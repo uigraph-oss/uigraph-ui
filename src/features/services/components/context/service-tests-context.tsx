@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import type { TestCase } from '@/api/.gql/graphql'
 import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -417,7 +417,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
               input: {
                 testPackId: testCase.testPackId,
                 ...transformToCreateTestCase(
-                  transformTestCaseToSchema(testCase as V2.TestCase)
+                  transformTestCaseToSchema(testCase as GT.TestCase)
                 ),
                 title: `${testCase.title || 'Untitled'} (Copy)`,
                 order: newOrder,

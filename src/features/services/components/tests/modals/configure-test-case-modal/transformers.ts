@@ -1,10 +1,10 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import z from 'zod'
 import { configureTestCaseSchema } from './schema'
 
 export function transformToCreateTestCase(
   data: z.infer<typeof configureTestCaseSchema>
-): Omit<V2.CreateTestCaseInput, 'testPackId' | 'order'> {
+): Omit<GT.CreateTestCaseInput, 'testPackId' | 'order'> {
   return {
     title: data.title,
     description: data.description,
@@ -119,7 +119,7 @@ export function transformToCreateTestCase(
 
 export function transformToUpdateTestCase(
   data: z.infer<typeof configureTestCaseSchema>
-): Omit<V2.UpdateTestCaseInput, 'testCaseId' | 'testPackId' | 'order'> {
+): Omit<GT.UpdateTestCaseInput, 'testCaseId' | 'testPackId' | 'order'> {
   return {
     title: data.title,
     description: data.description,
@@ -247,7 +247,7 @@ function priorityToSchemaValue(
 }
 
 export function transformTestCaseToSchema(
-  testCase: V2.TestCase
+  testCase: GT.TestCase
 ): z.infer<typeof configureTestCaseSchema> {
   return {
     title: testCase.title!,

@@ -1,4 +1,4 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { GET_COMPONENTS } from '@/features/components/api/components'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -42,7 +42,7 @@ export function useComponents() {
   }
 }
 
-function transformComponentToSectionItem(input: V2.Component): V2.Component {
+function transformComponentToSectionItem(input: GT.Component): GT.Component {
   return {
     ...input,
     componentFields: arrayNonNullable(input.componentFields).map((field) => {

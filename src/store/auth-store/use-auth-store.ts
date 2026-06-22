@@ -1,8 +1,8 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { create } from 'zustand'
 
-type AuthenticatedUser = V2.MeAndOrgQuery['me']
-type UserOrganization = V2.MeAndOrgQuery['myOrgs'][number]
+type AuthenticatedUser = GT.MeAndOrgQuery['me']
+type UserOrganization = GT.MeAndOrgQuery['myOrgs'][number]
 
 export const useAuthStore = create(() => ({
   status: 'loading' as 'authenticated' | 'loading' | 'unauthenticated',

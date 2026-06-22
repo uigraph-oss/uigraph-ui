@@ -1,4 +1,4 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { ComponentInputType } from '@uigraph/sdk'
 import type { DashboardAPIEndpoint, DashboardAPIGroup } from './api-endpoints'
 import type { DashboardAPIGroupVersion } from './api-group-version'
@@ -23,7 +23,7 @@ export type LegacyComponentMeta = {
   componentFlowDiagramName?: string | null
   componentId?: string | null
   componentMetaId?: string | null
-  componentModalFields?: (V2.ComponentModalField | null)[] | null
+  componentModalFields?: (GT.ComponentModalField | null)[] | null
   createdAt?: string | null
   createdBy?: string | null
   deletedAt?: string | null
@@ -72,7 +72,7 @@ function metaField(
   value: string | null | undefined,
   order: number,
   type: string = ComponentInputType.TextInput
-): V2.ComponentModalField {
+): GT.ComponentModalField {
   const componentFieldId = `api-${label.toLowerCase().replace(/\s+/g, '-')}`
   const text = value ?? ''
   return {
@@ -94,7 +94,7 @@ export type LegacyEndpointWithMeta = {
   componentMeta: LegacyComponentMeta & {
     componentMetaId: string
     organizationId?: string | null
-    componentModalFields: V2.ComponentModalField[]
+    componentModalFields: GT.ComponentModalField[]
   }
 }
 
@@ -146,7 +146,7 @@ export function endpointToLegacyWithMeta(
   endpoint: DashboardAPIEndpoint,
   orgId: string
 ): LegacyEndpointWithMeta {
-  const fields: V2.ComponentModalField[] = [
+  const fields: GT.ComponentModalField[] = [
     metaField('Method', endpoint.method, 0),
     metaField('URL', endpoint.path, 1),
     metaField('Summary', endpoint.summary, 2),

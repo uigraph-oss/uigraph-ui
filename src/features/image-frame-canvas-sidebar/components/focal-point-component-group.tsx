@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { SuperLogoLoader } from '@/components/loader'
 import {
   Accordion,
@@ -30,7 +30,7 @@ type FocalPointComponentGroupProps = CommonMetaOptions & {
 }
 
 type FocalPointComponentSectionProps = CommonMetaOptions & {
-  component: V2.Component
+  component: GT.Component
   pointMetaList: PointMeta[]
 }
 

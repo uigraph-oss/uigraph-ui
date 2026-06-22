@@ -1,4 +1,4 @@
-import { graphql, V2 } from '@/api'
+import { graphql, GT } from '@/api'
 import {
   DynamoEditorSchema,
   MongoCollectionSchema,
@@ -12,9 +12,9 @@ export type ServiceDbActor = {
   avatarUrl?: string | null
 }
 
-export type DbColumn = V2.DbColumn
-export type DbIndex = V2.DbIndex
-export type DbTable = V2.DbTable
+export type DbColumn = GT.DbColumn
+export type DbIndex = GT.DbIndex
+export type DbTable = GT.DbTable
 
 export type ServiceDbNoSQLSchema = {
   dynamo?: { table?: z.infer<typeof DynamoEditorSchema> | null } | null

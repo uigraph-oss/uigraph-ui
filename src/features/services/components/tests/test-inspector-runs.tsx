@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import type { TestCase } from '@/api/.gql/graphql'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -48,11 +48,11 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   )
 
   const runsWithResults = useMemo(() => {
-    return testRuns.filter((run: V2.TestRun) => run.testRunId)
+    return testRuns.filter((run: GT.TestRun) => run.testRunId)
   }, [testRuns])
 
   const sortedRuns = useMemo(() => {
-    return [...runsWithResults].sort((a: V2.TestRun, b: V2.TestRun) => {
+    return [...runsWithResults].sort((a: GT.TestRun, b: GT.TestRun) => {
       const dateA = a.executedAt ? new Date(a.executedAt).getTime() : 0
       const dateB = b.executedAt ? new Date(b.executedAt).getTime() : 0
       return dateB - dateA
@@ -111,7 +111,7 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   return (
     <div className="px-6 py-4 transition-opacity duration-150">
       <div className="space-y-0">
-        {sortedRuns.map((run: V2.TestRun) => (
+        {sortedRuns.map((run: GT.TestRun) => (
           <TestRunRow
             key={run.testRunId}
             run={run}
@@ -128,7 +128,7 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
 }
 
 type TestRunRowProps = {
-  run: V2.TestRun
+  run: GT.TestRun
   orgId: string
   serviceId: string
   testCaseId?: string | null
@@ -161,8 +161,8 @@ function TestRunRow({
 
   const testCaseResult = useMemo(() => {
     return results.find(
-      (r: V2.TestRunResult) => r.testCaseId === testCaseId
-    ) as V2.TestRunResult | undefined
+      (r: GT.TestRunResult) => r.testCaseId === testCaseId
+    ) as GT.TestRunResult | undefined
   }, [results, testCaseId])
 
   const status = testCaseResult?.status ?? null

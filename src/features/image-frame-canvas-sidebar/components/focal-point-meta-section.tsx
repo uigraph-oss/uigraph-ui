@@ -1,4 +1,4 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { apolloClientGQL } from '@/api/client'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import {
@@ -39,7 +39,7 @@ import { ServiceDocSelectionModal } from './service-doc-selection-modal'
 import { TestSuiteSelectionModal } from './test-suite-selection-modal'
 
 export type FocalPointMetaSectionProps = {
-  component: V2.Component
+  component: GT.Component
   componentPointMeta: PointMeta[]
 
   showFocalPointName?: boolean

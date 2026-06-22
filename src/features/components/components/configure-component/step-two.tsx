@@ -1,4 +1,4 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import {
 } from './component-field-list'
 
 type StepTwoComponentProps = ComponentFieldListProps & {
-  nativeComponents?: V2.Component[]
+  nativeComponents?: GT.Component[]
   hideDescription?: boolean
   largeEmptyState?: boolean
   enableRequired?: boolean

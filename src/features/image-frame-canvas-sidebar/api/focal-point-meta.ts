@@ -1,6 +1,6 @@
-import { graphql, V2 } from '@/api'
+import { graphql, GT } from '@/api'
 
-export type ComponentFieldInput = V2.ComponentModalFieldInput
+export type ComponentFieldInput = GT.ComponentModalFieldInput
 
 export type PointMeta = {
   focalPointMetaId: string
@@ -10,7 +10,7 @@ export type PointMeta = {
   componentLinkId?: string | null
   componentFlowDiagram?: string | null
   componentImages: string[]
-  componentModalFields: V2.ComponentModalField[]
+  componentModalFields: GT.ComponentModalField[]
   updatedAt?: string | null
 }
 
@@ -22,7 +22,7 @@ type FocalPointMetaResult = {
   componentLinkId?: string | null
   componentFlowDiagram?: string | null
   componentImages: string[]
-  componentModalFields: V2.ComponentModalField[]
+  componentModalFields: GT.ComponentModalField[]
   updatedAt?: string | null
 }
 

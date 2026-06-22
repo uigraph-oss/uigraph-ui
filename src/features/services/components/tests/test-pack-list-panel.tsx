@@ -1,6 +1,6 @@
 'use client'
 
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -18,8 +18,8 @@ import { useServiceTestsContext } from '../context/service-tests-context'
 
 type TestPackListPanelProps = {
   onCreatePack: () => void
-  onEditPack: (pack: V2.TestPack) => void
-  onDeletePack: (pack: V2.TestPack) => void
+  onEditPack: (pack: GT.TestPack) => void
+  onDeletePack: (pack: GT.TestPack) => void
 }
 
 export function TestPackListPanel({
@@ -111,9 +111,9 @@ export function TestPackListPanel({
 }
 
 type TestPackRowProps = {
-  pack: V2.TestPack
+  pack: GT.TestPack
   isSelected: boolean
-  latestRun: V2.TestRun | V2.TestRunSummary | null
+  latestRun: GT.TestRun | GT.TestRunSummary | null
   onSelect: () => void
   onEdit: () => void
   onDelete: () => void

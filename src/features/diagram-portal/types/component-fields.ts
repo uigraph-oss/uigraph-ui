@@ -1,5 +1,5 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 
-export type TComponentField = V2.ComponentModalField & {
+export type TComponentField = GT.ComponentModalField & {
   hidden?: boolean | null
 }

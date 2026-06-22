@@ -1,4 +1,4 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -77,7 +77,7 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       },
 
       updateCustomComponent(
-        component: V2.Component,
+        component: GT.Component,
         name: string,
         category: string,
         description: string,

@@ -1,8 +1,8 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 
 export type ComponentsGroup = {
   name: string
-  components: V2.Component[]
+  components: GT.Component[]
 }
 
 export type FocalPointPreset = 'mobile' | 'tablet' | 'desktop'

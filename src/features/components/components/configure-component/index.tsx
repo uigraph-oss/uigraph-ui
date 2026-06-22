@@ -1,4 +1,4 @@
-import { V2 } from '@/api'
+import { GT } from '@/api'
 import { BetterDialogCloseButton } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -40,8 +40,8 @@ type StepOneFormData = z.infer<typeof stepOneSchema>
 
 type ConfigureComponentModalProps = {
   enableRequired?: boolean
-  nativeComponents?: V2.Component[]
-  selectedComponent: V2.Component | null
+  nativeComponents?: GT.Component[]
+  selectedComponent: GT.Component | null
   includeCategory?: boolean
   includeStepThree?: boolean
   includeReadonlyName?: boolean
