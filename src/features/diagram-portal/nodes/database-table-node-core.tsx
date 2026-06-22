@@ -66,7 +66,7 @@ export function DatabaseTableNodeShell({
     <NodeContainer selected={selected}>
       <div
         className={cn(
-          'relative min-w-[360px] overflow-hidden rounded-lg border-2 border-gray-300 bg-white shadow-lg transition-[border-color]',
+          'border-stock bg-card relative min-w-[360px] overflow-hidden rounded-lg border-2 shadow-lg transition-[border-color]',
           selected && 'border-primary'
         )}
       >
@@ -95,7 +95,7 @@ export function DatabaseTableNodeShell({
           )}
         </div>
 
-        <div className="bg-white">{children}</div>
+        <div className="bg-card">{children}</div>
       </div>
     </NodeContainer>
   )
@@ -128,7 +128,7 @@ export function DatabaseTableNodeCore({
           return (
             <div
               key={column.name}
-              className={`border-b border-gray-200 px-4 py-2 transition-colors hover:bg-gray-50 ${
+              className={`border-stock hover:bg-accent border-b px-4 py-2 transition-colors ${
                 index === columns.length - 1 ? 'border-b-0' : ''
               }`}
             >
@@ -140,12 +140,12 @@ export function DatabaseTableNodeCore({
                   {isForeign && !isPrimary && (
                     <KeyIcon className="h-3.5 w-3.5 flex-shrink-0 text-blue-500" />
                   )}
-                  <span className="truncate font-mono text-sm font-medium text-gray-900">
+                  <span className="text-foreground truncate font-mono text-sm font-medium">
                     {column.name}
                   </span>
                 </div>
                 <div className="flex flex-shrink-0 items-center gap-1">
-                  <span className="font-mono text-xs text-gray-600">
+                  <span className="text-paragraph font-mono text-xs">
                     {column.type}
                   </span>
                 </div>
@@ -158,7 +158,7 @@ export function DatabaseTableNodeCore({
                     .map((fk, fkIndex) => (
                       <div
                         key={fkIndex}
-                        className="flex items-center gap-1 text-xs text-blue-600"
+                        className="flex items-center gap-1 text-xs text-blue-400"
                       >
                         <span>→</span>
                         <span className="font-mono">
@@ -174,15 +174,15 @@ export function DatabaseTableNodeCore({
       </div>
 
       {indexes && indexes.length > 0 && (
-        <div className="border-t border-gray-200 bg-gray-50 px-4 py-2">
-          <div className="mb-1 text-xs font-semibold text-gray-700">
+        <div className="border-stock bg-shading-gray border-t px-4 py-2">
+          <div className="text-foreground mb-1 text-xs font-semibold">
             Indexes ({indexes.length})
           </div>
           <div className="space-y-1">
             {indexes.slice(0, 3).map((index, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-1 text-xs text-gray-600"
+                className="text-paragraph flex items-center gap-1 text-xs"
               >
                 {index.unique && (
                   <Badge variant="outline" className="h-4 px-1 py-0 text-[9px]">
@@ -193,7 +193,7 @@ export function DatabaseTableNodeCore({
               </div>
             ))}
             {indexes.length > 3 && (
-              <div className="text-xs text-gray-500">
+              <div className="text-paragraph text-xs">
                 +{indexes.length - 3} more
               </div>
             )}
@@ -214,7 +214,7 @@ export function DatabaseTableNodeInvalid({
     <NodeContainer selected={selected}>
       <div
         className={cn(
-          'relative max-w-[350px] min-w-[280px] overflow-hidden rounded-lg border-2 border-gray-300 bg-white shadow-lg transition-[border-color]',
+          'border-stock bg-card relative max-w-[350px] min-w-[280px] overflow-hidden rounded-lg border-2 shadow-lg transition-[border-color]',
           selected && 'border-primary'
         )}
       >

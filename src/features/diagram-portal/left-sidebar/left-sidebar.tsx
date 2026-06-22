@@ -176,7 +176,7 @@ export function FloatingLeftSidebar() {
               name,
               description,
               componentId: crypto.randomUUID(),
-              icon: <CgMoreO className="text-gray-500" />,
+              icon: <CgMoreO className="text-muted-foreground" />,
               componentFields: fields.map((field) => {
                 if (field.label !== 'Name') return field
 

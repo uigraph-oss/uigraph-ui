@@ -1,10 +1,10 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { GET_ME_AND_ORG } from './gql'
 import { useAuthStore } from './use-auth-store'
 
 export async function bootstrapSession() {
   try {
-    const { data } = await clientV2.query({ query: GET_ME_AND_ORG })
+    const { data } = await apolloClientGQL.query({ query: GET_ME_AND_ORG })
 
     useAuthStore.setState({
       status: 'authenticated',
@@ -21,7 +21,7 @@ export async function bootstrapSession() {
 }
 
 export async function refreshOrganizations() {
-  const { data } = await clientV2.query({
+  const { data } = await apolloClientGQL.query({
     query: GET_ME_AND_ORG,
     fetchPolicy: 'network-only',
   })

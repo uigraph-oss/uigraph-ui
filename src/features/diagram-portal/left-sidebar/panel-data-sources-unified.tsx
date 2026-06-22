@@ -980,12 +980,12 @@ export function PanelDataSourcesUnified() {
   return (
     <SidebarLayout className="left-18">
       <div className="flex h-full w-[500px] flex-col">
-        <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3">
-          <h3 className="flex items-center gap-2 text-base font-semibold text-gray-800">
-            <DatabaseIcon className="h-5 w-5 text-blue-600" />
+        <div className="from-primary/10 to-primary/5 border-stock border-b bg-gradient-to-r px-4 py-3">
+          <h3 className="text-foreground flex items-center gap-2 text-base font-semibold">
+            <DatabaseIcon className="text-primary h-5 w-5" />
             Data Sources
           </h3>
-          <p className="mt-1 text-xs text-gray-600">
+          <p className="text-paragraph mt-1 text-xs">
             Connect services, upload SQL or NoSQL files, or create tables
             manually
           </p>
@@ -1084,7 +1084,7 @@ export function PanelDataSourcesUnified() {
                 <Separator className="my-4" />
 
                 <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-gray-700">
+                  <h4 className="text-secondary-foreground text-sm font-medium">
                     Sources ({dataSources.length})
                   </h4>
 
@@ -1092,7 +1092,7 @@ export function PanelDataSourcesUnified() {
                     <div
                       key={source.id}
                       className={cn(
-                        'group rounded-lg border border-gray-200 bg-white py-2 transition-all',
+                        'group border-stock bg-popover rounded-lg border py-2 transition-all',
                         selectedSource === source.id &&
                           'border-blue-500 ring-1 ring-blue-500',
                         editingSource === source.id && 'ring-2 ring-green-500'
@@ -1103,7 +1103,7 @@ export function PanelDataSourcesUnified() {
                           <div className="mb-2 flex items-center justify-between px-2">
                             <div className="flex items-center gap-2">
                               <Code2 className="h-4 w-4 text-green-600" />
-                              <span className="text-sm font-medium text-gray-900">
+                              <span className="text-foreground text-sm font-medium">
                                 Editing: {source.name}
                               </span>
                             </div>
@@ -1136,7 +1136,7 @@ export function PanelDataSourcesUnified() {
                             }
                           />
 
-                          <div className="mt-2 px-2 text-xs text-gray-500">
+                          <div className="text-muted-foreground mt-2 px-2 text-xs">
                             Changes sync automatically to flow diagram and right
                             panel
                           </div>
@@ -1150,12 +1150,12 @@ export function PanelDataSourcesUnified() {
                             >
                               <div className="flex w-full items-center gap-2">
                                 {isExpanded(source.id) ? (
-                                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                                  <ChevronDown className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                                 ) : (
-                                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                                  <ChevronRight className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                                 )}
                                 <FileText className="h-4 w-4 flex-shrink-0 text-blue-600" />
-                                <span className="truncate text-sm font-medium text-gray-900">
+                                <span className="text-foreground truncate text-sm font-medium">
                                   {source.name}
                                 </span>
                                 {source.modifiedAt && (
@@ -1164,7 +1164,7 @@ export function PanelDataSourcesUnified() {
                                   </span>
                                 )}
                               </div>
-                              <div className="mt-1 ml-10 flex items-center gap-3 text-xs text-gray-500">
+                              <div className="text-muted-foreground mt-1 ml-10 flex items-center gap-3 text-xs">
                                 <span className="uppercase">
                                   {source.dialect}
                                 </span>
@@ -1191,7 +1191,7 @@ export function PanelDataSourcesUnified() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 w-7 p-0 text-gray-400 hover:text-blue-600"
+                                className="text-muted-foreground h-7 w-7 p-0 hover:text-blue-600"
                                 onClick={() => handleViewEditSql(source)}
                                 title="View/Edit SQL"
                               >
@@ -1204,7 +1204,7 @@ export function PanelDataSourcesUnified() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 w-7 p-0 text-gray-400 hover:text-blue-600"
+                                  className="text-muted-foreground h-7 w-7 p-0 hover:text-blue-600"
                                   onClick={() =>
                                     setNosqlDataSourceEditing(source)
                                   }
@@ -1217,7 +1217,7 @@ export function PanelDataSourcesUnified() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 w-7 p-0 text-gray-400 hover:text-green-600"
+                                className="text-muted-foreground h-7 w-7 p-0 hover:text-green-600"
                                 onClick={() =>
                                   handleRegenerateFromAST(source.id)
                                 }
@@ -1229,7 +1229,7 @@ export function PanelDataSourcesUnified() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 w-7 p-0 text-gray-400 hover:text-red-600"
+                                className="text-muted-foreground h-7 w-7 p-0 hover:text-red-600"
                                 onClick={() => handleRemoveSource(source.id)}
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
@@ -1243,7 +1243,7 @@ export function PanelDataSourcesUnified() {
                                 <div
                                   key={`${source.id}-${table?.name}`}
                                   draggable
-                                  className="flex cursor-grab items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm transition-all hover:bg-gray-100 active:cursor-grabbing"
+                                  className="bg-card hover:bg-accent flex cursor-grab items-center justify-between rounded px-3 py-2 text-sm transition-all active:cursor-grabbing"
                                   onDragStart={(event: React.DragEvent) => {
                                     componentDragDataTransfer(
                                       event,
@@ -1267,11 +1267,11 @@ export function PanelDataSourcesUnified() {
                                 >
                                   <div className="flex items-center gap-2">
                                     <DatabaseIcon className="h-4 w-4 text-green-600" />
-                                    <span className="font-mono font-medium text-gray-700">
+                                    <span className="text-secondary-foreground font-mono font-medium">
                                       {table?.name}
                                     </span>
                                   </div>
-                                  <span className="text-xs text-gray-500">
+                                  <span className="text-muted-foreground text-xs">
                                     {table?.columns?.length || 0} cols
                                   </span>
                                 </div>
@@ -1288,11 +1288,13 @@ export function PanelDataSourcesUnified() {
 
             {dataSources.length === 0 && (
               <div className="mt-8 text-center">
-                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                  <DatabaseIcon className="h-8 w-8 text-gray-400" />
+                <div className="bg-accent mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full">
+                  <DatabaseIcon className="text-muted-foreground h-8 w-8" />
                 </div>
-                <p className="text-sm text-gray-500">No data sources yet</p>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="text-muted-foreground text-sm">
+                  No data sources yet
+                </p>
+                <p className="text-muted-foreground mt-1 text-xs">
                   Upload a SQL file or create a table manually
                 </p>
               </div>
@@ -1302,7 +1304,7 @@ export function PanelDataSourcesUnified() {
           <div className="space-y-2">
             {services.length > 0 && (
               <div className="mb-4">
-                <label className="mb-2 block text-sm font-medium text-gray-700">
+                <label className="text-secondary-foreground mb-2 block text-sm font-medium">
                   Select Service
                 </label>
 
@@ -1350,12 +1352,12 @@ export function PanelDataSourcesUnified() {
 
                   return (
                     <div key={serviceDb.serviceDBId} className="mb-4">
-                      <h4 className="mb-2 text-sm font-medium text-gray-700">
+                      <h4 className="text-secondary-foreground mb-2 text-sm font-medium">
                         {serviceDb.dbName} ({tableCount} tables)
                       </h4>
                       <div className="space-y-2">
                         {isServicesDbLoading ? (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-muted-foreground text-sm">
                             Loading tables...
                           </div>
                         ) : isNoSQL ? (
@@ -1363,7 +1365,7 @@ export function PanelDataSourcesUnified() {
                             <div
                               key={`${serviceDb.serviceDBId}-${entry.name}`}
                               draggable
-                              className="flex cursor-grab items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm transition-all hover:bg-gray-100 active:cursor-grabbing"
+                              className="bg-card hover:bg-accent flex cursor-grab items-center justify-between rounded px-3 py-2 text-sm transition-all active:cursor-grabbing"
                               onDragStart={(event: React.DragEvent) => {
                                 componentDragDataTransfer(
                                   event,
@@ -1382,11 +1384,11 @@ export function PanelDataSourcesUnified() {
                             >
                               <div className="flex items-center gap-2">
                                 <DatabaseIcon className="h-4 w-4 text-green-600" />
-                                <span className="font-mono font-medium text-gray-700">
+                                <span className="text-secondary-foreground font-mono font-medium">
                                   {entry.name}
                                 </span>
                               </div>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-muted-foreground text-xs">
                                 {entry.colCount} attrs
                               </span>
                             </div>
@@ -1401,7 +1403,7 @@ export function PanelDataSourcesUnified() {
                               <div
                                 key={`${serviceDb.serviceDBId}-${table?.name}`}
                                 draggable
-                                className="flex cursor-grab items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm transition-all hover:bg-gray-100 active:cursor-grabbing"
+                                className="bg-card hover:bg-accent flex cursor-grab items-center justify-between rounded px-3 py-2 text-sm transition-all active:cursor-grabbing"
                                 onDragStart={(event: React.DragEvent) => {
                                   componentDragDataTransfer(
                                     event,
@@ -1420,11 +1422,11 @@ export function PanelDataSourcesUnified() {
                               >
                                 <div className="flex items-center gap-2">
                                   <DatabaseIcon className="h-4 w-4 text-green-600" />
-                                  <span className="font-mono font-medium text-gray-700">
+                                  <span className="text-secondary-foreground font-mono font-medium">
                                     {table?.name}
                                   </span>
                                 </div>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-muted-foreground text-xs">
                                   {table?.columns?.length || 0} cols
                                 </span>
                               </div>

@@ -69,7 +69,7 @@ export function DatabaseColumnInput({
   }, [autoSave, inEditMode, ref, localColumn, triggerChanges])
 
   return (
-    <div className="space-y-2 rounded border border-gray-200 bg-gray-50 p-2">
+    <div className="border-stock bg-card space-y-2 rounded border p-2">
       {/* Column Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -98,7 +98,7 @@ export function DatabaseColumnInput({
             size="sm"
             variant="ghost"
             onClick={triggerRemove}
-            className="h-5 w-5 p-0 text-gray-400 hover:text-red-600"
+            className="text-muted-foreground h-5 w-5 p-0 hover:text-red-600"
           >
             <Trash2 className="h-3 w-3" />
           </Button>
@@ -111,7 +111,7 @@ export function DatabaseColumnInput({
           <div className="space-y-2">
             <Label className="text-xs">Column Name</Label>
             <Input
-              className="!h-11 w-full rounded-[0.8rem] bg-white shadow-none"
+              className="bg-input !h-11 w-full rounded-[0.8rem] shadow-none"
               value={localColumn.name}
               onChange={(e) =>
                 setLocalColumn((prev) => ({
@@ -126,7 +126,7 @@ export function DatabaseColumnInput({
             <Label className="text-xs">Data Type</Label>
             <Input
               placeholder="VARCHAR(255), INT, etc."
-              className="!h-11 rounded-[0.8rem] bg-white font-mono text-xs shadow-none"
+              className="bg-input !h-11 rounded-[0.8rem] font-mono text-xs shadow-none"
               value={localColumn.type}
               onChange={(e) =>
                 setLocalColumn((prev) => ({
@@ -148,7 +148,7 @@ export function DatabaseColumnInput({
                 }))
               }
             >
-              <SelectTrigger className="!h-11 w-full rounded-[0.8rem] bg-white text-xs shadow-none">
+              <SelectTrigger className="bg-input !h-11 w-full rounded-[0.8rem] text-xs shadow-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -191,7 +191,7 @@ export function DatabaseColumnInput({
         </div>
       ) : (
         <div className="flex items-center justify-between border-t pt-1 text-xs">
-          <span className="font-mono break-all text-gray-600">
+          <span className="text-paragraph font-mono break-all">
             {localColumn.type}
           </span>
           {!readOnly && (

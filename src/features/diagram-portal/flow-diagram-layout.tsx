@@ -94,7 +94,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
                         'flex items-center justify-start gap-2 rounded-[0.75rem] p-1 px-2 transition-all',
                         item.disabled
                           ? 'text-paragraph cursor-not-allowed'
-                          : 'cursor-pointer hover:bg-gray-200'
+                          : 'hover:bg-accent cursor-pointer'
                       )}
                     >
                       <span

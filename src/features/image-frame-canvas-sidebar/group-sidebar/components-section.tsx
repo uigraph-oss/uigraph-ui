@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { FocalPointV2 } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -33,7 +33,7 @@ export function ComponentsSection({
 
       const results = await Promise.all(
         focalPoints.map((focalPoint) =>
-          clientV2.query({
+          apolloClientGQL.query({
             query: FOCAL_POINT_META,
             variables: {
               orgId,
@@ -83,7 +83,7 @@ export function ComponentsSection({
         )
         if (!meta) throw new Error('Point meta not found')
 
-        await clientV2.mutate({
+        await apolloClientGQL.mutate({
           mutation: DELETE_FOCAL_POINT_META,
           variables: {
             orgId: orgId!,
@@ -104,7 +104,7 @@ export function ComponentsSection({
         )
         if (!meta) throw new Error('Point meta not found')
 
-        const { data } = await clientV2.mutate({
+        const { data } = await apolloClientGQL.mutate({
           mutation: UPDATE_FOCAL_POINT_META,
           variables: {
             orgId: orgId!,

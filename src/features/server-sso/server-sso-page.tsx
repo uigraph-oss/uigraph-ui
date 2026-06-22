@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
@@ -27,20 +26,18 @@ import {
 } from './configure-oauth-provider-modal'
 
 export function ServerSSOPage() {
-  const providersQuery = useQuery(OAUTH_PROVIDERS, { client: clientV2 })
-  const ldapQuery = useQuery(LDAP_STATUS, { client: clientV2 })
-  const samlQuery = useQuery(SAML_STATUS, { client: clientV2 })
+  const providersQuery = useQuery(OAUTH_PROVIDERS)
+  const ldapQuery = useQuery(LDAP_STATUS)
+  const samlQuery = useQuery(SAML_STATUS)
 
   const [scimStatus, setScimStatus] = useState<ProviderStatus | null>(null)
 
   const refetchQueries = [{ query: OAUTH_PROVIDERS }]
   const [upsertProvider] = useMutation(UPSERT_OAUTH_PROVIDER, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })
   const [deleteProvider] = useMutation(DELETE_OAUTH_PROVIDER, {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries,
   })

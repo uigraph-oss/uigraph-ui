@@ -41,7 +41,7 @@ export function NodeDatabaseNosqlProperties({
     <div className="relative">
       <div
         className={cn(
-          'flex items-center justify-between gap-2 bg-white pt-2 pb-3',
+          'bg-card flex items-center justify-between gap-2 pt-2 pb-3',
           isCodeMode && 'sticky top-0 z-50'
         )}
       >
@@ -61,7 +61,7 @@ export function NodeDatabaseNosqlProperties({
           onClick={() => setIsCodeMode((prev) => !prev)}
           className={cn(
             'size-9 border-none! px-3!',
-            !isCodeMode && 'bg-gray-200/60 hover:bg-gray-300/60'
+            !isCodeMode && 'bg-accent/60 hover:bg-accent'
           )}
         >
           <Code2 className="size-5" />

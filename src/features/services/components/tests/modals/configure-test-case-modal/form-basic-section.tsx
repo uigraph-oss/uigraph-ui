@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -196,7 +196,6 @@ function TestOwnerSelect({
 export function FormBasicSection({ form }: { form: FormType }) {
   const organizationId = useCurrentOrganization()?.id
   const { data } = useQuery(MEMBERS, {
-    client: clientV2,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
     skip: !organizationId,
@@ -223,7 +222,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
 
     void Promise.allSettled(
       userIds.map(async (userId) => {
-        const { data } = await clientV2.query({
+        const { data } = await apolloClientGQL.query({
           query: ACTOR,
           variables: { orgId: organizationId!, id: userId },
           fetchPolicy: 'cache-first',

@@ -2,7 +2,6 @@
 
 import './global.scss'
 
-import { clientV2 } from '@/api/client'
 import { GlobalLoader } from '@/components/loader/global-loader'
 import { useCurrentOrganization } from '@/store/auth-store/use-auth-store'
 import { useQuery } from '@apollo/client'
@@ -23,7 +22,6 @@ export function DiagramPortalPage() {
   const { diagramId } = useParams() as { diagramId: string }
 
   const { data, loading } = useQuery(DIAGRAM, {
-    client: clientV2,
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
     skip: !organization.id,
@@ -33,7 +31,6 @@ export function DiagramPortalPage() {
   const { data: contentData, loading: contentLoading } = useQuery(
     DIAGRAM_CONTENT,
     {
-      client: clientV2,
       errorPolicy: 'ignore',
       fetchPolicy: 'cache-first',
       skip: !organization.id,

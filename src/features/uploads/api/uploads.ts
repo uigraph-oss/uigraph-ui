@@ -1,5 +1,5 @@
 import { graphql } from '@/api'
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { env } from '@/env'
 import axios from 'axios'
 
@@ -17,7 +17,7 @@ export function assetUrlV2(assetId: string) {
 }
 
 export async function uploadFileV2(orgId: string, file: File): Promise<string> {
-  const { data } = await clientV2.mutate({
+  const { data } = await apolloClientGQL.mutate({
     mutation: CREATE_ASSET_UPLOAD,
     variables: { orgId },
   })

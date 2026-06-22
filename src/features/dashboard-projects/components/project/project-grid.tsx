@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { SimpleModalBase } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionNotFound } from '@/components/section-not-found'
@@ -129,7 +128,6 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
   const refetchMaps = [{ query: MAPS, variables: { orgId: organizationId! } }]
 
   const [updateProject] = useMutation(UPDATE_MAP, {
-    client: clientV2,
     refetchQueries: refetchMaps,
     awaitRefetchQueries: true,
   })
@@ -137,7 +135,6 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
   const [deleteProject, { loading: isProjectDeleting }] = useMutation(
     DELETE_MAP,
     {
-      client: clientV2,
       refetchQueries: refetchMaps,
       awaitRefetchQueries: true,
     }

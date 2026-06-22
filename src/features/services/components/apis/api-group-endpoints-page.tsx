@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import {
   ApiContextOption,
   ApiContextToolbar,
@@ -123,7 +123,7 @@ function ApiGroupEndpointsPageContent() {
     let cancelled = false
     async function run() {
       try {
-        const { data } = await clientV2.query({
+        const { data } = await apolloClientGQL.query({
           query: API_GROUP_SPEC,
           variables: {
             orgId: orgId!,

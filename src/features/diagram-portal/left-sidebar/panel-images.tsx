@@ -1,6 +1,5 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
 import { uploadFileV2 } from '@/features/uploads/api/uploads'
@@ -20,15 +19,12 @@ export function SidebarImages() {
   const { diagramId, organizationId } = useFlowDiagramContext()
 
   const { data, refetch } = useQuery(DIAGRAM_IMAGES, {
-    client: clientV2,
     variables: { orgId: organizationId!, diagramId: diagramId! },
     skip: !diagramId || !organizationId,
   })
 
-  const [createDiagramImage, { loading: isUploading }] = useMutation(
-    CREATE_DIAGRAM_IMAGE,
-    { client: clientV2 }
-  )
+  const [createDiagramImage, { loading: isUploading }] =
+    useMutation(CREATE_DIAGRAM_IMAGE)
 
   const images = useMemo(() => {
     return arrayNonNullable(data?.diagramImages)

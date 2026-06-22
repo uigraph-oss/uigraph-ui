@@ -1,6 +1,6 @@
 'use client'
 
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'
@@ -125,7 +125,7 @@ export function ServiceApiEndpoints() {
 
     async function run() {
       try {
-        const { data } = await clientV2.query({
+        const { data } = await apolloClientGQL.query({
           query: API_GROUP_SPEC,
           variables: { orgId: organizationId!, serviceId, apiGroupId },
           fetchPolicy: 'cache-first',

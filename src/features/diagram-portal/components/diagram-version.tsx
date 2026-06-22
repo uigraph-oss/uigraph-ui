@@ -1,4 +1,4 @@
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SuperCircleLoader } from '@/components/loader'
@@ -50,13 +50,11 @@ export function DiagramVersion() {
   const [showVersionCount, setShowVersionCount] = useState(5)
 
   const versionsQuery = useQuery(DIAGRAM_VERSIONS, {
-    client: clientV2,
     variables: { orgId: organizationId!, diagramId: diagramId! },
     skip: !diagramId || !organizationId,
   })
 
   const versionsRefetch = {
-    client: clientV2,
     awaitRefetchQueries: true,
     refetchQueries: [
       {
@@ -184,7 +182,7 @@ export function DiagramVersion() {
           }
 
           try {
-            const { data } = await clientV2.query({
+            const { data } = await apolloClientGQL.query({
               query: DIAGRAM_VERSION_CONTENT,
               variables: {
                 orgId: organizationId!,

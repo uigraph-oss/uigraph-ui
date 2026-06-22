@@ -2,7 +2,7 @@
 
 import { V2 } from '@/api'
 import type { TestCase } from '@/api/.gql/graphql'
-import { clientV2 } from '@/api/client'
+import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -61,28 +61,24 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     }
 
     const { data: packsData, loading: packsLoading } = useQuery(TEST_PACKS, {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: packsVars,
       skip: !orgId || !serviceId,
     })
 
     const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: casesVars,
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
     const { data: packRunsData } = useQuery(TEST_RUNS, {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: packRunsVars,
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
     const { data: summaryRunsData } = useQuery(TEST_RUNS_SUMMARY, {
-      client: clientV2,
       fetchPolicy: 'cache-first',
       variables: runsVars,
       skip: !orgId || !serviceId || !!selectedPackId,
@@ -141,37 +137,30 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     ]
 
     const [createTestPack] = useMutation(CREATE_TEST_PACK, {
-      client: clientV2,
       refetchQueries: packRefetchQueries,
     })
 
     const [updateTestPack] = useMutation(UPDATE_TEST_PACK, {
-      client: clientV2,
       refetchQueries: packRefetchQueries,
     })
 
     const [deleteTestPack] = useMutation(DELETE_TEST_PACK, {
-      client: clientV2,
       refetchQueries: packRefetchQueries,
     })
 
     const [createTestCaseMutation] = useMutation(CREATE_TEST_CASE, {
-      client: clientV2,
       refetchQueries: caseRefetchQueries,
     })
 
     const [updateTestCaseMutation] = useMutation(UPDATE_TEST_CASE, {
-      client: clientV2,
       refetchQueries: caseRefetchQueries,
     })
 
     const [deleteTestCaseMutation] = useMutation(DELETE_TEST_CASE, {
-      client: clientV2,
       refetchQueries: [{ query: TEST_CASES, variables: casesVars }],
     })
 
     const [createTestRun] = useMutation(CREATE_TEST_RUN, {
-      client: clientV2,
       refetchQueries: [
         { query: TEST_RUNS, variables: packRunsVars },
         { query: TEST_RUNS_SUMMARY, variables: runsVars },
@@ -405,7 +394,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
         }
 
         try {
-          const { data: freshCasesData } = await clientV2.query({
+          const { data: freshCasesData } = await apolloClientGQL.query({
             query: TEST_CASES,
             variables: {
               orgId: orgId!,
