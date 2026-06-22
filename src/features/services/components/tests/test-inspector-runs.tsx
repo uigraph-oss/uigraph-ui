@@ -2,7 +2,6 @@
 
 import { V2 } from '@/api'
 import type { TestCase } from '@/api/.gql/graphql'
-import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +33,6 @@ export function TestInspectorRuns({ testCase }: TestInspectorRunsProps) {
   }, [testCase.testCaseId])
 
   const { data: runsData, loading: runsLoading } = useQuery(TEST_RUNS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: {
       orgId: orgId!,
@@ -147,7 +145,6 @@ function TestRunRow({
   getStatusBadgeVariant: _getStatusBadgeVariant,
 }: TestRunRowProps) {
   const { data: resultsData } = useQuery(TEST_RUN_RESULTS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: {
       orgId,

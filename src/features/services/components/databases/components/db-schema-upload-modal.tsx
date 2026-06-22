@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import {
   CREATE_SERVICE_DB,
@@ -23,11 +22,8 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM, {
-    client: apolloClientGQL,
-  })
+  const [createDiagram] = useMutation(CREATE_DIAGRAM)
   const [createServiceDb] = useMutation(CREATE_SERVICE_DB, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICE_DBS, variables: listVars }],
   })

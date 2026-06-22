@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { SectionLoader } from '@/components/section-loader'
 import { Input } from '@/components/ui/input'
@@ -25,14 +24,12 @@ export function UsersList({ teamId }: { teamId?: string }) {
   const organizationId = useCurrentOrganization()?.id
 
   const membersQuery = useQuery(MEMBERS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
     skip: !organizationId,
   })
 
   const teamsQuery = useQuery(SETTINGS_TEAMS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
     skip: !organizationId,

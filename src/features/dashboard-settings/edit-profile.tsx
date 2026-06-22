@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,7 +27,6 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [updateUser, { loading: isUpdating }] = useMutation(UPDATE_USER, {
-    client: apolloClientGQL,
     onCompleted: async () => {
       await bootstrapSession()
       toast.success('Profile updated successfully')

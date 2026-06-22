@@ -50,13 +50,11 @@ export function DiagramVersion() {
   const [showVersionCount, setShowVersionCount] = useState(5)
 
   const versionsQuery = useQuery(DIAGRAM_VERSIONS, {
-    client: apolloClientGQL,
     variables: { orgId: organizationId!, diagramId: diagramId! },
     skip: !diagramId || !organizationId,
   })
 
   const versionsRefetch = {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [
       {

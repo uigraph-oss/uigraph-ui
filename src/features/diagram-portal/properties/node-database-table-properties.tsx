@@ -1,4 +1,3 @@
-import { apolloClientGQL } from '@/api/client'
 import { SuperLogoLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -319,7 +318,6 @@ function NodeDatabaseTablePropertiesRemoteSource() {
   const orgId = useCurrentOrganization().id
   const [isCodeMode, setIsCodeMode] = useState(false)
   const { data: serviceDbData, loading } = useQuery(SERVICE_DB, {
-    client: apolloClientGQL,
     variables: {
       orgId: orgId!,
       serviceId: serviceTable?.serviceId ?? '',

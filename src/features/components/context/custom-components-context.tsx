@@ -1,5 +1,4 @@
 import { V2 } from '@/api'
-import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -29,7 +28,6 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
     const organizationId = useCurrentOrganization()?.id
 
     const { data, loading } = useQuery(GET_COMPONENTS, {
-      client: apolloClientGQL,
       variables: { orgId: organizationId! },
       skip: !organizationId,
     })
@@ -39,19 +37,16 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
     ]
 
     const [createCustomComponent] = useMutation(CREATE_CUSTOM_COMPONENT, {
-      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
     const [updateCustomComponent] = useMutation(UPDATE_CUSTOM_COMPONENT, {
-      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries,
     })
 
     const [deleteCustomComponent] = useMutation(DELETE_CUSTOM_COMPONENT, {
-      client: apolloClientGQL,
       awaitRefetchQueries: true,
       refetchQueries,
     })

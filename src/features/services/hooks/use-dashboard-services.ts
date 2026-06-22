@@ -1,4 +1,3 @@
-import { apolloClientGQL } from '@/api/client'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import {
@@ -27,14 +26,12 @@ export function useDashboardServicesList(serviceId?: string) {
   const servicesVariables = { orgId: orgId! }
 
   const { data, loading } = useQuery(SERVICES, {
-    client: apolloClientGQL,
     variables: servicesVariables,
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
   })
 
   const { data: statsData, loading: statsLoading } = useQuery(SERVICE_STATS, {
-    client: apolloClientGQL,
     variables: { orgId: orgId!, serviceId },
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -52,14 +49,12 @@ export function useDashboardServicesList(serviceId?: string) {
   }, [statsData?.serviceStats])
 
   const teamsData = useQuery(TEAMS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },
     skip: !orgId,
   })
 
   const orgUsersData = useQuery(MEMBERS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: orgId! },
     skip: !orgId,
@@ -91,19 +86,16 @@ export function useDashboardServicesList(serviceId?: string) {
   }, [selectedTeamId, currentUserTeamId, orgUsersData.loading])
 
   const [createService] = useMutation(CREATE_SERVICE, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICES, variables: servicesVariables }],
   })
 
   const [updateService] = useMutation(UPDATE_SERVICE, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICES, variables: servicesVariables }],
   })
 
   const [deleteService] = useMutation(DELETE_SERVICE, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICES, variables: servicesVariables }],
   })

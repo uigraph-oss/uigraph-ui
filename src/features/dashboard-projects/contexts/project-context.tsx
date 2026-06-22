@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { DashboardPageLayout } from '@/features/dashboard/dashboard-layout'
 import { DashboardSectionHeader } from '@/features/dashboard/dashboard-section'
@@ -18,14 +17,12 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     const { mapId } = useParams() as { mapId: string }
 
     const mapQuery = useQuery(MAP, {
-      client: apolloClientGQL,
       variables: { orgId: organizationId!, id: mapId },
       fetchPolicy: 'cache-and-network',
       skip: !organizationId,
     })
 
     const framesQuery = useQuery(FRAMES, {
-      client: apolloClientGQL,
       variables: { orgId: organizationId!, mapId },
       fetchPolicy: 'cache-and-network',
       skip: !organizationId,
@@ -38,7 +35,6 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     const [createFrame, { loading: isCreatingFrame }] = useMutation(
       CREATE_FRAME,
       {
-        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries: refetchFrames,
       }
@@ -47,7 +43,6 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     const [deleteFrame, { loading: isFrameDeleting }] = useMutation(
       DELETE_FRAME,
       {
-        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries: refetchFrames,
       }
@@ -56,7 +51,6 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
     const [updateFrame, { loading: isFrameUpdating }] = useMutation(
       UPDATE_FRAME,
       {
-        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries: refetchFrames,
       }

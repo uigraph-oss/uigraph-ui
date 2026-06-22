@@ -2,7 +2,6 @@
 
 import { V2 } from '@/api'
 import type { TestCase } from '@/api/.gql/graphql'
-import { apolloClientGQL } from '@/api/client'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
@@ -246,7 +245,6 @@ function APIDetails({ testCase }: { testCase: TestCase }) {
   const { serviceId, apiGroupId } = parseApiSpecValue(api?.apiSpecId)
 
   const { data: endpointsData } = useQuery(API_ENDPOINTS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: {
       orgId: orgId!,

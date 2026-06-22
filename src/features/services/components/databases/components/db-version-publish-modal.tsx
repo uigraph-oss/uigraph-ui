@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import { useServiceDbContext } from '@/features/services/contexts/service-db-context'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -16,9 +15,7 @@ export function DBVersionPublishModal({
   const { createServiceDbVersion } = useServiceDbContext()
   const orgId = useCurrentOrganization().id
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM, {
-    client: apolloClientGQL,
-  })
+  const [createDiagram] = useMutation(CREATE_DIAGRAM)
 
   return (
     <ConfigureDbSchemaModal

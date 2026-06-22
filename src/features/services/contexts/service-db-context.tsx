@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -51,7 +50,6 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     }
 
     const { data, loading } = useQuery(SERVICE_DB, {
-      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: dbVars,
       skip: !orgId || !serviceId || !dbId,
@@ -60,7 +58,6 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     const { data: versionsData, loading: versionsLoading } = useQuery(
       SERVICE_DB_VERSIONS,
       {
-        client: apolloClientGQL,
         fetchPolicy: 'cache-first',
         variables: versionVars,
         skip: !orgId || !serviceId || !dbId,
@@ -93,7 +90,6 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     const [restoreServiceDbVersionMutation] = useMutation(
       RESTORE_SERVICE_DB_VERSION,
       {
-        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries,
       }
@@ -102,7 +98,6 @@ export const [ServiceDbContextProvider, useServiceDbContext] = createContext(
     const [createServiceDbVersionMutation] = useMutation(
       CREATE_SERVICE_DB_VERSION,
       {
-        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries,
       }

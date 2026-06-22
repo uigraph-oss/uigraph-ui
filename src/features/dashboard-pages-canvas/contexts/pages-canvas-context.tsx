@@ -39,13 +39,11 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
       const mapId = project.id
 
       const canvasRes = useQuery(CANVAS, {
-        client: apolloClientGQL,
         variables: { orgId: orgId!, mapId },
         skip: !orgId || !mapId,
       })
 
       const [upsertCanvas, upsertCanvasRes] = useMutation(UPSERT_CANVAS, {
-        client: apolloClientGQL,
         awaitRefetchQueries: true,
         refetchQueries: [
           { query: CANVAS, variables: { orgId: orgId!, mapId } },
@@ -127,22 +125,14 @@ export const [PagesCanvasContextProvider, usePagesCanvasContext] =
         [frameGroups, selectedFrameGroupId]
       )
 
-      const [updateFocalPointMutation, updateFocalPointRes] = useMutation(
-        UPDATE_FOCAL_POINT,
-        { client: apolloClientGQL }
-      )
-      const [deleteFocalPointMutation, deleteFocalPointRes] = useMutation(
-        DELETE_FOCAL_POINT,
-        { client: apolloClientGQL }
-      )
-      const [updateFrameGroupMutation, updateFrameGroupRes] = useMutation(
-        UPDATE_FRAME_GROUP,
-        { client: apolloClientGQL }
-      )
-      const [deleteFrameGroupMutation, deleteFrameGroupRes] = useMutation(
-        DELETE_FRAME_GROUP,
-        { client: apolloClientGQL }
-      )
+      const [updateFocalPointMutation, updateFocalPointRes] =
+        useMutation(UPDATE_FOCAL_POINT)
+      const [deleteFocalPointMutation, deleteFocalPointRes] =
+        useMutation(DELETE_FOCAL_POINT)
+      const [updateFrameGroupMutation, updateFrameGroupRes] =
+        useMutation(UPDATE_FRAME_GROUP)
+      const [deleteFrameGroupMutation, deleteFrameGroupRes] =
+        useMutation(DELETE_FRAME_GROUP)
 
       const selectedFrameGroupPoints = useMemo(() => {
         if (!selectedFrameGroup || focalPoints.length === 0) return []

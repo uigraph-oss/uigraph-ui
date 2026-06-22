@@ -61,28 +61,24 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     }
 
     const { data: packsData, loading: packsLoading } = useQuery(TEST_PACKS, {
-      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: packsVars,
       skip: !orgId || !serviceId,
     })
 
     const { data: casesData, loading: casesLoading } = useQuery(TEST_CASES, {
-      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: casesVars,
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
     const { data: packRunsData } = useQuery(TEST_RUNS, {
-      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: packRunsVars,
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
     const { data: summaryRunsData } = useQuery(TEST_RUNS_SUMMARY, {
-      client: apolloClientGQL,
       fetchPolicy: 'cache-first',
       variables: runsVars,
       skip: !orgId || !serviceId || !!selectedPackId,
@@ -141,37 +137,30 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     ]
 
     const [createTestPack] = useMutation(CREATE_TEST_PACK, {
-      client: apolloClientGQL,
       refetchQueries: packRefetchQueries,
     })
 
     const [updateTestPack] = useMutation(UPDATE_TEST_PACK, {
-      client: apolloClientGQL,
       refetchQueries: packRefetchQueries,
     })
 
     const [deleteTestPack] = useMutation(DELETE_TEST_PACK, {
-      client: apolloClientGQL,
       refetchQueries: packRefetchQueries,
     })
 
     const [createTestCaseMutation] = useMutation(CREATE_TEST_CASE, {
-      client: apolloClientGQL,
       refetchQueries: caseRefetchQueries,
     })
 
     const [updateTestCaseMutation] = useMutation(UPDATE_TEST_CASE, {
-      client: apolloClientGQL,
       refetchQueries: caseRefetchQueries,
     })
 
     const [deleteTestCaseMutation] = useMutation(DELETE_TEST_CASE, {
-      client: apolloClientGQL,
       refetchQueries: [{ query: TEST_CASES, variables: casesVars }],
     })
 
     const [createTestRun] = useMutation(CREATE_TEST_RUN, {
-      client: apolloClientGQL,
       refetchQueries: [
         { query: TEST_RUNS, variables: packRunsVars },
         { query: TEST_RUNS_SUMMARY, variables: runsVars },

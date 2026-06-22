@@ -196,7 +196,6 @@ function TestOwnerSelect({
 export function FormBasicSection({ form }: { form: FormType }) {
   const organizationId = useCurrentOrganization()?.id
   const { data } = useQuery(MEMBERS, {
-    client: apolloClientGQL,
     fetchPolicy: 'cache-first',
     variables: { orgId: organizationId! },
     skip: !organizationId,

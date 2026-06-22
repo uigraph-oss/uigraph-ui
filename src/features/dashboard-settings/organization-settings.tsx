@@ -1,5 +1,4 @@
 'use client'
-import { apolloClientGQL } from '@/api/client'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,7 +17,6 @@ export function OrganizationSettings() {
   const org = useCurrentOrganization()
 
   const [updateOrg, { loading: isUpdating }] = useMutation(UPDATE_ORG, {
-    client: apolloClientGQL,
     onCompleted: async () => {
       await refreshOrganizations()
       toast.success('Organization updated successfully')

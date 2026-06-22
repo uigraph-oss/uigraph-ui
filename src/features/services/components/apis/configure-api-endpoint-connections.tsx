@@ -98,7 +98,6 @@ export function ConfigureApiEndpointConnections({
     error: focalPointsError,
     refetch,
   } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
-    client: apolloClientGQL,
     variables: {
       orgId: organizationId!,
       componentLinkId: componentLinkId!,

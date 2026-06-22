@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
@@ -31,24 +30,19 @@ import { ConfigureServerUserModal } from './configure-server-user-modal'
 import { ServerUsersTable } from './server-users-table'
 
 export function ServerUsersPage() {
-  const { data, loading, error } = useQuery(SERVER_USERS, {
-    client: apolloClientGQL,
-  })
+  const { data, loading, error } = useQuery(SERVER_USERS)
 
   const refetchQueries = [{ query: SERVER_USERS }]
 
   const [createUser] = useMutation(CREATE_SERVER_USER, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries,
   })
   const [updateUser] = useMutation(UPDATE_SERVER_USER, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries,
   })
   const [disableUser] = useMutation(DISABLE_SERVER_USER, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries,
   })

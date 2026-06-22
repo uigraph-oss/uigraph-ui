@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
 import { NosqlEditorModal } from '@/features/diagram-portal/components/nosql-editor/nosql-editor-modal'
 import { convertDiagramServerDataToString } from '@/features/diagram-portal/helpers/diagram-data'
@@ -28,11 +27,8 @@ export function NosqlBuilderModal({
 
   const listVars = { orgId: orgId!, serviceId }
 
-  const [createDiagram] = useMutation(CREATE_DIAGRAM, {
-    client: apolloClientGQL,
-  })
+  const [createDiagram] = useMutation(CREATE_DIAGRAM)
   const [createServiceDb] = useMutation(CREATE_SERVICE_DB, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICE_DBS, variables: listVars }],
   })

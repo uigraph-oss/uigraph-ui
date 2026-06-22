@@ -45,9 +45,7 @@ export function useDiagramPortalMutation({
   initialLastUpdatedAt,
 }: TUseDiagramPortalMutationProps) {
   const [loading, setLoading] = useState(false)
-  const [updateDiagram] = useMutation(UPDATE_DIAGRAM, {
-    client: apolloClientGQL,
-  })
+  const [updateDiagram] = useMutation(UPDATE_DIAGRAM)
 
   const serverLastUpdatedAt = useMemo(() => {
     return initialLastUpdatedAt ? new Date(initialLastUpdatedAt).getTime() : 0

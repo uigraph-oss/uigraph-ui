@@ -1,4 +1,3 @@
-import { apolloClientGQL } from '@/api/client'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { VersionLayout } from '@/components/version-layout'
@@ -34,7 +33,6 @@ function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
   const skip = !selectedDiagramId || !orgId
 
   const { loading } = useQuery(DIAGRAM, {
-    client: apolloClientGQL,
     variables: { orgId: orgId!, id: selectedDiagramId! },
     skip,
     fetchPolicy: 'cache-first',
@@ -43,7 +41,6 @@ function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
   const { data: contentData, loading: contentLoading } = useQuery(
     DIAGRAM_CONTENT,
     {
-      client: apolloClientGQL,
       variables: { orgId: orgId!, id: selectedDiagramId! },
       skip,
       fetchPolicy: 'cache-first',

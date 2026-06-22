@@ -1,6 +1,5 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
@@ -43,7 +42,6 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
   const listVars = { orgId: orgId!, serviceId }
 
   const { data: diagramData } = useQuery(DIAGRAM, {
-    client: apolloClientGQL,
     skip: !db.dbDiagramId || !orgId,
     fetchPolicy: 'cache-first',
     variables: {
@@ -55,7 +53,6 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
   const previewSrc = diagramData?.diagram?.previewImageUrl ?? undefined
 
   const [deleteServiceDb] = useMutation(DELETE_SERVICE_DB, {
-    client: apolloClientGQL,
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICE_DBS, variables: listVars }],
   })
