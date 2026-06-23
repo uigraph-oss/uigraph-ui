@@ -1,11 +1,10 @@
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
 import { arrayNonNullable } from 'daily-code'
 import { formatDistanceToNow } from 'date-fns'
 import { Calendar, Database, Hash, Table2 } from 'lucide-react'
 import { BsCollection } from 'react-icons/bs'
 import { CiViewTable } from 'react-icons/ci'
 import { ServiceDbSchema } from '../../api/service-db'
+import { DbTypeBadge } from './components/db-type-badge'
 import { RenderDynamoTable } from './components/render-dynamo-table'
 import { RenderMongoCollections } from './components/render-mongo-collections'
 import { RenderSQLTable } from './components/render-sql-table'
@@ -26,18 +25,6 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
     : db.createdAt
       ? new Date(db.createdAt)
       : null
-
-  function getTypeBadgeClass(type?: string | null) {
-    const value = type?.toLowerCase()
-    if (value === 'postgresql' || value === 'postgres')
-      return 'bg-blue-100 text-blue-800'
-    if (value === 'mysql') return 'bg-amber-100 text-amber-800'
-    if (value === 'mongodb' || value === 'document')
-      return 'bg-emerald-100 text-emerald-800'
-    if (value === 'dynamodb') return 'bg-purple-100 text-purple-800'
-    if (value === 'sqlite') return 'bg-green-100 text-green-800'
-    return 'bg-[#1E2533] text-[#F4F7FC]'
-  }
 
   const sqlTablesContent = db.tables != null && (
     <RenderSQLTable tables={tables} />
@@ -61,9 +48,7 @@ export function SelectedDatabaseSchemaSection({ db }: { db: ServiceDbSchema }) {
             Overview of the selected database schema
           </p>
         </div>
-        <Badge className={cn('text-xs', getTypeBadgeClass(db.dbType))}>
-          {db.dbType ?? 'unknown'}
-        </Badge>
+        <DbTypeBadge type={db.dbType} />
       </div>
 
       <div className="rounded-[1.4525rem] bg-[#141925] p-5 ring-1 ring-[#2A3242]">
