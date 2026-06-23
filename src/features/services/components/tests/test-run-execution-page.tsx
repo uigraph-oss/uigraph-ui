@@ -23,6 +23,7 @@ import {
 import { IoPause, IoPlaySkipForwardOutline } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { ACTOR } from '../../api/actor'
 import {
   CREATE_TEST_RUN_RESULT,
   TEST_CASES,
@@ -159,6 +160,16 @@ export function TestRunExecutionPage() {
   })
 
   const testRun = runData?.testRun
+
+  const executedById = testRun?.executedBy ?? undefined
+  const { data: executorData } = useQuery(ACTOR, {
+    variables: { orgId: orgId!, id: executedById! },
+    skip: !orgId || !executedById,
+    fetchPolicy: 'cache-first',
+  })
+  const executor = executorData?.actor
+  const executedByName = executor?.name?.trim() || executedById || ''
+  const executedByAvatar = executor?.avatarUrl || ''
 
   const runStatus = (testRun?.status ?? '').toLowerCase()
   const isRunning = runStatus === 'running'
@@ -724,12 +735,15 @@ export function TestRunExecutionPage() {
                   </p>
                   <div className="text-foreground flex items-center gap-2 text-sm font-medium">
                     <Avatar className="size-5">
-                      <AvatarImage src="" className="object-cover" />
+                      <AvatarImage
+                        src={executedByAvatar}
+                        className="object-cover"
+                      />
                       <AvatarFallback className="text-[10px]">
-                        {testRun.executedBy.charAt(0).toUpperCase()}
+                        {executedByName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span>{testRun.executedBy}</span>
+                    <span>{executedByName}</span>
                   </div>
                 </div>
               )}

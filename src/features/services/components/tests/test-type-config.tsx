@@ -29,38 +29,32 @@ const TYPE_CONFIG: Record<Exclude<TestTypeKey, 'all'>, TestTypeConfig> = {
   manual: {
     label: 'Manual',
     icon: Pencil,
-    pillClass:
-      'text-violet-700 border-violet-200 bg-violet-50 dark:text-violet-300 dark:border-violet-800 dark:bg-violet-950/40',
+    pillClass: 'text-violet-300 border-violet-500/30 bg-violet-500/10',
   },
   api: {
     label: 'API',
     icon: Zap,
-    pillClass:
-      'text-blue-700 border-blue-200 bg-blue-50 dark:text-blue-300 dark:border-blue-800 dark:bg-blue-950/40',
+    pillClass: 'text-blue-300 border-blue-500/30 bg-blue-500/10',
   },
   graphql: {
     label: 'GraphQL',
     icon: Braces,
-    pillClass:
-      'text-pink-700 border-pink-200 bg-pink-50 dark:text-pink-300 dark:border-pink-800 dark:bg-pink-950/40',
+    pillClass: 'text-pink-300 border-pink-500/30 bg-pink-500/10',
   },
   grpc: {
     label: 'gRPC',
     icon: ArrowLeftRight,
-    pillClass:
-      'text-teal-700 border-teal-200 bg-teal-50 dark:text-teal-300 dark:border-teal-800 dark:bg-teal-950/40',
+    pillClass: 'text-teal-300 border-teal-500/30 bg-teal-500/10',
   },
   database: {
     label: 'Database',
     icon: Database,
-    pillClass:
-      'text-orange-700 border-orange-200 bg-orange-50 dark:text-orange-300 dark:border-orange-800 dark:bg-orange-950/40',
+    pillClass: 'text-orange-300 border-orange-500/30 bg-orange-500/10',
   },
   other: {
     label: 'Other',
     icon: Braces,
-    pillClass:
-      'text-[#828DA3] border-[#2A3242] bg-[#1E2533] dark:text-[#586378] dark:border-slate-700 dark:bg-slate-800/50',
+    pillClass: 'text-[#828DA3] border-[#2A3242] bg-[#1E2533]',
   },
 }
 
