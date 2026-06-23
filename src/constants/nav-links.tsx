@@ -51,6 +51,7 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     label: 'Assist',
     icon: <HugeiconsIcon icon={RoboticIcon} size={30} strokeWidth={1} />,
     nested: true,
+    hidden: true,
   },
   {
     id: '/settings',
