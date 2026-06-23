@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
-import { Calendar, MoreVertical } from 'lucide-react'
+import { Calendar, Layers, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
@@ -169,6 +169,13 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
                   {project.createdAt
                     ? format(project.createdAt, 'dd MMM yyyy')
                     : 'N/A'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <Layers className="h-3 w-3 shrink-0" />
+                <span className="text-[11px]">
+                  {project.previewImgUrls?.filter(Boolean).length ?? 0} screens
                 </span>
               </div>
             </div>
