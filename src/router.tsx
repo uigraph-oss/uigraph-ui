@@ -9,7 +9,7 @@ import {
 import { DashboardLayout, DashboardSettingsLayout } from '@/features/dashboard'
 import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
 import { ServiceLayout } from '@/routes/service-layout'
-import { ComponentType, lazy, PropsWithChildren } from 'react'
+import { lazy } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
 const SignInForm = lazy(() =>
@@ -188,24 +188,6 @@ const DiagramPortalPage = lazy(() =>
   }))
 )
 
-function withOutlet(layout: ComponentType<PropsWithChildren>) {
-  const Layout = layout
-  return function LayoutRoute() {
-    return (
-      <Layout>
-        <Outlet />
-      </Layout>
-    )
-  }
-}
-
-const DashboardLayoutRoute = withOutlet(DashboardLayout)
-const AiChatLayoutRoute = withOutlet(
-  AiChatLayout as ComponentType<PropsWithChildren>
-)
-const SettingsLayoutRoute = withOutlet(DashboardSettingsLayout)
-const ServerAdminLayoutRoute = withOutlet(ServerAdminLayout)
-
 export function AppRoutes() {
   return (
     <Routes>
@@ -244,7 +226,14 @@ export function AppRoutes() {
       />
 
       <Route element={<ProtectedServerAdminLayout />}>
-        <Route path="/server" element={<ServerAdminLayoutRoute />}>
+        <Route
+          path="/server"
+          element={
+            <ServerAdminLayout>
+              <Outlet />
+            </ServerAdminLayout>
+          }
+        >
           <Route index element={<Navigate to="/server/overview" replace />} />
           <Route path="overview" element={<ServerOverviewPage />} />
           <Route path="orgs" element={<ServerOrgsPage />} />
@@ -256,7 +245,13 @@ export function AppRoutes() {
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/diagram/:diagramId" element={<DiagramPortalPage />} />
 
-        <Route element={<DashboardLayoutRoute />}>
+        <Route
+          element={
+            <DashboardLayout>
+              <Outlet />
+            </DashboardLayout>
+          }
+        >
           <Route
             path="/dashboard"
             element={<Navigate to={DASHBOARD_NAV_LINKS[0].id} replace />}
@@ -276,7 +271,13 @@ export function AppRoutes() {
             element={<DashboardMapFramePage />}
           />
 
-          <Route element={<AiChatLayoutRoute />}>
+          <Route
+            element={
+              <AiChatLayout>
+                <Outlet />
+              </AiChatLayout>
+            }
+          >
             <Route path="/dashboard/ai" element={<AiChatIndexPage />} />
             <Route
               path="/dashboard/ai/:sessionId"
@@ -310,7 +311,14 @@ export function AppRoutes() {
             />
           </Route>
 
-          <Route path="/settings" element={<SettingsLayoutRoute />}>
+          <Route
+            path="/settings"
+            element={
+              <DashboardSettingsLayout>
+                <Outlet />
+              </DashboardSettingsLayout>
+            }
+          >
             <Route
               index
               element={<Navigate to="/settings/profile" replace />}
