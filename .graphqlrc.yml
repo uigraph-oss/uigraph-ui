@@ -1,2 +1,2 @@
-schema: ../uigraph-graphql/graph/schema/*.graphqls
+schema: http://localhost:8090/graphql
 documents: ./src/**/*.{graphql,js,ts,jsx,tsx}

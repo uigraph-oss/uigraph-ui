@@ -3,7 +3,7 @@ import { CodegenConfig } from '@graphql-codegen/cli'
 export default {
   generates: {
     './src/api/.gql/': {
-      schema: '../uigraph-graphql/internal/graph/schema/*.graphqls',
+      schema: `${process.env.VITE_GRAPHQL_TARGET ?? 'http://localhost:8090'}/graphql`,
       documents: ['./src/**/*.{ts,tsx}'],
 
       preset: 'client',
