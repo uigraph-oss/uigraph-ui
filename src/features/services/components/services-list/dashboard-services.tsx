@@ -100,7 +100,7 @@ export function DashboardServices() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search services..."
-              className="h-8 w-52 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
+              className="h-10 w-52 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
             />
 
             {teams.length > 0 && (
@@ -110,7 +110,7 @@ export function DashboardServices() {
                   setSelectedTeamId(v === '__all__' ? null : v)
                 }
               >
-                <SelectTrigger className="h-8 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
+                <SelectTrigger className="h-10 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
                   <SelectValue placeholder="All Teams" />
                 </SelectTrigger>
                 <SelectContent>

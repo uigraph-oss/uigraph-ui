@@ -98,8 +98,8 @@ function ConfigureFolderModalCreate({
             control={control}
             name="name"
             render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel className="text-sm text-[#111110]">
+              <FormItem>
+                <FormLabel className="text-foreground text-sm font-medium">
                   Folder name
                 </FormLabel>
                 <FormControl>
@@ -108,7 +108,7 @@ function ConfigureFolderModalCreate({
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="none"
-                    className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                    className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                     {...field}
                   />
                 </FormControl>
@@ -120,13 +120,13 @@ function ConfigureFolderModalCreate({
             control={control}
             name="teamId"
             render={({ field }) => (
-              <FormItem className="space-y-1.5">
-                <FormLabel className="text-xs font-medium text-[#6B7280]">
+              <FormItem>
+                <FormLabel className="text-foreground text-sm font-medium">
                   Team
                 </FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#E5E7E9] bg-[#F9FAFB] px-3 text-sm">
+                    <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
                       <SelectValue placeholder="Select a team" />
                     </SelectTrigger>
                   </FormControl>
@@ -181,8 +181,8 @@ function ConfigureFolderModalUpdate({
             control={control}
             name="name"
             render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel className="text-sm text-[#111110]">
+              <FormItem>
+                <FormLabel className="text-foreground text-sm font-medium">
                   Folder name
                 </FormLabel>
                 <FormControl>
@@ -191,7 +191,7 @@ function ConfigureFolderModalUpdate({
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="none"
-                    className="h-[56px] rounded-[16px] border border-[#E5E7E9] bg-white px-6 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                    className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                     {...field}
                   />
                 </FormControl>
