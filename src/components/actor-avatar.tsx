@@ -28,7 +28,7 @@ export function ActorAvatar({
     <Avatar
       title={title === false ? undefined : (actor.name ?? undefined)}
       className={cn(
-        'pointer-events-none size-7 border-2 border-white bg-[#F0F0F2] shadow-sm',
+        'pointer-events-none size-7 bg-[#1E2533] ring-1 ring-[#2A3242]',
         className
       )}
     >
@@ -37,7 +37,7 @@ export function ActorAvatar({
         alt={actor.name ?? ''}
         className="object-cover"
       />
-      <AvatarFallback className="text-[9px] font-medium text-[#A0A0A2]">
+      <AvatarFallback className="bg-[#1E2533] text-[9px] font-medium text-[#828DA3]">
         {initialsOf(actor.name)}
       </AvatarFallback>
     </Avatar>
