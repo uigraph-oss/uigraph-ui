@@ -123,7 +123,7 @@ export function FlowDiagramCard({
               </span>
             </div>
           )}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-white/30 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
 
         <div className="h-px bg-[#1E2533]" />

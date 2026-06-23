@@ -798,7 +798,7 @@ export function GraphqlSpecViewer({
                             selectedType.name ? (
                               <Badge
                                 variant="outline"
-                                className="border-sky-200 text-sky-700"
+                                className="border-sky-500/40 bg-sky-500/10 text-sky-300"
                               >
                                 Query Root
                               </Badge>
@@ -808,7 +808,7 @@ export function GraphqlSpecViewer({
                             selectedType.name ? (
                               <Badge
                                 variant="outline"
-                                className="border-emerald-200 text-emerald-700"
+                                className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
                               >
                                 Mutation Root
                               </Badge>
@@ -818,7 +818,7 @@ export function GraphqlSpecViewer({
                             selectedType.name ? (
                               <Badge
                                 variant="outline"
-                                className="border-violet-200 text-violet-700"
+                                className="border-violet-500/40 bg-violet-500/10 text-violet-300"
                               >
                                 Subscription Root
                               </Badge>
