@@ -56,21 +56,19 @@ function getStatusBadge(status: string): {
       return {
         label: 'Passed',
         className:
-          'border-green-500/30 bg-green-50 text-green-700 text-xs dark:bg-green-950/30 dark:text-green-300',
-        dotClass: 'bg-green-500',
+          'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs',
+        dotClass: 'bg-emerald-500',
       }
     case 'failed':
       return {
         label: 'Failed',
-        className:
-          'border-red-500/30 bg-red-50 text-red-700 text-xs dark:bg-red-950/30 dark:text-red-300',
+        className: 'border-red-500/30 bg-red-500/10 text-red-300 text-xs',
         dotClass: 'bg-red-500',
       }
     case 'blocked':
       return {
         label: 'Blocked',
-        className:
-          'border-amber-500/30 bg-amber-50 text-amber-700 text-xs dark:bg-amber-950/30 dark:text-amber-300',
+        className: 'border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs',
         dotClass: 'bg-amber-500',
       }
     case 'not_recorded':
@@ -99,24 +97,25 @@ function getStatusCodeBadge(statusCode: number): {
     return {
       label: 'Success',
       className:
-        'border-green-500/50 bg-green-50 text-green-700 text-sm px-3 py-1',
+        'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm px-3 py-1',
     }
   } else if (statusCode >= 300 && statusCode < 400) {
     return {
       label: 'Redirect',
       className:
-        'border-blue-500/50 bg-blue-50 text-blue-700 text-sm px-3 py-1',
+        'border-blue-500/30 bg-blue-500/10 text-blue-300 text-sm px-3 py-1',
     }
   } else if (statusCode >= 400 && statusCode < 500) {
     return {
       label: 'Client Error',
       className:
-        'border-amber-500/50 bg-amber-50 text-amber-700 text-sm px-3 py-1',
+        'border-amber-500/30 bg-amber-500/10 text-amber-300 text-sm px-3 py-1',
     }
   } else if (statusCode >= 500) {
     return {
       label: 'Server Error',
-      className: 'border-red-500/50 bg-red-50 text-red-700 text-sm px-3 py-1',
+      className:
+        'border-red-500/30 bg-red-500/10 text-red-300 text-sm px-3 py-1',
     }
   } else {
     return {
@@ -156,8 +155,7 @@ export function getPriorityDisplay(priority: string | null | undefined): {
     case 'P1':
       return {
         label: 'High',
-        className:
-          'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800',
+        className: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
       }
     case 'P2':
       return {
@@ -213,7 +211,7 @@ function BlockedReasonSection({ reason }: { reason: string }) {
       <Label className="text-foreground text-sm font-normal">
         Blocked reason
       </Label>
-      <p className="text-sm text-amber-800">{reason}</p>
+      <p className="text-sm text-amber-300">{reason}</p>
     </div>
   )
 }
@@ -819,7 +817,7 @@ export function RunStepResultRow({
                 {statusBadge.label}
               </Badge>
               {testCase.isCritical && (
-                <span className="inline-flex items-center gap-1 rounded bg-red-50 px-1.5 py-0.5 text-xs font-medium text-red-700">
+                <span className="inline-flex items-center gap-1 rounded bg-red-500/10 px-1.5 py-0.5 text-xs font-medium text-red-300">
                   <ShieldAlert className="h-3 w-3" />
                   Critical
                 </span>

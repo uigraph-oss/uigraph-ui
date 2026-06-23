@@ -148,43 +148,43 @@ function iconColorFromPill(pillClass: string) {
 
 const V = {
   nogo: {
-    banner: 'bg-red-50 border-red-200',
+    banner: 'bg-red-500/10 border-red-500/30',
     accent: 'bg-red-500',
-    label: 'text-red-700',
-    sub: 'text-red-600',
+    label: 'text-red-400',
+    sub: 'text-red-300/80',
     icon: XCircle,
-    iconCls: 'text-red-500',
-    iconBg: 'bg-red-100',
-    badge: 'bg-red-100 text-red-800 border-red-200',
+    iconCls: 'text-red-400',
+    iconBg: 'bg-red-500/15',
+    badge: 'bg-red-500/15 text-red-300 border-red-500/30',
     bar: 'bg-red-400',
-    sectionHeader: 'bg-red-50/60 border-red-100',
-    sectionIcon: 'text-red-500',
+    sectionHeader: 'bg-red-500/10 border-red-500/20',
+    sectionIcon: 'text-red-400',
   },
   conditional: {
-    banner: 'bg-amber-50 border-amber-200',
+    banner: 'bg-amber-500/10 border-amber-500/30',
     accent: 'bg-amber-400',
-    label: 'text-amber-700',
-    sub: 'text-amber-600',
+    label: 'text-amber-400',
+    sub: 'text-amber-300/80',
     icon: AlertTriangle,
-    iconCls: 'text-amber-500',
-    iconBg: 'bg-amber-100',
-    badge: 'bg-amber-100 text-amber-800 border-amber-200',
+    iconCls: 'text-amber-400',
+    iconBg: 'bg-amber-500/15',
+    badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     bar: 'bg-amber-400',
-    sectionHeader: 'bg-amber-50/60 border-amber-100',
-    sectionIcon: 'text-amber-500',
+    sectionHeader: 'bg-amber-500/10 border-amber-500/20',
+    sectionIcon: 'text-amber-400',
   },
   go: {
-    banner: 'bg-green-50 border-green-200',
-    accent: 'bg-green-500',
-    label: 'text-green-700',
-    sub: 'text-green-600',
+    banner: 'bg-emerald-500/10 border-emerald-500/30',
+    accent: 'bg-emerald-500',
+    label: 'text-emerald-400',
+    sub: 'text-emerald-300/80',
     icon: CheckCircle2,
-    iconCls: 'text-green-500',
-    iconBg: 'bg-green-100',
-    badge: 'bg-green-100 text-green-800 border-green-200',
-    bar: 'bg-green-500',
-    sectionHeader: 'bg-green-50/60 border-green-100',
-    sectionIcon: 'text-green-500',
+    iconCls: 'text-emerald-400',
+    iconBg: 'bg-emerald-500/15',
+    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+    bar: 'bg-emerald-500',
+    sectionHeader: 'bg-emerald-500/10 border-emerald-500/20',
+    sectionIcon: 'text-emerald-400',
   },
 }
 
@@ -244,9 +244,9 @@ function VerdictBanner({
         <div className="flex shrink-0 items-center gap-6">
           {[
             { label: 'Total', value: stats.total, color: 'text-foreground' },
-            { label: 'Passed', value: stats.passed, color: 'text-green-700' },
-            { label: 'Failed', value: stats.failed, color: 'text-red-700' },
-            { label: 'Blocked', value: stats.blocked, color: 'text-amber-700' },
+            { label: 'Passed', value: stats.passed, color: 'text-emerald-400' },
+            { label: 'Failed', value: stats.failed, color: 'text-red-400' },
+            { label: 'Blocked', value: stats.blocked, color: 'text-amber-400' },
             { label: 'Skipped', value: stats.skipped, color: 'text-[#828DA3]' },
           ].map((s) => (
             <div key={s.label} className="text-center">
@@ -264,7 +264,7 @@ function VerdictBanner({
             </div>
           ))}
 
-          <div className="h-12 w-px bg-black/10" />
+          <div className="h-12 w-px bg-white/10" />
 
           <div className="flex flex-col items-center gap-1.5">
             <p
@@ -275,7 +275,7 @@ function VerdictBanner({
             >
               {rate}%
             </p>
-            <div className="h-1.5 w-20 overflow-hidden rounded-full bg-black/10">
+            <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/10">
               <div
                 className={cn('h-full rounded-full transition-all', barColor)}
                 style={{ width: `${rate}%` }}
@@ -390,10 +390,10 @@ function ResultsTable({
       rate >= 80 ? 'bg-green-500' : rate >= 50 ? 'bg-amber-400' : 'bg-red-400'
     const text =
       rate >= 80
-        ? 'text-green-700'
+        ? 'text-emerald-400'
         : rate >= 50
-          ? 'text-amber-700'
-          : 'text-red-600'
+          ? 'text-amber-400'
+          : 'text-red-400'
     return (
       <div className="flex items-center gap-2">
         <div className="bg-muted h-1.5 w-16 overflow-hidden rounded-full">
@@ -446,9 +446,9 @@ function ResultsTable({
             <th className={cn(thCls, 'text-muted-foreground text-center')}>
               Exec
             </th>
-            <th className={cn(thCls, 'text-center text-green-700')}>Pass</th>
-            <th className={cn(thCls, 'text-center text-red-700')}>Fail</th>
-            <th className={cn(thCls, 'text-center text-amber-700')}>Block</th>
+            <th className={cn(thCls, 'text-center text-emerald-400')}>Pass</th>
+            <th className={cn(thCls, 'text-center text-red-400')}>Fail</th>
+            <th className={cn(thCls, 'text-center text-amber-400')}>Block</th>
             <th className={cn(thCls, 'text-center text-[#828DA3]')}>Skip</th>
             <th className={cn(thCls, 'text-muted-foreground text-left')}>
               Pass %
@@ -477,19 +477,19 @@ function ResultsTable({
                 <td className="text-muted-foreground px-4 py-3 text-center text-sm tabular-nums">
                   {r.d.exec}
                 </td>
-                <td className="px-4 py-3 text-center text-sm font-semibold text-green-700 tabular-nums">
+                <td className="px-4 py-3 text-center text-sm font-semibold text-emerald-400 tabular-nums">
                   {r.d.passed}
                 </td>
                 <td className="px-4 py-3 text-center text-sm font-semibold tabular-nums">
                   {r.d.failed > 0 ? (
-                    <span className="text-red-700">{r.d.failed}</span>
+                    <span className="text-red-400">{r.d.failed}</span>
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-center text-sm font-semibold tabular-nums">
                   {r.d.blocked > 0 ? (
-                    <span className="text-amber-700">{r.d.blocked}</span>
+                    <span className="text-amber-400">{r.d.blocked}</span>
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
@@ -522,13 +522,13 @@ function ResultsTable({
             <td className="text-foreground px-4 py-3 text-center text-sm font-bold tabular-nums">
               {executed}
             </td>
-            <td className="px-4 py-3 text-center text-sm font-bold text-green-700 tabular-nums">
+            <td className="px-4 py-3 text-center text-sm font-bold text-emerald-400 tabular-nums">
               {stats.passed}
             </td>
-            <td className="px-4 py-3 text-center text-sm font-bold text-red-700 tabular-nums">
+            <td className="px-4 py-3 text-center text-sm font-bold text-red-400 tabular-nums">
               {stats.failed}
             </td>
-            <td className="px-4 py-3 text-center text-sm font-bold text-amber-700 tabular-nums">
+            <td className="px-4 py-3 text-center text-sm font-bold text-amber-400 tabular-nums">
               {stats.blocked}
             </td>
             <td className="px-4 py-3 text-center text-sm font-bold text-[#828DA3] tabular-nums">
@@ -563,17 +563,17 @@ function IssuesSection({
   const isFailed = variant === 'failed'
   const SectionIcon = isFailed ? XCircle : AlertTriangle
   const headerBg = isFailed
-    ? 'bg-red-50/70 border-red-100'
-    : 'bg-amber-50/70 border-amber-100'
-  const iconCls = isFailed ? 'text-red-500' : 'text-amber-500'
+    ? 'bg-red-500/10 border-red-500/20'
+    : 'bg-amber-500/10 border-amber-500/20'
+  const iconCls = isFailed ? 'text-red-400' : 'text-amber-400'
   const countCls = isFailed
-    ? 'bg-red-100 text-red-700'
-    : 'bg-amber-100 text-amber-700'
+    ? 'bg-red-500/15 text-red-300'
+    : 'bg-amber-500/15 text-amber-300'
   const title = isFailed ? 'What Failed & Why' : "Blocked — Can't Run Yet"
   const accentBorder = isFailed ? 'border-l-red-400' : 'border-l-amber-400'
   const statusBadge = isFailed
-    ? 'bg-red-50 text-red-700 border-red-200'
-    : 'bg-amber-50 text-amber-700 border-amber-200'
+    ? 'bg-red-500/15 text-red-300 border-red-500/30'
+    : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
 
   return (
     <div className="overflow-hidden rounded-xl border bg-[#141925]">
@@ -624,7 +624,7 @@ function IssuesSection({
                       {cfg.label}
                     </span>
                     {testCase.isCritical && (
-                      <span className="rounded border border-red-300 bg-red-50 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-700 uppercase">
+                      <span className="rounded border border-red-500/30 bg-red-500/15 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-300 uppercase">
                         Critical
                       </span>
                     )}
@@ -686,9 +686,9 @@ function IssuesSection({
 
 function PassedCard({ count, runUrl }: { count: number; runUrl: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-5 py-4">
-      <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
-      <p className="text-sm text-green-800">
+    <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4">
+      <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
+      <p className="text-sm text-emerald-300">
         {count > 0 ? (
           <>
             <strong>
@@ -719,25 +719,25 @@ function ActionsCard({ stats }: { stats: ReportStats }) {
   if (stats.failed > 0)
     actions.push({
       type: 'Immediate',
-      cls: 'bg-red-50 text-red-700 border-red-200',
+      cls: 'bg-red-500/15 text-red-300 border-red-500/30',
       text: `Investigate and fix ${stats.failed} failed test${stats.failed > 1 ? 's' : ''}`,
     })
   if (stats.criticalFailures > 0)
     actions.push({
       type: 'Critical',
-      cls: 'bg-red-50 text-red-700 border-red-200',
+      cls: 'bg-red-500/15 text-red-300 border-red-500/30',
       text: `Address ${stats.criticalFailures} critical failure${stats.criticalFailures > 1 ? 's' : ''} before deployment`,
     })
   if (stats.blocked > 0)
     actions.push({
       type: 'Blocked',
-      cls: 'bg-amber-50 text-amber-700 border-amber-200',
+      cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
       text: `Resolve ${stats.blocked} blocked test${stats.blocked > 1 ? 's' : ''} and retest`,
     })
   if (actions.length === 0)
     actions.push({
       type: 'Deploy',
-      cls: 'bg-green-50 text-green-700 border-green-200',
+      cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
       text: 'All tests passed — build is ready for deployment',
     })
 

@@ -644,11 +644,11 @@ function TestCaseDetailsPanel({
                 className={cn(
                   'rounded border px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase',
                   displayStatus === 'passed' &&
-                    'border-green-500/50 bg-green-50 text-green-700',
+                    'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
                   displayStatus === 'failed' &&
-                    'border-red-500/50 bg-red-50 text-red-700',
+                    'border-red-500/30 bg-red-500/10 text-red-300',
                   displayStatus === 'blocked' &&
-                    'border-amber-500/50 bg-amber-50 text-amber-700',
+                    'border-amber-500/30 bg-amber-500/10 text-amber-300',
                   displayStatus === 'skipped' &&
                     'border-border bg-muted/50 text-muted-foreground'
                 )}

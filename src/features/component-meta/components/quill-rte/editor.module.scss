@@ -55,6 +55,43 @@
     align-items: center !important;
     justify-content: center !important;
   }
+
+  :global(.ql-toolbar button .ql-stroke),
+  :global(.ql-toolbar .ql-picker .ql-stroke) {
+    stroke: #98a2b3;
+  }
+
+  :global(.ql-toolbar button .ql-fill),
+  :global(.ql-toolbar .ql-picker .ql-fill) {
+    fill: #98a2b3;
+  }
+
+  :global(.ql-toolbar .ql-picker-label) {
+    color: #98a2b3;
+  }
+
+  :global(.ql-toolbar button:hover),
+  :global(.ql-toolbar button:focus),
+  :global(.ql-toolbar button.ql-active) {
+    background-color: rgba(141, 180, 255, 0.12);
+  }
+
+  :global(.ql-toolbar button:hover .ql-stroke),
+  :global(.ql-toolbar button:focus .ql-stroke),
+  :global(.ql-toolbar button.ql-active .ql-stroke) {
+    stroke: #8db4ff;
+  }
+
+  :global(.ql-toolbar button:hover .ql-fill),
+  :global(.ql-toolbar button:focus .ql-fill),
+  :global(.ql-toolbar button.ql-active .ql-fill) {
+    fill: #8db4ff;
+  }
+
+  :global(.ql-editor.ql-blank::before) {
+    color: #586378;
+    font-style: normal;
+  }
 }
 
 .root :global(.ql-toolbar:not(:has(+ .ql-toolbar))) {

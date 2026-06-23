@@ -1,11 +1,15 @@
 'use client'
 
 import { GT } from '@/api'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { format } from 'date-fns'
 import { ArrowLeft, Download, FileText, Play } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { ACTOR } from '../../api/actor'
 
 export type DisplayRunStatus =
   | 'running'
@@ -43,27 +47,23 @@ function getStatusPillProps(displayRunStatus: DisplayRunStatus): {
     case 'running':
       return {
         label: 'RUNNING',
-        className:
-          'border-blue-500/50 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300',
+        className: 'border-blue-500/30 bg-blue-500/10 text-blue-300',
       }
     case 'passed':
       return {
         label: 'PASSED',
-        className:
-          'border-green-500/50 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-300',
+        className: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
       }
     case 'failed':
       return {
         label: 'FAILED',
-        className:
-          'border-red-500/50 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300',
+        className: 'border-red-500/30 bg-red-500/10 text-red-300',
       }
     case 'issues':
     case 'aborted':
       return {
         label: displayRunStatus === 'aborted' ? 'ABORTED' : 'ISSUES',
-        className:
-          'border-amber-500/50 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300',
+        className: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
       }
     case 'none':
     default:
@@ -91,6 +91,7 @@ export function RunDetailsHeader({
 }: RunDetailsHeaderProps) {
   const navigate = useNavigate()
   const params = useParams() as { serviceId?: string }
+  const orgId = useCurrentOrganization().id
   const statusPill = getStatusPillProps(displayRunStatus)
   const hasStats = stats && stats.total > 0
   const executed = hasStats ? stats.total - stats.skipped : 0
@@ -107,10 +108,18 @@ export function RunDetailsHeader({
             1000
         )
       : null
-  const triggeredBy =
+  const triggeredById =
     (testRun as { executedBy?: string; startedBy?: string }).executedBy ??
     (testRun as { startedBy?: string }).startedBy ??
-    '—'
+    undefined
+  const { data: triggeredByData } = useQuery(ACTOR, {
+    variables: { orgId: orgId!, id: triggeredById! },
+    skip: !orgId || !triggeredById,
+    fetchPolicy: 'cache-first',
+  })
+  const triggeredBy =
+    triggeredByData?.actor?.name?.trim() || triggeredById || '—'
+  const triggeredByAvatar = triggeredByData?.actor?.avatarUrl || ''
 
   const metaItems = [
     { label: 'RUN ID', value: runIdShort },
@@ -131,7 +140,21 @@ export function RunDetailsHeader({
       label: 'DURATION',
       value: durationSec != null ? formatDuration(durationSec) : '—',
     },
-    { label: 'TRIGGERED BY', value: triggeredBy },
+    {
+      label: 'TRIGGERED BY',
+      value: triggeredBy,
+      node: (
+        <div className="text-foreground flex items-center gap-2 text-sm font-medium">
+          <Avatar className="size-5">
+            <AvatarImage src={triggeredByAvatar} className="object-cover" />
+            <AvatarFallback className="text-[10px]">
+              {triggeredBy.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span>{triggeredBy}</span>
+        </div>
+      ),
+    },
   ]
 
   return (
@@ -139,24 +162,28 @@ export function RunDetailsHeader({
       {/* Meta strip: run id, status, context + actions */}
       <div className="border-border flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-[#141925] px-5 py-3.5">
         <div className="flex flex-wrap gap-8">
-          {metaItems.map(({ label, value, valueClassName }) => (
+          {metaItems.map(({ label, value, valueClassName, node }) => (
             <div key={label}>
               <p className="text-muted-foreground mb-0.5 text-[10px] font-semibold tracking-wider uppercase">
                 {label}
               </p>
-              <p
-                className={cn(
-                  'text-sm font-medium',
-                  valueClassName
-                    ? cn(
-                        'rounded border px-1.5 py-0.5 text-[11px] font-bold tracking-wide',
-                        valueClassName
-                      )
-                    : 'text-foreground font-mono'
-                )}
-              >
-                {value}
-              </p>
+              {node ? (
+                node
+              ) : (
+                <p
+                  className={cn(
+                    'text-sm font-medium',
+                    valueClassName
+                      ? cn(
+                          'rounded border px-1.5 py-0.5 text-[11px] font-bold tracking-wide',
+                          valueClassName
+                        )
+                      : 'text-foreground font-mono'
+                  )}
+                >
+                  {value}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -212,7 +239,7 @@ export function RunDetailsHeader({
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               PASSED
             </p>
-            <p className="text-2xl font-bold text-green-600 tabular-nums dark:text-green-400">
+            <p className="text-2xl font-bold text-emerald-400 tabular-nums">
               {stats.passed}
             </p>
             <p className="text-muted-foreground mt-1 text-[11px]">
@@ -223,7 +250,7 @@ export function RunDetailsHeader({
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               FAILED
             </p>
-            <p className="text-2xl font-bold text-red-600 tabular-nums dark:text-red-400">
+            <p className="text-2xl font-bold text-red-400 tabular-nums">
               {stats.failed}
             </p>
             <p className="text-muted-foreground mt-1 text-[11px]">
@@ -236,7 +263,7 @@ export function RunDetailsHeader({
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               BLOCKED
             </p>
-            <p className="text-2xl font-bold text-amber-600 tabular-nums dark:text-amber-400">
+            <p className="text-2xl font-bold text-amber-400 tabular-nums">
               {stats.blocked}
             </p>
             <p className="text-muted-foreground mt-1 text-[11px]">
@@ -247,7 +274,7 @@ export function RunDetailsHeader({
             <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-wider uppercase">
               SKIPPED
             </p>
-            <p className="text-2xl font-bold text-[#828DA3] tabular-nums dark:text-[#586378]">
+            <p className="text-2xl font-bold text-[#828DA3] tabular-nums">
               {stats.skipped}
             </p>
             <p className="text-muted-foreground mt-1 text-[11px]">

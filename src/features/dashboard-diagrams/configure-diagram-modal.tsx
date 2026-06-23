@@ -153,9 +153,9 @@ export function ConfigureDiagramModal({
         </div>
 
         {mode === 'create' && (
-          <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label className="text-muted-foreground text-xs font-medium">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-foreground text-sm font-medium">
                 Team
               </Label>
               <Controller
@@ -163,7 +163,7 @@ export function ConfigureDiagramModal({
                 control={form.control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#2A3242] bg-[#1E2533] px-3 text-sm">
+                    <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
                       <SelectValue placeholder="Select a team" />
                     </SelectTrigger>
                     <SelectContent>
@@ -183,8 +183,8 @@ export function ConfigureDiagramModal({
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-muted-foreground text-xs font-medium">
+            <div className="space-y-2">
+              <Label className="text-foreground text-sm font-medium">
                 Folder <span className="text-muted-foreground">(optional)</span>
               </Label>
               <Controller
@@ -198,7 +198,7 @@ export function ConfigureDiagramModal({
                     }
                     disabled={!selectedTeamId}
                   >
-                    <SelectTrigger className="h-10 w-full rounded-xl border border-[#2A3242] bg-[#1E2533] px-3 text-sm disabled:opacity-60">
+                    <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm disabled:opacity-60">
                       <SelectValue
                         placeholder={
                           selectedTeamId ? 'No folder' : 'Select a team first'

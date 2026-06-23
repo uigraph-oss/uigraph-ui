@@ -79,14 +79,14 @@ export function DiagramsFolder() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search folders and flows"
-          className="h-9 max-w-sm flex-1 rounded-xl border-[#2A3242] bg-[#0F131D] px-3 text-sm text-[#F4F7FC] shadow-none placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:bg-[#0F131D]"
+          className="h-11 max-w-sm flex-1 rounded-[16px] border-[#2A3242] bg-transparent px-6 text-sm text-[#F4F7FC] shadow-none placeholder:text-[#586378] focus-visible:border-[#5C84FF]"
         />
 
         <Select
           value={selectedTeamId ?? '__all__'}
           onValueChange={(v) => setSelectedTeamId(v === '__all__' ? null : v)}
         >
-          <SelectTrigger className="h-9 w-40 shrink-0 rounded-xl border-[#2A3242] bg-[#0F131D] px-3 text-sm text-[#D2D9E6] shadow-none">
+          <SelectTrigger className="h-11 w-40 shrink-0 rounded-[16px] border-[#2A3242] bg-transparent px-6 text-sm text-[#D2D9E6] shadow-none">
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
           <SelectContent>
