@@ -700,7 +700,7 @@ export function TestRunExecutionPage() {
               {isAborted && (
                 <Badge
                   variant="outline"
-                  className="rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700"
+                  className="rounded-full border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400"
                 >
                   Aborted
                 </Badge>
@@ -820,11 +820,11 @@ export function TestRunExecutionPage() {
                           className={cn(
                             'relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
                             status === 'passed'
-                              ? 'bg-emerald-100 text-emerald-700'
+                              ? 'bg-emerald-500/15 text-emerald-400'
                               : status === 'failed'
-                                ? 'bg-red-100 text-red-700'
+                                ? 'bg-red-500/15 text-red-400'
                                 : status === 'blocked'
-                                  ? 'bg-amber-100 text-amber-700'
+                                  ? 'bg-amber-500/15 text-amber-400'
                                   : status === 'skipped'
                                     ? 'bg-[#2A3242] text-[#D2D9E6]'
                                     : isActive
@@ -836,7 +836,7 @@ export function TestRunExecutionPage() {
                           {status && (
                             <span
                               className={cn(
-                                'absolute -top-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full border border-white',
+                                'absolute -top-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full border border-[#141925]',
                                 status === 'passed'
                                   ? 'bg-emerald-600/80 text-white'
                                   : status === 'failed'
@@ -891,11 +891,11 @@ export function TestRunExecutionPage() {
                         selectedDisplayStatus === 'passed'
                           ? 'bg-emerald-100 text-emerald-700'
                           : selectedDisplayStatus === 'failed'
-                            ? 'bg-red-100 text-red-700'
+                            ? 'bg-red-500/15 text-red-400'
                             : selectedDisplayStatus === 'skipped'
                               ? 'bg-[#2A3242] text-[#D2D9E6]'
                               : selectedDisplayStatus === 'blocked'
-                                ? 'bg-amber-100 text-amber-700'
+                                ? 'bg-amber-500/15 text-amber-400'
                                 : 'bg-primary/12 text-primary'
                       }`}
                     >
@@ -909,7 +909,7 @@ export function TestRunExecutionPage() {
                         {selectedDraft && (
                           <Badge
                             variant="outline"
-                            className="shrink-0 rounded-full border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700"
+                            className="shrink-0 rounded-full border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-xs font-medium text-sky-400"
                           >
                             Modified
                           </Badge>
@@ -940,11 +940,11 @@ export function TestRunExecutionPage() {
                             variant="outline"
                             className={
                               selectedDisplayStatus === 'passed'
-                                ? 'rounded-full border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700'
+                                ? 'rounded-full border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400'
                                 : selectedDisplayStatus === 'failed'
-                                  ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
+                                  ? 'rounded-full border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400'
                                   : selectedDisplayStatus === 'blocked'
-                                    ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
+                                    ? 'rounded-full border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400'
                                     : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                             }
                           >
@@ -1055,16 +1055,16 @@ export function TestRunExecutionPage() {
                 </span>
               </span>
               <span className="text-muted-foreground">Summary</span>
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/30">
                 Passed: {summary.passed}
               </span>
-              <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+              <span className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-400 ring-1 ring-red-500/30">
                 Failed: {summary.failed}
               </span>
               <span className="rounded-full bg-[#1E2533] px-2.5 py-1 text-xs font-medium text-[#D2D9E6]">
                 Skipped: {summary.skipped}
               </span>
-              <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+              <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400 ring-1 ring-amber-500/30">
                 Blocked: {summary.blocked}
               </span>
               {summary.remaining > 0 && (

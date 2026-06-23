@@ -10,7 +10,7 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { TagInput } from '@/features/component-meta'
+import { ComponentMetaThemeProvider, TagInput } from '@/features/component-meta'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import { ACTOR } from '@/features/services/api/actor'
 import { cn } from '@/lib/utils'
@@ -448,7 +448,9 @@ export function FormBasicSection({ form }: { form: FormType }) {
           name="tags"
           control={form.control}
           render={({ field }) => (
-            <TagInput value={field.value || []} onChange={field.onChange} />
+            <ComponentMetaThemeProvider theme="modal">
+              <TagInput value={field.value || []} onChange={field.onChange} />
+            </ComponentMetaThemeProvider>
           )}
         />
         <FieldMessage message={form.formState.errors.tags?.message} />

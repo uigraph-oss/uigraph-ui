@@ -506,7 +506,7 @@ export function TestCaseExecutionCard({
           className={cn(
             'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'passed' &&
-              'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50'
+              'border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/15'
           )}
         >
           <FiCheckCircle className="size-4!" />
@@ -521,7 +521,7 @@ export function TestCaseExecutionCard({
           className={cn(
             'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'failed' &&
-              'border-red-200 bg-red-50 text-red-700 hover:bg-red-50'
+              'border-red-500/40 bg-red-500/15 text-red-300 hover:bg-red-500/15'
           )}
         >
           <FiXCircle className="size-4!" />
@@ -551,7 +551,7 @@ export function TestCaseExecutionCard({
           className={cn(
             'text-foreground/80 h-12 flex-1 rounded-[12px] border-[#2A3242] bg-[#141925] hover:bg-[#141925]',
             displayStatus === 'blocked' &&
-              'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50'
+              'border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/15'
           )}
         >
           <FiPauseCircle className="size-4!" />
@@ -715,11 +715,11 @@ export function TestCaseExecutionCard({
                     variant="outline"
                     className={
                       displayStatus === 'passed'
-                        ? 'rounded-full border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700'
+                        ? 'rounded-full border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400'
                         : displayStatus === 'failed'
-                          ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
+                          ? 'rounded-full border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400'
                           : displayStatus === 'blocked'
-                            ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
+                            ? 'rounded-full border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400'
                             : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                     }
                   >
@@ -943,11 +943,11 @@ export function TestCaseExecutionCard({
                 variant="outline"
                 className={
                   displayStatus === 'passed'
-                    ? 'rounded-full border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700'
+                    ? 'rounded-full border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400'
                     : displayStatus === 'failed'
-                      ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
+                      ? 'rounded-full border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400'
                       : displayStatus === 'blocked'
-                        ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
+                        ? 'rounded-full border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400'
                         : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                 }
               >
@@ -968,11 +968,11 @@ export function TestCaseExecutionCard({
                 variant="outline"
                 className={
                   displayStatus === 'passed'
-                    ? 'rounded-full border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700'
+                    ? 'rounded-full border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400'
                     : displayStatus === 'failed'
-                      ? 'rounded-full border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'
+                      ? 'rounded-full border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400'
                       : displayStatus === 'blocked'
-                        ? 'rounded-full border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700'
+                        ? 'rounded-full border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400'
                         : 'rounded-full border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#D2D9E6]'
                 }
               >
