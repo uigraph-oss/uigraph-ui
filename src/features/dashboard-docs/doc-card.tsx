@@ -10,25 +10,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useMutation } from '@apollo/client'
-import { format } from 'date-fns'
-import { Calendar, Download, Eye, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { toast } from 'sonner'
-import {
-  DELETE_SERVICE_DOC,
-  SERVICE_DOCS,
-  ServiceLinkedDoc,
-} from '../../api/service-doc'
-import { useServiceContext } from '../../contexts/service-context'
+import { ConfigureServiceDocModal } from '@/features/services/components/docs/configure-service-doc-modal'
+import { ServiceDocPreviewModal } from '@/features/services/components/docs/service-doc-preview-modal'
 import {
   getDocumentFileTypeIcon,
   getDocumentFileTypeLabel,
-} from '../../helpers/doc-file'
-import { ServiceDocPreviewModal } from './service-doc-preview-modal'
+} from '@/features/services/helpers/doc-file'
+import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { format } from 'date-fns'
+import { Calendar, Download, Eye, Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { DashboardDoc } from './api/docs'
+import { useDocsContext } from './contexts/docs-context'
+import { setDragData } from './helpers/dnd-handler'
 
 function DocCardThumbnail({
   fileURL,
@@ -80,8 +77,6 @@ function DocCardThumbnail({
   }
 
   if (isPDF || isHTML) {
-    // The iframe is rendered 4× oversized then scaled to 25%, so the
-    // thumbnail always fills the container regardless of card width.
     return (
       <div className="relative h-full w-full overflow-hidden">
         <iframe
@@ -130,20 +125,42 @@ function DocCardThumbnail({
   return <>{fallback}</>
 }
 
-export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
-  const { serviceId } = useServiceContext()
+function getFileTypeBadgeColor(
+  fileType?: string | null,
+  fileName?: string | null
+) {
+  const normalizedType = fileType?.toLowerCase() || ''
+  const normalizedName = fileName?.toLowerCase() || ''
+
+  if (normalizedType === 'pdf' || normalizedName.endsWith('.pdf')) {
+    return 'bg-red-100 text-red-700 border-red-200'
+  }
+  if (
+    normalizedType === 'html' ||
+    normalizedName.endsWith('.html') ||
+    normalizedName.endsWith('.htm')
+  ) {
+    return 'bg-blue-100 text-blue-700 border-blue-200'
+  }
+  if (
+    normalizedType === 'readme' ||
+    normalizedType === 'markdown' ||
+    normalizedName.endsWith('.md') ||
+    normalizedName.endsWith('.markdown')
+  ) {
+    return 'bg-orange-100 text-orange-700 border-orange-200'
+  }
+  return 'bg-[#1E2533] text-[#D2D9E6] border-[#2A3242]'
+}
+
+export function DocCard({ doc }: { doc: DashboardDoc }) {
   const orgId = useCurrentOrganization().id
-
-  const listVars = { orgId: orgId!, serviceId }
-
-  const [deleteServiceDoc] = useMutation(DELETE_SERVICE_DOC, {
-    refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
-    awaitRefetchQueries: true,
-  })
+  const { updateDoc, deleteDoc } = useDocsContext()
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const isPreviewModalOpen = searchParams.get('open') === doc.id
@@ -157,76 +174,35 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
     })
   }
 
-  function getFileTypeBadgeColor(
-    fileType?: string | null,
-    fileName?: string | null
-  ) {
-    const normalizedType = fileType?.toLowerCase() || ''
-    const normalizedName = fileName?.toLowerCase() || ''
-
-    if (normalizedType === 'pdf' || normalizedName.endsWith('.pdf')) {
-      return 'bg-red-100 text-red-700 border-red-200'
-    }
-    if (
-      normalizedType === 'html' ||
-      normalizedName.endsWith('.html') ||
-      normalizedName.endsWith('.htm')
-    ) {
-      return 'bg-blue-100 text-blue-700 border-blue-200'
-    }
-    if (
-      normalizedType === 'readme' ||
-      normalizedType === 'markdown' ||
-      normalizedName.endsWith('.md') ||
-      normalizedName.endsWith('.markdown')
-    ) {
-      return 'bg-orange-100 text-orange-700 border-orange-200'
-    }
-    return 'bg-[#1E2533] text-[#D2D9E6] border-[#2A3242]'
-  }
-
   function handleDownload() {
-    if (doc.fileUrl) {
-      window.open(doc.fileUrl, '_blank')
-    }
+    if (doc.fileUrl) window.open(doc.fileUrl, '_blank')
   }
 
-  function canPreview() {
-    return true
+  function handleOpen() {
+    if (doc.fileUrl) setPreviewModalOpen(true)
   }
 
-  function handleClick() {
-    if (!doc.fileUrl) return
-
-    if (canPreview()) {
-      setPreviewModalOpen(true)
-    } else {
-      window.open(doc.fileUrl, '_blank')
-    }
-  }
-
-  function handleView() {
-    if (!doc.fileUrl) return
-
-    if (canPreview()) {
-      setPreviewModalOpen(true)
-    } else {
-      window.open(doc.fileUrl, '_blank')
-    }
-  }
+  const updatedDate = doc.updatedAt
+    ? new Date(doc.updatedAt)
+    : doc.createdAt
+      ? new Date(doc.createdAt)
+      : null
 
   return (
     <>
-      <div className="group relative">
+      <div
+        draggable
+        className="group relative"
+        onDragStart={(e) => setDragData(e, doc.id)}
+      >
         <div
           className={cn(
             'relative cursor-pointer overflow-hidden rounded-[1.4525rem] bg-[#141925] shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#2A3242] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]',
             !doc.fileUrl && 'cursor-default opacity-60'
           )}
-          onClick={doc.fileUrl ? handleClick : undefined}
+          onClick={doc.fileUrl ? handleOpen : undefined}
         >
-          {/* Preview area */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1E2533] transition-colors duration-300 group-hover:bg-[#1E2533]">
+          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1E2533] transition-colors duration-300">
             <DocCardThumbnail
               fileURL={doc.fileUrl}
               fileType={doc.fileType}
@@ -256,11 +232,11 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
                 {getDocumentFileTypeLabel(doc.fileType ?? '')}
               </span>
 
-              {doc.updatedAt && (
+              {updatedDate && (
                 <div className="flex items-center gap-1.5 text-[#828DA3]">
                   <Calendar className="h-3 w-3 shrink-0" />
                   <span className="text-[11px]">
-                    {format(new Date(doc.updatedAt), 'dd MMM yyyy')}
+                    {format(updatedDate, 'dd MMM yyyy')}
                   </span>
                 </div>
               )}
@@ -285,7 +261,7 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
           <DropdownMenuContent align="end">
             {doc.fileUrl && (
               <>
-                <DropdownMenuItem onClick={handleView}>
+                <DropdownMenuItem onClick={handleOpen}>
                   <Eye className="h-4 w-4" />
                   Preview
                 </DropdownMenuItem>
@@ -295,6 +271,11 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
                 </DropdownMenuItem>
               </>
             )}
+
+            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+              <Pencil className="h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
 
             <DropdownMenuItem
               variant="destructive"
@@ -314,13 +295,7 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
         description="Deleting this documentation is a permanent action and cannot be undone. Please think carefully before proceeding."
         onConfirm={async () => {
           try {
-            await deleteServiceDoc({
-              variables: {
-                orgId: orgId!,
-                serviceId,
-                docId: doc.id,
-              },
-            })
+            await deleteDoc({ variables: { orgId: orgId!, id: doc.id } })
             setIsDeleteConfirmationOpen(false)
             toast.success('Documentation deleted successfully')
           } catch {
@@ -328,6 +303,45 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
           }
         }}
       />
+
+      <BetterDialogProvider
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+      >
+        <ConfigureServiceDocModal
+          mode="update"
+          defaultValues={{
+            fileId: doc.fileAssetId ?? undefined,
+            fileName: doc.fileName ?? undefined,
+            fileType: doc.fileType ?? undefined,
+            description: doc.description ?? undefined,
+          }}
+          onSubmit={async (formData) => {
+            try {
+              await updateDoc({
+                variables: {
+                  orgId: orgId!,
+                  id: doc.id,
+                  input: {
+                    fileName: formData.fileName,
+                    fileType: formData.fileType,
+                    description: formData.description,
+                    ...(formData.contentBase64
+                      ? { contentBase64: formData.contentBase64 }
+                      : {}),
+                  },
+                },
+              })
+              toast.success('Documentation updated successfully')
+              setIsEditModalOpen(false)
+            } catch (error) {
+              console.error(error)
+              toast.error('Failed to update documentation')
+              throw error
+            }
+          }}
+        />
+      </BetterDialogProvider>
 
       <BetterDialogProvider
         open={isPreviewModalOpen}

@@ -13,6 +13,7 @@ import {
   GoProjectTemplate,
   GoStack,
 } from 'react-icons/go'
+import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { LuBot, LuFingerprint, LuServer } from 'react-icons/lu'
 
 type NavLinkMeta = {
@@ -26,6 +27,12 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/dashboard/diagrams',
     label: 'Diagrams',
     icon: <GoGitCompare />,
+    nested: true,
+  },
+  {
+    id: '/dashboard/docs',
+    label: 'Docs',
+    icon: <HiOutlineDocumentText />,
     nested: true,
   },
   {

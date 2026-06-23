@@ -1,10 +1,7 @@
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
-import {
-  SERVICE_DOCS,
-  serviceDocToLegacy,
-} from '@/features/services/api/service-doc'
+import { SERVICE_DOCS } from '@/features/services/api/service-doc'
 import { SERVICES } from '@/features/services/api/services'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -66,7 +63,9 @@ export function ServiceDocSelectionModal({
 
   const serviceDocs = useMemo(
     () =>
-      arrayNonNullable(serviceDocsData?.serviceDocs).map(serviceDocToLegacy),
+      arrayNonNullable(serviceDocsData?.serviceDocs)
+        .map((s) => s.doc)
+        .filter((d): d is NonNullable<typeof d> => !!d),
     [serviceDocsData]
   )
 
@@ -122,8 +121,8 @@ export function ServiceDocSelectionModal({
             <SelectSearch
               value={form.watch('serviceDocId')}
               options={serviceDocs.map((doc) => ({
-                value: doc.serviceDocId ?? '',
-                label: doc.fileName ?? doc.serviceDocId ?? '',
+                value: doc.id,
+                label: doc.fileName ?? doc.id,
               }))}
               disabled={serviceDocsLoading || !selectedServiceId}
               onChange={(value) => form.setValue('serviceDocId', value)}

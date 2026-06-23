@@ -99,6 +99,11 @@ const DashboardDiagramsPage = lazy(() =>
     (mod) => ({ default: mod.DashboardDiagramsPage })
   )
 )
+const DashboardDocsPage = lazy(() =>
+  import('@/features/dashboard-docs/dashboard-docs-page').then((mod) => ({
+    default: mod.DashboardDocsPage,
+  }))
+)
 const ComponentsPage = lazy(() =>
   import('@/features/components/components-page').then((mod) => ({
     default: mod.ComponentsPage,
@@ -282,6 +287,7 @@ export function AppRoutes() {
             path="/dashboard/diagrams"
             element={<DashboardDiagramsPage />}
           />
+          <Route path="/dashboard/docs" element={<DashboardDocsPage />} />
           <Route path="/dashboard/components" element={<ComponentsPage />} />
           <Route path="/dashboard/maps" element={<DashboardProjects />} />
           <Route
