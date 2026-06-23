@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
 
     server: {
       host: true,
-      allowedHosts: ['host.docker.internal', 'localhost'],
+      allowedHosts: ['host.docker.internal', 'localhost', 'uigraph-ui'],
       port: process.env.PORT || 3000,
 
       proxy: {
