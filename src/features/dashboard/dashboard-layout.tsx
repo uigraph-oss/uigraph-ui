@@ -91,7 +91,7 @@ export function DashboardPageLayout({
   crumbs,
 }: PropsWithChildren<{ crumbs: { to: string; label: ReactNode }[] }>) {
   return (
-    <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-4 pr-6">
+    <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
       <DashboardHeader crumbs={crumbs} />
 
       <GridScrollBody className="bg-shading rounded-t-[1.2rem]">

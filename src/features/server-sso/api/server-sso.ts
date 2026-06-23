@@ -97,18 +97,43 @@ export const DELETE_OAUTH_PROVIDER = graphql(`
   }
 `)
 
-export const LDAP_STATUS = graphql(`
-  query LdapStatus {
+export const LDAP_CONFIG = graphql(`
+  query LdapConfig {
     ldap {
       id
+      host
+      port
+      useSsl
+      startTls
+      skipTlsVerify
+      bindDn
+      searchBaseDn
+      searchFilter
+      usernameAttribute
+      emailAttribute
+      nameAttribute
+      memberOfAttribute
+      allowSignUp
     }
   }
 `)
 
-export const SAML_STATUS = graphql(`
-  query SamlStatus {
+export const SAML_CONFIG = graphql(`
+  query SamlConfig {
     saml {
       id
+      spEntityId
+      spCert
+      idpEntityId
+      idpMetadataUrl
+      idpMetadataXml
+      nameIdFormat
+      loginAttribute
+      emailAttribute
+      nameAttribute
+      groupsAttribute
+      signRequests
+      allowSignUp
     }
   }
 `)
@@ -118,5 +143,23 @@ export const SCIM_STATUS = graphql(`
     scim {
       id
     }
+  }
+`)
+
+export const UPSERT_LDAP = graphql(`
+  mutation UpsertLdap($input: UpsertLDAPInput!) {
+    upsertLDAP(input: $input)
+  }
+`)
+
+export const DELETE_LDAP = graphql(`
+  mutation DeleteLdap {
+    deleteLDAP
+  }
+`)
+
+export const UPSERT_SAML = graphql(`
+  mutation UpsertSaml($input: UpsertSAMLInput!) {
+    upsertSAML(input: $input)
   }
 `)

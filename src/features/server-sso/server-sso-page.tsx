@@ -11,26 +11,31 @@ import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
+  DELETE_LDAP,
   DELETE_OAUTH_PROVIDER,
-  LDAP_STATUS,
+  LDAP_CONFIG,
   OAUTH_PROVIDERS,
   removeOAuthProviderIcon,
-  SAML_STATUS,
+  SAML_CONFIG,
   SCIM_STATUS,
   setOAuthProviderIcon,
+  UPSERT_LDAP,
   UPSERT_OAUTH_PROVIDER,
+  UPSERT_SAML,
   type OAuthProvider,
   type ProviderStatus,
 } from './api/server-sso'
+import { ConfigureLdapModal } from './configure-ldap-modal'
 import {
   ConfigureOAuthProviderModal,
   type OAuthProviderFormValues,
 } from './configure-oauth-provider-modal'
+import { ConfigureSamlModal } from './configure-saml-modal'
 
 export function ServerSSOPage() {
   const providersQuery = useQuery(OAUTH_PROVIDERS)
-  const ldapQuery = useQuery(LDAP_STATUS)
-  const samlQuery = useQuery(SAML_STATUS)
+  const ldapQuery = useQuery(LDAP_CONFIG)
+  const samlQuery = useQuery(SAML_CONFIG)
   const scimQuery = useQuery(SCIM_STATUS)
 
   const refetchQueries = [{ query: OAUTH_PROVIDERS }]
@@ -42,15 +47,32 @@ export function ServerSSOPage() {
     awaitRefetchQueries: true,
     refetchQueries,
   })
+  const [upsertLdap] = useMutation(UPSERT_LDAP, {
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: LDAP_CONFIG }],
+  })
+  const [deleteLdap] = useMutation(DELETE_LDAP, {
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: LDAP_CONFIG }],
+  })
+  const [upsertSaml] = useMutation(UPSERT_SAML, {
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: SAML_CONFIG }],
+  })
 
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [editProvider, setEditProvider] = useState<OAuthProvider | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<OAuthProvider | null>(null)
+  const [isLdapOpen, setIsLdapOpen] = useState(false)
+  const [isSamlOpen, setIsSamlOpen] = useState(false)
+  const [isLdapDeleteOpen, setIsLdapDeleteOpen] = useState(false)
 
   const providers = providersQuery.data?.oauthProviders ?? []
+  const ldap = ldapQuery.data?.ldap ?? null
+  const saml = samlQuery.data?.saml ?? null
   const statuses = {
-    ldap: ldapQuery.data?.ldap ? 'configured' : 'not-configured',
-    saml: samlQuery.data?.saml ? 'configured' : 'not-configured',
+    ldap: ldap ? 'configured' : 'not-configured',
+    saml: saml ? 'configured' : 'not-configured',
     scim: scimQuery.data?.scim ? 'configured' : 'not-configured',
   } as const
 
@@ -150,9 +172,45 @@ export function ServerSSOPage() {
               Directory & Enterprise SSO
             </h3>
             <div className="grid grid-cols-3 gap-4">
-              <StatusCard label="LDAP" status={statuses.ldap} />
-              <StatusCard label="SAML" status={statuses.saml} />
-              <StatusCard label="SCIM" status={statuses.scim} />
+              <StatusCard
+                label="LDAP"
+                status={statuses.ldap}
+                actions={
+                  <>
+                    <button
+                      className="text-sm text-blue-600 transition-colors hover:text-blue-700"
+                      onClick={() => setIsLdapOpen(true)}
+                    >
+                      {ldap ? 'Edit' : 'Configure'}
+                    </button>
+                    {ldap && (
+                      <button
+                        className="text-sm text-red-600 transition-colors hover:text-red-700"
+                        onClick={() => setIsLdapDeleteOpen(true)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </>
+                }
+              />
+              <StatusCard
+                label="SAML"
+                status={statuses.saml}
+                actions={
+                  <button
+                    className="text-sm text-blue-600 transition-colors hover:text-blue-700"
+                    onClick={() => setIsSamlOpen(true)}
+                  >
+                    {saml ? 'Edit' : 'Configure'}
+                  </button>
+                }
+              />
+              <StatusCard
+                label="SCIM"
+                status={statuses.scim}
+                note="Provisioned via server configuration"
+              />
             </div>
           </section>
         </div>
@@ -245,6 +303,81 @@ export function ServerSSOPage() {
         )}
       </BetterDialogProvider>
 
+      <BetterDialogProvider open={isLdapOpen} onOpenChange={setIsLdapOpen}>
+        {isLdapOpen && (
+          <ConfigureLdapModal
+            mode={ldap ? 'edit' : 'create'}
+            defaultValues={
+              ldap
+                ? {
+                    host: ldap.host,
+                    port: ldap.port,
+                    useSsl: ldap.useSsl,
+                    startTls: ldap.startTls,
+                    skipTlsVerify: ldap.skipTlsVerify,
+                    bindDn: ldap.bindDn,
+                    bindPassword: '',
+                    searchBaseDn: ldap.searchBaseDn,
+                    searchFilter: ldap.searchFilter,
+                    usernameAttribute: ldap.usernameAttribute,
+                    emailAttribute: ldap.emailAttribute,
+                    nameAttribute: ldap.nameAttribute,
+                    memberOfAttribute: ldap.memberOfAttribute,
+                    allowSignUp: ldap.allowSignUp,
+                  }
+                : undefined
+            }
+            onSubmit={async (values) => {
+              try {
+                await upsertLdap({ variables: { input: values } })
+                setIsLdapOpen(false)
+                toast.success('LDAP saved')
+              } catch (error) {
+                toast.error(
+                  error instanceof Error ? error.message : 'Failed to save LDAP'
+                )
+              }
+            }}
+          />
+        )}
+      </BetterDialogProvider>
+
+      <BetterDialogProvider open={isSamlOpen} onOpenChange={setIsSamlOpen}>
+        {isSamlOpen && (
+          <ConfigureSamlModal
+            mode={saml ? 'edit' : 'create'}
+            spCert={saml?.spCert}
+            defaultValues={
+              saml
+                ? {
+                    spEntityId: saml.spEntityId,
+                    idpMetadataUrl: saml.idpMetadataUrl,
+                    idpMetadataXml: saml.idpMetadataXml,
+                    nameIdFormat: saml.nameIdFormat,
+                    loginAttribute: saml.loginAttribute,
+                    emailAttribute: saml.emailAttribute,
+                    nameAttribute: saml.nameAttribute,
+                    groupsAttribute: saml.groupsAttribute,
+                    signRequests: saml.signRequests,
+                    allowSignUp: saml.allowSignUp,
+                  }
+                : undefined
+            }
+            onSubmit={async (values) => {
+              try {
+                await upsertSaml({ variables: { input: values } })
+                setIsSamlOpen(false)
+                toast.success('SAML saved')
+              } catch (error) {
+                toast.error(
+                  error instanceof Error ? error.message : 'Failed to save SAML'
+                )
+              }
+            }}
+          />
+        )}
+      </BetterDialogProvider>
+
       <BetterDeleteConfirmationModal
         open={deleteTarget !== null}
         onOpenChange={(open) => {
@@ -269,6 +402,26 @@ export function ServerSSOPage() {
         title="Remove this OAuth provider?"
         description="Users will no longer be able to sign in through this provider."
         deleteButtonText="Remove Provider"
+        cancelButtonText="Cancel"
+      />
+
+      <BetterDeleteConfirmationModal
+        open={isLdapDeleteOpen}
+        onOpenChange={setIsLdapDeleteOpen}
+        onConfirm={async () => {
+          try {
+            await deleteLdap()
+            setIsLdapDeleteOpen(false)
+            toast.success('LDAP removed')
+          } catch (error) {
+            toast.error(
+              error instanceof Error ? error.message : 'Failed to remove LDAP'
+            )
+          }
+        }}
+        title="Remove LDAP configuration?"
+        description="Users will no longer be able to sign in through LDAP."
+        deleteButtonText="Remove LDAP"
         cancelButtonText="Cancel"
       />
     </>
@@ -296,13 +449,17 @@ function toInput(values: OAuthProviderFormValues) {
 function StatusCard({
   label,
   status,
+  actions,
+  note,
 }: {
   label: string
   status: ProviderStatus | null
+  actions?: React.ReactNode
+  note?: string
 }) {
   const isConfigured = status === 'configured'
   return (
-    <div className="rounded-[12px] border border-[#2A3242] px-6 py-5">
+    <div className="flex flex-col rounded-[12px] border border-[#2A3242] px-6 py-5">
       <div className="flex items-center justify-between">
         <p className="font-medium text-[#F4F7FC]">{label}</p>
         {isConfigured ? (
@@ -321,6 +478,18 @@ function StatusCard({
           </Badge>
         )}
       </div>
+
+      {actions && (
+        <div className="mt-4 flex items-center gap-4 border-t border-[#2A3242] pt-4">
+          {actions}
+        </div>
+      )}
+
+      {!actions && note && (
+        <p className="mt-4 border-t border-[#2A3242] pt-4 text-xs text-[#828DA3]">
+          {note}
+        </p>
+      )}
     </div>
   )
 }

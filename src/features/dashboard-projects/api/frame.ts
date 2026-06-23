@@ -20,6 +20,7 @@ export type DashboardFrame = {
   status?: string | null
   order?: number | null
   source?: string | null
+  focalPointCount?: number | null
   createdBy?: string | null
   updatedBy?: string | null
   createdAt?: string | null
@@ -44,6 +45,7 @@ export const FRAMES = graphql(`
       status
       order
       source
+      focalPointCount
       createdBy
       updatedBy
       createdAt
@@ -78,6 +80,7 @@ export const FRAME = graphql(`
       status
       order
       source
+      focalPointCount
       createdBy
       updatedBy
       createdAt
@@ -112,6 +115,7 @@ export const FRAME_BY_ID = graphql(`
       status
       order
       source
+      focalPointCount
       createdBy
       updatedBy
       createdAt

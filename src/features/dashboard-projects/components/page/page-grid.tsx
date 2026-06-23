@@ -19,7 +19,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
-import { Calendar, MoreVertical } from 'lucide-react'
+import { Calendar, MoreVertical, Target } from 'lucide-react'
 import { useState } from 'react'
 import { LuCloudUpload } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
@@ -55,8 +55,6 @@ function PageCard({ page }: { page: DashboardFrame }) {
   const [isPortraitImage, setIsPortraitImage] = useState(true)
   const [imageError, setImageError] = useState(false)
 
-  const screenshotSrc = page.screenshotImageUrl ?? undefined
-
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
     if (naturalHeight > 0) {
@@ -74,15 +72,15 @@ function PageCard({ page }: { page: DashboardFrame }) {
         <div
           className={cn(
             'relative aspect-[16/10] w-full transition-colors duration-300',
-            screenshotSrc && !imageError
+            page.screenshotImageUrl && !imageError
               ? 'bg-[#1E2533] group-hover:bg-[#2A3242]'
               : 'bg-[#1E2533]'
           )}
         >
-          {screenshotSrc && !imageError ? (
+          {page.screenshotImageUrl && !imageError ? (
             <img
               alt={page.name ?? 'Frame Image'}
-              src={screenshotSrc}
+              src={page.screenshotImageUrl}
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}
               className={cn(
@@ -123,13 +121,22 @@ function PageCard({ page }: { page: DashboardFrame }) {
           </h4>
 
           <div className="mt-2 flex min-h-[1.75rem] items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-1.5 text-[#828DA3]">
-              <Calendar className="h-3 w-3 shrink-0" />
-              <span className="text-[11px]">
-                {page.createdAt
-                  ? format(new Date(page.createdAt), 'dd MMM yyyy')
-                  : 'N/A'}
-              </span>
+            <div className="flex min-w-0 items-center gap-3 text-[#828DA3]">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3 w-3 shrink-0" />
+                <span className="text-[11px]">
+                  {page.createdAt
+                    ? format(new Date(page.createdAt), 'dd MMM yyyy')
+                    : 'N/A'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <Target className="h-3 w-3 shrink-0" />
+                <span className="text-[11px]">
+                  {page.focalPointCount ?? 0} focal points
+                </span>
+              </div>
             </div>
 
             <ActorAvatar

@@ -1,79 +1,214 @@
-import { GlobalLoader } from '@/components/loader/global-loader'
 import { DASHBOARD_NAV_LINKS } from '@/constants'
-import { AiChatInboxPage } from '@/features/ai-chat/ai-chat-inbox-page'
-import { AiChatIndexPage } from '@/features/ai-chat/ai-chat-index-page'
-import { AiChatLayout } from '@/features/ai-chat/ai-chat-layout'
 import {
   AuthenticatedGuard,
   ProtectedDashboardLayout,
   ProtectedServerAdminLayout,
   UnauthenticatedGuard,
 } from '@/features/auth/auth-guards'
-import { SignInForm } from '@/features/auth/sign-in-form'
-import { ComponentsPage } from '@/features/components/components-page'
-import { DashboardLayout, DashboardSettingsLayout } from '@/features/dashboard'
-import { DashboardDiagramsPage } from '@/features/dashboard-diagrams/dashboard-diagrams-page'
-import { DashboardMapFramePage } from '@/features/dashboard-pages/dashboard-map-frame-page'
-import {
-  DashboardProjectPage,
-  DashboardProjects,
-} from '@/features/dashboard-projects'
-import {
-  ProfileSettings,
-  SecuritySettings,
-} from '@/features/dashboard-settings'
-import { ServiceAccountsPage } from '@/features/dashboard-settings/service-accounts/service-accounts-page'
-import { TeamManagementPage } from '@/features/dashboard-settings/users-team-management/team-management-page'
-import { UsersManagementPage } from '@/features/dashboard-settings/users-team-management/users-management-page'
-import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
-import { ServerOverviewPage } from '@/features/server-dashboard/server-overview-page'
-import { ServerOrgsPage } from '@/features/server-orgs/server-orgs-page'
-import { ServerSSOPage } from '@/features/server-sso/server-sso-page'
-import { ServerUsersPage } from '@/features/server-users/server-users-page'
-import { DashboardServiceApis } from '@/features/services/components/apis/dashboard-service-apis'
-import { ServiceDatabaseListPage } from '@/features/services/components/databases/service-database-list-page'
-import { ServiceDatabasePage } from '@/features/services/components/databases/service-database-page'
-import { DashboardServiceDiagrams } from '@/features/services/components/diagrams/dashboard-service-diagrams'
-import { DashboardServices } from '@/features/services/components/services-list/dashboard-services'
-import { ServiceTestsPage } from '@/features/services/components/tests/service-tests-page'
-import { DashboardServiceDocs } from '@/features/services/dashboard-service-docs'
-import { DiagramPreviewPage } from '@/routes/diagram-preview-page'
-import { DiagramScreenshotPage } from '@/routes/diagram-screenshot-page'
-import {
-  ApiGroupEndpointsPage,
-  DiagramPortalPage,
-  TestRunDetailsPage,
-  TestRunExecutionPage,
-} from '@/routes/lazy-pages'
-import { NotFoundPage } from '@/routes/not-found-page'
-import { OnboardingPage } from '@/routes/onboarding-page'
-import { ServiceLayout } from '@/routes/service-layout'
-import {
-  ServiceOperationsRoute,
-  ServiceOverviewRoute,
-  ServicePeopleRoute,
-} from '@/routes/service-pages'
-import { ComponentType, PropsWithChildren, Suspense } from 'react'
+import { lazy } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
-// Feature layouts receive `children`; React Router layout routes render <Outlet/>.
-function withOutlet(layout: ComponentType<PropsWithChildren>) {
-  const Layout = layout
-  return function LayoutRoute() {
-    return (
-      <Layout>
-        <Outlet />
-      </Layout>
-    )
-  }
-}
-
-const DashboardLayoutRoute = withOutlet(DashboardLayout)
-const AiChatLayoutRoute = withOutlet(
-  AiChatLayout as ComponentType<PropsWithChildren>
+const DashboardLayout = lazy(() =>
+  import('@/features/dashboard').then((mod) => ({
+    default: mod.DashboardLayout,
+  }))
 )
-const SettingsLayoutRoute = withOutlet(DashboardSettingsLayout)
-const ServerAdminLayoutRoute = withOutlet(ServerAdminLayout)
+const DashboardSettingsLayout = lazy(() =>
+  import('@/features/dashboard').then((mod) => ({
+    default: mod.DashboardSettingsLayout,
+  }))
+)
+const AiChatLayout = lazy(() =>
+  import('@/features/ai-chat/ai-chat-layout').then((mod) => ({
+    default: mod.AiChatLayout,
+  }))
+)
+const ServerAdminLayout = lazy(() =>
+  import('@/features/server-dashboard/server-admin-layout').then((mod) => ({
+    default: mod.ServerAdminLayout,
+  }))
+)
+const ServiceLayout = lazy(() =>
+  import('@/routes/service-layout').then((mod) => ({
+    default: mod.ServiceLayout,
+  }))
+)
+
+const SignInForm = lazy(() =>
+  import('@/features/auth/sign-in-form').then((mod) => ({
+    default: mod.SignInForm,
+  }))
+)
+const OnboardingPage = lazy(() =>
+  import('@/routes/onboarding-page').then((mod) => ({
+    default: mod.OnboardingPage,
+  }))
+)
+const NotFoundPage = lazy(() =>
+  import('@/routes/not-found-page').then((mod) => ({
+    default: mod.NotFoundPage,
+  }))
+)
+const DiagramPreviewPage = lazy(() =>
+  import('@/routes/diagram-preview-page').then((mod) => ({
+    default: mod.DiagramPreviewPage,
+  }))
+)
+const DiagramScreenshotPage = lazy(() =>
+  import('@/routes/diagram-screenshot-page').then((mod) => ({
+    default: mod.DiagramScreenshotPage,
+  }))
+)
+const ServiceOverviewRoute = lazy(() =>
+  import('@/routes/service-pages').then((mod) => ({
+    default: mod.ServiceOverviewRoute,
+  }))
+)
+const ServiceOperationsRoute = lazy(() =>
+  import('@/routes/service-pages').then((mod) => ({
+    default: mod.ServiceOperationsRoute,
+  }))
+)
+const ServicePeopleRoute = lazy(() =>
+  import('@/routes/service-pages').then((mod) => ({
+    default: mod.ServicePeopleRoute,
+  }))
+)
+const ServerOverviewPage = lazy(() =>
+  import('@/features/server-dashboard/server-overview-page').then((mod) => ({
+    default: mod.ServerOverviewPage,
+  }))
+)
+const ServerOrgsPage = lazy(() =>
+  import('@/features/server-orgs/server-orgs-page').then((mod) => ({
+    default: mod.ServerOrgsPage,
+  }))
+)
+const ServerSSOPage = lazy(() =>
+  import('@/features/server-sso/server-sso-page').then((mod) => ({
+    default: mod.ServerSSOPage,
+  }))
+)
+const ServerUsersPage = lazy(() =>
+  import('@/features/server-users/server-users-page').then((mod) => ({
+    default: mod.ServerUsersPage,
+  }))
+)
+const DashboardDiagramsPage = lazy(() =>
+  import('@/features/dashboard-diagrams/dashboard-diagrams-page').then(
+    (mod) => ({ default: mod.DashboardDiagramsPage })
+  )
+)
+const ComponentsPage = lazy(() =>
+  import('@/features/components/components-page').then((mod) => ({
+    default: mod.ComponentsPage,
+  }))
+)
+const DashboardProjects = lazy(() =>
+  import('@/features/dashboard-projects').then((mod) => ({
+    default: mod.DashboardProjects,
+  }))
+)
+const DashboardProjectPage = lazy(() =>
+  import('@/features/dashboard-projects').then((mod) => ({
+    default: mod.DashboardProjectPage,
+  }))
+)
+const DashboardMapFramePage = lazy(() =>
+  import('@/features/dashboard-pages/dashboard-map-frame-page').then((mod) => ({
+    default: mod.DashboardMapFramePage,
+  }))
+)
+const AiChatIndexPage = lazy(() =>
+  import('@/features/ai-chat/ai-chat-index-page').then((mod) => ({
+    default: mod.AiChatIndexPage,
+  }))
+)
+const AiChatInboxPage = lazy(() =>
+  import('@/features/ai-chat/ai-chat-inbox-page').then((mod) => ({
+    default: mod.AiChatInboxPage,
+  }))
+)
+const DashboardServices = lazy(() =>
+  import('@/features/services/components/services-list/dashboard-services').then(
+    (mod) => ({ default: mod.DashboardServices })
+  )
+)
+const DashboardServiceApis = lazy(() =>
+  import('@/features/services/components/apis/dashboard-service-apis').then(
+    (mod) => ({ default: mod.DashboardServiceApis })
+  )
+)
+const ApiGroupEndpointsPage = lazy(() =>
+  import('@/features/services/components/apis/api-group-endpoints-page').then(
+    (mod) => ({ default: mod.ApiGroupEndpointsPage })
+  )
+)
+const DashboardServiceDiagrams = lazy(() =>
+  import('@/features/services/components/diagrams/dashboard-service-diagrams').then(
+    (mod) => ({ default: mod.DashboardServiceDiagrams })
+  )
+)
+const ServiceDatabaseListPage = lazy(() =>
+  import('@/features/services/components/databases/service-database-list-page').then(
+    (mod) => ({ default: mod.ServiceDatabaseListPage })
+  )
+)
+const ServiceDatabasePage = lazy(() =>
+  import('@/features/services/components/databases/service-database-page').then(
+    (mod) => ({ default: mod.ServiceDatabasePage })
+  )
+)
+const DashboardServiceDocs = lazy(() =>
+  import('@/features/services/dashboard-service-docs').then((mod) => ({
+    default: mod.DashboardServiceDocs,
+  }))
+)
+const ServiceTestsPage = lazy(() =>
+  import('@/features/services/components/tests/service-tests-page').then(
+    (mod) => ({ default: mod.ServiceTestsPage })
+  )
+)
+const TestRunDetailsPage = lazy(() =>
+  import('@/features/services/components/tests/test-run-details-page').then(
+    (mod) => ({ default: mod.TestRunDetailsPage })
+  )
+)
+const TestRunExecutionPage = lazy(() =>
+  import('@/features/services/components/tests/test-run-execution-page').then(
+    (mod) => ({ default: mod.TestRunExecutionPage })
+  )
+)
+const ProfileSettings = lazy(() =>
+  import('@/features/dashboard-settings').then((mod) => ({
+    default: mod.ProfileSettings,
+  }))
+)
+const SecuritySettings = lazy(() =>
+  import('@/features/dashboard-settings').then((mod) => ({
+    default: mod.SecuritySettings,
+  }))
+)
+const TeamManagementPage = lazy(() =>
+  import('@/features/dashboard-settings/users-team-management/team-management-page').then(
+    (mod) => ({ default: mod.TeamManagementPage })
+  )
+)
+const UsersManagementPage = lazy(() =>
+  import('@/features/dashboard-settings/users-team-management/users-management-page').then(
+    (mod) => ({ default: mod.UsersManagementPage })
+  )
+)
+const ServiceAccountsPage = lazy(() =>
+  import('@/features/dashboard-settings/service-accounts/service-accounts-page').then(
+    (mod) => ({ default: mod.ServiceAccountsPage })
+  )
+)
+const DiagramPortalPage = lazy(() =>
+  import('@/features/diagram-portal/diagram-portal-page').then((mod) => ({
+    default: mod.DiagramPortalPage,
+  }))
+)
 
 export function AppRoutes() {
   return (
@@ -90,9 +225,7 @@ export function AppRoutes() {
         path="/sign-in"
         element={
           <UnauthenticatedGuard>
-            <Suspense fallback={<GlobalLoader />}>
-              <SignInForm />
-            </Suspense>
+            <SignInForm />
           </UnauthenticatedGuard>
         }
       />
@@ -115,7 +248,14 @@ export function AppRoutes() {
       />
 
       <Route element={<ProtectedServerAdminLayout />}>
-        <Route path="/server" element={<ServerAdminLayoutRoute />}>
+        <Route
+          path="/server"
+          element={
+            <ServerAdminLayout>
+              <Outlet />
+            </ServerAdminLayout>
+          }
+        >
           <Route index element={<Navigate to="/server/overview" replace />} />
           <Route path="overview" element={<ServerOverviewPage />} />
           <Route path="orgs" element={<ServerOrgsPage />} />
@@ -127,7 +267,13 @@ export function AppRoutes() {
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/diagram/:diagramId" element={<DiagramPortalPage />} />
 
-        <Route element={<DashboardLayoutRoute />}>
+        <Route
+          element={
+            <DashboardLayout>
+              <Outlet />
+            </DashboardLayout>
+          }
+        >
           <Route
             path="/dashboard"
             element={<Navigate to={DASHBOARD_NAV_LINKS[0].id} replace />}
@@ -147,7 +293,13 @@ export function AppRoutes() {
             element={<DashboardMapFramePage />}
           />
 
-          <Route element={<AiChatLayoutRoute />}>
+          <Route
+            element={
+              <AiChatLayout>
+                <Outlet />
+              </AiChatLayout>
+            }
+          >
             <Route path="/dashboard/ai" element={<AiChatIndexPage />} />
             <Route
               path="/dashboard/ai/:sessionId"
@@ -181,7 +333,14 @@ export function AppRoutes() {
             />
           </Route>
 
-          <Route path="/settings" element={<SettingsLayoutRoute />}>
+          <Route
+            path="/settings"
+            element={
+              <DashboardSettingsLayout>
+                <Outlet />
+              </DashboardSettingsLayout>
+            }
+          >
             <Route
               index
               element={<Navigate to="/settings/profile" replace />}

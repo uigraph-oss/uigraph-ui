@@ -246,106 +246,104 @@ export function ServiceDocPreviewModal({
     ) {
       return (
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          <div className="overflow-hidden rounded-lg border bg-[#141925] p-6 dark:bg-gray-900">
-            <div className="w-full overflow-x-auto">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  code({ node, inline, className, children, ...props }: any) {
-                    const match = /language-(\w+)/.exec(className || '')
-                    return !inline && match ? (
-                      <div className="overflow-x-auto">
-                        <SyntaxHighlighter
-                          {...props}
-                          style={vscDarkPlus}
-                          language={match[1]}
-                          PreTag="div"
-                          className="rounded-md"
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
-                      </div>
-                    ) : (
-                      <code
+          <div className="w-full overflow-x-auto px-2 *:first:mt-0">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                code({ node, inline, className, children, ...props }: any) {
+                  const match = /language-(\w+)/.exec(className || '')
+                  return !inline && match ? (
+                    <div className="overflow-x-auto">
+                      <SyntaxHighlighter
                         {...props}
-                        className={className}
-                        style={{
-                          backgroundColor: 'rgba(0, 0, 0, 0.05)',
-                          padding: '0.2em 0.4em',
-                          borderRadius: '3px',
-                          fontSize: '0.9em',
-                        }}
+                        style={vscDarkPlus}
+                        language={match[1]}
+                        PreTag="div"
+                        className="rounded-md"
                       >
-                        {children}
-                      </code>
-                    )
-                  },
-                  h1: ({ children }) => (
-                    <h1 className="mt-6 mb-4 text-3xl font-bold">{children}</h1>
-                  ),
-                  h2: ({ children }) => (
-                    <h2 className="mt-5 mb-3 text-2xl font-semibold">
-                      {children}
-                    </h2>
-                  ),
-                  h3: ({ children }) => (
-                    <h3 className="mt-4 mb-2 text-xl font-semibold">
-                      {children}
-                    </h3>
-                  ),
-                  a: ({ children, href }) => (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                        {String(children).replace(/\n$/, '')}
+                      </SyntaxHighlighter>
+                    </div>
+                  ) : (
+                    <code
+                      {...props}
+                      className={className}
+                      style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                        padding: '0.2em 0.4em',
+                        borderRadius: '3px',
+                        fontSize: '0.9em',
+                      }}
                     >
                       {children}
-                    </a>
-                  ),
-                  blockquote: ({ children }) => (
-                    <blockquote className="my-4 border-l-4 border-[#3B4658] pl-4 italic">
+                    </code>
+                  )
+                },
+                h1: ({ children }) => (
+                  <h1 className="mt-6 mb-4 text-3xl font-bold">{children}</h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="mt-5 mb-3 text-2xl font-semibold">
+                    {children}
+                  </h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="mt-4 mb-2 text-xl font-semibold">
+                    {children}
+                  </h3>
+                ),
+                a: ({ children, href }) => (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {children}
+                  </a>
+                ),
+                blockquote: ({ children }) => (
+                  <blockquote className="my-4 border-l-4 border-[#3B4658] pl-4 italic">
+                    {children}
+                  </blockquote>
+                ),
+                ul: ({ children }) => (
+                  <ul className="my-2 ml-6 list-disc">{children}</ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="my-2 ml-6 list-decimal">{children}</ol>
+                ),
+                li: ({ children }) => <li className="my-1">{children}</li>,
+                table: ({ children }) => (
+                  <div className="my-4 w-full overflow-x-auto">
+                    <table className="min-w-full border-collapse border border-[#3B4658]">
                       {children}
-                    </blockquote>
-                  ),
-                  ul: ({ children }) => (
-                    <ul className="my-2 ml-6 list-disc">{children}</ul>
-                  ),
-                  ol: ({ children }) => (
-                    <ol className="my-2 ml-6 list-decimal">{children}</ol>
-                  ),
-                  li: ({ children }) => <li className="my-1">{children}</li>,
-                  table: ({ children }) => (
-                    <div className="my-4 w-full overflow-x-auto">
-                      <table className="min-w-full border-collapse border border-[#3B4658]">
-                        {children}
-                      </table>
-                    </div>
-                  ),
-                  img: ({ src, alt }) => (
-                    <img
-                      src={src}
-                      alt={alt}
-                      className="h-auto max-w-full rounded-md"
-                      loading="lazy"
-                    />
-                  ),
-                  th: ({ children }) => (
-                    <th className="border border-[#3B4658] bg-[#1E2533] px-4 py-2 text-left font-semibold">
-                      {children}
-                    </th>
-                  ),
-                  td: ({ children }) => (
-                    <td className="border border-[#3B4658] px-4 py-2">
-                      {children}
-                    </td>
-                  ),
-                }}
-              >
-                {content}
-              </ReactMarkdown>
-            </div>
+                    </table>
+                  </div>
+                ),
+                img: ({ src, alt }) => (
+                  <img
+                    src={src}
+                    alt={alt}
+                    className="h-auto max-w-full rounded-md"
+                    loading="lazy"
+                  />
+                ),
+                th: ({ children }) => (
+                  <th className="border border-[#3B4658] bg-[#1E2533] px-4 py-2 text-left font-semibold">
+                    {children}
+                  </th>
+                ),
+                td: ({ children }) => (
+                  <td className="border border-[#3B4658] px-4 py-2">
+                    {children}
+                  </td>
+                ),
+              }}
+            >
+              {content}
+            </ReactMarkdown>
           </div>
         </div>
       )

@@ -6,7 +6,8 @@ export const SERVICE_DOCS = graphql(`
       id
       serviceId
       orgId
-      fileKey
+      fileAssetId
+      fileUrl
       fileName
       fileType
       description
@@ -70,7 +71,8 @@ export async function readFileAsBase64(file: File): Promise<string> {
 export function serviceDocToLegacy(doc: {
   id: string
   serviceId: string
-  fileKey: string
+  fileAssetId: string
+  fileUrl?: string | null
   fileName: string
   fileType: string
   description: string
@@ -82,8 +84,8 @@ export function serviceDocToLegacy(doc: {
   return {
     serviceDocId: doc.id,
     serviceId: doc.serviceId,
-    fileId: doc.fileKey,
-    fileURL: doc.fileKey,
+    fileId: doc.fileAssetId,
+    fileURL: doc.fileUrl ?? null,
     fileName: doc.fileName,
     fileType: doc.fileType,
     description: doc.description,

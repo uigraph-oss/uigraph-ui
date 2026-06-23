@@ -30,7 +30,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
   }, [activeTab])
 
   return (
-    <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-4 pr-6">
+    <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
       <DashboardHeader
         crumbs={[
           { to: '/services', label: 'Services' },

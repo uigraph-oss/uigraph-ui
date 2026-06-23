@@ -4,7 +4,6 @@ import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -28,6 +27,7 @@ import {
   serviceDBToLegacy,
 } from '../../api/service-db'
 import { useServiceContext } from '../../contexts/service-context'
+import { DbTypeBadge } from './components/db-type-badge'
 
 type ServiceDatabaseCardProps = {
   db: ReturnType<typeof serviceDBToLegacy>
@@ -75,26 +75,6 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
     }
   }
 
-  function getTypeBadgeClass(type?: string | null) {
-    const value = type?.toLowerCase()
-    if (value === 'postgresql' || value === 'postgres') {
-      return 'bg-blue-100 text-blue-800'
-    }
-    if (value === 'mysql') {
-      return 'bg-amber-100 text-amber-800'
-    }
-    if (value === 'mongodb' || value === 'document') {
-      return 'bg-emerald-100 text-emerald-800'
-    }
-    if (value === 'dynamodb') {
-      return 'bg-purple-100 text-purple-800'
-    }
-    if (value === 'sqlite') {
-      return 'bg-green-100 text-green-800'
-    }
-    return 'bg-[#1E2533] text-[#F4F7FC]'
-  }
-
   const updatedDate = db.updatedAt
     ? new Date(db.updatedAt)
     : db.createdAt
@@ -102,10 +82,6 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
       : null
 
   const tables = arrayNonNullable(db.tables)
-  const totalColumns = tables.reduce(
-    (sum, table) => sum + (table?.columns?.length ?? 0),
-    0
-  )
   const totalIndexes = tables.reduce(
     (sum, table) => sum + (table?.indexes?.length ?? 0),
     0
@@ -139,18 +115,13 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
             <h4 className="line-clamp-1 text-[1.385rem] font-semibold text-[#F4F7FC]">
               {db.dbName ?? 'Untitled Database'}
             </h4>
-            <Badge className={cn('text-xs', getTypeBadgeClass(db.dbType))}>
-              {db.dbType ?? 'unknown'}
-            </Badge>
+            <DbTypeBadge type={db.dbType} />
           </div>
 
           <div className="mb-4 flex items-center gap-4 text-sm text-[#828DA3]">
             <div className="flex items-center space-x-1">
               <Table2 className="h-4 w-4" />
               <span>{tables.length} tables</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span>{totalColumns} columns</span>
             </div>
             {totalIndexes > 0 && (
               <div className="flex items-center space-x-1">
