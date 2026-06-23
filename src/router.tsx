@@ -1,16 +1,38 @@
 import { DASHBOARD_NAV_LINKS } from '@/constants'
-import { AiChatLayout } from '@/features/ai-chat/ai-chat-layout'
 import {
   AuthenticatedGuard,
   ProtectedDashboardLayout,
   ProtectedServerAdminLayout,
   UnauthenticatedGuard,
 } from '@/features/auth/auth-guards'
-import { DashboardLayout, DashboardSettingsLayout } from '@/features/dashboard'
-import { ServerAdminLayout } from '@/features/server-dashboard/server-admin-layout'
-import { ServiceLayout } from '@/routes/service-layout'
 import { lazy } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+
+const DashboardLayout = lazy(() =>
+  import('@/features/dashboard').then((mod) => ({
+    default: mod.DashboardLayout,
+  }))
+)
+const DashboardSettingsLayout = lazy(() =>
+  import('@/features/dashboard').then((mod) => ({
+    default: mod.DashboardSettingsLayout,
+  }))
+)
+const AiChatLayout = lazy(() =>
+  import('@/features/ai-chat/ai-chat-layout').then((mod) => ({
+    default: mod.AiChatLayout,
+  }))
+)
+const ServerAdminLayout = lazy(() =>
+  import('@/features/server-dashboard/server-admin-layout').then((mod) => ({
+    default: mod.ServerAdminLayout,
+  }))
+)
+const ServiceLayout = lazy(() =>
+  import('@/routes/service-layout').then((mod) => ({
+    default: mod.ServiceLayout,
+  }))
+)
 
 const SignInForm = lazy(() =>
   import('@/features/auth/sign-in-form').then((mod) => ({
