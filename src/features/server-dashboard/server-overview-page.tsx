@@ -1,6 +1,8 @@
 'use client'
 
+import { graphqlEndpoint } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
+import { env } from '@/env'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
 import {
@@ -10,9 +12,12 @@ import {
   Database,
   Globe,
   HardDrive,
+  Monitor,
+  Server,
   Sparkles,
   UserCheck,
   Users,
+  Webhook,
 } from 'lucide-react'
 import { ReactNode } from 'react'
 import { SERVER_OVERVIEW } from './api/server-overview'
@@ -23,6 +28,11 @@ export function ServerOverviewPage() {
 
   const overview = data?.serverOverview
   const config = data?.serverConfig
+
+  const origin =
+    typeof window !== 'undefined' ? window.location.origin : env.clientOrigin
+  const graphqlUrl = new URL(graphqlEndpoint, origin).href
+  const apiUrl = new URL(graphqlEndpoint, origin).origin
 
   return (
     <>
@@ -58,6 +68,21 @@ export function ServerOverviewPage() {
           <SectionLoader label="Loading configuration..." />
         ) : (
           <div className="border-stock overflow-hidden rounded-[12px] border">
+            <ConfigRow
+              icon={<Monitor className="size-4" />}
+              label="Frontend URL"
+              value={env.clientOrigin}
+            />
+            <ConfigRow
+              icon={<Server className="size-4" />}
+              label="API URL"
+              value={apiUrl}
+            />
+            <ConfigRow
+              icon={<Webhook className="size-4" />}
+              label="GraphQL Endpoint"
+              value={graphqlUrl}
+            />
             <ConfigRow
               icon={<Database className="size-4" />}
               label="Storage Provider"
@@ -136,11 +161,16 @@ function ConfigRow({
         last ? '' : 'border-stock border-b'
       )}
     >
-      <div className="text-paragraph flex items-center gap-3">
+      <div className="text-paragraph flex shrink-0 items-center gap-3">
         {icon}
         <p className="text-sm font-medium">{label}</p>
       </div>
-      <p className="text-foreground font-mono text-sm">{value}</p>
+      <p
+        className="text-foreground min-w-0 truncate font-mono text-sm"
+        title={value}
+      >
+        {value}
+      </p>
     </div>
   )
 }
