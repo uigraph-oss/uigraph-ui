@@ -1,8 +1,8 @@
 import { GT } from '@/api'
 import { create } from 'zustand'
 
-type AuthenticatedUser = GT.MeAndOrgQuery['me']
-type UserOrganization = GT.MeAndOrgQuery['myOrgs'][number]
+type AuthenticatedUser = GT.MeAndOrgBootstrapQuery['me']
+type UserOrganization = GT.MeAndOrgBootstrapQuery['myOrgs'][number]
 
 export const useAuthStore = create(() => ({
   status: 'loading' as 'authenticated' | 'loading' | 'unauthenticated',

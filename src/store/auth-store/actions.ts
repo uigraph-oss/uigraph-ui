@@ -1,6 +1,24 @@
+import { graphql } from '@/api'
 import { apolloClientGQL } from '@/api/client'
-import { GET_ME_AND_ORG } from './gql'
 import { useAuthStore } from './use-auth-store'
+
+const GET_ME_AND_ORG = graphql(`
+  query MeAndOrgBootstrap {
+    me {
+      userId
+      email
+      name
+      avatarUrl
+      isServerAdmin
+    }
+    myOrgs {
+      id
+      name
+      role
+      logoUrl
+    }
+  }
+`)
 
 export async function bootstrapSession() {
   try {
