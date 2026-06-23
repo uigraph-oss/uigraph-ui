@@ -16,6 +16,7 @@ import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
 import { Calendar, Download, Eye, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   DELETE_SERVICE_DOC,
@@ -155,7 +156,20 @@ export function ServiceDocCard({
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const isPreviewModalOpen =
+    !!serviceDoc.serviceDocId &&
+    searchParams.get('open') === serviceDoc.serviceDocId
+
+  function setPreviewModalOpen(open: boolean) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (open) next.set('open', serviceDoc.serviceDocId!)
+      if (!open) next.delete('open')
+      return next
+    })
+  }
 
   function getFileTypeBadgeColor(
     fileType?: string | null,
@@ -199,7 +213,7 @@ export function ServiceDocCard({
     if (!serviceDoc.fileURL) return
 
     if (canPreview()) {
-      setIsPreviewModalOpen(true)
+      setPreviewModalOpen(true)
     } else {
       window.open(serviceDoc.fileURL, '_blank')
     }
@@ -209,7 +223,7 @@ export function ServiceDocCard({
     if (!serviceDoc.fileURL) return
 
     if (canPreview()) {
-      setIsPreviewModalOpen(true)
+      setPreviewModalOpen(true)
     } else {
       window.open(serviceDoc.fileURL, '_blank')
     }
@@ -380,7 +394,7 @@ export function ServiceDocCard({
 
       <BetterDialogProvider
         open={isPreviewModalOpen}
-        onOpenChange={setIsPreviewModalOpen}
+        onOpenChange={setPreviewModalOpen}
         className="min-h-[95vh] [--width:min(95vw,100rem)]"
       >
         <ServiceDocPreviewModal
