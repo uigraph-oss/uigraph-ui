@@ -24,7 +24,7 @@ export function ServerAdminLayout({ children }: PropsWithChildren) {
     <main className="bg-shading-gray grid h-screen grid-cols-[5.25rem_1fr] gap-2">
       <DashboardSidebar />
 
-      <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-4 pr-6">
+      <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
         <ServerAdminHeader crumbs={crumbs} />
 
         <GridScrollBody className="bg-shading rounded-t-[1.2rem]">
