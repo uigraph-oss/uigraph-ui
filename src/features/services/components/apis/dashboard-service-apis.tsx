@@ -17,7 +17,7 @@ import {
   SYNC_API_GROUP,
   UPDATE_API_GROUP,
   protocolTo,
-  readSpecFile,
+  uploadSpecFile,
 } from '@/features/services/api/api-endpoints'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -113,7 +113,7 @@ export function DashboardServiceApis() {
             onSubmit={async (data) => {
               const protocol = protocolTo(data.importSource ?? 'openapi')
               if (data.specFile) {
-                const spec = await readSpecFile(data.specFile)
+                const specAssetId = await uploadSpecFile(orgId!, data.specFile)
                 await syncAPIGroup({
                   variables: {
                     orgId: orgId!,
@@ -121,7 +121,7 @@ export function DashboardServiceApis() {
                     input: {
                       name: data.name,
                       protocol,
-                      spec,
+                      specAssetId,
                     },
                   },
                 })
@@ -212,7 +212,10 @@ export function DashboardServiceApis() {
                     }
                     updateGroup={async (input) => {
                       if (input.specFile) {
-                        const spec = await readSpecFile(input.specFile)
+                        const specAssetId = await uploadSpecFile(
+                          orgId!,
+                          input.specFile
+                        )
                         await syncAPIGroup({
                           variables: {
                             orgId: orgId!,
@@ -223,7 +226,7 @@ export function DashboardServiceApis() {
                               protocol: protocolTo(
                                 input.importSource ?? 'openapi'
                               ),
-                              spec,
+                              specAssetId,
                             },
                           },
                         })

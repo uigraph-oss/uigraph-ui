@@ -64,7 +64,7 @@ function FieldError({ message }: { message?: string }) {
 }
 
 const inputClassName =
-  'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6'
+  'override-autofill h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6 text-[#F4F7FC] placeholder:text-[#586378]'
 const selectTriggerClassName =
   '!h-[56px] !w-full rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-4 capitalize'
 
@@ -138,9 +138,10 @@ function CreateServerUserModal({
               </Label>
               <Input
                 {...field}
+                type="email"
                 placeholder="Enter email address"
                 className={inputClassName}
-                autoComplete="off"
+                autoComplete="email"
               />
               <FieldError message={form.formState.errors.email?.message} />
             </div>

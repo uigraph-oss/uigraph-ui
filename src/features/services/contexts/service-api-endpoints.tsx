@@ -261,17 +261,15 @@ export const [
           apiGroupId: string
           input: {
             label?: string
-            openApiSpecFileId?: string
-            spec?: string
+            specAssetId?: string
             name?: string
             protocol?: string
           }
         }
       }) => {
         const { input } = opts.variables
-        const spec = input.spec
-        if (!spec) {
-          throw new Error('Spec content is required to publish a version')
+        if (!input.specAssetId) {
+          throw new Error('Spec file is required to publish a version')
         }
         return syncAPIGroupMut({
           variables: {
@@ -282,7 +280,7 @@ export const [
               name: apiGroup?.name ?? input.label ?? 'API Group',
               version: apiGroup?.version ?? 'v1',
               protocol: apiGroup?.protocol ?? input.protocol ?? 'REST',
-              spec,
+              specAssetId: input.specAssetId,
             },
           },
         })

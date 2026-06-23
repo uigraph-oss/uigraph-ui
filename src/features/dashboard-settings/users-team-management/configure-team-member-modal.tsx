@@ -30,6 +30,9 @@ const createMemberSchema = teamMemberSchema.extend({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
+const inputClassName =
+  'override-autofill h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6 text-[#F4F7FC] placeholder:text-[#586378]'
+
 type ConfigureTeamMemberModalProps = {
   mode?: 'create' | 'edit'
   defaultValues?: Partial<z.infer<typeof teamMemberSchema>>
@@ -89,7 +92,7 @@ export function ConfigureTeamMemberModal({
                 id="team-member-name"
                 {...field}
                 placeholder="Enter full name"
-                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6"
+                className={inputClassName}
                 autoComplete="off"
               />
               {form.formState.errors.name && (
@@ -115,9 +118,10 @@ export function ConfigureTeamMemberModal({
               <Input
                 id="team-member-email"
                 {...field}
+                type="email"
                 placeholder="Enter email address"
-                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6"
-                autoComplete="off"
+                className={inputClassName}
+                autoComplete="email"
               />
               {form.formState.errors.email && (
                 <p className="text-destructive text-sm">
@@ -145,7 +149,7 @@ export function ConfigureTeamMemberModal({
                   {...field}
                   type="password"
                   placeholder="Enter a password"
-                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-[#1E2533] px-6"
+                  className={inputClassName}
                   autoComplete="new-password"
                 />
                 {form.formState.errors.password && (
