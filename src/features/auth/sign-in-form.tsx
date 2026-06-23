@@ -5,6 +5,7 @@ import { UigraphMark } from '@/components/logo'
 import { Input } from '@/components/ui/input'
 import { Paths } from '@/constants'
 import { useOAuthProviders } from '@/hooks/use-oauth-providers'
+import { cn } from '@/lib/utils'
 import { signIn, useAuthStore } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeIcon, EyeOff, Lock, Mail } from 'lucide-react'
@@ -20,6 +21,9 @@ const signInSchema = z.object({
 })
 
 type SignInFormValues = z.infer<typeof signInSchema>
+
+const signInInputClassName =
+  'override-autofill [--autofill-bg:#0F131D] h-10 w-full rounded-[10px] border-[#2A3242] bg-[#0F131D] text-sm text-[#F4F7FC] placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:ring-[rgba(92,132,255,0.45)]'
 
 export function SignInForm() {
   const navigate = useNavigate()
@@ -184,7 +188,8 @@ export function SignInForm() {
                     id="email"
                     type="email"
                     placeholder="you@company.com"
-                    className="h-10 w-full rounded-[10px] border-[#2A3242] bg-[#0F131D] pl-[38px] text-sm text-[#F4F7FC] placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:ring-[rgba(92,132,255,0.45)]"
+                    autoComplete="email"
+                    className={cn(signInInputClassName, 'pl-[38px]')}
                   />
                 )}
               />
@@ -235,7 +240,8 @@ export function SignInForm() {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    className="h-10 w-full rounded-[10px] border-[#2A3242] bg-[#0F131D] pr-10 pl-[38px] text-sm text-[#F4F7FC] placeholder:text-[#586378] focus-visible:border-[#5C84FF] focus-visible:ring-[rgba(92,132,255,0.45)]"
+                    autoComplete="current-password"
+                    className={cn(signInInputClassName, 'pr-10 pl-[38px]')}
                   />
                 )}
               />

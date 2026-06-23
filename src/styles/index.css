@@ -259,6 +259,16 @@
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.2);
   }
+
+  .override-autofill:-webkit-autofill,
+  .override-autofill:-webkit-autofill:hover,
+  .override-autofill:-webkit-autofill:focus,
+  .override-autofill:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px var(--autofill-bg, #1e2533) inset !important;
+    -webkit-text-fill-color: var(--autofill-text, #f4f7fc) !important;
+    caret-color: var(--autofill-text, #f4f7fc);
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 /* Folder scroll row — scrollbar hidden until hover */

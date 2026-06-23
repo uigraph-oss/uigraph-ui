@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TagInput } from '@/features/component-meta'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -437,11 +438,13 @@ export function ConfigureServiceModal({
             name="labels"
             control={form.control}
             render={({ field }) => (
-              <TagInput
-                value={field.value || []}
-                onChange={field.onChange}
-                placeholder="Type and press Enter to add labels"
-              />
+              <ComponentMetaThemeProvider theme="modal">
+                <TagInput
+                  value={field.value || []}
+                  onChange={field.onChange}
+                  placeholder="Type and press Enter to add labels"
+                />
+              </ComponentMetaThemeProvider>
             )}
           />
         </div>

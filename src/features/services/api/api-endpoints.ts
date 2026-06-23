@@ -1,4 +1,5 @@
 import { graphql } from '@/api'
+import { uploadFile } from '@/features/uploads/api/uploads'
 
 export type DashboardAPIGroup = {
   id: string
@@ -227,6 +228,9 @@ export function protocolFrom(protocol?: string | null): string {
   return (protocol ?? 'REST').toLowerCase()
 }
 
-export async function readSpecFile(file: File): Promise<string> {
-  return file.text()
+export async function uploadSpecFile(
+  orgId: string,
+  file: File
+): Promise<string> {
+  return uploadFile(orgId, file)
 }
