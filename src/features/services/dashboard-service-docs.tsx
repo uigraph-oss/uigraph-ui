@@ -14,11 +14,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import {
-  CREATE_SERVICE_DOC,
-  SERVICE_DOCS,
-  serviceDocToLegacy,
-} from './api/service-doc'
+import { CREATE_SERVICE_DOC, SERVICE_DOCS } from './api/service-doc'
 import { ConfigureServiceDocModal } from './components/docs/configure-service-doc-modal'
 import { ServiceDocCard } from './components/docs/service-doc-card'
 import { useServiceContext } from './contexts/service-context'
@@ -42,8 +38,10 @@ export function DashboardServiceDocs() {
     refetchQueries: [{ query: SERVICE_DOCS, variables: listVars }],
   })
 
-  const serviceDocs = useMemo(() => {
-    return arrayNonNullable(data?.serviceDocs).map(serviceDocToLegacy)
+  const docs = useMemo(() => {
+    return arrayNonNullable(data?.serviceDocs)
+      .map((s) => s.doc)
+      .filter((d): d is NonNullable<typeof d> => !!d)
   }, [data?.serviceDocs])
 
   return (
@@ -93,18 +91,15 @@ export function DashboardServiceDocs() {
       <DashboardSectionContent noPadding>
         {isLoadingServiceDocs ? (
           <SectionLoader label="Loading documentation..." />
-        ) : serviceDocs.length > 0 ? (
+        ) : docs.length > 0 ? (
           <div
             className="grid gap-4 p-6"
             style={{
               gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
             }}
           >
-            {serviceDocs.map((serviceDoc) => (
-              <ServiceDocCard
-                key={serviceDoc.serviceDocId}
-                serviceDoc={serviceDoc}
-              />
+            {docs.map((doc) => (
+              <ServiceDocCard key={doc.id} doc={doc} />
             ))}
           </div>
         ) : (

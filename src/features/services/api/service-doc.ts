@@ -3,19 +3,25 @@ import { graphql } from '@/api'
 export const SERVICE_DOCS = graphql(`
   query ServiceDocs($orgId: ID!, $serviceId: ID!) {
     serviceDocs(orgId: $orgId, serviceId: $serviceId) {
-      id
       serviceId
+      docId
       orgId
-      fileAssetId
-      fileUrl
-      fileName
-      fileType
-      description
-      contentHash
       createdBy
       updatedBy
       createdAt
       updatedAt
+      doc {
+        id
+        orgId
+        fileAssetId
+        fileUrl
+        fileName
+        fileType
+        description
+        contentHash
+        createdAt
+        updatedAt
+      }
     }
   }
 `)
@@ -27,36 +33,28 @@ export const CREATE_SERVICE_DOC = graphql(`
     $input: CreateServiceDocInput!
   ) {
     createServiceDoc(orgId: $orgId, serviceId: $serviceId, input: $input) {
-      id
-      fileName
-    }
-  }
-`)
-
-export const UPDATE_SERVICE_DOC = graphql(`
-  mutation UpdateServiceDoc(
-    $orgId: ID!
-    $serviceId: ID!
-    $id: ID!
-    $input: UpdateServiceDocInput!
-  ) {
-    updateServiceDoc(
-      orgId: $orgId
-      serviceId: $serviceId
-      id: $id
-      input: $input
-    ) {
-      id
-      fileName
+      serviceId
+      docId
     }
   }
 `)
 
 export const DELETE_SERVICE_DOC = graphql(`
-  mutation DeleteServiceDoc($orgId: ID!, $serviceId: ID!, $id: ID!) {
-    deleteServiceDoc(orgId: $orgId, serviceId: $serviceId, id: $id)
+  mutation DeleteServiceDoc($orgId: ID!, $serviceId: ID!, $docId: ID!) {
+    deleteServiceDoc(orgId: $orgId, serviceId: $serviceId, docId: $docId)
   }
 `)
+
+export type ServiceLinkedDoc = {
+  id: string
+  fileAssetId?: string | null
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
+  description?: string | null
+  createdAt?: string | null
+  updatedAt?: string | null
+}
 
 export async function readFileAsBase64(file: File): Promise<string> {
   const buffer = await file.arrayBuffer()
@@ -66,32 +64,4 @@ export async function readFileAsBase64(file: File): Promise<string> {
     binary += String.fromCharCode(i)
   }
   return btoa(binary)
-}
-
-export function serviceDocToLegacy(doc: {
-  id: string
-  serviceId: string
-  fileAssetId: string
-  fileUrl?: string | null
-  fileName: string
-  fileType: string
-  description: string
-  createdBy: string
-  updatedBy?: string | null
-  createdAt: string
-  updatedAt: string
-}) {
-  return {
-    serviceDocId: doc.id,
-    serviceId: doc.serviceId,
-    fileId: doc.fileAssetId,
-    fileURL: doc.fileUrl ?? null,
-    fileName: doc.fileName,
-    fileType: doc.fileType,
-    description: doc.description,
-    createdBy: doc.createdBy,
-    updatedBy: doc.updatedBy,
-    createdAt: doc.createdAt,
-    updatedAt: doc.updatedAt,
-  }
 }
