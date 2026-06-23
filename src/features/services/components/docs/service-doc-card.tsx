@@ -16,8 +16,6 @@ import { useMutation } from '@apollo/client'
 import { format } from 'date-fns'
 import { Calendar, Download, Eye, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import {
   DELETE_SERVICE_DOC,
@@ -108,24 +106,24 @@ function DocCardThumbnail({
     )
   }
 
-  if (isMarkdown && markdownContent) {
+  if (isMarkdown) {
+    const excerpt = markdownContent
+      ?.split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !/^#{1,6}\s+/.test(line))
+      .join(' ')
+      .replace(/[#*_`>\-]/g, '')
+      .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim()
+
     return (
-      <div className="relative h-full w-full overflow-hidden">
-        <div
-          className="pointer-events-none absolute top-0 left-0 bg-[#141925] p-4 text-left"
-          style={{
-            width: '400%',
-            height: '400%',
-            transform: 'scale(0.25)',
-            transformOrigin: '0 0',
-          }}
-        >
-          <div className="prose prose-xs max-w-none text-[10px] leading-snug">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {markdownContent}
-            </ReactMarkdown>
-          </div>
+      <div className="relative flex h-full w-full gap-4 overflow-hidden bg-gradient-to-br from-[#1A2030] to-[#141925] p-6">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#0F1320] ring-1 ring-[#2A3242] [&_svg]:size-6 [&_svg]:shrink-0 [&_svg]:stroke-[1.15]">
+          {getDocumentFileTypeIcon('markdown')}
         </div>
+        <p className="text-[13px] leading-relaxed text-[#828DA3]">{excerpt}</p>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#141925] to-transparent" />
       </div>
     )
   }
