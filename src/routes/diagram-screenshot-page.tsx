@@ -2,7 +2,7 @@ import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useAuthStore } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { lazy, Suspense, useEffect, useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
 const FlowDiagramPreview = lazy(() =>
@@ -10,14 +10,6 @@ const FlowDiagramPreview = lazy(() =>
     default: mod.FlowDiagramPreview,
   }))
 )
-
-const READY_DELAY_MS = 1500
-
-declare global {
-  interface Window {
-    __screenshotReady?: boolean
-  }
-}
 
 export function DiagramScreenshotPage() {
   const { diagramId } = useParams<{ diagramId: string }>()
@@ -55,14 +47,6 @@ export function DiagramScreenshotPage() {
     return convertDiagramServerData(content)
   }, [contentData?.diagramContent?.content])
 
-  useEffect(() => {
-    if (!diagramData) return
-    const timer = setTimeout(() => {
-      window.__screenshotReady = true
-    }, READY_DELAY_MS)
-    return () => clearTimeout(timer)
-  }, [diagramData])
-
   if (!diagramData) return null
 
   return (
@@ -72,6 +56,7 @@ export function DiagramScreenshotPage() {
           data={diagramData}
           options={{ forceNoBackground: true }}
           name={data?.diagram?.name}
+          screenshotCapture
         />
       </Suspense>
     </div>
