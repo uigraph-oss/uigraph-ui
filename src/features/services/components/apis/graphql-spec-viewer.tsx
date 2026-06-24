@@ -648,7 +648,7 @@ export function GraphqlSpecViewer({
   }
 
   return (
-    <div className="graphql-spec-viewer-shell h-full w-full bg-[#141925]">
+    <div className="graphql-spec-viewer-shell w-full bg-[#141925]">
       <div className="flex min-h-full flex-col">
         <div className="viewer-header backdrop-blur-xl">
           <div className="flex flex-col gap-4 px-6 py-5">
