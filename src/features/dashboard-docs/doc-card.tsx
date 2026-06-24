@@ -44,6 +44,9 @@ function DocCardThumbnail({
   const [markdownContent, setMarkdownContent] = useState<string | null>(null)
   const [htmlContent, setHtmlContent] = useState<string | null>(null)
   const [pdfBlobURL, setPdfBlobURL] = useState<string | null>(null)
+  const [audioDuration, setAudioDuration] = useState<number | null>(null)
+  const [videoDuration, setVideoDuration] = useState<number | null>(null)
+  const [textContent, setTextContent] = useState<string | null>(null)
 
   const isImage =
     normalizedFileType === 'image' ||
@@ -64,6 +67,8 @@ function DocCardThumbnail({
   const isVideo =
     normalizedFileType === 'video' ||
     /\.(mp4|mov|avi|wmv|flv|mkv|webm)$/i.test(normalizedFileName)
+  const renderKind = getDocRenderKind(fileType, fileName)
+  const isTextLike = renderKind === 'text' || renderKind === 'code'
 
   useEffect(() => {
     if (!fileURL || !isMarkdown) return
@@ -80,6 +85,14 @@ function DocCardThumbnail({
       .then(setHtmlContent)
       .catch(() => null)
   }, [fileURL, isHTML])
+
+  useEffect(() => {
+    if (!fileURL || !isTextLike) return
+    fetch(fileURL)
+      .then((r) => r.text())
+      .then(setTextContent)
+      .catch(() => null)
+  }, [fileURL, isTextLike])
 
   useEffect(() => {
     if (!fileURL || !isPDF) return
@@ -116,17 +129,50 @@ function DocCardThumbnail({
 
   if (isVideo) {
     return (
-      <video
-        src={fileURL}
-        muted
-        playsInline
-        preload="metadata"
-        className="h-full w-full object-cover"
-      />
+      <div className="relative h-full w-full">
+        <video
+          src={fileURL}
+          muted
+          playsInline
+          preload="metadata"
+          className="h-full w-full object-cover"
+          onLoadedMetadata={(e) => setVideoDuration(e.currentTarget.duration)}
+        />
+        {videoDuration !== null && (
+          <span className="absolute right-2 bottom-2 rounded-md bg-black/70 px-1.5 py-0.5 font-mono text-[11px] text-white">
+            {Math.floor(videoDuration / 60)}:
+            {Math.floor(videoDuration % 60)
+              .toString()
+              .padStart(2, '0')}
+          </span>
+        )}
+      </div>
     )
   }
 
-  if (isAudio) return <>{fallback}</>
+  if (isAudio) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 [&_svg]:size-10 [&_svg]:shrink-0 [&_svg]:stroke-[1.15]">
+        {getDocumentFileTypeIcon('audio')}
+        {audioDuration !== null && (
+          <span className="font-mono text-xs text-[#828DA3]">
+            {Math.floor(audioDuration / 60)}:
+            {Math.floor(audioDuration % 60)
+              .toString()
+              .padStart(2, '0')}
+          </span>
+        )}
+        <audio
+          src={fileURL}
+          preload="metadata"
+          className="hidden"
+          onLoadedMetadata={(e) => setAudioDuration(e.currentTarget.duration)}
+        >
+          <track kind="captions" />
+        </audio>
+      </div>
+    )
+  }
 
   if (isPDF || isHTML) {
     if (isHTML && htmlContent === null) return <>{fallback}</>
@@ -147,6 +193,7 @@ function DocCardThumbnail({
             transform: 'scale(0.25)',
             transformOrigin: '0 0',
             border: 'none',
+            backgroundColor: isHTML ? '#ffffff' : undefined,
           }}
           sandbox={isHTML ? 'allow-same-origin allow-scripts' : undefined}
           title="preview"
@@ -172,6 +219,17 @@ function DocCardThumbnail({
           {getDocumentFileTypeIcon('markdown')}
         </div>
         <p className="text-[13px] leading-relaxed text-[#828DA3]">{excerpt}</p>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#141925] to-transparent" />
+      </div>
+    )
+  }
+
+  if (isTextLike && textContent !== null) {
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-[#1A2030] to-[#141925] p-5">
+        <pre className="font-mono text-[10px] leading-relaxed break-words whitespace-pre-wrap text-[#828DA3]">
+          {textContent.slice(0, 700)}
+        </pre>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#141925] to-transparent" />
       </div>
     )
@@ -262,7 +320,7 @@ export function DocCard({ doc }: { doc: DashboardDoc }) {
       >
         <div
           className={cn(
-            'relative cursor-pointer overflow-hidden rounded-[1.4525rem] bg-[#141925] shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#2A3242] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]',
+            'relative cursor-pointer overflow-hidden rounded-[1.4525rem] bg-[#141925] shadow-[0_1px_3px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-[#2A3242] transition-all duration-300 hover:shadow-[0_0_0_3px_rgba(1,90,235,0.18),0_8px_24px_rgba(0,0,0,0.10)] hover:ring-2 hover:ring-[#015AEB]',
             !doc.fileUrl && 'cursor-default opacity-60'
           )}
           onClick={doc.fileUrl ? handleOpen : undefined}
