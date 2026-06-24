@@ -144,9 +144,21 @@ export function FocalPointMetaSection({
     window.open(`/services/${serviceId}/docs?open=${serviceDocId}`)
   }
 
+  function startApiContract(meta: PointMeta) {
+    const [serviceId, apiGroupId, apiEndpointId] = (
+      meta.componentLinkId ?? ''
+    ).split(':')
+    if (!serviceId || !apiGroupId)
+      return toast.error('Invalid API contract link. Please try again.')
+    window.open(
+      `/services/${serviceId}/apis/${apiGroupId}?endpoint=${apiEndpointId}`
+    )
+  }
+
   function startCompositeLink(meta: PointMeta) {
     if (isTestSuite) return startTestSuite(meta)
     if (isServiceDoc) return startServiceDoc(meta)
+    if (isApiContract) return startApiContract(meta)
   }
 
   return (
@@ -328,7 +340,7 @@ export function FocalPointMetaSection({
           onSelect={async (formData) => {
             try {
               await createPointMeta(component.componentId!, {
-                componentLinkId: formData.apiEndpointId,
+                componentLinkId: `${formData.serviceId}:${formData.apiGroupId}:${formData.apiEndpointId}`,
               })
               setIsLinkModalOpen(false)
               toast.success('Focal point meta created successfully')
