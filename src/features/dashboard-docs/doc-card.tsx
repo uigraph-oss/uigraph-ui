@@ -13,6 +13,7 @@ import {
 import { ConfigureServiceDocModal } from '@/features/services/components/docs/configure-service-doc-modal'
 import { ServiceDocPreviewModal } from '@/features/services/components/docs/service-doc-preview-modal'
 import {
+  getDocRenderKind,
   getDocumentFileTypeIcon,
   getDocumentFileTypeLabel,
 } from '@/features/services/helpers/doc-file'
@@ -41,6 +42,8 @@ function DocCardThumbnail({
   const normalizedFileType = fileType?.toLowerCase() || ''
   const normalizedFileName = fileName?.toLowerCase() || ''
   const [markdownContent, setMarkdownContent] = useState<string | null>(null)
+  const [htmlContent, setHtmlContent] = useState<string | null>(null)
+  const [pdfBlobURL, setPdfBlobURL] = useState<string | null>(null)
 
   const isImage =
     normalizedFileType === 'image' ||
@@ -55,6 +58,12 @@ function DocCardThumbnail({
     normalizedFileType === 'markdown' ||
     normalizedFileName.endsWith('.md') ||
     normalizedFileName.endsWith('.markdown')
+  const isAudio =
+    normalizedFileType === 'audio' ||
+    /\.(mp3|wav|ogg|m4a|aac|flac|wma)$/i.test(normalizedFileName)
+  const isVideo =
+    normalizedFileType === 'video' ||
+    /\.(mp4|mov|avi|wmv|flv|mkv|webm)$/i.test(normalizedFileName)
 
   useEffect(() => {
     if (!fileURL || !isMarkdown) return
@@ -63,6 +72,35 @@ function DocCardThumbnail({
       .then(setMarkdownContent)
       .catch(() => null)
   }, [fileURL, isMarkdown])
+
+  useEffect(() => {
+    if (!fileURL || !isHTML) return
+    fetch(fileURL)
+      .then((r) => r.text())
+      .then(setHtmlContent)
+      .catch(() => null)
+  }, [fileURL, isHTML])
+
+  useEffect(() => {
+    if (!fileURL || !isPDF) return
+    let objectURL: string | null = null
+    let cancelled = false
+    fetch(fileURL)
+      .then((r) => r.blob())
+      .then((blob) => {
+        if (cancelled) return
+        objectURL = URL.createObjectURL(
+          blob.type ? blob : new Blob([blob], { type: 'application/pdf' })
+        )
+        setPdfBlobURL(objectURL)
+      })
+      .catch(() => null)
+    return () => {
+      cancelled = true
+      if (objectURL) URL.revokeObjectURL(objectURL)
+      setPdfBlobURL(null)
+    }
+  }, [fileURL, isPDF])
 
   if (!fileURL) return <>{fallback}</>
 
@@ -76,15 +114,32 @@ function DocCardThumbnail({
     )
   }
 
+  if (isVideo) {
+    return (
+      <video
+        src={fileURL}
+        muted
+        playsInline
+        preload="metadata"
+        className="h-full w-full object-cover"
+      />
+    )
+  }
+
+  if (isAudio) return <>{fallback}</>
+
   if (isPDF || isHTML) {
+    if (isHTML && htmlContent === null) return <>{fallback}</>
+    if (isPDF && pdfBlobURL === null) return <>{fallback}</>
     return (
       <div className="relative h-full w-full overflow-hidden">
         <iframe
           src={
             isPDF
-              ? `${fileURL}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
-              : fileURL
+              ? `${pdfBlobURL}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
+              : undefined
           }
+          srcDoc={isHTML ? (htmlContent ?? undefined) : undefined}
           className="pointer-events-none absolute top-0 left-0"
           style={{
             width: '400%',
@@ -187,6 +242,16 @@ export function DocCard({ doc }: { doc: DashboardDoc }) {
     : doc.createdAt
       ? new Date(doc.createdAt)
       : null
+
+  const previewKind = getDocRenderKind(doc.fileType, doc.fileName)
+  const previewDialogClassName =
+    previewKind === 'audio'
+      ? '[--width:min(90vw,38rem)]'
+      : previewKind === 'video'
+        ? '[--width:min(92vw,64rem)]'
+        : previewKind === 'image'
+          ? '[--width:min(92vw,72rem)]'
+          : 'min-h-[95vh] [--width:min(95vw,100rem)]'
 
   return (
     <>
@@ -346,7 +411,7 @@ export function DocCard({ doc }: { doc: DashboardDoc }) {
       <BetterDialogProvider
         open={isPreviewModalOpen}
         onOpenChange={setPreviewModalOpen}
-        className="min-h-[95vh] [--width:min(95vw,100rem)]"
+        className={previewDialogClassName}
       >
         <ServiceDocPreviewModal
           fileURL={doc.fileUrl || undefined}
