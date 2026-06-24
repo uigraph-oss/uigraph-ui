@@ -134,6 +134,11 @@ const AiChatInboxPage = lazy(() =>
     default: mod.AiChatInboxPage,
   }))
 )
+const DashboardInsightsPage = lazy(() =>
+  import('@/features/dashboard-insights/dashboard-insights-page').then(
+    (mod) => ({ default: mod.DashboardInsightsPage })
+  )
+)
 const DashboardServices = lazy(() =>
   import('@/features/services/components/services-list/dashboard-services').then(
     (mod) => ({ default: mod.DashboardServices })
@@ -312,6 +317,11 @@ export function AppRoutes() {
               element={<AiChatInboxPage />}
             />
           </Route>
+
+          <Route
+            path="/dashboard/insights"
+            element={<DashboardInsightsPage />}
+          />
 
           <Route path="/services" element={<DashboardServices />} />
           <Route path="/services/:serviceId" element={<ServiceLayout />}>
