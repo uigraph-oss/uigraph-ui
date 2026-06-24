@@ -48,8 +48,8 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     nested: true,
   },
   {
-    id: '/dashboard/components',
-    label: 'Components',
+    id: '/dashboard/catalog',
+    label: 'Catalog',
     icon: <GoProjectTemplate />,
     nested: true,
   },

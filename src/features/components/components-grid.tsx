@@ -50,7 +50,7 @@ function ComponentCard({
   return (
     <div className={cn('group relative', !isDeleting && 'magic-shadow')}>
       <Link
-        to={`/dashboard/components/?component=${component.componentId}`}
+        to={`/dashboard/catalog/?component=${component.componentId}`}
         className={cn(
           'border-stock flex h-[7.1875rem] flex-col justify-between rounded-2xl border bg-[#141925] p-4 transition-all',
           isDeleting && 'pointer-events-none opacity-80',

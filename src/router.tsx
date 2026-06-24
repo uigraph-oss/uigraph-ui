@@ -288,7 +288,7 @@ export function AppRoutes() {
             element={<DashboardDiagramsPage />}
           />
           <Route path="/dashboard/docs" element={<DashboardDocsPage />} />
-          <Route path="/dashboard/components" element={<ComponentsPage />} />
+          <Route path="/dashboard/catalog" element={<ComponentsPage />} />
           <Route path="/dashboard/maps" element={<DashboardProjects />} />
           <Route
             path="/dashboard/maps/:mapId"
