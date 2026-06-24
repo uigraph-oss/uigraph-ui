@@ -52,7 +52,7 @@ export function DashboardServiceDocs() {
       >
         <Button preset="primary" onClick={() => setIsAddDocModalOpen(true)}>
           <CirclePlusIcon />
-          Upload Documentation
+          Upload
         </Button>
 
         <BetterDialogProvider
