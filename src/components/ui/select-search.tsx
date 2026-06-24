@@ -1,6 +1,6 @@
 import { useFuse } from '@/features/diagram-portal/hooks/use-fuse'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Input } from './input'
 import {
   Select,
@@ -13,7 +13,7 @@ import {
 type SelectSearchProps = {
   value: string
   onChange: (value: string) => void
-  options: { label: string; value: string }[]
+  options: { label: string; value: string; node?: ReactNode }[]
 
   disabled?: boolean
   className?: string
@@ -60,7 +60,7 @@ export function SelectSearch({
       <SelectContent>
         <Input
           placeholder="Search..."
-          className="bg-input/80"
+          className="bg-input/80 mb-1"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -75,7 +75,7 @@ export function SelectSearch({
             value={option.value}
             hidden={!filteredOptions.some((o) => o.value === option.value)}
           >
-            {option.label}
+            {option.node ?? option.label}
           </SelectItem>
         ))}
 

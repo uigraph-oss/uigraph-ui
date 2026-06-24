@@ -110,10 +110,17 @@ function FocalPointMetaModalContent({
     }
 
     submit(
-      buildMetaData(fields, duplicatedMetaData).map((field) => ({
-        ...field,
-        options: arrayNonNullable(field.options),
-      }))
+      buildMetaData(fields, duplicatedMetaData).map((field) => {
+        const { readonly, ...rest } = field as ComponentFieldInput & {
+          readonly?: boolean | null
+        }
+
+        return {
+          ...rest,
+          isReadonly: rest.isReadonly ?? readonly ?? null,
+          options: arrayNonNullable(rest.options),
+        }
+      })
     )
       .then(() => {
         setIsLoading(false)

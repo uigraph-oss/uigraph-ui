@@ -95,9 +95,7 @@ export function ConfigureServiceDocModal({
 
   return (
     <BetterDialogContent
-      title={
-        mode === 'create' ? 'Upload Documentation' : 'Update Documentation'
-      }
+      title={mode === 'create' ? 'Upload' : 'Update'}
       description={
         mode === 'create'
           ? 'Upload PDF, README, HTML, or other documentation files.'

@@ -65,6 +65,124 @@ export const DOCUMENT_FILE_TYPES: DocumentFileType[] = [
   },
 ]
 
+export type DocRenderKind =
+  | 'pdf'
+  | 'image'
+  | 'audio'
+  | 'video'
+  | 'html'
+  | 'markdown'
+  | 'code'
+  | 'text'
+
+const IMAGE_EXTENSION_REGEX = /\.(jpg|jpeg|png|gif|svg|webp|bmp|ico)$/i
+const AUDIO_EXTENSION_REGEX = /\.(mp3|wav|ogg|m4a|aac|flac|wma)$/i
+const VIDEO_EXTENSION_REGEX = /\.(mp4|mov|avi|wmv|flv|mkv|webm)$/i
+
+const CODE_EXTENSIONS = [
+  '.js',
+  '.jsx',
+  '.ts',
+  '.tsx',
+  '.py',
+  '.rb',
+  '.go',
+  '.java',
+  '.cpp',
+  '.c',
+  '.cs',
+  '.php',
+  '.swift',
+  '.kt',
+  '.rs',
+  '.sh',
+  '.bash',
+  '.zsh',
+  '.yml',
+  '.yaml',
+  '.json',
+  '.xml',
+  '.css',
+  '.scss',
+  '.sql',
+  '.graphql',
+  '.dockerfile',
+  '.vue',
+  '.svelte',
+  '.r',
+  '.m',
+  '.mm',
+  '.h',
+  '.hpp',
+  '.cc',
+  '.cxx',
+  '.pl',
+  '.pm',
+  '.lua',
+  '.dart',
+  '.ex',
+  '.exs',
+  '.elm',
+  '.clj',
+  '.cljs',
+  '.hs',
+  '.ml',
+  '.mli',
+  '.fs',
+  '.fsx',
+  '.vb',
+  '.ps1',
+  '.psm1',
+  '.psd1',
+  '.coffee',
+  '.litcoffee',
+  '.iced',
+  '.less',
+  '.sass',
+  '.styl',
+  '.stylus',
+  '.jade',
+  '.pug',
+  '.haml',
+  '.erb',
+  '.rhtml',
+  '.slim',
+  '.twig',
+  '.liquid',
+  '.mustache',
+  '.hbs',
+  '.handlebars',
+  '.ejs',
+  '.njk',
+  '.nunjucks',
+  '.jinja',
+  '.jinja2',
+]
+
+export function getDocRenderKind(
+  fileType?: string | null,
+  fileName?: string | null
+): DocRenderKind {
+  const type = fileType?.toLowerCase() || ''
+  const name = fileName?.toLowerCase() || ''
+
+  if (type === 'pdf' || name.endsWith('.pdf')) return 'pdf'
+  if (type === 'image' || IMAGE_EXTENSION_REGEX.test(name)) return 'image'
+  if (type === 'audio' || AUDIO_EXTENSION_REGEX.test(name)) return 'audio'
+  if (type === 'video' || VIDEO_EXTENSION_REGEX.test(name)) return 'video'
+  if (type === 'html' || name.endsWith('.html') || name.endsWith('.htm'))
+    return 'html'
+  if (
+    type === 'readme' ||
+    type === 'markdown' ||
+    name.endsWith('.md') ||
+    name.endsWith('.markdown')
+  )
+    return 'markdown'
+  if (CODE_EXTENSIONS.some((ext) => name.endsWith(ext))) return 'code'
+  return 'text'
+}
+
 export function getDocumentFileTypeKey(extension: string) {
   return (
     DOCUMENT_FILE_TYPES.find((type) => type.extensions.includes(extension))

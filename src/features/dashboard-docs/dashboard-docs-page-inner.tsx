@@ -43,7 +43,7 @@ function DashboardDocsPageContent() {
 
           <Button preset="cta" onClick={() => setIsUploadDocOpen(true)}>
             <CirclePlusIcon />
-            Upload Documentation
+            Upload
           </Button>
         </div>
       }

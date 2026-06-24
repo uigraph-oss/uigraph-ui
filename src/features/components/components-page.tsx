@@ -30,12 +30,12 @@ function ComponentsPageInner() {
 
   return (
     <DashboardPageSectionLayout
-      title="Component Manager"
+      title="Catalog Manager"
       description="Create and manage your application components"
-      crumbs={[{ to: '/dashboard/components', label: 'Components' }]}
+      crumbs={[{ to: '/dashboard/catalog', label: 'Catalog' }]}
       headerContent={
         <Button asChild className="h-11 gap-2 rounded-[0.8125rem]">
-          <Link to="/dashboard/components?component=new">
+          <Link to="/dashboard/catalog?component=new">
             <CirclePlusIcon />
             New Component
           </Link>
@@ -46,7 +46,7 @@ function ComponentsPageInner() {
 
       <ConfigureComponentModal
         open={Boolean(componentId || selectedComponent)}
-        onOpenChange={() => navigate('/dashboard/components')}
+        onOpenChange={() => navigate('/dashboard/catalog')}
         nativeComponents={nativeComponents}
         selectedComponent={selectedComponent ?? null}
         onSubmit={async (name, category, description, fields) => {
@@ -60,7 +60,7 @@ function ComponentsPageInner() {
                 fields
               )
 
-              void navigate('/dashboard/components')
+              void navigate('/dashboard/catalog')
               toast.success('Component updated successfully!')
             } catch {
               toast.error('Error updating component. Please try again later.')
@@ -69,7 +69,7 @@ function ComponentsPageInner() {
             try {
               await createCustomComponent(name, category, description, fields)
 
-              void navigate('/dashboard/components')
+              void navigate('/dashboard/catalog')
               toast.success('Component created successfully!')
             } catch {
               toast.error('Error creating component. Please try again later.')
