@@ -24,35 +24,56 @@ export type DashboardDoc = {
 }
 
 export const DOCS = graphql(`
-  query Docs($orgId: ID!, $folderId: ID) {
-    docs(orgId: $orgId, folderId: $folderId) {
-      id
-      orgId
-      folderId
-      teamId
-      fileAssetId
-      fileUrl
-      fileName
-      fileType
-      description
-      contentHash
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      createdByActor {
+  query Docs(
+    $orgId: ID!
+    $folderId: ID
+    $teamId: ID
+    $search: String
+    $sortBy: String
+    $sortDir: String
+    $limit: Int
+    $offset: Int
+  ) {
+    docs(
+      orgId: $orgId
+      folderId: $folderId
+      teamId: $teamId
+      search: $search
+      sortBy: $sortBy
+      sortDir: $sortDir
+      limit: $limit
+      offset: $offset
+    ) {
+      totalCount
+      items {
         id
-        type
-        name
-        email
-        avatarUrl
-      }
-      updatedByActor {
-        id
-        type
-        name
-        email
-        avatarUrl
+        orgId
+        folderId
+        teamId
+        fileAssetId
+        fileUrl
+        fileName
+        fileType
+        description
+        contentHash
+        createdBy
+        updatedBy
+        createdAt
+        updatedAt
+        createdByActor {
+          id
+          type
+          name
+          email
+          avatarUrl
+        }
+        updatedByActor {
+          id
+          type
+          name
+          email
+          avatarUrl
+        }
       }
     }
   }

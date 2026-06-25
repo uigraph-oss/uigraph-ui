@@ -52,7 +52,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
   return (
     <section
       ref={containerRef}
-      className="bg-shading flex h-screen flex-1 flex-col rounded-[20px] select-none"
+      className="bg-shading flex h-screen flex-1 flex-col select-none"
     >
       <style>{`:root { --react-flow-scale: ${viewport?.zoom ?? 1}}`}</style>
 

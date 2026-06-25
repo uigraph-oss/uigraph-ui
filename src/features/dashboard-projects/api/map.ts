@@ -16,20 +16,41 @@ export type DashboardMap = {
 }
 
 export const MAPS = graphql(`
-  query Maps($orgId: ID!, $folderId: ID) {
-    maps(orgId: $orgId, folderId: $folderId) {
-      id
-      orgId
-      folderId
-      teamId
-      name
-      description
-      status
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      previewImgUrls
+  query Maps(
+    $orgId: ID!
+    $folderId: ID
+    $teamId: ID
+    $search: String
+    $sortBy: String
+    $sortDir: String
+    $limit: Int
+    $offset: Int
+  ) {
+    maps(
+      orgId: $orgId
+      folderId: $folderId
+      teamId: $teamId
+      search: $search
+      sortBy: $sortBy
+      sortDir: $sortDir
+      limit: $limit
+      offset: $offset
+    ) {
+      totalCount
+      items {
+        id
+        orgId
+        folderId
+        teamId
+        name
+        description
+        status
+        createdBy
+        updatedBy
+        createdAt
+        updatedAt
+        previewImgUrls
+      }
     }
   }
 `)

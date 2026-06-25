@@ -30,35 +30,54 @@ export type DashboardFrame = {
 }
 
 export const FRAMES = graphql(`
-  query Frames($orgId: ID!, $mapId: ID!) {
-    frames(orgId: $orgId, mapId: $mapId) {
-      id
-      mapId
-      orgId
-      parentFrameId
-      name
-      description
-      templateType
-      screenshotAssetId
-      screenshotImageUrl
-      screenshotContentHash
-      status
-      order
-      source
-      focalPointCount
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      createdByActor {
+  query Frames(
+    $orgId: ID!
+    $mapId: ID!
+    $search: String
+    $sortBy: String
+    $sortDir: String
+    $limit: Int
+    $offset: Int
+  ) {
+    frames(
+      orgId: $orgId
+      mapId: $mapId
+      search: $search
+      sortBy: $sortBy
+      sortDir: $sortDir
+      limit: $limit
+      offset: $offset
+    ) {
+      totalCount
+      items {
         id
+        mapId
+        orgId
+        parentFrameId
         name
-        avatarUrl
-      }
-      updatedByActor {
-        id
-        name
-        avatarUrl
+        description
+        templateType
+        screenshotAssetId
+        screenshotImageUrl
+        screenshotContentHash
+        status
+        order
+        source
+        focalPointCount
+        createdBy
+        updatedBy
+        createdAt
+        updatedAt
+        createdByActor {
+          id
+          name
+          avatarUrl
+        }
+        updatedByActor {
+          id
+          name
+          avatarUrl
+        }
       }
     }
   }

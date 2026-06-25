@@ -1,8 +1,11 @@
 import { GT } from '@/api'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   CREATE_CUSTOM_COMPONENT,
   DELETE_CUSTOM_COMPONENT,
@@ -10,6 +13,8 @@ import {
   UPDATE_CUSTOM_COMPONENT,
 } from '../api/components'
 import { ComponentField } from '../components/configure-component/component-field-list'
+
+const PAGE_SIZE = 24
 
 function mapComponentFields(fields: ComponentField[]) {
   return fields.map((field, i) => ({
@@ -32,6 +37,15 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       skip: !organizationId,
     })
 
+    const [sortBy, setSortBy] = useScopedStorage('catalog:sort', 'name')
+    const [search, setSearch] = useState('')
+    const debouncedSearch = useDebouncedValue(search)
+    const [page, setPage] = useState(0)
+
+    useEffect(() => {
+      setPage(0)
+    }, [sortBy, debouncedSearch])
+
     const refetchQueries = [
       { query: GET_COMPONENTS, variables: { orgId: organizationId } },
     ]
@@ -51,11 +65,47 @@ export const [CustomComponentsContextProvider, useCustomComponentsContext] =
       refetchQueries,
     })
 
+    const allCustomComponents = arrayNonNullable(
+      data?.components?.customComponents
+    )
+
+    const filteredComponents = useMemo(() => {
+      let result = allCustomComponents
+      if (debouncedSearch) {
+        const q = debouncedSearch.toLowerCase()
+        result = result.filter((c) => c.name?.toLowerCase().includes(q))
+      }
+      if (sortBy === 'name') {
+        result = [...result].sort((a, b) => a.name!.localeCompare(b.name!))
+      } else if (sortBy === 'created') {
+        result = [...result].sort(
+          (a, b) =>
+            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+        )
+      }
+      return result
+    }, [allCustomComponents, debouncedSearch, sortBy])
+
+    const pagedComponents = filteredComponents.slice(
+      page * PAGE_SIZE,
+      page * PAGE_SIZE + PAGE_SIZE
+    )
+
     return {
       fetchingComponents: loading,
       loadingComponents: loading && !data?.components?.customComponents?.length,
       nativeComponents: arrayNonNullable(data?.components?.components),
-      customComponents: arrayNonNullable(data?.components?.customComponents),
+      customComponents: allCustomComponents,
+
+      filteredComponents: pagedComponents,
+      totalCount: filteredComponents.length,
+      pageSize: PAGE_SIZE,
+      page,
+      setPage,
+      sortBy,
+      setSortBy,
+      search,
+      setSearch,
 
       createCustomComponent(
         name: string,

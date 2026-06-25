@@ -270,7 +270,7 @@ function NodeDatabaseTablePropertiesLocalSource() {
               {primaryKeys.map((pk) => (
                 <span
                   key={pk}
-                  className="inline-flex items-center rounded bg-amber-100 px-2 py-0.5 font-mono text-xs text-amber-700"
+                  className="inline-flex items-center rounded bg-amber-500/15 px-2 py-0.5 font-mono text-xs text-amber-400"
                 >
                   {pk}
                 </span>
@@ -290,13 +290,13 @@ function NodeDatabaseTablePropertiesLocalSource() {
                 fk.columns.map((columnName, colIndex) => (
                   <div
                     key={`${fkIndex}-${colIndex}`}
-                    className="rounded bg-blue-50 px-2 py-1 text-xs"
+                    className="rounded bg-blue-500/10 px-2 py-1 text-xs"
                   >
-                    <span className="font-mono text-blue-700">
+                    <span className="font-mono text-blue-400">
                       {columnName}
                     </span>
                     <span className="text-muted-foreground"> → </span>
-                    <span className="font-mono text-blue-700">
+                    <span className="font-mono text-blue-400">
                       {fk.referencedTable}.
                       {fk.referencedColumns[colIndex] ??
                         fk.referencedColumns[0]}
@@ -361,7 +361,7 @@ function NodeDatabaseTablePropertiesRemoteSource() {
   }, [serviceDb, serviceTable?.tableName])
 
   const remoteNote = (
-    <div className="rounded bg-red-50 p-2 text-xs text-red-700">
+    <div className="rounded border border-red-500/20 bg-red-500/10 p-2 text-xs text-red-400">
       <strong className="font-semibold">Note:</strong> This is a remote source
       and you cannot edit it directly. To edit it, use the service database data
       source editor in the service details panel.

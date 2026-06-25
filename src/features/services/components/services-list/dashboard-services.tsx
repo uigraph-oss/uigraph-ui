@@ -27,19 +27,21 @@ import { ServiceCard } from './service-card'
 
 export function DashboardServices() {
   const [createServiceOpen, setCreateServiceOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   const {
     orgId,
     services,
-    allServices,
     isServicesLoading,
     statsByServiceId,
     isStatsLoading,
     teams,
     selectedTeamId,
     setSelectedTeamId,
+    sortBy,
+    setSortBy,
+    search,
+    setSearch,
     createService,
     updateService,
     deleteService,
@@ -65,17 +67,11 @@ export function DashboardServices() {
   }, [services])
 
   const filtered = useMemo(() => {
-    return services.filter((s) => {
-      const matchesSearch =
-        !searchQuery ||
-        s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory =
-        !activeCategory ||
-        s.category?.toLowerCase() === activeCategory.toLowerCase()
-      return matchesSearch && matchesCategory
-    })
-  }, [services, searchQuery, activeCategory])
+    if (!activeCategory) return services
+    return services.filter(
+      (s) => s.category?.toLowerCase() === activeCategory.toLowerCase()
+    )
+  }, [services, activeCategory])
 
   return (
     <DashboardPageSectionLayout
@@ -91,14 +87,12 @@ export function DashboardServices() {
     >
       {isServicesLoading ? (
         <SectionLoader label="Loading services..." />
-      ) : allServices.length === 0 ? (
-        <SectionNotFound label="No services yet." />
       ) : (
         <>
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search services..."
               className="h-10 w-52 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
             />
@@ -123,6 +117,17 @@ export function DashboardServices() {
                 </SelectContent>
               </Select>
             )}
+
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="h-10 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="created">Newest</SelectItem>
+                <SelectItem value="updated">Recently updated</SelectItem>
+              </SelectContent>
+            </Select>
 
             <div className="flex items-center gap-0.5 rounded-lg bg-[#1E2533] p-0.5 ring-1 ring-[#2A3242]">
               <FilterPill

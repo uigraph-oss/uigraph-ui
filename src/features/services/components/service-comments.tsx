@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { mockComments } from '@/features/services/constants/mock-data'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useState } from 'react'
 import { ServiceComment } from '../types'
 
@@ -20,10 +21,16 @@ interface ServiceCommentsProps {
   serviceId: string
 }
 
-export function ServiceComments({}: ServiceCommentsProps) {
+export function ServiceComments({ serviceId }: ServiceCommentsProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState<string>('all')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterType, setFilterType] = useScopedStorage(
+    `${serviceId}:comments-type`,
+    'all'
+  )
+  const [filterStatus, setFilterStatus] = useScopedStorage(
+    `${serviceId}:comments-status`,
+    'all'
+  )
   const [selectedComment, setSelectedComment] = useState<ServiceComment | null>(
     null
   )

@@ -60,8 +60,8 @@ export const [SingleProjectProvider, useSingleProject] = createContext(
       loading: mapQuery.loading && !mapQuery.data?.map,
       map: useMemo(() => mapQuery.data?.map ?? null, [mapQuery.data?.map]),
       frames: useMemo(
-        () => arrayNonNullable(framesQuery.data?.frames),
-        [framesQuery.data?.frames]
+        () => arrayNonNullable(framesQuery.data?.frames.items),
+        [framesQuery.data?.frames.items]
       ),
 
       mapId,

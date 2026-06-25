@@ -57,7 +57,7 @@ export function ServiceDocSelectionModal({
   )
 
   const services = useMemo(
-    () => arrayNonNullable(servicesData?.services),
+    () => arrayNonNullable(servicesData?.services.items),
     [servicesData]
   )
 

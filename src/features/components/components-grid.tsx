@@ -12,11 +12,11 @@ import { toast } from 'sonner'
 import { useCustomComponentsContext } from './context/custom-components-context'
 
 export function ComponentsGrid() {
-  const { customComponents, loadingComponents } = useCustomComponentsContext()
+  const { filteredComponents, loadingComponents } = useCustomComponentsContext()
 
   if (loadingComponents) return <SectionLoader />
 
-  if (customComponents.length === 0) {
+  if (filteredComponents.length === 0) {
     return <SectionNotFound label="No components available" />
   }
 
@@ -25,7 +25,7 @@ export function ComponentsGrid() {
       className="grid gap-2"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}
     >
-      {customComponents.map((component) => (
+      {filteredComponents.map((component) => (
         <ComponentCard key={component.componentId} component={component} />
       ))}
     </div>

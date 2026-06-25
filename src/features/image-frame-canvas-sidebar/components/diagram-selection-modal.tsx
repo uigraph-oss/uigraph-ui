@@ -24,7 +24,7 @@ export function DiagramSelectionModal({
     fetchPolicy: 'cache-first',
   })
 
-  const diagrams = arrayNonNullable(diagramsData?.diagrams)
+  const diagrams = arrayNonNullable(diagramsData?.diagrams.items)
 
   async function handleSelect() {
     if (!selectedDiagramId) return

@@ -40,10 +40,12 @@ export function usePanelServicesDb() {
 
     services: useMemo(
       () =>
-        arrayNonNullable(servicesResult.data?.services).map((service) => ({
-          ...service,
-          serviceId: service.id,
-        })),
+        arrayNonNullable(servicesResult.data?.services.items).map(
+          (service) => ({
+            ...service,
+            serviceId: service.id,
+          })
+        ),
       [servicesResult.data]
     ),
 

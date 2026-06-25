@@ -7,13 +7,17 @@ import {
 } from '@/features/dashboard-diagrams/api/folders'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CREATE_DOC, DELETE_DOC, DOCS, UPDATE_DOC } from '../api/docs'
+
+const PAGE_SIZE = 24
 
 export const [DocsContextProvider, useDocsContext] = createContext(() => {
   const organization = useCurrentOrganization()
@@ -21,12 +25,24 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
 
   const [searchParams, setSearchParams] = useSearchParamsState(
     'folder',
-    'parent',
-    'team'
+    'parent'
   )
 
   const selectedFolderId = searchParams.folder
-  const selectedTeamId = searchParams.team
+
+  const [selectedTeamId, setSelectedTeamId] = useScopedStorage<string | null>(
+    'docs:team',
+    null
+  )
+  const [sortBy, setSortBy] = useScopedStorage('docs:sort', 'created')
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search)
+  const [page, setPage] = useState(0)
+  const sortDir = sortBy === 'name' ? 'asc' : 'desc'
+
+  useEffect(() => {
+    setPage(0)
+  }, [selectedTeamId, sortBy, debouncedSearch, selectedFolderId])
 
   const foldersQuery = useQuery(FOLDERS, {
     fetchPolicy: 'cache-and-network',
@@ -40,6 +56,12 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
     variables: {
       orgId: orgId!,
       folderId: selectedFolderId,
+      teamId: selectedTeamId,
+      search: debouncedSearch || null,
+      sortBy,
+      sortDir,
+      limit: PAGE_SIZE,
+      offset: page * PAGE_SIZE,
     },
   })
 
@@ -138,15 +160,12 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
     [parentFolderData.data?.folder]
   )
 
-  const allDocs = useMemo(
-    () => arrayNonNullable(docsQuery.data?.docs ?? []),
-    [docsQuery.data?.docs]
+  const docs = useMemo(
+    () => arrayNonNullable(docsQuery.data?.docs.items ?? []),
+    [docsQuery.data?.docs.items]
   )
 
-  const docs = useMemo(() => {
-    if (!selectedTeamId) return allDocs
-    return allDocs.filter((d) => d.teamId === selectedTeamId)
-  }, [allDocs, selectedTeamId])
+  const totalCount = docsQuery.data?.docs.totalCount ?? 0
 
   const isFolderDataLoading =
     folderData.loading && !folderData.data?.folder && !!selectedFolderId
@@ -159,6 +178,10 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
     folders,
     allFolders,
     docs,
+    totalCount,
+    pageSize: PAGE_SIZE,
+    page,
+    setPage,
     isLoading: isFolderDataLoading || isFolderAndDocsDataLoading,
 
     selectedFolder,
@@ -169,9 +192,12 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
     },
 
     selectedTeamId,
-    setSelectedTeamId: (teamId: string | null) => {
-      setSearchParams({ team: teamId })
-    },
+    setSelectedTeamId,
+
+    sortBy,
+    setSortBy,
+    search,
+    setSearch,
 
     teams,
     orgUsers,

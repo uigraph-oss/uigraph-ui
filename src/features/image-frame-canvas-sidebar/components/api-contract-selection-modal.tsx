@@ -91,7 +91,7 @@ export function ApiContractSelectionModal({
   )
 
   const services = useMemo(
-    () => arrayNonNullable(servicesData?.services),
+    () => arrayNonNullable(servicesData?.services.items),
     [servicesData]
   )
 

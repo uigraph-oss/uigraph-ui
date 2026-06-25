@@ -21,33 +21,54 @@ export type DashboardDiagram = {
 }
 
 export const DIAGRAMS = graphql(`
-  query Diagrams($orgId: ID!, $folderId: ID) {
-    diagrams(orgId: $orgId, folderId: $folderId) {
-      id
-      orgId
-      folderId
-      teamId
-      name
-      previewAssetId
-      previewImageUrl
-      previewContentHash
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      createdByActor {
+  query Diagrams(
+    $orgId: ID!
+    $folderId: ID
+    $teamId: ID
+    $search: String
+    $sortBy: String
+    $sortDir: String
+    $limit: Int
+    $offset: Int
+  ) {
+    diagrams(
+      orgId: $orgId
+      folderId: $folderId
+      teamId: $teamId
+      search: $search
+      sortBy: $sortBy
+      sortDir: $sortDir
+      limit: $limit
+      offset: $offset
+    ) {
+      totalCount
+      items {
         id
-        type
+        orgId
+        folderId
+        teamId
         name
-        email
-        avatarUrl
-      }
-      updatedByActor {
-        id
-        type
-        name
-        email
-        avatarUrl
+        previewAssetId
+        previewImageUrl
+        previewContentHash
+        createdBy
+        updatedBy
+        createdAt
+        updatedAt
+        createdByActor {
+          id
+          type
+          name
+          email
+          avatarUrl
+        }
+        updatedByActor {
+          id
+          type
+          name
+          email
+          avatarUrl
+        }
       }
     }
   }

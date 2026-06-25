@@ -34,17 +34,17 @@ import { useDocsContext } from './contexts/docs-context'
 import { DocCard } from './doc-card'
 import { getDragData } from './helpers/dnd-handler'
 
-const PAGE_SIZE = 12
-
 export function DocsFolder() {
   const organization = useCurrentOrganization()
-  const [searchQuery, setSearchQuery] = useState('')
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
-  const [page, setPage] = useState(0)
 
   const {
     folders,
     docs,
+    totalCount,
+    pageSize,
+    page,
+    setPage,
     isLoading,
     selectedFolder,
     parentFolder,
@@ -52,20 +52,16 @@ export function DocsFolder() {
     setSelectedFolderId,
     selectedTeamId,
     setSelectedTeamId,
+    sortBy,
+    setSortBy,
+    search,
+    setSearch,
     teams,
     createFolder,
   } = useDocsContext()
 
-  useEffect(() => {
-    setPage(0)
-  }, [selectedFolderId, selectedTeamId, searchQuery])
-
-  const filteredFolders = useFuse(folders, searchQuery, {
+  const filteredFolders = useFuse(folders, search, {
     keys: ['name'],
-  })
-
-  const filteredDocs = useFuse(docs, searchQuery, {
-    keys: ['fileName'],
   })
 
   if (isLoading) {
@@ -76,8 +72,8 @@ export function DocsFolder() {
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Search folders and docs"
           className="h-11 max-w-sm flex-1 rounded-[16px] border-[#2A3242] bg-transparent px-6 text-sm text-[#F4F7FC] shadow-none placeholder:text-[#586378] focus-visible:border-[#5C84FF]"
         />
@@ -99,6 +95,17 @@ export function DocsFolder() {
           </SelectContent>
         </Select>
 
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="h-11 w-40 shrink-0 rounded-[16px] border-[#2A3242] bg-transparent px-6 text-sm text-[#D2D9E6] shadow-none">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="created">Newest</SelectItem>
+            <SelectItem value="updated">Recently updated</SelectItem>
+            <SelectItem value="name">Name</SelectItem>
+          </SelectContent>
+        </Select>
+
         {selectedFolderId && (
           <Button
             preset="outline"
@@ -116,45 +123,35 @@ export function DocsFolder() {
       {Boolean(folders.length > 0 || selectedFolderId) && (
         <div className="space-y-3">
           <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
-            {!selectedFolderId && <AllDocsCard docsCount={docs.length} />}
+            {!selectedFolderId && <AllDocsCard docsCount={totalCount} />}
             {selectedFolderId && selectedFolder && (
-              <AllDocsCard docsCount={docs.length} folder={selectedFolder} />
+              <AllDocsCard docsCount={totalCount} folder={selectedFolder} />
             )}
 
             {filteredFolders.map((folder) => (
               <FolderChip key={folder.id} folder={folder} />
             ))}
 
-            {!selectedFolderId &&
-              filteredFolders.length === 0 &&
-              searchQuery && (
-                <span className="text-sm text-[#586378]">No folders found</span>
-              )}
+            {!selectedFolderId && filteredFolders.length === 0 && search && (
+              <span className="text-sm text-[#586378]">No folders found</span>
+            )}
           </div>
         </div>
       )}
 
       <div>
-        <h3 className="text-paragraph mb-3 text-sm font-medium">
-          {selectedFolder ? `Docs in ${selectedFolder.name}` : 'All Docs'}
-          <span className="text-paragraph/50 ml-1.5">
-            {searchQuery
-              ? `· ${filteredDocs.length} result${filteredDocs.length !== 1 ? 's' : ''}`
-              : `· ${docs.length}`}
-          </span>
-        </h3>
-
-        {filteredDocs.length > 0 ? (
+        {docs.length > 0 ? (
           <DocGrid
-            docs={filteredDocs}
+            docs={docs}
             page={page}
-            pageSize={PAGE_SIZE}
+            pageSize={pageSize}
+            totalCount={totalCount}
             onPageChange={setPage}
           />
         ) : (
           <SectionNotFound
             label={
-              searchQuery || selectedTeamId
+              search || selectedTeamId
                 ? 'No docs match your filters.'
                 : selectedFolder
                   ? 'No docs in this folder yet.'
@@ -225,16 +222,16 @@ function DocGrid({
   docs,
   page,
   pageSize,
+  totalCount,
   onPageChange,
 }: {
   docs: DashboardDoc[]
   page: number
   pageSize: number
+  totalCount: number
   onPageChange: (page: number) => void
 }) {
-  const totalPages = Math.ceil(docs.length / pageSize)
-  const start = page * pageSize
-  const pageItems = docs.slice(start, start + pageSize)
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
     <div className="space-y-4">
@@ -242,7 +239,7 @@ function DocGrid({
         className="grid gap-4"
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
       >
-        {pageItems.map((doc) => (
+        {docs.map((doc) => (
           <DocCard key={doc.id} doc={doc} />
         ))}
       </div>

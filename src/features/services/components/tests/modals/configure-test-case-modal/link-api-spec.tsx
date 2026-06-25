@@ -97,8 +97,8 @@ export function LinkApiSpecSelect({
     }
   )
 
-  const services = arrayNonNullable(servicesData?.services).filter((service) =>
-    Boolean(service.id)
+  const services = arrayNonNullable(servicesData?.services.items).filter(
+    (service) => Boolean(service.id)
   )
 
   const defaultExpandedServiceIds = useMemo(

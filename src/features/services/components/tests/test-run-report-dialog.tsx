@@ -952,7 +952,7 @@ export function TestRunReportDialog({
     skip: !orgId,
   })
   const serviceName =
-    arrayNonNullable(serviceData?.services).find(
+    arrayNonNullable(serviceData?.services.items).find(
       (service) => service.id === testRun.serviceId
     )?.name ?? null
   const [tabs, activeTab] = useBetterTabs(

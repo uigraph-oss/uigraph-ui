@@ -13,13 +13,13 @@ export function CommentsSection() {
   return (
     <div className="p-4">
       <div className="mb-4 flex items-center space-x-2">
-        <MessageCircle className="h-5 w-5 text-gray-600" />
+        <MessageCircle className="text-paragraph h-5 w-5" />
 
-        <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
+        <h3 className="text-lg font-semibold text-[#F4F7FC]">Comments</h3>
 
         <Badge
           variant="secondary"
-          className="bg-gray-100 text-xs text-gray-600"
+          className="bg-primary/20 text-primary text-xs"
         >
           {comments.length || 0}
         </Badge>
@@ -38,10 +38,10 @@ export function CommentsSection() {
             ))}
           </div>
         ) : (
-          <div className="py-8 text-center text-gray-500">
-            <MessageCircle className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+          <div className="text-paragraph py-8 text-center">
+            <MessageCircle className="text-paragraph/40 mx-auto mb-3 h-12 w-12" />
             <p className="text-sm">No comments yet</p>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="text-paragraph mt-1 text-xs">
               Start the conversation by adding a comment below
             </p>
           </div>

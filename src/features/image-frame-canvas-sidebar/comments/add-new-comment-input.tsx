@@ -40,10 +40,10 @@ export function AddNewCommentInput() {
   return (
     <div className="space-y-3">
       {!!replyToCommentId && (
-        <div className="flex items-center justify-between gap-3 rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600">
+        <div className="text-paragraph flex items-center justify-between gap-3 rounded-md border border-[#2A3242] bg-[#1E2533] px-3 py-2 text-xs">
           <div className="min-w-0 flex-1 truncate">
             Replying to{' '}
-            <span className="font-medium text-gray-800">
+            <span className="font-medium text-[#F4F7FC]">
               {replyToName || 'a comment'}
             </span>
           </div>
@@ -58,7 +58,11 @@ export function AddNewCommentInput() {
         </div>
       )}
       <div className={isSubmitting ? 'opacity-60' : ''}>
-        <InputEditor value={commentValue} setValue={setCommentValue} />
+        <InputEditor
+          value={commentValue}
+          setValue={setCommentValue}
+          theme="dark"
+        />
       </div>
 
       <div className="flex items-center justify-end">

@@ -73,13 +73,13 @@ export function AddLinkModal({ x, y }: AddLinkModalProps) {
   })
 
   const maps = useMemo(
-    () => arrayNonNullable(mapsQuery.data?.maps),
-    [mapsQuery.data?.maps]
+    () => arrayNonNullable(mapsQuery.data?.maps.items),
+    [mapsQuery.data?.maps.items]
   )
 
   const frames = useMemo(
-    () => arrayNonNullable(framesQuery.data?.frames),
-    [framesQuery.data?.frames]
+    () => arrayNonNullable(framesQuery.data?.frames.items),
+    [framesQuery.data?.frames.items]
   )
 
   return (
