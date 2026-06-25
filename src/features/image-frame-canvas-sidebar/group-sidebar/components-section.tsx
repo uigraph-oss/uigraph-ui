@@ -1,3 +1,4 @@
+import { GT } from '@/api'
 import { apolloClientGQL } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
@@ -7,8 +8,6 @@ import { toast } from 'sonner'
 import {
   DELETE_FOCAL_POINT_META,
   FOCAL_POINT_META,
-  PointMeta,
-  toPointMeta,
   UPDATE_FOCAL_POINT_META,
 } from '../api/focal-point-meta'
 import { FocalPointComponentsSection } from '../components/focal-point-component-group'
@@ -25,7 +24,7 @@ export function ComponentsSection({
   const orgId = useCurrentOrganization()?.id
 
   const [isPointMetaLoading, setIsPointMetaLoading] = useState(false)
-  const [pointMetaList, setPointMetaList] = useState<PointMeta[]>([])
+  const [pointMetaList, setPointMetaList] = useState<GT.FocalPointMeta[]>([])
 
   useEffect(() => {
     async function fetchPointMetaList() {
@@ -46,9 +45,9 @@ export function ComponentsSection({
         )
       )
 
-      const flat = results
-        .flatMap((result) => result.data?.focalPointMeta ?? [])
-        .map(toPointMeta)
+      const flat = results.flatMap(
+        (result) => result.data?.focalPointMeta ?? []
+      )
 
       setPointMetaList(flat)
     }
@@ -78,9 +77,7 @@ export function ComponentsSection({
         )
       }}
       deletePointMeta={async (pointMetaId) => {
-        const meta = pointMetaList.find(
-          (m) => m.focalPointMetaId === pointMetaId
-        )
+        const meta = pointMetaList.find((m) => m.id === pointMetaId)
         if (!meta) throw new Error('Point meta not found')
 
         await apolloClientGQL.mutate({
@@ -88,20 +85,16 @@ export function ComponentsSection({
           variables: {
             orgId: orgId!,
             mapId,
-            frameId: meta.pageId ?? '',
+            frameId: meta.frameId ?? '',
             focalPointId: meta.focalPointId ?? '',
             id: pointMetaId,
           },
         })
 
-        setPointMetaList((prev) =>
-          prev.filter((m) => m.focalPointMetaId !== pointMetaId)
-        )
+        setPointMetaList((prev) => prev.filter((m) => m.id !== pointMetaId))
       }}
       updatePointMeta={async (pointMetaId, componentId, input) => {
-        const meta = pointMetaList.find(
-          (m) => m.focalPointMetaId === pointMetaId
-        )
+        const meta = pointMetaList.find((m) => m.id === pointMetaId)
         if (!meta) throw new Error('Point meta not found')
 
         const { data } = await apolloClientGQL.mutate({
@@ -109,7 +102,7 @@ export function ComponentsSection({
           variables: {
             orgId: orgId!,
             mapId,
-            frameId: meta.pageId ?? '',
+            frameId: meta.frameId ?? '',
             focalPointId: meta.focalPointId ?? '',
             id: pointMetaId,
             input: {
@@ -122,7 +115,7 @@ export function ComponentsSection({
         if (data?.updateFocalPointMeta) {
           setPointMetaList((prev) =>
             prev.map((m) =>
-              m.focalPointMetaId === pointMetaId
+              m.id === pointMetaId
                 ? {
                     ...m,
                     componentModalFields: input.componentModalFields ?? [],

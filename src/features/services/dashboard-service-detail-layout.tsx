@@ -50,61 +50,29 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
       />
 
       {isServiceLoading ? (
-        <div className="flex h-full items-center justify-center rounded-t-[1.2rem] bg-[#0b0e16]">
+        <div className="flex h-full items-center justify-center rounded-t-[1.2rem] bg-[#141925]">
           <SectionLoader />
         </div>
       ) : service ? (
-        <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#0b0e16]">
-          <div>
-            <div className="border-stock flex items-center border-b-2">
-              {serviceTabs.map((tab) => (
-                <Button
-                  key={tab.id}
-                  variant="ghost"
-                  className={cn(
-                    'mb-[-2px] h-11 rounded-none border-b-2 border-transparent bg-transparent px-10 hover:bg-transparent',
-                    activeTab === tab.id && 'border-primary'
-                  )}
-                  onClick={() =>
-                    navigate(`/services/${service.id}/${tab.id}`, {
-                      replace: true,
-                    })
-                  }
-                >
-                  {tab.label}
-                </Button>
-              ))}
-            </div>
-
-            <div>
-              {/* <BetterTabsList
-                items={tabs}
-                activeTab={activeTab}
-                setActiveTab={(tab) =>
-                  router.replace(`/services/${service.serviceId}/${tab}`)
+        <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
+          <div className="border-stock flex items-center border-b-2">
+            {serviceTabs.map((tab) => (
+              <Button
+                key={tab.id}
+                variant="ghost"
+                className={cn(
+                  'mb-[-2px] h-11 rounded-none border-b-2 border-transparent bg-transparent px-10 hover:bg-transparent',
+                  activeTab === tab.id && 'border-primary'
+                )}
+                onClick={() =>
+                  navigate(`/services/${service.id}/${tab.id}`, {
+                    replace: true,
+                  })
                 }
-                className="border-stock grid grid-flow-col gap-6 border-b p-2"
-                renderTrigger={(props, { id, label }) => (
-                  <Button
-                    {...props}
-                    key={id}
-                    variant="ghost"
-                    className="h-8 bg-transparent hover:bg-transparent"
-                  >
-                    {label}
-                  </Button>
-                )}
-                renderOverlay={(props) => (
-                  <div
-                    {...props}
-                    className={cn(
-                      props.className,
-                      'bg-stock inset-y-1.5 rounded-lg'
-                    )}
-                  />
-                )}
-              /> */}
-            </div>
+              >
+                {tab.label}
+              </Button>
+            ))}
           </div>
 
           <GridScrollBody>{children}</GridScrollBody>

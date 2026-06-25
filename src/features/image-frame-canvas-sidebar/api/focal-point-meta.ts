@@ -1,39 +1,4 @@
-import { graphql, GT } from '@/api'
-import { ComponentLink, parseComponentLink } from '../schemas/component-link'
-
-export type ComponentFieldInput = GT.ComponentModalFieldInput
-
-export type PointMeta = {
-  focalPointMetaId: string
-  focalPointId?: string | null
-  pageId?: string | null
-  componentId?: string | null
-  componentLink?: ComponentLink | null
-  componentModalFields: GT.ComponentModalField[]
-  updatedAt?: string | null
-}
-
-type FocalPointMetaResult = {
-  id: string
-  focalPointId?: string | null
-  frameId?: string | null
-  componentId?: string | null
-  componentLink?: unknown
-  componentModalFields: GT.ComponentModalField[]
-  updatedAt?: string | null
-}
-
-export function toPointMeta(m: FocalPointMetaResult): PointMeta {
-  return {
-    focalPointMetaId: m.id,
-    focalPointId: m.focalPointId,
-    pageId: m.frameId,
-    componentId: m.componentId,
-    componentLink: parseComponentLink(m.componentId, m.componentLink),
-    componentModalFields: m.componentModalFields,
-    updatedAt: m.updatedAt,
-  }
-}
+import { graphql } from '@/api'
 
 export const FOCAL_POINT_META = graphql(`
   query FocalPointMeta(
@@ -53,7 +18,11 @@ export const FOCAL_POINT_META = graphql(`
       orgId
       frameId
       componentId
-      componentLink
+      componentLinkDiagramId
+      componentLinkApiEndpointId
+      componentLinkTestPackId
+      componentLinkServiceDocId
+      createdBy
       componentModalFields {
         componentFieldId
         label
@@ -71,22 +40,18 @@ export const FOCAL_POINT_META = graphql(`
 `)
 
 export const FOCAL_POINT_META_BY_LINK = graphql(`
-  query FocalPointMetaByLink(
-    $orgId: ID!
-    $linkKey: String!
-    $linkValue: String!
-  ) {
-    focalPointMetaByLink(
-      orgId: $orgId
-      linkKey: $linkKey
-      linkValue: $linkValue
-    ) {
+  query FocalPointMetaByLink($orgId: ID!, $linkId: ID!) {
+    focalPointMetaByLink(orgId: $orgId, linkId: $linkId) {
       id
       focalPointId
       orgId
       frameId
       componentId
-      componentLink
+      componentLinkDiagramId
+      componentLinkApiEndpointId
+      componentLinkTestPackId
+      componentLinkServiceDocId
+      createdBy
       componentModalFields {
         componentFieldId
         label

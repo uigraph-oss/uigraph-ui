@@ -850,7 +850,7 @@ function RestEndpointRow({
       onClick={onSelect}
       className={`group flex cursor-pointer items-start justify-between rounded-md border px-3 py-2.5 transition-colors ${
         selected
-          ? 'border-blue-300 bg-blue-50/60'
+          ? 'border-blue-500 bg-blue-500/10'
           : 'border-transparent hover:bg-[#1E2533]'
       }`}
     >

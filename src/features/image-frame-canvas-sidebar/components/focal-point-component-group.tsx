@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/accordion'
 import { useComponents } from '@/features/dashboard-pages/hooks/use-components'
 import { useMemo } from 'react'
-import { PointMeta } from '../api/focal-point-meta'
 import {
   FocalPointMetaSection,
   FocalPointMetaSectionProps,
@@ -26,12 +25,12 @@ type CommonMetaOptions = Pick<
 >
 
 type FocalPointComponentGroupProps = CommonMetaOptions & {
-  pointMetaList: PointMeta[]
+  pointMetaList: GT.FocalPointMeta[]
 }
 
 type FocalPointComponentSectionProps = CommonMetaOptions & {
   component: GT.Component
-  pointMetaList: PointMeta[]
+  pointMetaList: GT.FocalPointMeta[]
 }
 
 export function FocalPointComponentsSection({
