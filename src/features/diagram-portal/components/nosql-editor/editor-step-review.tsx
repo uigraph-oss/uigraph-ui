@@ -10,28 +10,32 @@ export function EditorStepReview() {
       <div className="space-y-4 rounded-lg border p-4">
         <div className="space-y-2">
           <p className="text-sm font-semibold">Review schema</p>
-          <p className="text-xs text-gray-600">
+          <p className="text-muted-foreground text-xs">
             Review your MongoDB database, collections, and indexes before
             saving.
           </p>
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-lg border bg-gray-50 p-4">
-            <p className="mb-1 text-xs font-semibold text-gray-700">Database</p>
+          <div className="bg-secondary rounded-lg border p-4">
+            <p className="text-foreground mb-1 text-xs font-semibold">
+              Database
+            </p>
             <p className="text-sm font-medium">
               {coreSchema.name || 'Unnamed'}
             </p>
             {coreSchema.description && (
-              <p className="mt-1 text-xs text-gray-600">
+              <p className="text-muted-foreground mt-1 text-xs">
                 {coreSchema.description}
               </p>
             )}
           </div>
 
           {mongoSchema.collections.length === 0 ? (
-            <div className="rounded-lg border bg-gray-50 p-4 text-center">
-              <p className="text-sm text-gray-600">No collections defined</p>
+            <div className="bg-secondary rounded-lg border p-4 text-center">
+              <p className="text-muted-foreground text-sm">
+                No collections defined
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -50,19 +54,21 @@ export function EditorStepReview() {
                 return (
                   <div
                     key={collection.id}
-                    className="rounded-lg border bg-gray-50 p-4"
+                    className="bg-secondary rounded-lg border p-4"
                   >
-                    <p className="mb-1 text-xs font-semibold text-gray-700">
+                    <p className="text-foreground mb-1 text-xs font-semibold">
                       Collection &quot;{collection.name}&quot;
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-muted-foreground text-sm">
                       {fieldsCount} field{fieldsCount !== 1 ? 's' : ''} ·{' '}
                       {indexesCount} index{indexesCount !== 1 ? 'es' : ''}
                     </p>
                     {fieldNames.length > 0 && (
                       <div className="mt-2">
-                        <p className="mb-1 text-xs text-gray-500">Fields:</p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-muted-foreground mb-1 text-xs">
+                          Fields:
+                        </p>
+                        <p className="text-muted-foreground text-xs">
                           {fieldNames.join(', ')}
                           {collection.fields.length > 5 && '...'}
                         </p>
@@ -70,8 +76,10 @@ export function EditorStepReview() {
                     )}
                     {indexNames.length > 0 && (
                       <div className="mt-2">
-                        <p className="mb-1 text-xs text-gray-500">Indexes:</p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-muted-foreground mb-1 text-xs">
+                          Indexes:
+                        </p>
+                        <p className="text-muted-foreground text-xs">
                           {indexNames.join(', ')}
                           {collection.indexes.length > 5 && '...'}
                         </p>
@@ -89,7 +97,7 @@ export function EditorStepReview() {
 
   return (
     <div className="space-y-4 rounded-lg border p-4">
-      <div className="text-sm text-gray-600">
+      <div className="text-muted-foreground text-sm">
         Review step will be implemented here for {currentDialect}
       </div>
     </div>

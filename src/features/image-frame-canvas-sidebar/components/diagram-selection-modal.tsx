@@ -51,17 +51,19 @@ export function DiagramSelectionModal({
           <SectionLoader label="Loading diagrams..." />
         ) : diagrams.length === 0 ? (
           <div className="py-8 text-center">
-            <p className="text-sm text-[#6B7480]">No diagrams available</p>
+            <p className="text-muted-foreground text-sm">
+              No diagrams available
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
             {diagrams.map((diagram) => (
               <div
                 key={diagram.id}
-                className={`relative cursor-pointer rounded-lg border-2 p-3 transition-all ${
+                className={`bg-card relative cursor-pointer rounded-lg border-2 p-3 transition-all ${
                   selectedDiagramId === diagram.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-primary bg-primary/10'
+                    : 'border-stock hover:border-primary/50'
                 }`}
                 onClick={() => setSelectedDiagramId(diagram.id ?? '')}
               >
@@ -71,12 +73,12 @@ export function DiagramSelectionModal({
                   className="aspect-square w-full rounded-md object-cover object-top"
                 />
                 <div className="mt-2">
-                  <h4 className="line-clamp-1 text-sm font-medium text-[#161616]">
+                  <h4 className="text-foreground line-clamp-1 text-sm font-medium">
                     {diagram.name ?? 'Blank Diagram'}
                   </h4>
                 </div>
                 {selectedDiagramId === diagram.id && (
-                  <div className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500">
+                  <div className="bg-primary absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full">
                     <div className="h-2 w-2 rounded-full bg-white"></div>
                   </div>
                 )}
