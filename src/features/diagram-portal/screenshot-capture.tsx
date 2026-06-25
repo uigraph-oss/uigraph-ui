@@ -1,7 +1,7 @@
 import { useReactFlow } from '@xyflow/react'
 import { useEffect } from 'react'
 
-const CAPTURE_DELAY_MS = 1500
+const CAPTURE_DELAY_MS = 1000
 const CLIP_PADDING = 60
 
 declare global {
