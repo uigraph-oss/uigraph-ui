@@ -142,11 +142,84 @@ export function apiGroupVersionToLegacy(
   }
 }
 
-export function endpointToLegacyWithMeta(
-  endpoint: DashboardAPIEndpoint,
-  orgId: string
-): LegacyEndpointWithMeta {
-  const fields: GT.ComponentModalField[] = [
+type GrpcServiceMetadata = {
+  packageName?: string
+  serviceName?: string
+  requestType?: string
+  responseType?: string
+}
+
+function parseGrpcServiceMetadata(raw?: string | null): GrpcServiceMetadata {
+  if (!raw) return {}
+  try {
+    return JSON.parse(raw) as GrpcServiceMetadata
+  } catch {
+    return {}
+  }
+}
+
+function graphqlFields(
+  endpoint: DashboardAPIEndpoint
+): GT.ComponentModalField[] {
+  return [
+    metaField('Name', endpoint.operationId, 0),
+    metaField('GraphQL Operation Type', endpoint.method, 1),
+    metaField('Signature', endpoint.path, 2),
+    metaField('Description', endpoint.description, 3),
+    metaField(
+      'Parameters',
+      endpoint.parameters,
+      4,
+      ComponentInputType.CodeEditor
+    ),
+    metaField(
+      'Request Schema',
+      endpoint.requestBody,
+      5,
+      ComponentInputType.CodeEditor
+    ),
+    metaField(
+      'Response Schema',
+      endpoint.responses,
+      6,
+      ComponentInputType.CodeEditor
+    ),
+  ]
+}
+
+function grpcFields(endpoint: DashboardAPIEndpoint): GT.ComponentModalField[] {
+  const grpcMeta = parseGrpcServiceMetadata(endpoint.parameters)
+  return [
+    metaField('gRPC Method Name', endpoint.operationId, 0),
+    metaField('gRPC Service Name', grpcMeta.serviceName, 1),
+    metaField('Package Name', grpcMeta.packageName, 2),
+    metaField('gRPC RPC Type', endpoint.method, 3),
+    metaField('Request Type', grpcMeta.requestType, 4),
+    metaField('Response Type', grpcMeta.responseType, 5),
+    metaField(
+      'Proto Snippet',
+      endpoint.summary,
+      6,
+      ComponentInputType.CodeEditor
+    ),
+    metaField('Description', endpoint.description, 7),
+    metaField(
+      'Request Schema',
+      endpoint.requestBody,
+      8,
+      ComponentInputType.CodeEditor
+    ),
+    metaField(
+      'Response Schema',
+      endpoint.responses,
+      9,
+      ComponentInputType.CodeEditor
+    ),
+  ]
+}
+
+function restFields(endpoint: DashboardAPIEndpoint): GT.ComponentModalField[] {
+  return [
     metaField('Method', endpoint.method, 0),
     metaField('URL', endpoint.path, 1),
     metaField('Summary', endpoint.summary, 2),
@@ -170,6 +243,20 @@ export function endpointToLegacyWithMeta(
       ComponentInputType.CodeEditor
     ),
   ]
+}
+
+export function endpointToLegacyWithMeta(
+  endpoint: DashboardAPIEndpoint,
+  orgId: string,
+  protocol: string = 'rest'
+): LegacyEndpointWithMeta {
+  const normalizedProtocol = protocol.toLowerCase()
+  const fields =
+    normalizedProtocol === 'graphql'
+      ? graphqlFields(endpoint)
+      : normalizedProtocol === 'grpc'
+        ? grpcFields(endpoint)
+        : restFields(endpoint)
 
   return {
     apiEndpoint: {
@@ -192,7 +279,8 @@ export function endpointToLegacyWithMeta(
 
 export function endpointsToLegacyWithMeta(
   endpoints: DashboardAPIEndpoint[],
-  orgId: string
+  orgId: string,
+  protocol: string = 'rest'
 ): LegacyEndpointWithMeta[] {
-  return endpoints.map((e) => endpointToLegacyWithMeta(e, orgId))
+  return endpoints.map((e) => endpointToLegacyWithMeta(e, orgId, protocol))
 }
