@@ -52,14 +52,8 @@ export default defineConfig(({ mode }) => {
 
     server: {
       host: true,
-      allowedHosts: ['host.docker.internal', 'localhost', 'uigraph-ui'],
       port: process.env.PORT || 3000,
-
-      watch: {
-        // eslint-disable-next-line no-undef
-        usePolling: process.env.CHOKIDAR_USEPOLLING === 'true',
-        interval: 300,
-      },
+      allowedHosts: ['host.docker.internal', 'localhost', 'uigraph-ui'],
 
       proxy: {
         '/api': {
