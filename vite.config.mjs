@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { defineConfig } from 'vite'
+import { processEnv } from './environment'
 
 const __dirname = new URL('.', import.meta.url).pathname.replace(
   /^\/([A-Za-z]:)/,
@@ -26,6 +27,10 @@ export default defineConfig(() => {
       host: true,
       port: process.env.PORT || 3000,
       allowedHosts: true,
+      proxy: {
+        '/api': { target: processEnv.API_URL, changeOrigin: true },
+        '/graphql': { target: processEnv.GRAPHQL_URL, changeOrigin: true },
+      },
     },
   }
 })

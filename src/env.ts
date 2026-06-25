@@ -19,4 +19,8 @@ const envSchema = z.object({
   VITE_FIGMA_REDIRECT_URI: z.string().default(''),
 })
 
-export const env = envSchema.parse(import.meta.env)
+export const env = envSchema.parse({
+  ...import.meta.env,
+  VITE_API_URL: `${window.location.origin}/api`,
+  VITE_GRAPHQL_URL: `${window.location.origin}/graphql`,
+})
