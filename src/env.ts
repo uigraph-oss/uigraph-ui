@@ -1,11 +1,6 @@
 import z from 'zod'
 
 const envSchema = z.object({
-  VITE_APP_URL: z.url().min(1),
-  VITE_API_URL: z.url().min(1),
-  VITE_ASSETS_URL: z.url().min(1),
-  VITE_GRAPHQL_URL: z.string().min(1),
-
   VITE_DEPLOY_ENV: z
     .enum(['local', 'development', 'production'])
     .default('local'),

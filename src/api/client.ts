@@ -6,12 +6,7 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
-import { env } from '@/env'
-
-const httpLink = new HttpLink({
-  uri: env.VITE_GRAPHQL_URL,
-  credentials: 'include',
-})
+const httpLink = new HttpLink({ uri: '/graphql', credentials: 'include' })
 
 const authLink = setContext((_operation, { headers }) => {
   const token =

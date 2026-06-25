@@ -1,7 +1,6 @@
 'use client'
 
 import { SectionLoader } from '@/components/section-loader'
-import { env } from '@/env'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
 import {
@@ -12,11 +11,9 @@ import {
   Globe,
   HardDrive,
   Monitor,
-  Server,
   Sparkles,
   UserCheck,
   Users,
-  Webhook,
 } from 'lucide-react'
 import { ReactNode } from 'react'
 import { SERVER_OVERVIEW } from './api/server-overview'
@@ -27,11 +24,6 @@ export function ServerOverviewPage() {
 
   const overview = data?.serverOverview
   const config = data?.serverConfig
-
-  const origin =
-    typeof window !== 'undefined' ? window.location.origin : env.VITE_APP_URL
-  const graphqlUrl = new URL(env.VITE_GRAPHQL_URL, origin).href
-  const apiUrl = new URL(env.VITE_API_URL, origin).origin
 
   return (
     <>
@@ -70,17 +62,7 @@ export function ServerOverviewPage() {
             <ConfigRow
               icon={<Monitor className="size-4" />}
               label="Frontend URL"
-              value={env.VITE_APP_URL}
-            />
-            <ConfigRow
-              icon={<Server className="size-4" />}
-              label="API URL"
-              value={apiUrl}
-            />
-            <ConfigRow
-              icon={<Webhook className="size-4" />}
-              label="GraphQL Endpoint"
-              value={graphqlUrl}
+              value={window.location.origin ?? '—'}
             />
             <ConfigRow
               icon={<Database className="size-4" />}
