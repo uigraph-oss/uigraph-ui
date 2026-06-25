@@ -1320,6 +1320,7 @@ function GraphQLOperationDetailsPanel({
             readonly={readonly}
             className="px-0"
             hideFooter
+            lockedFieldLabels={['name', 'graphql operation type', 'signature']}
             onDirtyChange={setIsMetaDirty}
             onBindActions={setMetaActions}
           />
@@ -1477,6 +1478,15 @@ function GrpcMethodDetailsPanel({
             readonly={readonly}
             className="px-0"
             hideFooter
+            lockedFieldLabels={[
+              'grpc method name',
+              'grpc service name',
+              'package name',
+              'grpc rpc type',
+              'request type',
+              'response type',
+              'proto snippet',
+            ]}
             onDirtyChange={setIsMetaDirty}
             onBindActions={setMetaActions}
           />

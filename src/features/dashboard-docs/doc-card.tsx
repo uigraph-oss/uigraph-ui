@@ -224,6 +224,17 @@ function DocCardThumbnail({
     )
   }
 
+  if (isTextLike && textContent !== null) {
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-[#1A2030] to-[#141925] p-5">
+        <pre className="font-mono text-[10px] leading-relaxed break-words whitespace-pre-wrap text-[#828DA3]">
+          {textContent.slice(0, 700)}
+        </pre>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#141925] to-transparent" />
+      </div>
+    )
+  }
+
   return <>{fallback}</>
 }
 

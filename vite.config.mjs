@@ -36,5 +36,10 @@ export default defineConfig(() => {
         '/graphql': { target: process.env.GRAPHQL_URL, changeOrigin: true },
       },
     },
+
+    test: {
+      environment: 'jsdom',
+      setupFiles: ['./src/test/setup.ts'],
+    },
   }
 })
