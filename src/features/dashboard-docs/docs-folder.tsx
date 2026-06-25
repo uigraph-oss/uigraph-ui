@@ -64,10 +64,6 @@ export function DocsFolder() {
     keys: ['name'],
   })
 
-  if (isLoading) {
-    return <SectionLoader label="Loading folders..." />
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -120,46 +116,56 @@ export function DocsFolder() {
         )}
       </div>
 
-      {Boolean(folders.length > 0 || selectedFolderId) && (
-        <div className="space-y-3">
-          <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
-            {!selectedFolderId && <AllDocsCard docsCount={totalCount} />}
-            {selectedFolderId && selectedFolder && (
-              <AllDocsCard docsCount={totalCount} folder={selectedFolder} />
-            )}
+      {isLoading ? (
+        <SectionLoader label="Loading docs..." />
+      ) : (
+        <>
+          {Boolean(folders.length > 0 || selectedFolderId) && (
+            <div className="space-y-3">
+              <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
+                {!selectedFolderId && <AllDocsCard docsCount={totalCount} />}
+                {selectedFolderId && selectedFolder && (
+                  <AllDocsCard docsCount={totalCount} folder={selectedFolder} />
+                )}
 
-            {filteredFolders.map((folder) => (
-              <FolderChip key={folder.id} folder={folder} />
-            ))}
+                {filteredFolders.map((folder) => (
+                  <FolderChip key={folder.id} folder={folder} />
+                ))}
 
-            {!selectedFolderId && filteredFolders.length === 0 && search && (
-              <span className="text-sm text-[#586378]">No folders found</span>
+                {!selectedFolderId &&
+                  filteredFolders.length === 0 &&
+                  search && (
+                    <span className="text-sm text-[#586378]">
+                      No folders found
+                    </span>
+                  )}
+              </div>
+            </div>
+          )}
+
+          <div>
+            {docs.length > 0 ? (
+              <DocGrid
+                docs={docs}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={setPage}
+              />
+            ) : (
+              <SectionNotFound
+                label={
+                  search || selectedTeamId
+                    ? 'No docs match your filters.'
+                    : selectedFolder
+                      ? 'No docs in this folder yet.'
+                      : 'No docs yet.'
+                }
+              />
             )}
           </div>
-        </div>
+        </>
       )}
-
-      <div>
-        {docs.length > 0 ? (
-          <DocGrid
-            docs={docs}
-            page={page}
-            pageSize={pageSize}
-            totalCount={totalCount}
-            onPageChange={setPage}
-          />
-        ) : (
-          <SectionNotFound
-            label={
-              search || selectedTeamId
-                ? 'No docs match your filters.'
-                : selectedFolder
-                  ? 'No docs in this folder yet.'
-                  : 'No docs yet.'
-            }
-          />
-        )}
-      </div>
 
       <BetterDialogProvider
         open={isCreateFolderOpen}

@@ -176,9 +176,10 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
     const isFolderDataLoading =
       folderData.loading && !folderData.data?.folder && !!selectedFolderId
 
-    const isFolderAndDiagramsDataLoading =
-      (foldersQuery.loading && !foldersQuery.data?.folders) ||
-      (diagramsQuery.loading && !diagramsQuery.data?.diagrams)
+    const isFoldersLoading = foldersQuery.loading && !foldersQuery.data?.folders
+
+    const isDiagramsLoading =
+      diagramsQuery.loading && !diagramsQuery.data?.diagrams
 
     return {
       folders,
@@ -188,7 +189,7 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       pageSize: PAGE_SIZE,
       page,
       setPage,
-      isLoading: isFolderDataLoading || isFolderAndDiagramsDataLoading,
+      isLoading: isFolderDataLoading || isFoldersLoading || isDiagramsLoading,
 
       selectedFolder,
       parentFolder,

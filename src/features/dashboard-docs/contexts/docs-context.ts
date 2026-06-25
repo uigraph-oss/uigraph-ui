@@ -170,9 +170,9 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
   const isFolderDataLoading =
     folderData.loading && !folderData.data?.folder && !!selectedFolderId
 
-  const isFolderAndDocsDataLoading =
-    (foldersQuery.loading && !foldersQuery.data?.folders) ||
-    (docsQuery.loading && !docsQuery.data?.docs)
+  const isFoldersLoading = foldersQuery.loading && !foldersQuery.data?.folders
+
+  const isDocsLoading = docsQuery.loading && !docsQuery.data?.docs
 
   return {
     folders,
@@ -182,7 +182,7 @@ export const [DocsContextProvider, useDocsContext] = createContext(() => {
     pageSize: PAGE_SIZE,
     page,
     setPage,
-    isLoading: isFolderDataLoading || isFolderAndDocsDataLoading,
+    isLoading: isFolderDataLoading || isFoldersLoading || isDocsLoading,
 
     selectedFolder,
     parentFolder,

@@ -64,10 +64,6 @@ export function DiagramsFolder() {
     keys: ['name'],
   })
 
-  if (isLoading) {
-    return <SectionLoader label="Loading folders..." />
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -120,49 +116,61 @@ export function DiagramsFolder() {
         )}
       </div>
 
-      {Boolean(folders.length > 0 || selectedFolderId) && (
-        <div className="space-y-3">
-          <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
-            {!selectedFolderId && <AllFlowsCard diagramsCount={totalCount} />}
-            {selectedFolderId && selectedFolder && (
-              <AllFlowsCard
-                diagramsCount={totalCount}
-                folder={selectedFolder}
+      {isLoading ? (
+        <SectionLoader label="Loading flows..." />
+      ) : (
+        <>
+          {Boolean(folders.length > 0 || selectedFolderId) && (
+            <div className="space-y-3">
+              <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
+                {!selectedFolderId && (
+                  <AllFlowsCard diagramsCount={totalCount} />
+                )}
+                {selectedFolderId && selectedFolder && (
+                  <AllFlowsCard
+                    diagramsCount={totalCount}
+                    folder={selectedFolder}
+                  />
+                )}
+
+                {filteredFolders.map((folder) => (
+                  <FolderChip key={folder.id} folder={folder} />
+                ))}
+
+                {!selectedFolderId &&
+                  filteredFolders.length === 0 &&
+                  search && (
+                    <span className="text-sm text-[#586378]">
+                      No folders found
+                    </span>
+                  )}
+              </div>
+            </div>
+          )}
+
+          <div>
+            {diagrams.length > 0 ? (
+              <DiagramGrid
+                diagrams={diagrams}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={setPage}
+              />
+            ) : (
+              <SectionNotFound
+                label={
+                  search || selectedTeamId
+                    ? 'No flows match your filters.'
+                    : selectedFolder
+                      ? 'No diagrams in this folder yet.'
+                      : 'No diagrams yet.'
+                }
               />
             )}
-
-            {filteredFolders.map((folder) => (
-              <FolderChip key={folder.id} folder={folder} />
-            ))}
-
-            {!selectedFolderId && filteredFolders.length === 0 && search && (
-              <span className="text-sm text-[#586378]">No folders found</span>
-            )}
           </div>
-        </div>
+        </>
       )}
-
-      <div>
-        {diagrams.length > 0 ? (
-          <DiagramGrid
-            diagrams={diagrams}
-            page={page}
-            pageSize={pageSize}
-            totalCount={totalCount}
-            onPageChange={setPage}
-          />
-        ) : (
-          <SectionNotFound
-            label={
-              search || selectedTeamId
-                ? 'No flows match your filters.'
-                : selectedFolder
-                  ? 'No diagrams in this folder yet.'
-                  : 'No diagrams yet.'
-            }
-          />
-        )}
-      </div>
 
       <BetterDialogProvider
         open={isCreateFolderOpen}
