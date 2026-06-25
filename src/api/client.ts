@@ -9,7 +9,7 @@ import { setContext } from '@apollo/client/link/context'
 import { env } from '@/env'
 
 const httpLink = new HttpLink({
-  uri: env.VITE_GRAPHQL_ENDPOINT,
+  uri: env.VITE_GRAPHQL_URL,
   credentials: 'include',
 })
 

@@ -30,8 +30,8 @@ export function ServerOverviewPage() {
 
   const origin =
     typeof window !== 'undefined' ? window.location.origin : env.VITE_APP_URL
-  const graphqlUrl = new URL(env.VITE_GRAPHQL_ENDPOINT, origin).href
-  const apiUrl = new URL(env.VITE_GRAPHQL_ENDPOINT, origin).origin
+  const graphqlUrl = new URL(env.VITE_GRAPHQL_URL, origin).href
+  const apiUrl = new URL(env.VITE_API_URL, origin).origin
 
   return (
     <>

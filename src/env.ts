@@ -2,14 +2,13 @@ import z from 'zod'
 
 const envSchema = z.object({
   VITE_APP_URL: z.url().min(1),
+  VITE_API_URL: z.url().min(1),
   VITE_ASSETS_URL: z.url().min(1),
-  VITE_GRAPHQL_ENDPOINT: z.string().min(1),
+  VITE_GRAPHQL_URL: z.string().min(1),
 
-  VITE_DEPLOY_ENV: z.enum(['local', 'development', 'production']),
-
-  VITE_BYPASS_DOMAIN_CHECK: z
-    .enum(['true', 'false'])
-    .transform((v) => v === 'true'),
+  VITE_DEPLOY_ENV: z
+    .enum(['local', 'development', 'production'])
+    .default('local'),
 
   VITE_FEATURE_ENABLE_DEMO_TEST_CASES: z
     .enum(['true', 'false'])
