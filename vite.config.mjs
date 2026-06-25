@@ -29,13 +29,11 @@ export default defineConfig(() => {
 
       proxy: {
         '/api': {
-          // eslint-disable-next-line no-undef
           target: process.env.VITE_API_TARGET ?? 'http://127.0.0.1:8080',
           changeOrigin: true,
         },
 
         '/graphql': {
-          // eslint-disable-next-line no-undef
           target: process.env.VITE_GRAPHQL_TARGET ?? 'http://127.0.0.1:8090',
           changeOrigin: true,
         },
