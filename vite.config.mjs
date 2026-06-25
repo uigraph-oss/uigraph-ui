@@ -50,6 +50,10 @@ export default defineConfig(({ mode }) => {
       },
     },
 
+    optimizeDeps: {
+      include: ['@apollo/client', 'graphql'],
+    },
+
     server: {
       host: true,
       port: process.env.PORT || 3000,
