@@ -351,8 +351,8 @@ export const [
 
     const _allEndpoints = useMemo((): LegacyEndpointWithMeta[] => {
       const raw = arrayNonNullable(endpointsRes.data?.apiEndpoints)
-      return endpointsToLegacyWithMeta(raw, orgId!)
-    }, [endpointsRes.data?.apiEndpoints, orgId])
+      return endpointsToLegacyWithMeta(raw, orgId!, protocol)
+    }, [endpointsRes.data?.apiEndpoints, orgId, protocol])
 
     const apiEndpoints = useMemo(() => {
       return protocol === 'rest' ? _allEndpoints : []
