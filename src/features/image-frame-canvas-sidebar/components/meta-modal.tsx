@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -38,7 +39,7 @@ import {
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
 import { ComponentField } from '@/features/components/components/configure-component/component-field-list'
-import { assetUrl, uploadFile } from '@/features/uploads/api/uploads'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -103,7 +104,7 @@ function FocalPointMetaModalContent({
 
         const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = assetUrl(assetId)
+        duplicatedMetaData[file] = `${env.VITE_ASSETS_URL}/assets/${assetId}`
       }
 
       setIsUploading(false)

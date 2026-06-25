@@ -5,6 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -33,7 +34,7 @@ import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
 } from '@/features/services/api/api-adapters'
-import { assetUrl, uploadFile } from '@/features/uploads/api/uploads'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -144,7 +145,7 @@ export function ConfigureApiEndpointMeta({
 
         const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = assetUrl(assetId)
+        duplicatedMetaData[file] = `${env.VITE_ASSETS_URL}/assets/${assetId}`
       }
 
       setIsUploading(false)

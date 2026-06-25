@@ -1,4 +1,5 @@
 import { graphql } from '@/api'
+import { env } from '@/env'
 
 export type OAuthProvider = {
   id: string
@@ -65,21 +66,27 @@ export const OAUTH_PROVIDERS = graphql(`
 export async function setOAuthProviderIcon(provider: string, file: File) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`/api/v1/sso/oauth/${provider}/icon`, {
-    method: 'PUT',
-    credentials: 'include',
-    body: form,
-  })
+  const res = await fetch(
+    `${env.VITE_API_URL}/api/v1/sso/oauth/${provider}/icon`,
+    {
+      method: 'PUT',
+      credentials: 'include',
+      body: form,
+    }
+  )
   if (!res.ok) {
     throw new Error(`upload icon failed (${res.status})`)
   }
 }
 
 export async function removeOAuthProviderIcon(provider: string) {
-  const res = await fetch(`/api/v1/sso/oauth/${provider}/icon`, {
-    method: 'DELETE',
-    credentials: 'include',
-  })
+  const res = await fetch(
+    `${env.VITE_API_URL}/api/v1/sso/oauth/${provider}/icon`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    }
+  )
   if (!res.ok) {
     throw new Error(`remove icon failed (${res.status})`)
   }

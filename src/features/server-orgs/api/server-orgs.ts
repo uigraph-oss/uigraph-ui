@@ -1,4 +1,5 @@
 import { graphql } from '@/api'
+import { env } from '@/env'
 
 export type ServerOrg = {
   id: string
@@ -27,7 +28,7 @@ export const SERVER_ORGS = graphql(`
 export async function setServerOrgLogo(orgId: string, file: File) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`/api/v1/orgs/${orgId}/logo`, {
+  const res = await fetch(`${env.VITE_API_URL}/api/v1/orgs/${orgId}/logo`, {
     method: 'PUT',
     credentials: 'include',
     body: form,
@@ -38,7 +39,7 @@ export async function setServerOrgLogo(orgId: string, file: File) {
 }
 
 export async function removeServerOrgLogo(orgId: string) {
-  const res = await fetch(`/api/v1/orgs/${orgId}/logo`, {
+  const res = await fetch(`${env.VITE_API_URL}/api/v1/orgs/${orgId}/logo`, {
     method: 'DELETE',
     credentials: 'include',
   })

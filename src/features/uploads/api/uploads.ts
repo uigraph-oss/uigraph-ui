@@ -11,10 +11,6 @@ export const CREATE_ASSET_UPLOAD = graphql(`
   }
 `)
 
-export function assetUrl(assetId: string) {
-  return `/assets/${assetId}`
-}
-
 export async function uploadFile(orgId: string, file: File): Promise<string> {
   const { data } = await apolloClientGQL.mutate({
     mutation: CREATE_ASSET_UPLOAD,

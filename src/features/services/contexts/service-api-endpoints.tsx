@@ -3,6 +3,7 @@
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
+import { env } from '@/env'
 import {
   DashboardSectionContent,
   DashboardSectionHeader,
@@ -299,7 +300,7 @@ export const [
           throw new Error('Version not found')
         }
         const specRes = await fetch(
-          `/api/v1/storage/${encodeURIComponent(version.versionId)}`,
+          `${env.VITE_API_URL}/api/v1/storage/${encodeURIComponent(version.versionId)}`,
           { credentials: 'include' }
         ).catch(() => null)
         let spec = ''
