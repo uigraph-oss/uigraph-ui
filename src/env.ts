@@ -1,35 +1,18 @@
 import z from 'zod'
 
-const baseEnvSchema = z.object({
-  deployEnv: z.enum(['local', 'development', 'production']),
-  clientOrigin: z.url().min(1),
-  assetsOrigin: z.url().min(1),
-  bypassDomainCheck: z.boolean().optional(),
+const bool = z.enum(['true', 'false']).transform((v) => v === 'true')
+
+const envSchema = z.object({
+  VITE_DEPLOY_ENV: z.enum(['local', 'development', 'production']),
+  VITE_APP_URL: z.url().min(1),
+  VITE_ASSETS_URL: z.url().min(1),
+  VITE_GRAPHQL_ENDPOINT: z.string().min(1),
+  VITE_BYPASS_DOMAIN_CHECK: bool,
+  VITE_FEATURE_SSO_ENABLED: bool,
+  VITE_FEATURE_ENABLE_DEMO_TEST_CASES: bool,
+  VITE_FIGMA_CLIENT_ID: z.string(),
+  VITE_FIGMA_CLIENT_SECRET: z.string(),
+  VITE_FIGMA_REDIRECT_URI: z.string(),
 })
 
-export const env = {
-  ...baseEnvSchema.parse({
-    deployEnv: (process.env.NEXT_PUBLIC_DEPLOY_ENV ?? 'production') as
-      | 'local'
-      | 'development'
-      | 'production',
-
-    bypassDomainCheck: process.env.NEXT_PUBLIC_BYPASS_DOMAIN_CHECK === 'true',
-
-    clientOrigin:
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.NEXT_PUBLIC_CLIENT_URL ??
-      'https://uigraph.app',
-
-    assetsOrigin:
-      process.env.NEXT_PUBLIC_ASSETS_URL ??
-      'http://localhost:9000/uigraph/assets',
-  }),
-
-  features: {
-    ssoEnabled: process.env.NEXT_PUBLIC_FEATURE_SSO_ENABLED === 'true',
-
-    enableDemoTestCases:
-      process.env.NEXT_PUBLIC_FEATURE_ENABLE_DEMO_TEST_CASES === 'true',
-  },
-}
+export const env = envSchema.parse(import.meta.env)

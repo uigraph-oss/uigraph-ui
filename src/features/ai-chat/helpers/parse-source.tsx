@@ -41,7 +41,7 @@ export function getImageSourceUrl(input: string): {
   const match = input.match(IMAGE_DIAGRAM_REGEX)
   if (match?.groups?.id) {
     return {
-      src: `${env.assetsOrigin}/file_${match.groups.id}?source=chat`,
+      src: `${env.VITE_ASSETS_URL}/file_${match.groups.id}?source=chat`,
       href: `${location.origin}/diagram/${match.groups.id}?source=chat`,
     }
   }

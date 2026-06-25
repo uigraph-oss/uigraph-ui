@@ -139,7 +139,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
           />
         </div>
 
-        {env.deployEnv === 'local' && <DiagramTestingOptions />}
+        {env.VITE_DEPLOY_ENV === 'local' && <DiagramTestingOptions />}
 
         <div className="flex items-center gap-2">
           <DiagramVersion />

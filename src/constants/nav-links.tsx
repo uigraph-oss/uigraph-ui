@@ -125,7 +125,7 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings/sso',
     label: 'SSO Settings',
     icon: <LuFingerprint />,
-    hidden: !env.features.ssoEnabled,
+    hidden: !env.VITE_FEATURE_SSO_ENABLED,
     adminOnly: true,
   }
   /* {

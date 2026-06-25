@@ -13,7 +13,7 @@ export const CREATE_ASSET_UPLOAD = graphql(`
 `)
 
 export function assetUrl(assetId: string) {
-  return `${env.assetsOrigin}/assets/${assetId}`
+  return `${env.VITE_ASSETS_URL}/assets/${assetId}`
 }
 
 export async function uploadFile(orgId: string, file: File): Promise<string> {

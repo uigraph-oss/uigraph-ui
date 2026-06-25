@@ -1,6 +1,5 @@
 'use client'
 
-import { graphqlEndpoint } from '@/api/client'
 import { SectionLoader } from '@/components/section-loader'
 import { env } from '@/env'
 import { cn } from '@/lib/utils'
@@ -30,9 +29,9 @@ export function ServerOverviewPage() {
   const config = data?.serverConfig
 
   const origin =
-    typeof window !== 'undefined' ? window.location.origin : env.clientOrigin
-  const graphqlUrl = new URL(graphqlEndpoint, origin).href
-  const apiUrl = new URL(graphqlEndpoint, origin).origin
+    typeof window !== 'undefined' ? window.location.origin : env.VITE_APP_URL
+  const graphqlUrl = new URL(env.VITE_GRAPHQL_ENDPOINT, origin).href
+  const apiUrl = new URL(env.VITE_GRAPHQL_ENDPOINT, origin).origin
 
   return (
     <>
@@ -71,7 +70,7 @@ export function ServerOverviewPage() {
             <ConfigRow
               icon={<Monitor className="size-4" />}
               label="Frontend URL"
-              value={env.clientOrigin}
+              value={env.VITE_APP_URL}
             />
             <ConfigRow
               icon={<Server className="size-4" />}

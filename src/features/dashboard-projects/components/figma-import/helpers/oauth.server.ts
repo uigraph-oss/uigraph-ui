@@ -1,6 +1,4 @@
-const FIGMA_CLIENT_ID = process.env.NEXT_PUBLIC_FIGMA_CLIENT_ID || ''
-const FIGMA_CLIENT_SECRET = process.env.NEXT_PUBLIC_FIGMA_CLIENT_SECRET || ''
-const FIGMA_REDIRECT_URI = process.env.NEXT_PUBLIC_FIGMA_REDIRECT_URI || ''
+import { env } from '@/env'
 
 export interface FigmaExchangeTokenResponse {
   access_token: string
@@ -22,15 +20,15 @@ export async function exchangeCodeForToken(
   const response = await fetch('https://api.figma.com/v1/oauth/token', {
     method: 'POST',
     body: new URLSearchParams({
-      client_id: FIGMA_CLIENT_ID,
-      client_secret: FIGMA_CLIENT_SECRET,
-      redirect_uri: FIGMA_REDIRECT_URI,
+      client_id: env.VITE_FIGMA_CLIENT_ID,
+      client_secret: env.VITE_FIGMA_CLIENT_SECRET,
+      redirect_uri: env.VITE_FIGMA_REDIRECT_URI,
       grant_type: 'authorization_code',
       code,
     }),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${Buffer.from(`${FIGMA_CLIENT_ID}:${FIGMA_CLIENT_SECRET}`).toString('base64')}`,
+      Authorization: `Basic ${Buffer.from(`${env.VITE_FIGMA_CLIENT_ID}:${env.VITE_FIGMA_CLIENT_SECRET}`).toString('base64')}`,
     },
   })
 
@@ -43,14 +41,14 @@ export async function refreshFigmaToken(
   const response = await fetch('https://api.figma.com/v1/oauth/token', {
     method: 'POST',
     body: new URLSearchParams({
-      client_id: FIGMA_CLIENT_ID,
-      client_secret: FIGMA_CLIENT_SECRET,
+      client_id: env.VITE_FIGMA_CLIENT_ID,
+      client_secret: env.VITE_FIGMA_CLIENT_SECRET,
       refresh_token: refreshToken,
       grant_type: 'refresh_token',
     }),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${Buffer.from(`${FIGMA_CLIENT_ID}:${FIGMA_CLIENT_SECRET}`).toString('base64')}`,
+      Authorization: `Basic ${Buffer.from(`${env.VITE_FIGMA_CLIENT_ID}:${env.VITE_FIGMA_CLIENT_SECRET}`).toString('base64')}`,
     },
   })
 
