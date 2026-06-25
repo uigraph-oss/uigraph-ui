@@ -18,11 +18,6 @@ export default defineConfig(() => {
       },
     },
 
-    watch: {
-      usePolling: process.env.CHOKIDAR_USEPOLLING === 'true',
-      interval: 300,
-    },
-
     optimizeDeps: {
       include: ['@apollo/client', 'graphql'],
     },
