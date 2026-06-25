@@ -11,6 +11,7 @@ const envSchema = z.object({
 
   VITE_FEATURE_ENABLE_DEMO_TEST_CASES: z
     .enum(['true', 'false'])
+    .optional()
     .transform((v) => v === 'true'),
 
   // TODO: Migrate this into server
