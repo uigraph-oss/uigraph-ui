@@ -4,8 +4,12 @@ export default {
   generates: {
     './src/api/.gql/': {
       schema:
-        process.env.CODEGEN_URL ??
-        process.env.GRAPHQL_URL ??
+        (process.env.CODEGEN_URL
+          ? `${process.env.CODEGEN_URL}/graphql`
+          : undefined) ??
+        (process.env.GRAPHQL_URL
+          ? `${process.env.GRAPHQL_URL}/graphql`
+          : undefined) ??
         '../uigraph-graphql/internal/graph/schema/*.graphqls',
 
       documents: ['./src/**/*.{ts,tsx}'],
