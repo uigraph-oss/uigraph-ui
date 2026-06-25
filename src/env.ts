@@ -15,9 +15,10 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .transform((v) => v === 'true'),
 
-  VITE_FIGMA_CLIENT_ID: z.string(),
-  VITE_FIGMA_CLIENT_SECRET: z.string(),
-  VITE_FIGMA_REDIRECT_URI: z.string(),
+  // TODO: Migrate this into server
+  VITE_FIGMA_CLIENT_ID: z.string().default(''),
+  VITE_FIGMA_CLIENT_SECRET: z.string().default(''),
+  VITE_FIGMA_REDIRECT_URI: z.string().default(''),
 })
 
 export const env = envSchema.parse(import.meta.env)
