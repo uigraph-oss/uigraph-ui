@@ -1,12 +1,11 @@
 import { CodegenConfig } from '@graphql-codegen/cli'
-import { processEnv } from './environment'
 
 export default {
   generates: {
     './src/api/.gql/': {
       schema:
-        processEnv.CODEGEN_URL ??
-        processEnv.GRAPHQL_URL ??
+        process.env.CODEGEN_URL ??
+        process.env.GRAPHQL_URL ??
         '../uigraph-graphql/internal/graph/schema/*.graphqls',
 
       documents: ['./src/**/*.{ts,tsx}'],
