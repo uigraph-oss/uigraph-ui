@@ -2,13 +2,16 @@ import { GT } from '@/api'
 import { CirclePlusIcon } from '@/assets/svgs'
 import { Button } from '@/components/ui/button'
 import { COMPONENT_FLOW_DIAGRAM_ID } from '@/constants/component-meta'
+import { DIAGRAM } from '@/features/diagram-portal/api/diagram'
 import { useComponentField } from '@/features/diagram-portal/hooks/use-component-field'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { formatDistanceToNowStrict } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { HiOutlineTrash } from 'react-icons/hi2'
-import { LuLink } from 'react-icons/lu'
+import { LuImage, LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta'
 import { componentLinkRef } from '../schemas/component-link'
@@ -41,6 +44,22 @@ export function FocalPointMetaMiniCard({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'view' | 'edit'>('view')
 
+  const organizationId = useCurrentOrganization()?.id
+
+  const diagramId =
+    pointMeta.componentLink && 'diagramId' in pointMeta.componentLink
+      ? pointMeta.componentLink.diagramId
+      : null
+
+  const { data: diagramData } = useQuery(DIAGRAM, {
+    variables: { orgId: organizationId!, id: diagramId! },
+    skip: !organizationId || !diagramId,
+    fetchPolicy: 'cache-first',
+  })
+
+  const previewImageUrl = diagramData?.diagram?.previewImageUrl
+  const diagramName = diagramData?.diagram?.name
+
   const memoizedComponentModalFields = useMemo(() => {
     return arrayNonNullable(pointMeta.componentModalFields)
   }, [pointMeta.componentModalFields])
@@ -51,7 +70,10 @@ export function FocalPointMetaMiniCard({
   )
 
   const fieldCount = memoizedComponentModalFields.length
-  const displayName = componentName?.trim() || `${component.name} ${index + 1}`
+  const displayName =
+    diagramName?.trim() ||
+    componentName?.trim() ||
+    `${component.name} ${index + 1}`
 
   return (
     <>
@@ -67,32 +89,47 @@ export function FocalPointMetaMiniCard({
           }
         }}
       >
-        <div>
-          <div className="flex items-center gap-1.5">
-            {pointMeta.componentLink && (
-              <LuLink className="text-primary size-3 shrink-0" />
-            )}
+        <div className="flex min-w-0 items-center gap-3">
+          {diagramId &&
+            (previewImageUrl ? (
+              <img
+                alt={displayName}
+                src={previewImageUrl}
+                className="size-9 shrink-0 rounded-md border border-[#2A3242] bg-[#0F1420] object-contain p-0.5"
+              />
+            ) : (
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#2A3242] bg-[#0F1420]">
+                <LuImage className="text-paragraph size-4" />
+              </span>
+            ))}
 
-            <span className="text-foreground block truncate text-sm font-medium">
-              {displayName}
-
-              {showFocalPointName && (
-                <FocalPointName
-                  pageId={pointMeta.pageId!}
-                  focalPointId={pointMeta.focalPointId!}
-                />
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              {pointMeta.componentLink && (
+                <LuLink className="text-primary size-3 shrink-0" />
               )}
-            </span>
-          </div>
 
-          {pointMeta.updatedAt && (
-            <span className="text-paragraph mt-0.5 block text-[10px] tracking-wide">
-              Updated{' '}
-              {formatDistanceToNowStrict(new Date(pointMeta.updatedAt), {
-                addSuffix: true,
-              })}
-            </span>
-          )}
+              <span className="text-foreground block truncate text-sm font-medium">
+                {displayName}
+
+                {showFocalPointName && (
+                  <FocalPointName
+                    pageId={pointMeta.pageId!}
+                    focalPointId={pointMeta.focalPointId!}
+                  />
+                )}
+              </span>
+            </div>
+
+            {pointMeta.updatedAt && (
+              <span className="text-paragraph mt-0.5 block text-[10px] tracking-wide">
+                Updated{' '}
+                {formatDistanceToNowStrict(new Date(pointMeta.updatedAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
