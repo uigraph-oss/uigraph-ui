@@ -3,7 +3,7 @@ import { CodegenConfig } from '@graphql-codegen/cli'
 export default {
   generates: {
     './src/api/.gql/': {
-      schema: process.env.GRAPHQL_URL,
+      schema: process.env.VITE_GRAPHQL_URL?? "http://localhost:8090/graphql",
       documents: ['./src/**/*.{ts,tsx}'],
 
       preset: 'client',
