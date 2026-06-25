@@ -11,6 +11,7 @@ import { HiOutlineTrash } from 'react-icons/hi2'
 import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta'
+import { componentLinkRef } from '../schemas/component-link'
 import { FocalPointName } from './focal-point-name'
 import { FocalPointMetaModal } from './meta-modal'
 
@@ -59,7 +60,7 @@ export function FocalPointMetaMiniCard({
         onClick={() => {
           if (component.componentId === COMPONENT_FLOW_DIAGRAM_ID) {
             startFlowDiagram()
-          } else if (pointMeta.componentLinkId?.includes(':')) {
+          } else if (pointMeta.componentLink) {
             startCompositeLink()
           } else {
             setIsModalOpen(true)
@@ -68,7 +69,7 @@ export function FocalPointMetaMiniCard({
       >
         <div>
           <div className="flex items-center gap-1.5">
-            {pointMeta.componentLinkId && (
+            {pointMeta.componentLink && (
               <LuLink className="text-primary size-3 shrink-0" />
             )}
 
@@ -137,12 +138,12 @@ export function FocalPointMetaMiniCard({
         }}
         submitLabel="Update Now"
         isViewMode={modalMode === 'view'}
-        isReadOnly={!!pointMeta.componentLinkId}
+        isReadOnly={!!pointMeta.componentLink}
         setEditMode={() => setModalMode('edit')}
         title={`${modalMode === 'view' ? '' : 'Edit'} ${component.name} ${index + 1 || ''}`}
         description={component.description}
         fields={memoizedComponentModalFields}
-        componentMetaId={pointMeta.componentLinkId}
+        componentLinkRef={componentLinkRef(pointMeta.componentLink)}
         submit={async (fieldsInput) => {
           try {
             await updatePointMeta({ componentModalFields: fieldsInput })

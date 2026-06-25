@@ -1,4 +1,5 @@
 import { graphql, GT } from '@/api'
+import { ComponentLink, parseComponentLink } from '../schemas/component-link'
 
 export type ComponentFieldInput = GT.ComponentModalFieldInput
 
@@ -7,9 +8,7 @@ export type PointMeta = {
   focalPointId?: string | null
   pageId?: string | null
   componentId?: string | null
-  componentLinkId?: string | null
-  componentFlowDiagram?: string | null
-  componentImages: string[]
+  componentLink?: ComponentLink | null
   componentModalFields: GT.ComponentModalField[]
   updatedAt?: string | null
 }
@@ -19,9 +18,7 @@ type FocalPointMetaResult = {
   focalPointId?: string | null
   frameId?: string | null
   componentId?: string | null
-  componentLinkId?: string | null
-  componentFlowDiagram?: string | null
-  componentImages: string[]
+  componentLink?: unknown
   componentModalFields: GT.ComponentModalField[]
   updatedAt?: string | null
 }
@@ -32,9 +29,7 @@ export function toPointMeta(m: FocalPointMetaResult): PointMeta {
     focalPointId: m.focalPointId,
     pageId: m.frameId,
     componentId: m.componentId,
-    componentLinkId: m.componentLinkId,
-    componentFlowDiagram: m.componentFlowDiagram,
-    componentImages: m.componentImages,
+    componentLink: parseComponentLink(m.componentId, m.componentLink),
     componentModalFields: m.componentModalFields,
     updatedAt: m.updatedAt,
   }
@@ -58,9 +53,7 @@ export const FOCAL_POINT_META = graphql(`
       orgId
       frameId
       componentId
-      componentLinkId
-      componentImages
-      componentFlowDiagram
+      componentLink
       componentModalFields {
         componentFieldId
         label
@@ -77,20 +70,23 @@ export const FOCAL_POINT_META = graphql(`
   }
 `)
 
-export const FOCAL_POINT_META_BY_COMPONENT_LINK = graphql(`
-  query FocalPointMetaByComponentLink($orgId: ID!, $componentLinkId: ID!) {
-    focalPointMetaByComponentLink(
+export const FOCAL_POINT_META_BY_LINK = graphql(`
+  query FocalPointMetaByLink(
+    $orgId: ID!
+    $linkKey: String!
+    $linkValue: String!
+  ) {
+    focalPointMetaByLink(
       orgId: $orgId
-      componentLinkId: $componentLinkId
+      linkKey: $linkKey
+      linkValue: $linkValue
     ) {
       id
       focalPointId
       orgId
       frameId
       componentId
-      componentLinkId
-      componentImages
-      componentFlowDiagram
+      componentLink
       componentModalFields {
         componentFieldId
         label

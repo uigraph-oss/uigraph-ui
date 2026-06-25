@@ -23,6 +23,13 @@ import { LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getFocalPointComponentIcon } from '../../../helpers/get-component-icon'
 import { ComponentFieldInput, PointMeta } from '../api/focal-point-meta'
+import {
+  apiContractSchema,
+  ComponentLink,
+  flowDiagramSchema,
+  serviceDocSchema,
+  testSuiteSchema,
+} from '../schemas/component-link'
 import { ApiContractSelectionModal } from './api-contract-selection-modal'
 import { DeletePointMetaConfirmationModal } from './delete-meta-confirm-modal'
 import { DiagramSelectionModal } from './diagram-selection-modal'
@@ -45,8 +52,7 @@ export type FocalPointMetaSectionProps = {
     componentId: string,
     input: {
       componentModalFields?: ComponentFieldInput[]
-      componentLinkId?: string
-      componentFlowDiagram?: string
+      componentLink?: ComponentLink
     }
   ) => Promise<void>
 
@@ -94,9 +100,9 @@ export function FocalPointMetaSection({
 
   async function startFlowDiagram(meta: PointMeta | null) {
     if (meta) {
-      const linkedDiagramId = meta.componentFlowDiagram || meta.componentLinkId
-      if (linkedDiagramId) {
-        return window.open(`/diagram/${linkedDiagramId}`)
+      const link = flowDiagramSchema.safeParse(meta.componentLink)
+      if (link.success) {
+        return window.open(`/diagram/${link.data.diagramId}`)
       }
 
       return toast.error('Invalid diagram ID. Please try again.')
@@ -120,7 +126,7 @@ export function FocalPointMetaSection({
       }
 
       await createPointMeta(component.componentId!, {
-        componentFlowDiagram: diagramId,
+        componentLink: { diagramId },
       })
       return window.open(`/diagram/${diagramId}`)
     } catch {
@@ -131,25 +137,26 @@ export function FocalPointMetaSection({
   }
 
   function startTestSuite(meta: PointMeta) {
-    const [serviceId, testPackId] = (meta.componentLinkId ?? '').split(':')
-    if (!serviceId || !testPackId)
+    const link = testSuiteSchema.safeParse(meta.componentLink)
+    if (!link.success)
       return toast.error('Invalid test suite link. Please try again.')
+    const { serviceId, testPackId } = link.data
     window.open(`/services/${serviceId}/tests?packId=${testPackId}`)
   }
 
   function startServiceDoc(meta: PointMeta) {
-    const [serviceId, serviceDocId] = (meta.componentLinkId ?? '').split(':')
-    if (!serviceId || !serviceDocId)
+    const link = serviceDocSchema.safeParse(meta.componentLink)
+    if (!link.success)
       return toast.error('Invalid document link. Please try again.')
+    const { serviceId, serviceDocId } = link.data
     window.open(`/services/${serviceId}/docs?open=${serviceDocId}`)
   }
 
   function startApiContract(meta: PointMeta) {
-    const [serviceId, apiGroupId, apiEndpointId] = (
-      meta.componentLinkId ?? ''
-    ).split(':')
-    if (!serviceId || !apiGroupId)
+    const link = apiContractSchema.safeParse(meta.componentLink)
+    if (!link.success)
       return toast.error('Invalid API contract link. Please try again.')
+    const { serviceId, apiGroupId, apiEndpointId } = link.data
     window.open(
       `/services/${serviceId}/apis/${apiGroupId}?endpoint=${apiEndpointId}`
     )
@@ -340,7 +347,11 @@ export function FocalPointMetaSection({
           onSelect={async (formData) => {
             try {
               await createPointMeta(component.componentId!, {
-                componentLinkId: `${formData.serviceId}:${formData.apiGroupId}:${formData.apiEndpointId}`,
+                componentLink: {
+                  serviceId: formData.serviceId,
+                  apiGroupId: formData.apiGroupId,
+                  apiEndpointId: formData.apiEndpointId,
+                },
               })
               setIsLinkModalOpen(false)
               toast.success('Focal point meta created successfully')
@@ -361,7 +372,7 @@ export function FocalPointMetaSection({
           onSelect={async (formData) => {
             try {
               await createPointMeta(component.componentId!, {
-                componentLinkId: formData,
+                componentLink: { diagramId: formData },
               })
               toast.success('Focal point meta created successfully')
               setIsLinkModalOpen(false)
@@ -382,7 +393,10 @@ export function FocalPointMetaSection({
           onSelect={async (formData) => {
             try {
               await createPointMeta(component.componentId!, {
-                componentLinkId: `${formData.serviceId}:${formData.testPackId}`,
+                componentLink: {
+                  serviceId: formData.serviceId,
+                  testPackId: formData.testPackId,
+                },
               })
               setIsLinkModalOpen(false)
               toast.success('Focal point meta created successfully')
@@ -403,7 +417,10 @@ export function FocalPointMetaSection({
           onSelect={async (formData) => {
             try {
               await createPointMeta(component.componentId!, {
-                componentLinkId: `${formData.serviceId}:${formData.serviceDocId}`,
+                componentLink: {
+                  serviceId: formData.serviceId,
+                  serviceDocId: formData.serviceDocId,
+                },
               })
               setIsLinkModalOpen(false)
               toast.success('Focal point meta created successfully')

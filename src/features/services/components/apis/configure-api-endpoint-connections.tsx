@@ -7,7 +7,7 @@ import { apolloClientGQL } from '@/api/client'
 import { FRAME_BY_ID } from '@/features/dashboard-projects/api/frame'
 import { MAP } from '@/features/dashboard-projects/api/map'
 import {
-  FOCAL_POINT_META_BY_COMPONENT_LINK,
+  FOCAL_POINT_META_BY_LINK,
   toPointMeta,
 } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
@@ -89,7 +89,7 @@ export function ConfigureApiEndpointConnections({
   readonly = false,
 }: ConfigureApiEndpointConnectionsProps) {
   const organizationId = useCurrentOrganization()?.id
-  const componentLinkId = endpoint.apiEndpointId
+  const apiEndpointId = endpoint.apiEndpointId
 
   // Connections tab is lazy-rendered, so this is effectively lazy-loaded
   const {
@@ -97,20 +97,21 @@ export function ConfigureApiEndpointConnections({
     loading: focalPointsLoading,
     error: focalPointsError,
     refetch,
-  } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
+  } = useQuery(FOCAL_POINT_META_BY_LINK, {
     variables: {
       orgId: organizationId!,
-      componentLinkId: componentLinkId!,
+      linkKey: 'apiEndpointId',
+      linkValue: apiEndpointId!,
     },
-    skip: !componentLinkId || !organizationId,
+    skip: !apiEndpointId || !organizationId,
     fetchPolicy: 'cache-and-network',
   })
 
   const focalPoints = useMemo(
     () =>
-      arrayNonNullable(
-        focalPointsData?.focalPointMetaByComponentLink || []
-      ).map(toPointMeta),
+      arrayNonNullable(focalPointsData?.focalPointMetaByLink || []).map(
+        toPointMeta
+      ),
     [focalPointsData]
   )
 

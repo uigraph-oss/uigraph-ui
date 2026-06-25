@@ -11,11 +11,11 @@ import {
   toPointMeta,
   UPDATE_FOCAL_POINT_META,
 } from '../api/focal-point-meta'
+import { ComponentLink } from '../schemas/component-link'
 
 type PointMetaInput = {
   componentModalFields?: ComponentFieldInput[]
-  componentLinkId?: string
-  componentFlowDiagram?: string
+  componentLink?: ComponentLink
 }
 
 export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
@@ -51,8 +51,7 @@ export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
       function buildInput(componentId: string, input: PointMetaInput) {
         return {
           componentId,
-          componentLinkId: input.componentLinkId,
-          componentFlowDiagram: input.componentFlowDiagram,
+          componentLink: input.componentLink,
           componentModalFields: input.componentModalFields,
         }
       }

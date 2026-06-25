@@ -51,7 +51,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { FiEdit } from 'react-icons/fi'
 import {
   ComponentFieldInput,
-  FOCAL_POINT_META_BY_COMPONENT_LINK,
+  FOCAL_POINT_META_BY_LINK,
 } from '../api/focal-point-meta'
 import { FocalPointMetaLayoutModalContent } from './modal-customize'
 
@@ -375,7 +375,7 @@ function FocalPointMetaModalWrapper({
   isOpen,
   setIsOpen,
   isViewMode = false,
-  componentMetaId,
+  componentLinkRef,
   ...props
 }: ModalProps & { isOpen: boolean; setIsOpen: (open: boolean) => void }) {
   const memoizedFields = useMemo(() => {
@@ -430,26 +430,29 @@ function FocalPointMetaModalWrapper({
 }
 
 function FocalPointMetaModalLoader({
-  componentMetaId,
+  componentLinkRef,
   ...props
 }: ModalProps & { isOpen: boolean; setIsOpen: (open: boolean) => void }) {
   const organizationId = useCurrentOrganization()?.id
 
   const { data: componentMetaData, loading: isLoadingComponentMetaData } =
-    useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
-      variables: { orgId: organizationId!, componentLinkId: componentMetaId! },
-      skip: !componentMetaId || !organizationId,
+    useQuery(FOCAL_POINT_META_BY_LINK, {
+      variables: {
+        orgId: organizationId!,
+        linkKey: componentLinkRef?.key ?? '',
+        linkValue: componentLinkRef?.value ?? '',
+      },
+      skip: !componentLinkRef || !organizationId,
       fetchPolicy: 'cache-first',
     })
 
   const memoizedFields = useMemo(() => {
-    return componentMetaId
+    return componentLinkRef
       ? arrayNonNullable(
-          componentMetaData?.focalPointMetaByComponentLink?.[0]
-            ?.componentModalFields
+          componentMetaData?.focalPointMetaByLink?.[0]?.componentModalFields
         )
       : props.fields
-  }, [componentMetaData, componentMetaId, props.fields])
+  }, [componentMetaData, componentLinkRef, props.fields])
 
   if (isLoadingComponentMetaData) {
     return (
@@ -501,5 +504,5 @@ type ModalProps = {
   isReadOnly?: boolean
   setEditMode?: () => void
 
-  componentMetaId?: string | null
+  componentLinkRef?: { key: string; value: string } | null
 }
