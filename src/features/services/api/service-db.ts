@@ -240,25 +240,3 @@ export function toCreateServiceDBInput(data: {
     }),
   }
 }
-
-export function toUpdateServiceDBInput(data: {
-  dbName?: string
-  dbType?: string
-  dialect?: string
-  tables?: unknown[]
-  noSQLSchema?: unknown
-  dbDiagramId?: string
-  pgDumpFileId?: string
-}) {
-  return {
-    dbName: data.dbName,
-    dbType: data.dbType,
-    dialect: data.dialect,
-    schemaJson: JSON.stringify({
-      tables: data.tables,
-      noSQLSchema: data.noSQLSchema,
-      dbDiagramId: data.dbDiagramId,
-      pgDumpFileId: data.pgDumpFileId,
-    }),
-  }
-}
