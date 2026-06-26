@@ -6,10 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { apolloClientGQL } from '@/api/client'
 import { FRAME_BY_ID } from '@/features/dashboard-projects/api/frame'
 import { MAP } from '@/features/dashboard-projects/api/map'
-import {
-  FOCAL_POINT_META_BY_COMPONENT_LINK,
-  toPointMeta,
-} from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
+import { FOCAL_POINT_META_BY_LINK } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 
@@ -89,7 +86,7 @@ export function ConfigureApiEndpointConnections({
   readonly = false,
 }: ConfigureApiEndpointConnectionsProps) {
   const organizationId = useCurrentOrganization()?.id
-  const componentLinkId = endpoint.apiEndpointId
+  const apiEndpointId = endpoint.apiEndpointId
 
   // Connections tab is lazy-rendered, so this is effectively lazy-loaded
   const {
@@ -97,26 +94,23 @@ export function ConfigureApiEndpointConnections({
     loading: focalPointsLoading,
     error: focalPointsError,
     refetch,
-  } = useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
+  } = useQuery(FOCAL_POINT_META_BY_LINK, {
     variables: {
       orgId: organizationId!,
-      componentLinkId: componentLinkId!,
+      linkId: apiEndpointId!,
     },
-    skip: !componentLinkId || !organizationId,
+    skip: !apiEndpointId || !organizationId,
     fetchPolicy: 'cache-and-network',
   })
 
   const focalPoints = useMemo(
-    () =>
-      arrayNonNullable(
-        focalPointsData?.focalPointMetaByComponentLink || []
-      ).map(toPointMeta),
+    () => arrayNonNullable(focalPointsData?.focalPointMetaByLink || []),
     [focalPointsData]
   )
 
   const pageIds = useMemo(() => {
     const ids = focalPoints
-      .map((fp) => fp.pageId)
+      .map((fp) => fp.frameId)
       .filter((id): id is string => Boolean(id))
     return uniq(ids)
   }, [focalPoints])
@@ -170,15 +164,12 @@ export function ConfigureApiEndpointConnections({
   const focalPointItems = useMemo<ConnectionItem[]>(() => {
     return arrayNonNullable(
       focalPoints.map((fp) => {
-        const id = fp.focalPointMetaId
+        const id = fp.id
         if (!id) return null
 
-        const pageData = fp.pageId ? pageDataMap.get(fp.pageId) : undefined
+        const pageData = fp.frameId ? pageDataMap.get(fp.frameId) : undefined
         const fallbackName =
-          pageData?.pageName ||
-          fp.focalPointMetaId ||
-          fp.focalPointId ||
-          'Unknown'
+          pageData?.pageName || fp.id || fp.focalPointId || 'Unknown'
 
         const projectName = pageData?.projectId
           ? projectNameMap.get(pageData.projectId)
@@ -196,17 +187,17 @@ export function ConfigureApiEndpointConnections({
           name: pageData?.pageName || fallbackName,
           imageUrl: pageData?.imageUrl,
           breadcrumb,
-          pageId: fp.pageId || undefined,
+          pageId: fp.frameId || undefined,
         }
       })
     )
   }, [focalPoints, pageDataMap, projectNameMap])
 
   function handleItemClick(id: string) {
-    const fp = focalPoints.find((x) => x.focalPointMetaId === id)
-    if (!fp?.pageId) return
+    const fp = focalPoints.find((x) => x.id === id)
+    if (!fp?.frameId) return
     window.open(
-      `/dashboard/frame/${fp.pageId}`,
+      `/dashboard/frame/${fp.frameId}`,
       '_blank',
       'noopener,noreferrer'
     )

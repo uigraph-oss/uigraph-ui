@@ -27,6 +27,7 @@ import {
 } from '@/features/services/api/api-adapters'
 import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { normalizePath } from '@/utils/api/display'
@@ -95,10 +96,22 @@ export function ServiceApiEndpoints() {
   )
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [authFilter, setAuthFilter] = useState('all')
-  const [methodFilter, setMethodFilter] = useState('all')
-  const [groupBy, setGroupBy] = useState<GroupByKind>('tags')
-  const [operationTypeFilter, setOperationTypeFilter] = useState('all')
+  const [authFilter, setAuthFilter] = useScopedStorage(
+    `${serviceId}:apis-auth`,
+    'all'
+  )
+  const [methodFilter, setMethodFilter] = useScopedStorage(
+    `${serviceId}:apis-method`,
+    'all'
+  )
+  const [groupBy, setGroupBy] = useScopedStorage<GroupByKind>(
+    `${serviceId}:apis-groupby`,
+    'tags'
+  )
+  const [operationTypeFilter, setOperationTypeFilter] = useScopedStorage(
+    `${serviceId}:apis-optype`,
+    'all'
+  )
   const [openApiSpec, setOpenApiSpec] = useState<Record<
     string,
     unknown
@@ -850,7 +863,7 @@ function RestEndpointRow({
       onClick={onSelect}
       className={`group flex cursor-pointer items-start justify-between rounded-md border px-3 py-2.5 transition-colors ${
         selected
-          ? 'border-blue-300 bg-blue-50/60'
+          ? 'border-blue-500 bg-blue-500/10'
           : 'border-transparent hover:bg-[#1E2533]'
       }`}
     >

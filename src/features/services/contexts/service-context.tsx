@@ -1,48 +1,35 @@
 'use client'
 
-import { apolloClientGQL } from '@/api/client'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
-import { useMemo } from 'react'
-import { SERVICES } from '../api/services'
+import { SERVICE } from '../api/services'
 import { useDashboardServicesList } from '../hooks/use-dashboard-services'
 
 export const [ServiceContextProvider, useServiceContext] = createContext(
   ({ serviceId }: { serviceId: string }) => {
     const organization = useCurrentOrganization()
     const orgId = organization.id
-    const services = useDashboardServicesList(serviceId)
+    const { createService, updateService, deleteService } =
+      useDashboardServicesList(serviceId)
 
-    const service = useMemo(() => {
-      const fetchedService = services.services.find(
-        (service) => service.id === serviceId
-      )
+    const { data, loading } = useQuery(SERVICE, {
+      variables: { orgId: orgId!, id: serviceId },
+      fetchPolicy: 'cache-first',
+      skip: !orgId || !serviceId,
+    })
 
-      if (!fetchedService) {
-        const cachedServices = apolloClientGQL.readQuery({
-          query: SERVICES,
-          variables: { orgId },
-        })
-
-        const cachedService = cachedServices?.services?.find(
-          (service) => service?.id === serviceId
-        )
-
-        return cachedService
-      }
-
-      return fetchedService
-    }, [services.services, serviceId, orgId])
+    const service = data?.service
 
     return {
       service: service!,
       serviceId: service?.id as string,
 
-      isServiceLoading: services.isServicesLoading && !service,
+      isServiceLoading: loading && !service,
 
-      createService: services.createService,
-      updateService: services.updateService,
-      deleteService: services.deleteService,
+      createService,
+      updateService,
+      deleteService,
     }
   }
 )

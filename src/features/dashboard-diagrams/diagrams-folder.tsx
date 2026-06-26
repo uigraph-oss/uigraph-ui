@@ -34,17 +34,17 @@ import { useDiagramsContext } from './contexts/diagrams-context'
 import { FlowDiagramCard } from './flow-diagram-card'
 import { getDragData } from './helpers/dnd-handler'
 
-const PAGE_SIZE = 12
-
 export function DiagramsFolder() {
   const organization = useCurrentOrganization()
-  const [searchQuery, setSearchQuery] = useState('')
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
-  const [page, setPage] = useState(0)
 
   const {
     folders,
     diagrams,
+    totalCount,
+    pageSize,
+    page,
+    setPage,
     isLoading,
     selectedFolder,
     parentFolder,
@@ -52,32 +52,24 @@ export function DiagramsFolder() {
     setSelectedFolderId,
     selectedTeamId,
     setSelectedTeamId,
+    sortBy,
+    setSortBy,
+    search,
+    setSearch,
     teams,
     createFolder,
   } = useDiagramsContext()
 
-  useEffect(() => {
-    setPage(0)
-  }, [selectedFolderId, selectedTeamId, searchQuery])
-
-  const filteredFolders = useFuse(folders, searchQuery, {
+  const filteredFolders = useFuse(folders, search, {
     keys: ['name'],
   })
-
-  const filteredDiagrams = useFuse(diagrams, searchQuery, {
-    keys: ['name'],
-  })
-
-  if (isLoading) {
-    return <SectionLoader label="Loading folders..." />
-  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Search folders and flows"
           className="h-11 max-w-sm flex-1 rounded-[16px] border-[#2A3242] bg-transparent px-6 text-sm text-[#F4F7FC] shadow-none placeholder:text-[#586378] focus-visible:border-[#5C84FF]"
         />
@@ -99,6 +91,17 @@ export function DiagramsFolder() {
           </SelectContent>
         </Select>
 
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="h-11 w-40 shrink-0 rounded-[16px] border-[#2A3242] bg-transparent px-6 text-sm text-[#D2D9E6] shadow-none">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="created">Newest</SelectItem>
+            <SelectItem value="updated">Recently updated</SelectItem>
+            <SelectItem value="name">Name</SelectItem>
+          </SelectContent>
+        </Select>
+
         {selectedFolderId && (
           <Button
             preset="outline"
@@ -113,61 +116,61 @@ export function DiagramsFolder() {
         )}
       </div>
 
-      {Boolean(folders.length > 0 || selectedFolderId) && (
-        <div className="space-y-3">
-          <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
-            {!selectedFolderId && (
-              <AllFlowsCard diagramsCount={diagrams.length} />
-            )}
-            {selectedFolderId && selectedFolder && (
-              <AllFlowsCard
-                diagramsCount={diagrams.length}
-                folder={selectedFolder}
+      {isLoading ? (
+        <SectionLoader label="Loading flows..." />
+      ) : (
+        <>
+          {Boolean(folders.length > 0 || selectedFolderId) && (
+            <div className="space-y-3">
+              <div className="folder-scroll-row flex items-center gap-3 overflow-x-auto pb-1">
+                {!selectedFolderId && (
+                  <AllFlowsCard diagramsCount={totalCount} />
+                )}
+                {selectedFolderId && selectedFolder && (
+                  <AllFlowsCard
+                    diagramsCount={totalCount}
+                    folder={selectedFolder}
+                  />
+                )}
+
+                {filteredFolders.map((folder) => (
+                  <FolderChip key={folder.id} folder={folder} />
+                ))}
+
+                {!selectedFolderId &&
+                  filteredFolders.length === 0 &&
+                  search && (
+                    <span className="text-sm text-[#586378]">
+                      No folders found
+                    </span>
+                  )}
+              </div>
+            </div>
+          )}
+
+          <div>
+            {diagrams.length > 0 ? (
+              <DiagramGrid
+                diagrams={diagrams}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={setPage}
+              />
+            ) : (
+              <SectionNotFound
+                label={
+                  search || selectedTeamId
+                    ? 'No flows match your filters.'
+                    : selectedFolder
+                      ? 'No diagrams in this folder yet.'
+                      : 'No diagrams yet.'
+                }
               />
             )}
-
-            {filteredFolders.map((folder) => (
-              <FolderChip key={folder.id} folder={folder} />
-            ))}
-
-            {!selectedFolderId &&
-              filteredFolders.length === 0 &&
-              searchQuery && (
-                <span className="text-sm text-[#586378]">No folders found</span>
-              )}
           </div>
-        </div>
+        </>
       )}
-
-      <div>
-        <h3 className="text-paragraph mb-3 text-sm font-medium">
-          {selectedFolder ? `Flows in ${selectedFolder.name}` : 'All Flows'}
-          <span className="text-paragraph/50 ml-1.5">
-            {searchQuery
-              ? `· ${filteredDiagrams.length} result${filteredDiagrams.length !== 1 ? 's' : ''}`
-              : `· ${diagrams.length}`}
-          </span>
-        </h3>
-
-        {filteredDiagrams.length > 0 ? (
-          <DiagramGrid
-            diagrams={filteredDiagrams}
-            page={page}
-            pageSize={PAGE_SIZE}
-            onPageChange={setPage}
-          />
-        ) : (
-          <SectionNotFound
-            label={
-              searchQuery || selectedTeamId
-                ? 'No flows match your filters.'
-                : selectedFolder
-                  ? 'No diagrams in this folder yet.'
-                  : 'No diagrams yet.'
-            }
-          />
-        )}
-      </div>
 
       <BetterDialogProvider
         open={isCreateFolderOpen}
@@ -230,16 +233,16 @@ function DiagramGrid({
   diagrams,
   page,
   pageSize,
+  totalCount,
   onPageChange,
 }: {
   diagrams: DashboardDiagram[]
   page: number
   pageSize: number
+  totalCount: number
   onPageChange: (page: number) => void
 }) {
-  const totalPages = Math.ceil(diagrams.length / pageSize)
-  const start = page * pageSize
-  const pageItems = diagrams.slice(start, start + pageSize)
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
     <div className="space-y-4">
@@ -247,7 +250,7 @@ function DiagramGrid({
         className="grid gap-4"
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
       >
-        {pageItems.map((diagram) => (
+        {diagrams.map((diagram) => (
           <FlowDiagramCard key={diagram.id} diagram={diagram} />
         ))}
       </div>

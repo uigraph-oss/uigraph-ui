@@ -20,24 +20,24 @@ export function EditorStepPrimaryKeys() {
   return (
     <div className="space-y-4 rounded-lg border p-4">
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-gray-700">
+        <label className="text-foreground text-xs font-semibold">
           Table name
         </label>
         <Input
-          className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+          className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
           value={coreSchema.name}
           disabled
         />
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <div className="space-y-2 rounded-lg border bg-gray-50 p-3">
-          <label className="text-xs font-semibold text-gray-700">
+        <div className="bg-secondary space-y-2 rounded-lg border p-3">
+          <label className="text-foreground text-xs font-semibold">
             Partition key
           </label>
           <div className="flex gap-2">
             <Input
-              className="border-stock text-foreground h-[3.5rem] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+              className="border-stock text-foreground bg-card h-[3.5rem] flex-1 rounded-[1rem] border px-4 text-sm"
               value={dynamoSchema.primaryKey.partitionKey}
               onChange={(event) =>
                 setDynamoSchema({
@@ -64,7 +64,7 @@ export function EditorStepPrimaryKeys() {
                   })
                 }
               }}
-              className="h-[3.5rem] flex-none overflow-hidden rounded-md border border-gray-300 shadow-none"
+              className="border-border h-[3.5rem] flex-none overflow-hidden rounded-md border shadow-none"
               variant="outline"
             >
               {KEY_TYPE_OPTIONS.map((option) => {
@@ -78,7 +78,7 @@ export function EditorStepPrimaryKeys() {
                       '!border-0 !shadow-none first:!rounded-l-md last:!rounded-r-md',
                       isSelected
                         ? 'bg-primary hover:bg-primary/90 focus-visible:ring-primary z-10 font-semibold text-white focus-visible:ring-2 focus-visible:ring-offset-1'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1'
+                        : 'bg-card text-foreground hover:bg-accent focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1'
                     )}
                   >
                     {option.label}
@@ -87,7 +87,7 @@ export function EditorStepPrimaryKeys() {
               })}
             </ToggleGroup>
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-muted-foreground text-xs">
             Required. Primary partition key attribute name and type.
           </p>
         </div>
@@ -96,16 +96,16 @@ export function EditorStepPrimaryKeys() {
           className={cn(
             'space-y-2 rounded-lg border p-3 transition-opacity',
             dynamoSchema.primaryKey.sortKey
-              ? 'bg-gray-50 opacity-100'
-              : 'bg-gray-50/50 opacity-60'
+              ? 'bg-secondary opacity-100'
+              : 'bg-secondary/50 opacity-60'
           )}
         >
-          <label className="text-xs font-semibold text-gray-700">
+          <label className="text-foreground text-xs font-semibold">
             Sort key
           </label>
           <div className="flex gap-2">
             <Input
-              className="border-stock text-foreground h-[3.5rem] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+              className="border-stock text-foreground bg-card h-[3.5rem] flex-1 rounded-[1rem] border px-4 text-sm"
               value={dynamoSchema.primaryKey.sortKey}
               onChange={(event) =>
                 setDynamoSchema({
@@ -132,7 +132,7 @@ export function EditorStepPrimaryKeys() {
                   })
                 }
               }}
-              className="h-[3.5rem] flex-none overflow-hidden rounded-md border border-gray-300 shadow-none"
+              className="border-border h-[3.5rem] flex-none overflow-hidden rounded-md border shadow-none"
               variant="outline"
             >
               {KEY_TYPE_OPTIONS.map((option) => {
@@ -146,7 +146,7 @@ export function EditorStepPrimaryKeys() {
                       '!border-0 !shadow-none first:!rounded-l-md last:!rounded-r-md',
                       isSelected
                         ? 'bg-primary hover:bg-primary/90 focus-visible:ring-primary z-10 font-semibold text-white focus-visible:ring-2 focus-visible:ring-offset-1'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1'
+                        : 'bg-card text-foreground hover:bg-accent focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1'
                     )}
                   >
                     {option.label}
@@ -156,7 +156,7 @@ export function EditorStepPrimaryKeys() {
             </ToggleGroup>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500">
+            <p className="text-muted-foreground text-xs">
               Optional. Primary sort key attribute name and type.
             </p>
             {dynamoSchema.primaryKey.sortKey && (

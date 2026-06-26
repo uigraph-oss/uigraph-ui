@@ -112,7 +112,7 @@ function MapScreensSection({
     variables: { orgId, mapId: projectId },
   })
 
-  const pages = arrayNonNullable(data?.frames).filter((page) =>
+  const pages = arrayNonNullable(data?.frames.items).filter((page) =>
     Boolean(page.id)
   )
 
@@ -178,8 +178,8 @@ export function LinkUiMapNodeSelect({
     skip: !organizationId,
   })
 
-  const projects = arrayNonNullable(projectsData?.maps).filter((project) =>
-    Boolean(project.id)
+  const projects = arrayNonNullable(projectsData?.maps.items).filter(
+    (project) => Boolean(project.id)
   )
   const defaultExpandedProjectIds = arrayNonNullable(
     projects.map((project) => project.id)
@@ -202,8 +202,8 @@ export function LinkUiMapNodeSelect({
 
   const selectedInfo = useMemo(() => {
     return {
-      map: projectsData?.maps?.find((project) => project?.id === mapId),
-      screen: screensData?.frames?.find((page) => page?.id === screenId),
+      map: projectsData?.maps.items?.find((project) => project?.id === mapId),
+      screen: screensData?.frames.items?.find((page) => page?.id === screenId),
       focalPoint: focalPointsData?.focalPoints?.find(
         (focalPoint) => focalPoint?.id === focalPointId
       ),
@@ -212,8 +212,8 @@ export function LinkUiMapNodeSelect({
     mapId,
     screenId,
     focalPointId,
-    screensData?.frames,
-    projectsData?.maps,
+    screensData?.frames.items,
+    projectsData?.maps.items,
     focalPointsData?.focalPoints,
   ])
 

@@ -1,5 +1,5 @@
 import { ComponentInputType } from '@/features/component-meta'
-import animatedNodes from '../../../../public/animated-nodes.json'
+import { animatedNodes } from '@uigraph/sdk/animated-nodes'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import { SidebarLayout } from './sidebar-layout'
 import { sidebarDragRowClassName } from './sidebar-panel-styles'

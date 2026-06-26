@@ -27,19 +27,21 @@ import { ServiceCard } from './service-card'
 
 export function DashboardServices() {
   const [createServiceOpen, setCreateServiceOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   const {
     orgId,
     services,
-    allServices,
     isServicesLoading,
     statsByServiceId,
     isStatsLoading,
     teams,
     selectedTeamId,
     setSelectedTeamId,
+    sortBy,
+    setSortBy,
+    search,
+    setSearch,
     createService,
     updateService,
     deleteService,
@@ -65,17 +67,11 @@ export function DashboardServices() {
   }, [services])
 
   const filtered = useMemo(() => {
-    return services.filter((s) => {
-      const matchesSearch =
-        !searchQuery ||
-        s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory =
-        !activeCategory ||
-        s.category?.toLowerCase() === activeCategory.toLowerCase()
-      return matchesSearch && matchesCategory
-    })
-  }, [services, searchQuery, activeCategory])
+    if (!activeCategory) return services
+    return services.filter(
+      (s) => s.category?.toLowerCase() === activeCategory.toLowerCase()
+    )
+  }, [services, activeCategory])
 
   return (
     <DashboardPageSectionLayout
@@ -89,100 +85,103 @@ export function DashboardServices() {
         </Button>
       }
     >
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search services..."
+          className="h-10 w-52 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
+        />
+
+        {teams.length > 0 && (
+          <Select
+            value={selectedTeamId ?? '__all__'}
+            onValueChange={(v) => setSelectedTeamId(v === '__all__' ? null : v)}
+          >
+            <SelectTrigger className="h-10 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
+              <SelectValue placeholder="All Teams" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Teams</SelectItem>
+              {teams.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="h-10 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="created">Newest</SelectItem>
+            <SelectItem value="updated">Recently updated</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="flex items-center gap-0.5 rounded-lg bg-[#1E2533] p-0.5 ring-1 ring-[#2A3242]">
+          <FilterPill
+            label="All"
+            count={services.length}
+            active={activeCategory === null}
+            onClick={() => setActiveCategory(null)}
+          />
+          {categories.map(([cat, count]) => (
+            <FilterPill
+              key={cat}
+              label={cat}
+              count={count}
+              active={activeCategory === cat}
+              onClick={() =>
+                setActiveCategory(activeCategory === cat ? null : cat)
+              }
+            />
+          ))}
+        </div>
+      </div>
+
       {isServicesLoading ? (
         <SectionLoader label="Loading services..." />
-      ) : allServices.length === 0 ? (
-        <SectionNotFound label="No services yet." />
+      ) : filtered.length === 0 ? (
+        <SectionNotFound label="No services match your search." />
       ) : (
-        <>
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search services..."
-              className="h-10 w-52 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
+        <div
+          className="grid grid-cols-1 gap-4 pb-6"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          }}
+        >
+          {filtered.map((service, index) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              stats={statsByServiceId.get(service.id)}
+              statsLoading={isStatsLoading}
+              updateService={(data) =>
+                updateService({
+                  variables: {
+                    orgId: orgId!,
+                    id: service.id,
+                    input: toUpdateServiceInput(data),
+                  },
+                })
+              }
+              deleteService={() =>
+                deleteService({
+                  variables: {
+                    orgId: orgId!,
+                    id: service.id,
+                  },
+                })
+              }
             />
-
-            {teams.length > 0 && (
-              <Select
-                value={selectedTeamId ?? '__all__'}
-                onValueChange={(v) =>
-                  setSelectedTeamId(v === '__all__' ? null : v)
-                }
-              >
-                <SelectTrigger className="h-10 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
-                  <SelectValue placeholder="All Teams" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all__">All Teams</SelectItem>
-                  {teams.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            <div className="flex items-center gap-0.5 rounded-lg bg-[#1E2533] p-0.5 ring-1 ring-[#2A3242]">
-              <FilterPill
-                label="All"
-                count={services.length}
-                active={activeCategory === null}
-                onClick={() => setActiveCategory(null)}
-              />
-              {categories.map(([cat, count]) => (
-                <FilterPill
-                  key={cat}
-                  label={cat}
-                  count={count}
-                  active={activeCategory === cat}
-                  onClick={() =>
-                    setActiveCategory(activeCategory === cat ? null : cat)
-                  }
-                />
-              ))}
-            </div>
-          </div>
-
-          {filtered.length === 0 ? (
-            <SectionNotFound label="No services match your search." />
-          ) : (
-            <div
-              className="grid grid-cols-1 gap-4 pb-6"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              }}
-            >
-              {filtered.map((service, index) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  index={index}
-                  stats={statsByServiceId.get(service.id)}
-                  statsLoading={isStatsLoading}
-                  updateService={(data) =>
-                    updateService({
-                      variables: {
-                        orgId: orgId!,
-                        id: service.id,
-                        input: toUpdateServiceInput(data),
-                      },
-                    })
-                  }
-                  deleteService={() =>
-                    deleteService({
-                      variables: {
-                        orgId: orgId!,
-                        id: service.id,
-                      },
-                    })
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
 
       <BetterDialogProvider

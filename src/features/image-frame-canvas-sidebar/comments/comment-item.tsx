@@ -52,7 +52,7 @@ export function CommentItem({ comment }: CommentItemProps) {
 
   return (
     <>
-      <div className="rounded-lg bg-gray-50 p-3">
+      <div className="rounded-lg border border-[#2A3242] bg-[#1E2533] p-3">
         <div className="flex items-start space-x-3">
           <Avatar className="h-8 w-8 flex-shrink-0">
             <AvatarImage src={avatarSrc ?? ''} className="object-cover" />
@@ -64,19 +64,19 @@ export function CommentItem({ comment }: CommentItemProps) {
 
           <div className="min-w-0 flex-1">
             {!!comment.parentCommentId && (
-              <div className="mb-1 text-xs text-gray-500">
+              <div className="text-paragraph mb-1 text-xs">
                 Replying to{' '}
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-[#F4F7FC]">
                   {parentName || 'a comment'}
                 </span>
               </div>
             )}
             <div className="mb-1 flex items-center justify-between space-x-2">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-[#F4F7FC]">
                   {name}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-paragraph text-xs">
                   {comment.createdAt
                     ? formatDistanceToNow(new Date(comment.createdAt), {
                         addSuffix: true,
@@ -132,7 +132,11 @@ export function CommentItem({ comment }: CommentItemProps) {
             {isEditing ? (
               <div className="space-y-2">
                 <div>
-                  <InputEditor value={editText} setValue={setEditText} />
+                  <InputEditor
+                    value={editText}
+                    setValue={setEditText}
+                    theme="dark"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -157,7 +161,7 @@ export function CommentItem({ comment }: CommentItemProps) {
                 </div>
               </div>
             ) : (
-              <InputRenderer value={comment.text ?? ''} />
+              <InputRenderer value={comment.text ?? ''} theme="dark" />
             )}
           </div>
         </div>

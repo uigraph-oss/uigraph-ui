@@ -1,14 +1,17 @@
 import { CodegenConfig } from '@graphql-codegen/cli'
 
 export default {
-  watchConfig: {
-    usePolling: process.env.CHOKIDAR_USEPOLLING === 'true',
-    interval: 300,
-  },
-
   generates: {
     './src/api/.gql/': {
-      schema: `${process.env.VITE_GRAPHQL_TARGET ?? 'http://localhost:8090'}/graphql`,
+      schema:
+        (process.env.CODEGEN_URL
+          ? `${process.env.CODEGEN_URL}/graphql`
+          : undefined) ??
+        (process.env.GRAPHQL_URL
+          ? `${process.env.GRAPHQL_URL}/graphql`
+          : undefined) ??
+        '../uigraph-graphql/internal/graph/schema/*.graphqls',
+
       documents: ['./src/**/*.{ts,tsx}'],
 
       preset: 'client',

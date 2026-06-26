@@ -79,7 +79,7 @@ export function EditorStepEntities() {
   if (currentDialect !== 'dynamodb') {
     return (
       <div className="space-y-4 rounded-lg border p-4">
-        <div className="text-sm text-gray-600">
+        <div className="text-muted-foreground text-sm">
           Attributes configuration will be implemented here for {currentDialect}
         </div>
       </div>
@@ -91,7 +91,7 @@ export function EditorStepEntities() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <p className="text-sm font-semibold">Attributes</p>
-          <p className="text-xs text-gray-600">
+          <p className="text-muted-foreground text-xs">
             Describe the attributes stored on items in this table. Primary keys
             and indexes are defined in earlier steps.
           </p>

@@ -1,7 +1,7 @@
+import { GT } from '@/api'
 import { SettingsIcon } from '@/assets/svgs'
 import { CrossButton } from '@/components/cross-button'
 import { SuperCircleLoader } from '@/components/loader'
-import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -38,10 +39,9 @@ import {
 } from '@/features/component-meta'
 import { SaveIcon } from '@/features/component-meta/assets'
 import { ComponentField } from '@/features/components/components/configure-component/component-field-list'
-import { assetUrl, uploadFile } from '@/features/uploads/api/uploads'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { buildDynamicZodSchema } from '@uigraph/sdk/browser'
@@ -49,10 +49,6 @@ import { arrayNonNullable } from 'daily-code'
 import { ReactNode, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { FiEdit } from 'react-icons/fi'
-import {
-  ComponentFieldInput,
-  FOCAL_POINT_META_BY_COMPONENT_LINK,
-} from '../api/focal-point-meta'
 import { FocalPointMetaLayoutModalContent } from './modal-customize'
 
 function FocalPointMetaModalContent({
@@ -103,7 +99,7 @@ function FocalPointMetaModalContent({
 
         const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = assetUrl(assetId)
+        duplicatedMetaData[file] = `${env.VITE_ASSETS_URL}/assets/${assetId}`
       }
 
       setIsUploading(false)
@@ -111,7 +107,7 @@ function FocalPointMetaModalContent({
 
     submit(
       buildMetaData(fields, duplicatedMetaData).map((field) => {
-        const { readonly, ...rest } = field as ComponentFieldInput & {
+        const { readonly, ...rest } = field as GT.ComponentModalFieldInput & {
           readonly?: boolean | null
         }
 
@@ -375,7 +371,6 @@ function FocalPointMetaModalWrapper({
   isOpen,
   setIsOpen,
   isViewMode = false,
-  componentMetaId,
   ...props
 }: ModalProps & { isOpen: boolean; setIsOpen: (open: boolean) => void }) {
   const memoizedFields = useMemo(() => {
@@ -429,44 +424,6 @@ function FocalPointMetaModalWrapper({
   )
 }
 
-function FocalPointMetaModalLoader({
-  componentMetaId,
-  ...props
-}: ModalProps & { isOpen: boolean; setIsOpen: (open: boolean) => void }) {
-  const organizationId = useCurrentOrganization()?.id
-
-  const { data: componentMetaData, loading: isLoadingComponentMetaData } =
-    useQuery(FOCAL_POINT_META_BY_COMPONENT_LINK, {
-      variables: { orgId: organizationId!, componentLinkId: componentMetaId! },
-      skip: !componentMetaId || !organizationId,
-      fetchPolicy: 'cache-first',
-    })
-
-  const memoizedFields = useMemo(() => {
-    return componentMetaId
-      ? arrayNonNullable(
-          componentMetaData?.focalPointMetaByComponentLink?.[0]
-            ?.componentModalFields
-        )
-      : props.fields
-  }, [componentMetaData, componentMetaId, props.fields])
-
-  if (isLoadingComponentMetaData) {
-    return (
-      <>
-        <DialogTitle hidden>Loading...</DialogTitle>
-        <DialogDescription hidden>
-          Loading component meta data...
-        </DialogDescription>
-
-        <SectionLoader label={'Loading component meta data...'} />
-      </>
-    )
-  }
-
-  return <FocalPointMetaModalWrapper {...props} fields={memoizedFields} />
-}
-
 export function FocalPointMetaModal({
   isOpen,
   setIsOpen,
@@ -479,7 +436,7 @@ export function FocalPointMetaModal({
         showCloseButton={false}
         className="h-full max-h-full w-full max-w-full grid-rows-[auto_1fr_auto] gap-0 rounded-none border border-[#2A3242] bg-[#141925] p-0 sm:h-auto sm:max-h-[95%] sm:max-w-[min(43rem,95%)] sm:rounded-[1rem]"
       >
-        <FocalPointMetaModalLoader
+        <FocalPointMetaModalWrapper
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           {...props}
@@ -494,12 +451,10 @@ type ModalProps = {
   description: ReactNode
   fields: ComponentField[]
 
-  submit: (data: ComponentFieldInput[]) => Promise<void>
+  submit: (data: GT.ComponentModalFieldInput[]) => Promise<void>
   submitLabel: string
 
   isViewMode?: boolean
   isReadOnly?: boolean
   setEditMode?: () => void
-
-  componentMetaId?: string | null
 }

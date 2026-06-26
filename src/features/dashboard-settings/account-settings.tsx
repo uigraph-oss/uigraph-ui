@@ -22,7 +22,7 @@ export function SecuritySettings() {
             <button className="font-sm flex h-[44px] items-center gap-1 rounded-[12px] bg-[#2A3242] px-3 leading-[1.33] font-normal">
               <img
                 className="size-[16px]"
-                src={forgotPasswordIcon.src}
+                src={forgotPasswordIcon}
                 alt="arrow-up-right"
               />{' '}
               Change Password

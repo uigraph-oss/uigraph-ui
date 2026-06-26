@@ -1,10 +1,12 @@
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
+    --xy-attribution-background-color: transparent;
   }
 
   html,
   body {
+    color-scheme: dark;
     min-height: 100%;
   }
 

@@ -1,21 +1,20 @@
+import { GT } from '@/api'
 import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
-import { useMemo } from 'react'
 import {
-  ComponentFieldInput,
   CREATE_FOCAL_POINT_META,
   DELETE_FOCAL_POINT_META,
   FOCAL_POINT_META,
-  toPointMeta,
   UPDATE_FOCAL_POINT_META,
 } from '../api/focal-point-meta'
-
 type PointMetaInput = {
-  componentModalFields?: ComponentFieldInput[]
-  componentLinkId?: string
-  componentFlowDiagram?: string
+  componentModalFields?: GT.ComponentModalFieldInput[]
+  componentLinkDiagramId?: string
+  componentLinkApiEndpointId?: string
+  componentLinkTestPackId?: string
+  componentLinkServiceDocId?: string
 }
 
 export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
@@ -43,18 +42,10 @@ export const [FocalPointSidebarContextProvider, useFocalPointSidebarContext] =
       const [updateMeta] = useMutation(UPDATE_FOCAL_POINT_META, mutationBase)
       const [deleteMeta] = useMutation(DELETE_FOCAL_POINT_META, mutationBase)
 
-      const pointMeta = useMemo(
-        () => (metaRes.data?.focalPointMeta ?? []).map(toPointMeta),
-        [metaRes.data?.focalPointMeta]
-      )
+      const pointMeta = metaRes.data?.focalPointMeta ?? []
 
       function buildInput(componentId: string, input: PointMetaInput) {
-        return {
-          componentId,
-          componentLinkId: input.componentLinkId,
-          componentFlowDiagram: input.componentFlowDiagram,
-          componentModalFields: input.componentModalFields,
-        }
+        return { componentId, ...input }
       }
 
       return {

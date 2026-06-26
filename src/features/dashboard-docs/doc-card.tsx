@@ -203,22 +203,22 @@ function DocCardThumbnail({
   }
 
   if (isMarkdown) {
-    const excerpt = markdownContent
-      ?.split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0 && !/^#{1,6}\s+/.test(line))
-      .join(' ')
-      .replace(/[#*_`>\-]/g, '')
-      .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
-      .replace(/\s+/g, ' ')
-      .trim()
-
     return (
-      <div className="relative flex h-full w-full gap-4 overflow-hidden bg-gradient-to-br from-[#1A2030] to-[#141925] p-6">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#0F1320] ring-1 ring-[#2A3242] [&_svg]:size-6 [&_svg]:shrink-0 [&_svg]:stroke-[1.15]">
-          {getDocumentFileTypeIcon('markdown')}
-        </div>
-        <p className="text-[13px] leading-relaxed text-[#828DA3]">{excerpt}</p>
+      <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-[#1A2030] to-[#141925] p-5">
+        <pre className="font-mono text-[10px] leading-relaxed break-words whitespace-pre-wrap text-[#828DA3]">
+          {markdownContent?.slice(0, 700)}
+        </pre>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#141925] to-transparent" />
+      </div>
+    )
+  }
+
+  if (isTextLike && textContent !== null) {
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-[#1A2030] to-[#141925] p-5">
+        <pre className="font-mono text-[10px] leading-relaxed break-words whitespace-pre-wrap text-[#828DA3]">
+          {textContent.slice(0, 700)}
+        </pre>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#141925] to-transparent" />
       </div>
     )

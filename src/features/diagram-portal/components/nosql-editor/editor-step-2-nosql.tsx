@@ -415,13 +415,13 @@ export function EditorStep2NoSQL() {
               className={cn(
                 'cursor-pointer rounded border p-2 text-sm',
                 selectedCollectionId === collection.id
-                  ? 'border-primary bg-blue-50'
+                  ? 'border-primary bg-primary/10'
                   : 'border-stock'
               )}
               onClick={() => setSelectedCollectionId(collection.id)}
             >
               <Input
-                className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+                className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
                 value={collection.name}
                 onChange={(event) =>
                   updateCollection(collection.id, {
@@ -441,11 +441,11 @@ export function EditorStep2NoSQL() {
             <>
               <div className="flex flex-wrap gap-3">
                 <div className="min-w-[220px] flex-1 space-y-2">
-                  <label className="text-xs font-semibold text-gray-700">
+                  <label className="text-foreground text-xs font-semibold">
                     Display label
                   </label>
                   <Input
-                    className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+                    className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
                     value={selectedCollection.label || ''}
                     onChange={(event) =>
                       updateCollection(selectedCollection.id, {
@@ -456,11 +456,11 @@ export function EditorStep2NoSQL() {
                   />
                 </div>
                 <div className="min-w-[220px] flex-1 space-y-2">
-                  <label className="text-xs font-semibold text-gray-700">
+                  <label className="text-foreground text-xs font-semibold">
                     Tags
                   </label>
                   <Input
-                    className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+                    className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
                     value={selectedCollection.tags || ''}
                     onChange={(event) =>
                       updateCollection(selectedCollection.id, {
@@ -471,11 +471,11 @@ export function EditorStep2NoSQL() {
                   />
                 </div>
                 <div className="w-full space-y-2">
-                  <label className="text-xs font-semibold text-gray-700">
+                  <label className="text-foreground text-xs font-semibold">
                     Description
                   </label>
                   <Textarea
-                    className="border-stock text-foreground w-full rounded-[1rem] border bg-white p-4 text-sm"
+                    className="border-stock text-foreground bg-card w-full rounded-[1rem] border p-4 text-sm"
                     value={selectedCollection.description || ''}
                     onChange={(event) =>
                       updateCollection(selectedCollection.id, {
@@ -538,16 +538,18 @@ export function EditorStep2NoSQL() {
                         Add Field
                       </Button>
                     </div>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-muted-foreground text-xs">
                       Define the fields in this collection. Fields can be nested
                       objects or arrays.
                     </p>
                   </div>
 
                   {selectedCollection.fields.length === 0 ? (
-                    <div className="rounded-lg border bg-gray-50 p-4">
+                    <div className="bg-secondary rounded-lg border p-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-600">No fields yet.</p>
+                        <p className="text-muted-foreground text-sm">
+                          No fields yet.
+                        </p>
                         <Button
                           size="sm"
                           onClick={() => addField(selectedCollection.id)}
@@ -558,21 +560,21 @@ export function EditorStep2NoSQL() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-lg border bg-gray-50 p-3">
-                      <div className="grid grid-cols-[2fr_1.5fr_auto_1fr_auto] gap-3 border-b border-gray-200 px-2 pb-2">
-                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                    <div className="bg-secondary rounded-lg border p-3">
+                      <div className="border-border grid grid-cols-[2fr_1.5fr_auto_1fr_auto] gap-3 border-b px-2 pb-2">
+                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                           NAME
                         </div>
-                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                           TYPE
                         </div>
-                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                           REQUIRED
                         </div>
-                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                           REFERENCE
                         </div>
-                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase"></div>
+                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase"></div>
                       </div>
 
                       <div className="space-y-2 pt-2">
@@ -595,7 +597,7 @@ export function EditorStep2NoSQL() {
                             <div key={field.id} className="space-y-2">
                               <div className="grid grid-cols-[2fr_1.5fr_auto_1fr_auto] items-center gap-3">
                                 <Input
-                                  className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm"
+                                  className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm"
                                   value={field.name}
                                   onChange={(event) =>
                                     updateField(
@@ -649,7 +651,7 @@ export function EditorStep2NoSQL() {
                                       )
                                     }}
                                   >
-                                    <SelectTrigger className="border-stock text-foreground h-[3.5rem] min-w-[120px] flex-1 rounded-[1rem] border bg-white px-4 text-sm">
+                                    <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] min-w-[120px] flex-1 rounded-[1rem] border px-4 text-sm">
                                       <SelectValue placeholder="Type" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -692,7 +694,7 @@ export function EditorStep2NoSQL() {
                                     >
                                       Edit fields
                                       {objectFieldsCount > 0 && (
-                                        <span className="ml-1 text-gray-500">
+                                        <span className="text-muted-foreground ml-1">
                                           · {objectFieldsCount}
                                         </span>
                                       )}
@@ -718,7 +720,7 @@ export function EditorStep2NoSQL() {
                                         )
                                       }}
                                     >
-                                      <SelectTrigger className="border-stock text-foreground h-[3.5rem] min-w-[100px] rounded-[1rem] border bg-white px-3 text-xs">
+                                      <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] min-w-[100px] rounded-[1rem] border px-3 text-xs">
                                         <SelectValue placeholder="Item type" />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -755,7 +757,7 @@ export function EditorStep2NoSQL() {
                                     >
                                       Edit item fields
                                       {arrayFieldsCount > 0 && (
-                                        <span className="ml-1 text-gray-500">
+                                        <span className="text-muted-foreground ml-1">
                                           · {arrayFieldsCount}
                                         </span>
                                       )}
@@ -792,7 +794,7 @@ export function EditorStep2NoSQL() {
                                     )
                                   }
                                 >
-                                  <SelectTrigger className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm">
+                                  <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm">
                                     <SelectValue placeholder="Reference" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -836,9 +838,9 @@ export function EditorStep2NoSQL() {
                               </div>
 
                               {isObject && isExpanded && (
-                                <div className="ml-4 rounded-lg border bg-white p-3">
+                                <div className="bg-card ml-4 rounded-lg border p-3">
                                   <div className="mb-3 flex items-center justify-between">
-                                    <p className="text-xs font-semibold text-gray-700">
+                                    <p className="text-foreground text-xs font-semibold">
                                       Nested fields for &quot;
                                       {field.name || 'unnamed'}&quot;
                                     </p>
@@ -857,24 +859,24 @@ export function EditorStep2NoSQL() {
                                   </div>
 
                                   {nestedFields.length === 0 ? (
-                                    <div className="rounded-lg border bg-gray-50 p-4 text-center">
-                                      <p className="text-sm text-gray-600">
+                                    <div className="bg-secondary rounded-lg border p-4 text-center">
+                                      <p className="text-muted-foreground text-sm">
                                         No nested fields yet.
                                       </p>
                                     </div>
                                   ) : (
                                     <div className="space-y-2">
-                                      <div className="grid grid-cols-[2fr_1.2fr_auto_auto] gap-3 border-b border-gray-200 px-2 pb-2">
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                                      <div className="border-border grid grid-cols-[2fr_1.2fr_auto_auto] gap-3 border-b px-2 pb-2">
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                                           NAME
                                         </div>
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                                           TYPE
                                         </div>
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                                           REQUIRED
                                         </div>
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase"></div>
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase"></div>
                                       </div>
 
                                       <div className="space-y-2 pt-2">
@@ -888,7 +890,7 @@ export function EditorStep2NoSQL() {
                                               className="grid grid-cols-[2fr_1.2fr_auto_auto] items-center gap-3"
                                             >
                                               <Input
-                                                className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm"
+                                                className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm"
                                                 value={nestedField.name}
                                                 onChange={(event) =>
                                                   updateNestedField(
@@ -913,7 +915,7 @@ export function EditorStep2NoSQL() {
                                                   )
                                                 }
                                               >
-                                                <SelectTrigger className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm">
+                                                <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm">
                                                   <SelectValue placeholder="Type" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -984,9 +986,9 @@ export function EditorStep2NoSQL() {
                               )}
 
                               {isArrayOfObjects && isExpanded && (
-                                <div className="ml-4 rounded-lg border bg-white p-3">
+                                <div className="bg-card ml-4 rounded-lg border p-3">
                                   <div className="mb-3 flex items-center justify-between">
-                                    <p className="text-xs font-semibold text-gray-700">
+                                    <p className="text-foreground text-xs font-semibold">
                                       Item fields for &quot;
                                       {field.name || 'unnamed'}[]&quot;
                                     </p>
@@ -1018,24 +1020,24 @@ export function EditorStep2NoSQL() {
                                   </div>
 
                                   {(field.itemFields || []).length === 0 ? (
-                                    <div className="rounded-lg border bg-gray-50 p-4 text-center">
-                                      <p className="text-sm text-gray-600">
+                                    <div className="bg-secondary rounded-lg border p-4 text-center">
+                                      <p className="text-muted-foreground text-sm">
                                         No item fields yet.
                                       </p>
                                     </div>
                                   ) : (
                                     <div className="space-y-2">
-                                      <div className="grid grid-cols-[2fr_1.2fr_auto_auto] gap-3 border-b border-gray-200 px-2 pb-2">
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                                      <div className="border-border grid grid-cols-[2fr_1.2fr_auto_auto] gap-3 border-b px-2 pb-2">
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                                           NAME
                                         </div>
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                                           TYPE
                                         </div>
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                                           REQUIRED
                                         </div>
-                                        <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase"></div>
+                                        <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase"></div>
                                       </div>
 
                                       <div className="space-y-2 pt-2">
@@ -1046,7 +1048,7 @@ export function EditorStep2NoSQL() {
                                               className="grid grid-cols-[2fr_1.2fr_auto_auto] items-center gap-3"
                                             >
                                               <Input
-                                                className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm"
+                                                className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm"
                                                 value={itemField.name}
                                                 onChange={(event) => {
                                                   const currentFields =
@@ -1099,7 +1101,7 @@ export function EditorStep2NoSQL() {
                                                   )
                                                 }}
                                               >
-                                                <SelectTrigger className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm">
+                                                <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm">
                                                   <SelectValue placeholder="Type" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -1198,9 +1200,9 @@ export function EditorStep2NoSQL() {
                       </div>
                     </div>
                   )}
-                  <div className="space-y-2 rounded border bg-gray-50 p-2">
+                  <div className="bg-secondary space-y-2 rounded border p-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-gray-700">
+                      <p className="text-foreground text-xs font-semibold">
                         Sample document inference
                       </p>
                       <Button
@@ -1212,7 +1214,7 @@ export function EditorStep2NoSQL() {
                       </Button>
                     </div>
                     <Textarea
-                      className="border-stock text-foreground h-32 w-full rounded-[1rem] border bg-white p-4 text-sm"
+                      className="border-stock text-foreground bg-card h-32 w-full rounded-[1rem] border p-4 text-sm"
                       value={sampleDoc}
                       onChange={(event) => setSampleDoc(event.target.value)}
                       placeholder="Paste a sample JSON document"
@@ -1228,7 +1230,7 @@ export function EditorStep2NoSQL() {
                       className="flex flex-wrap items-start gap-2 rounded border p-2"
                     >
                       <Input
-                        className="border-stock text-foreground h-[3.5rem] min-w-[160px] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+                        className="border-stock text-foreground bg-card h-[3.5rem] min-w-[160px] flex-1 rounded-[1rem] border px-4 text-sm"
                         value={index.name}
                         onChange={(event) =>
                           updateIndex(selectedCollection.id, index.id, {
@@ -1238,7 +1240,7 @@ export function EditorStep2NoSQL() {
                         placeholder="Index name"
                       />
                       <Input
-                        className="border-stock text-foreground h-[3.5rem] min-w-[200px] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+                        className="border-stock text-foreground bg-card h-[3.5rem] min-w-[200px] flex-1 rounded-[1rem] border px-4 text-sm"
                         value={index.fields.join(', ')}
                         onChange={(event) =>
                           updateIndex(selectedCollection.id, index.id, {
@@ -1259,10 +1261,12 @@ export function EditorStep2NoSQL() {
                             })
                           }
                         />
-                        <span className="text-xs text-gray-600">Unique</span>
+                        <span className="text-muted-foreground text-xs">
+                          Unique
+                        </span>
                       </div>
                       <Input
-                        className="border-stock text-foreground h-[3.5rem] min-w-[140px] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+                        className="border-stock text-foreground bg-card h-[3.5rem] min-w-[140px] flex-1 rounded-[1rem] border px-4 text-sm"
                         value={index.ttl || ''}
                         onChange={(event) =>
                           updateIndex(selectedCollection.id, index.id, {

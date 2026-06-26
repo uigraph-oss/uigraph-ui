@@ -1,10 +1,12 @@
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   CREATE_DIAGRAM,
   DELETE_DIAGRAM,
@@ -20,6 +22,8 @@ import {
 } from '../api/folders'
 import { TEAMS } from '../api/teams'
 
+const PAGE_SIZE = 24
+
 export const [DiagramsContextProvider, useDiagramsContext] = createContext(
   () => {
     const organization = useCurrentOrganization()
@@ -27,12 +31,24 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
 
     const [searchParams, setSearchParams] = useSearchParamsState(
       'folder',
-      'parent',
-      'team'
+      'parent'
     )
 
     const selectedFolderId = searchParams.folder
-    const selectedTeamId = searchParams.team
+
+    const [selectedTeamId, setSelectedTeamId] = useScopedStorage<string | null>(
+      'diagrams:team',
+      null
+    )
+    const [sortBy, setSortBy] = useScopedStorage('diagrams:sort', 'created')
+    const [search, setSearch] = useState('')
+    const debouncedSearch = useDebouncedValue(search)
+    const [page, setPage] = useState(0)
+    const sortDir = sortBy === 'name' ? 'asc' : 'desc'
+
+    useEffect(() => {
+      setPage(0)
+    }, [selectedTeamId, sortBy, debouncedSearch, selectedFolderId])
 
     const foldersQuery = useQuery(FOLDERS, {
       fetchPolicy: 'cache-and-network',
@@ -46,6 +62,12 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       variables: {
         orgId: orgId!,
         folderId: selectedFolderId,
+        teamId: selectedTeamId,
+        search: debouncedSearch || null,
+        sortBy,
+        sortDir,
+        limit: PAGE_SIZE,
+        offset: page * PAGE_SIZE,
       },
     })
 
@@ -144,28 +166,30 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       [parentFolderData.data?.folder]
     )
 
-    const allDiagrams = useMemo(
-      () => arrayNonNullable(diagramsQuery.data?.diagrams ?? []),
-      [diagramsQuery.data?.diagrams]
+    const diagrams = useMemo(
+      () => arrayNonNullable(diagramsQuery.data?.diagrams.items ?? []),
+      [diagramsQuery.data?.diagrams.items]
     )
 
-    const diagrams = useMemo(() => {
-      if (!selectedTeamId) return allDiagrams
-      return allDiagrams.filter((d) => d.teamId === selectedTeamId)
-    }, [allDiagrams, selectedTeamId])
+    const totalCount = diagramsQuery.data?.diagrams.totalCount ?? 0
 
     const isFolderDataLoading =
       folderData.loading && !folderData.data?.folder && !!selectedFolderId
 
-    const isFolderAndDiagramsDataLoading =
-      (foldersQuery.loading && !foldersQuery.data?.folders) ||
-      (diagramsQuery.loading && !diagramsQuery.data?.diagrams)
+    const isFoldersLoading = foldersQuery.loading && !foldersQuery.data?.folders
+
+    const isDiagramsLoading =
+      diagramsQuery.loading && !diagramsQuery.data?.diagrams
 
     return {
       folders,
       allFolders,
       diagrams,
-      isLoading: isFolderDataLoading || isFolderAndDiagramsDataLoading,
+      totalCount,
+      pageSize: PAGE_SIZE,
+      page,
+      setPage,
+      isLoading: isFolderDataLoading || isFoldersLoading || isDiagramsLoading,
 
       selectedFolder,
       parentFolder,
@@ -175,9 +199,12 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       },
 
       selectedTeamId,
-      setSelectedTeamId: (teamId: string | null) => {
-        setSearchParams({ team: teamId })
-      },
+      setSelectedTeamId,
+
+      sortBy,
+      setSortBy,
+      search,
+      setSearch,
 
       teams,
       orgUsers,

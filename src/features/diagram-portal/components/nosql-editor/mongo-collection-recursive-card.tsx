@@ -82,10 +82,10 @@ export function MongoCollectionRecursiveCard({
 
   return (
     <div
-      className={cn('rounded-lg border bg-white p-3', !isFirstLevel && 'ml-4')}
+      className={cn('bg-card rounded-lg border p-3', !isFirstLevel && 'ml-4')}
     >
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-xs font-semibold text-gray-700">{parentLabel}</p>
+        <p className="text-foreground text-xs font-semibold">{parentLabel}</p>
 
         {!isFirstLevel && (
           <Button preset="outline" className="h-10 px-3!" onClick={addField}>
@@ -96,22 +96,22 @@ export function MongoCollectionRecursiveCard({
       </div>
 
       {fields.length === 0 ? (
-        <div className="rounded-lg border bg-gray-50 p-4 text-center">
-          <p className="text-sm text-gray-600">No nested fields yet.</p>
+        <div className="bg-secondary rounded-lg border p-4 text-center">
+          <p className="text-muted-foreground text-sm">No nested fields yet.</p>
         </div>
       ) : (
         <div className="space-y-2">
-          <div className="grid grid-cols-[2fr_1.2fr_auto_auto] gap-3 border-b border-gray-200 px-2 pb-2">
-            <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+          <div className="border-border grid grid-cols-[2fr_1.2fr_auto_auto] gap-3 border-b px-2 pb-2">
+            <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
               NAME
             </div>
-            <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+            <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
               TYPE
             </div>
-            <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+            <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
               REQUIRED
             </div>
-            <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase"></div>
+            <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase"></div>
           </div>
 
           <div className="space-y-2 pt-2">
@@ -128,7 +128,7 @@ export function MongoCollectionRecursiveCard({
                 <div key={field.id} className="space-y-2">
                   <div className="grid grid-cols-[2fr_1.2fr_auto_auto] items-center gap-3">
                     <Input
-                      className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm"
+                      className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm"
                       value={field.name}
                       onChange={(event) =>
                         updateField(field.id, { name: event.target.value })
@@ -146,7 +146,7 @@ export function MongoCollectionRecursiveCard({
                           }
                         }}
                       >
-                        <SelectTrigger className="border-stock text-foreground h-[3.5rem] min-w-[120px] flex-1 rounded-[1rem] border bg-white px-4 text-sm">
+                        <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] min-w-[120px] flex-1 rounded-[1rem] border px-4 text-sm">
                           <SelectValue placeholder="Type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -165,7 +165,7 @@ export function MongoCollectionRecursiveCard({
                         <button
                           type="button"
                           onClick={() => onToggle(field.id)}
-                          className="flex items-center gap-1 rounded-md border border-transparent p-2 text-gray-600 transition-colors hover:bg-gray-50"
+                          className="text-muted-foreground hover:bg-accent flex items-center gap-1 rounded-md border border-transparent p-2 transition-colors"
                         >
                           <ChevronRight
                             className={cn(
@@ -174,7 +174,7 @@ export function MongoCollectionRecursiveCard({
                             )}
                           />
                           {nestedFieldCount > 0 && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-muted-foreground text-xs">
                               {nestedFieldCount}
                             </span>
                           )}
@@ -183,7 +183,7 @@ export function MongoCollectionRecursiveCard({
 
                       {isArray && (
                         <>
-                          <span className="text-xs text-gray-600">
+                          <span className="text-muted-foreground text-xs">
                             Item type
                           </span>
                           <Select
@@ -195,7 +195,7 @@ export function MongoCollectionRecursiveCard({
                               }
                             }}
                           >
-                            <SelectTrigger className="border-stock text-foreground h-[3.5rem] min-w-[100px] rounded-[1rem] border bg-white px-3 text-xs">
+                            <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] min-w-[100px] rounded-[1rem] border px-3 text-xs">
                               <SelectValue placeholder="Item type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -217,7 +217,7 @@ export function MongoCollectionRecursiveCard({
                         <button
                           type="button"
                           onClick={() => onToggle(field.id)}
-                          className="flex items-center gap-1 rounded-md border border-transparent p-2 text-gray-600 transition-colors hover:bg-gray-50"
+                          className="text-muted-foreground hover:bg-accent flex items-center gap-1 rounded-md border border-transparent p-2 transition-colors"
                         >
                           <ChevronRight
                             className={cn(
@@ -226,7 +226,7 @@ export function MongoCollectionRecursiveCard({
                             )}
                           />
                           {itemFieldCount > 0 && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-muted-foreground text-xs">
                               {itemFieldCount}
                             </span>
                           )}
@@ -242,7 +242,7 @@ export function MongoCollectionRecursiveCard({
                             })
                           }
                         >
-                          <SelectTrigger className="border-stock text-foreground h-[3.5rem] min-w-[140px] rounded-[1rem] border bg-white px-4 text-sm">
+                          <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] min-w-[140px] rounded-[1rem] border px-4 text-sm">
                             <SelectValue placeholder="Target collection" />
                           </SelectTrigger>
                           <SelectContent>

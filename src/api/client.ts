@@ -6,11 +6,10 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
-export const graphqlEndpoint =
-  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? '/graphql'
+import { env } from '@/env'
 
 const httpLink = new HttpLink({
-  uri: graphqlEndpoint,
+  uri: env.VITE_GRAPHQL_URL,
   credentials: 'include',
 })
 

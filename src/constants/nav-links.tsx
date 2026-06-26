@@ -1,5 +1,4 @@
 import { SettingsIcon, UserIcon, UserListIcon } from '@/assets/svgs'
-import { env } from '@/env'
 import { generateNavItems } from '@/utils/nav-items'
 import { RoboticIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -125,13 +124,6 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings/service-accounts',
     label: 'Service Accounts',
     icon: <LuBot />,
-    adminOnly: true,
-  },
-  {
-    id: '/settings/sso',
-    label: 'SSO Settings',
-    icon: <LuFingerprint />,
-    hidden: !env.features.ssoEnabled,
     adminOnly: true,
   }
   /* {

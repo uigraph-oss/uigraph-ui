@@ -10,10 +10,9 @@ import {
   SERVICES,
   UPDATE_SERVICE,
 } from '@/features/services/api/services'
-import {
-  useAuthenticatedUser,
-  useCurrentOrganization,
-} from '@/store/auth-store'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
@@ -21,9 +20,23 @@ import { useMemo, useState } from 'react'
 export function useDashboardServicesList(serviceId?: string) {
   const organization = useCurrentOrganization()
   const orgId = organization.id
-  const accountId = useAuthenticatedUser().userId
 
-  const servicesVariables = { orgId: orgId! }
+  const [selectedTeamId, setSelectedTeamId] = useScopedStorage<string | null>(
+    'services:team',
+    null
+  )
+  const [sortBy, setSortBy] = useScopedStorage('services:sort', 'name')
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search)
+  const sortDir = sortBy === 'name' ? 'asc' : 'desc'
+
+  const servicesVariables = {
+    orgId: orgId!,
+    teamId: selectedTeamId,
+    search: debouncedSearch || null,
+    sortBy,
+    sortDir,
+  }
 
   const { data, loading } = useQuery(SERVICES, {
     variables: servicesVariables,
@@ -70,21 +83,6 @@ export function useDashboardServicesList(serviceId?: string) {
     [orgUsersData.data?.members]
   )
 
-  const currentUserTeamId = useMemo(() => {
-    const me = orgUsers.find((u) => u.userId === accountId)
-    return me?.teamId ?? null
-  }, [orgUsers, accountId])
-
-  const [selectedTeamId, setSelectedTeamId] = useState<
-    string | null | undefined
-  >(undefined)
-
-  const resolvedTeamId = useMemo(() => {
-    if (selectedTeamId !== undefined) return selectedTeamId
-    if (orgUsersData.loading) return undefined
-    return currentUserTeamId
-  }, [selectedTeamId, currentUserTeamId, orgUsersData.loading])
-
   const [createService] = useMutation(CREATE_SERVICE, {
     awaitRefetchQueries: true,
     refetchQueries: [{ query: SERVICES, variables: servicesVariables }],
@@ -100,27 +98,27 @@ export function useDashboardServicesList(serviceId?: string) {
     refetchQueries: [{ query: SERVICES, variables: servicesVariables }],
   })
 
-  const allServices = useMemo(
-    () => arrayNonNullable(data?.services),
-    [data?.services]
+  const services = useMemo(
+    () => arrayNonNullable(data?.services.items),
+    [data?.services.items]
   )
-
-  const services = useMemo(() => {
-    if (!resolvedTeamId) return allServices
-    return allServices.filter((s) => s.teamId === resolvedTeamId)
-  }, [allServices, resolvedTeamId])
 
   return {
     orgId,
     isServicesLoading: loading && !data?.services,
     isStatsLoading: statsLoading && !statsData?.serviceStats,
     services,
-    allServices,
+    totalCount: data?.services.totalCount ?? 0,
     statsByServiceId,
+    orgUsers,
 
     teams,
-    selectedTeamId: resolvedTeamId,
+    selectedTeamId,
     setSelectedTeamId,
+    sortBy,
+    setSortBy,
+    search,
+    setSearch,
 
     createService,
     updateService,

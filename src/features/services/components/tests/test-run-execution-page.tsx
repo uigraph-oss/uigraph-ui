@@ -6,7 +6,8 @@ import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { assetUrl, uploadFile } from '@/features/uploads/api/uploads'
+import { env } from '@/env'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -537,7 +538,7 @@ export function TestRunExecutionPage() {
     for (const file of files) {
       try {
         const assetId = await uploadFile(orgId, file)
-        const url = assetUrl(assetId)
+        const url = `${env.VITE_ASSETS_URL}/assets/${assetId}`
         urls.push(url)
       } catch (error) {
         console.error('Failed to upload file:', error)

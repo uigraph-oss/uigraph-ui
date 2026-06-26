@@ -27,7 +27,7 @@ export function DeleteFocalPointConfirmationModal({
       className={'!max-w-[463px]'}
     >
       <div className="p-6 text-center">
-        <img src={deleteImg.src} alt="trash" className="mx-auto mb-4" />
+        <img src={deleteImg} alt="trash" className="mx-auto mb-4" />
 
         <DialogTitle className="text-textPrimary pt-8 text-[1rem] leading-[1.33] font-semibold">
           Do you want to delete this focal point meta data?

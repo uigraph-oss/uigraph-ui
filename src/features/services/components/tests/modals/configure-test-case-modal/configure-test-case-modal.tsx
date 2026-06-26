@@ -169,7 +169,7 @@ export function ConfigureTestCaseModal({
         </div>
       </div>
 
-      {env.features.enableDemoTestCases && <DemoTestCase form={form} />}
+      {env.VITE_FEATURE_ENABLE_DEMO_TEST_CASES && <DemoTestCase form={form} />}
     </BetterDialogContent>
   )
 }

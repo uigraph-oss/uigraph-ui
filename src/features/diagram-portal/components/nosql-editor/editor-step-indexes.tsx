@@ -64,16 +64,16 @@ export function EditorStepIndexes() {
           <p className="text-sm font-semibold">
             Global Secondary Indexes (GSIs)
           </p>
-          <p className="text-xs text-gray-600">
+          <p className="text-muted-foreground text-xs">
             Add secondary indexes to enable efficient queries on different key
             patterns.
           </p>
         </div>
 
         {dynamoSchema.globalSecondaryIndexes.length === 0 ? (
-          <div className="rounded-lg border bg-gray-50 p-8 text-center">
-            <p className="text-sm text-gray-600">No GSIs yet</p>
-            <p className="mt-1 text-xs text-gray-500">
+          <div className="bg-secondary rounded-lg border p-8 text-center">
+            <p className="text-muted-foreground text-sm">No GSIs yet</p>
+            <p className="text-muted-foreground mt-1 text-xs">
               Add a Global Secondary Index to enable alternative query patterns.
             </p>
           </div>
@@ -84,15 +84,15 @@ export function EditorStepIndexes() {
               return (
                 <div
                   key={gsi.id}
-                  className="space-y-3 rounded-lg border bg-gray-50 p-4"
+                  className="bg-secondary space-y-3 rounded-lg border p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 space-y-2">
-                      <label className="text-xs font-semibold text-gray-700">
+                      <label className="text-foreground text-xs font-semibold">
                         Index name
                       </label>
                       <Input
-                        className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+                        className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
                         value={gsi.name}
                         onChange={(event) =>
                           updateGsi(gsi.id, { name: event.target.value })
@@ -111,13 +111,13 @@ export function EditorStepIndexes() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div className="space-y-2 rounded-lg border bg-white p-3">
-                      <label className="text-xs font-semibold text-gray-700">
+                    <div className="bg-card space-y-2 rounded-lg border p-3">
+                      <label className="text-foreground text-xs font-semibold">
                         Partition key
                       </label>
                       <div className="flex gap-2">
                         <Input
-                          className="border-stock text-foreground h-[3.5rem] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+                          className="border-stock text-foreground bg-card h-[3.5rem] flex-1 rounded-[1rem] border px-4 text-sm"
                           value={gsi.partitionKey}
                           onChange={(event) =>
                             updateGsi(gsi.id, {
@@ -136,7 +136,7 @@ export function EditorStepIndexes() {
                               })
                             }
                           }}
-                          className="h-[3.5rem] flex-none overflow-hidden rounded-md border border-gray-300 shadow-none"
+                          className="border-border h-[3.5rem] flex-none overflow-hidden rounded-md border shadow-none"
                           variant="outline"
                         >
                           {KEY_TYPE_OPTIONS.map((option) => {
@@ -151,7 +151,7 @@ export function EditorStepIndexes() {
                                   '!border-0 !shadow-none first:!rounded-l-md last:!rounded-r-md',
                                   isSelected
                                     ? 'bg-primary hover:bg-primary/90 focus-visible:ring-primary z-10 font-semibold text-white focus-visible:ring-2 focus-visible:ring-offset-1'
-                                    : 'bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1'
+                                    : 'bg-card text-foreground hover:bg-accent focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1'
                                 )}
                               >
                                 {option.label}
@@ -160,7 +160,7 @@ export function EditorStepIndexes() {
                           })}
                         </ToggleGroup>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-muted-foreground text-xs">
                         Required. Index partition key attribute name and type.
                       </p>
                     </div>
@@ -169,16 +169,16 @@ export function EditorStepIndexes() {
                       className={cn(
                         'space-y-2 rounded-lg border p-3 transition-opacity',
                         gsi.sortKey
-                          ? 'bg-white opacity-100'
-                          : 'bg-white/50 opacity-60'
+                          ? 'bg-card opacity-100'
+                          : 'bg-card/50 opacity-60'
                       )}
                     >
-                      <label className="text-xs font-semibold text-gray-700">
+                      <label className="text-foreground text-xs font-semibold">
                         Sort key (optional)
                       </label>
                       <div className="flex gap-2">
                         <Input
-                          className="border-stock text-foreground h-[3.5rem] flex-1 rounded-[1rem] border bg-white px-4 text-sm"
+                          className="border-stock text-foreground bg-card h-[3.5rem] flex-1 rounded-[1rem] border px-4 text-sm"
                           value={gsi.sortKey || ''}
                           onChange={(event) =>
                             updateGsi(gsi.id, { sortKey: event.target.value })
@@ -195,7 +195,7 @@ export function EditorStepIndexes() {
                               })
                             }
                           }}
-                          className="h-[3.5rem] flex-none overflow-hidden rounded-md border border-gray-300 shadow-none"
+                          className="border-border h-[3.5rem] flex-none overflow-hidden rounded-md border shadow-none"
                           variant="outline"
                         >
                           {KEY_TYPE_OPTIONS.map((option) => {
@@ -209,7 +209,7 @@ export function EditorStepIndexes() {
                                   '!border-0 !shadow-none first:!rounded-l-md last:!rounded-r-md',
                                   isSelected
                                     ? 'bg-primary hover:bg-primary/90 focus-visible:ring-primary z-10 font-semibold text-white focus-visible:ring-2 focus-visible:ring-offset-1'
-                                    : 'bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1'
+                                    : 'bg-card text-foreground hover:bg-accent focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1'
                                 )}
                               >
                                 {option.label}
@@ -219,7 +219,7 @@ export function EditorStepIndexes() {
                         </ToggleGroup>
                       </div>
                       <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-500">
+                        <p className="text-muted-foreground text-xs">
                           Optional. Index sort key attribute name and type.
                         </p>
                         {gsi.sortKey && (
@@ -257,7 +257,7 @@ export function EditorStepIndexes() {
 
   return (
     <div className="space-y-4 rounded-lg border p-4">
-      <div className="text-sm text-gray-600">
+      <div className="text-muted-foreground text-sm">
         Index configuration will be implemented here for {currentDialect}
       </div>
     </div>

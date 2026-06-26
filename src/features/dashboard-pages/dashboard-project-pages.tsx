@@ -1,6 +1,7 @@
 'use client'
 
 import { FigmaIcon } from '@/assets/svgs'
+import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,14 +9,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { fileToDataUrl } from '@/helpers/file-to-data-url'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { ChevronDown, CirclePlus } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DashboardPageSectionLayout } from '../dashboard'
 import { PagesCanvas } from '../dashboard-pages-canvas/pages-canvas'
-import { BasicFilterInput } from '../dashboard-projects/components/basic-filters'
 import { FigmaImportModal } from '../dashboard-projects/components/figma-import/figma-import-modal'
 import { ConfigurePageModal } from '../dashboard-projects/components/page/configure-page-modal'
 import { PagesGrid } from '../dashboard-projects/components/page/page-grid'
@@ -28,6 +38,8 @@ import {
   useSingleProject,
 } from '../dashboard-projects/contexts/project-context'
 
+const SCREENS_PAGE_SIZE = 24
+
 function DashboardProjectContent() {
   const [searchParams, setSearchParams] = useSearchParamsState('viewMode')
 
@@ -37,20 +49,37 @@ function DashboardProjectContent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isFigmaImportModalOpen, setIsFigmaImportModalOpen] = useState(false)
 
-  const [sortBy, setSortBy] = useState<string>('')
+  const [sortBy, setSortBy] = useScopedStorage(`${mapId}:screens:sort`, 'order')
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search)
+  const [page, setPage] = useState(0)
+
+  useEffect(() => {
+    setPage(0)
+  }, [sortBy, debouncedSearch])
 
   const filteredPages = useMemo(() => {
     let result = frames
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase()
+      result = result.filter((f) => f.name?.toLowerCase().includes(q))
+    }
     if (sortBy === 'name') {
       result = [...result].sort((a, b) => a.name!.localeCompare(b.name!))
-    } else if (sortBy === 'createdAt') {
+    } else if (sortBy === 'created') {
       result = [...result].sort(
         (a, b) =>
           new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
       )
     }
     return result
-  }, [frames, sortBy])
+  }, [frames, debouncedSearch, sortBy])
+
+  const totalPages = Math.ceil(filteredPages.length / SCREENS_PAGE_SIZE)
+  const pagedFrames = filteredPages.slice(
+    page * SCREENS_PAGE_SIZE,
+    page * SCREENS_PAGE_SIZE + SCREENS_PAGE_SIZE
+  )
 
   const viewMode = (searchParams.viewMode ?? 'grid') as ViewMode
 
@@ -113,14 +142,45 @@ function DashboardProjectContent() {
             />
           </div>
 
-          <div className={'flex flex-1 items-center justify-end gap-4'}>
+          <div className={'flex flex-1 items-center justify-end gap-3'}>
             {viewMode === 'grid' && (
-              <BasicFilterInput sortBy={sortBy} setSortBy={setSortBy} />
+              <>
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search frames..."
+                  className="h-10 w-44 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none focus-visible:bg-[#1E2533]"
+                />
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="h-10 w-36 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="order">Default order</SelectItem>
+                    <SelectItem value="created">Newest</SelectItem>
+                    <SelectItem value="name">Name</SelectItem>
+                  </SelectContent>
+                </Select>
+              </>
             )}
           </div>
         </div>
 
-        {viewMode === 'grid' && <PagesGrid pages={filteredPages} />}
+        {viewMode === 'grid' && (
+          <>
+            <PagesGrid pages={pagedFrames} />
+            {totalPages > 1 && (
+              <div className="mt-6 flex justify-center">
+                <FunctionalPagination
+                  currentPage={page + 1}
+                  totalPages={totalPages}
+                  setCurrentPage={(p) => setPage(p - 1)}
+                />
+              </div>
+            )}
+          </>
+        )}
         {viewMode === 'canvas' && <PagesCanvas pages={frames} project={map} />}
       </div>
 

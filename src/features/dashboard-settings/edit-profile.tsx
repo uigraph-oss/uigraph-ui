@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { env } from '@/env'
 import { bootstrapSession, useAuthenticatedUser } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import axios from 'axios'
@@ -50,7 +51,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
       const form = new FormData()
       form.append('file', file)
 
-      await axios.put('/api/v1/users/me/avatar', form, {
+      await axios.put(`${env.VITE_API_URL}/api/v1/users/me/avatar`, form, {
         withCredentials: true,
       })
 

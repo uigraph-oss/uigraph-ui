@@ -13,17 +13,17 @@ export function EditorStepDialectSelection() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <p className="text-sm text-gray-500">
+        <p className="text-muted-foreground text-sm">
           Step 1 of {totalSteps} · Select database type
         </p>
       </div>
 
       <div className="space-y-4 rounded-lg border p-4">
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-900">
+          <h3 className="text-foreground text-sm font-semibold">
             Select database type
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-muted-foreground text-sm">
             Pick the NoSQL database you&apos;re designing. We&apos;ll tailor the
             next steps to match.
           </p>
@@ -45,11 +45,11 @@ export function EditorStepDialectSelection() {
 
                   isSelected
                     ? 'border-primary bg-primary/5'
-                    : 'border-stock bg-white',
+                    : 'border-stock bg-card',
 
                   dialect.isNotAvailable
                     ? 'cursor-not-allowed opacity-50'
-                    : 'hover:border-primary hover:bg-gray-50'
+                    : 'hover:border-primary hover:bg-accent'
                 )}
               >
                 {isSelected && (
@@ -63,7 +63,7 @@ export function EditorStepDialectSelection() {
                     'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
                     isSelected
                       ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-600'
+                      : 'bg-secondary text-muted-foreground'
                   )}
                 >
                   <Icon className="h-5 w-5" />
@@ -72,12 +72,14 @@ export function EditorStepDialectSelection() {
                   <h3
                     className={cn(
                       'text-sm font-semibold',
-                      isSelected ? 'text-primary' : 'text-gray-900'
+                      isSelected ? 'text-primary' : 'text-foreground'
                     )}
                   >
                     {dialect.label}
                   </h3>
-                  <p className="text-xs text-gray-600">{dialect.description}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {dialect.description}
+                  </p>
                 </div>
               </button>
             )

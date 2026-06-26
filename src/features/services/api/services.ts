@@ -25,29 +25,50 @@ export type DashboardService = {
 }
 
 export const SERVICES = graphql(`
-  query Services($orgId: ID!, $folderId: ID) {
-    services(orgId: $orgId, folderId: $folderId) {
-      id
-      orgId
-      folderId
-      teamId
-      name
-      slug
-      description
-      status
-      tier
-      category
-      language
-      gitRepoUrl
-      jiraProjectUrl
-      slackChannelUrl
-      lastCommitSha
-      labels
-      metadata
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
+  query Services(
+    $orgId: ID!
+    $folderId: ID
+    $teamId: ID
+    $search: String
+    $sortBy: String
+    $sortDir: String
+    $limit: Int
+    $offset: Int
+  ) {
+    services(
+      orgId: $orgId
+      folderId: $folderId
+      teamId: $teamId
+      search: $search
+      sortBy: $sortBy
+      sortDir: $sortDir
+      limit: $limit
+      offset: $offset
+    ) {
+      totalCount
+      items {
+        id
+        orgId
+        folderId
+        teamId
+        name
+        slug
+        description
+        status
+        tier
+        category
+        language
+        gitRepoUrl
+        jiraProjectUrl
+        slackChannelUrl
+        lastCommitSha
+        labels
+        metadata
+        createdBy
+        updatedBy
+        createdAt
+        updatedAt
+      }
     }
   }
 `)

@@ -436,9 +436,9 @@ export function EditorStepMongoDBCollections() {
         </div>
 
         {mongoCollections.length === 0 ? (
-          <div className="rounded-lg border bg-gray-50 p-8 text-center">
-            <p className="text-sm text-gray-600">No collections yet.</p>
-            <p className="mt-1 text-xs text-gray-500">
+          <div className="bg-secondary rounded-lg border p-8 text-center">
+            <p className="text-muted-foreground text-sm">No collections yet.</p>
+            <p className="text-muted-foreground mt-1 text-xs">
               Click &quot;Add collection&quot; to define your first collection.
             </p>
           </div>
@@ -456,7 +456,7 @@ export function EditorStepMongoDBCollections() {
                     'cursor-pointer rounded-lg border p-3 transition-colors',
                     isSelected
                       ? 'border-primary bg-primary/5'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                      : 'border-border bg-card hover:border-border'
                   )}
                   onClick={() => {
                     setSelectedCollectionId(collection.id)
@@ -465,10 +465,10 @@ export function EditorStepMongoDBCollections() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-gray-900">
+                      <div className="text-foreground truncate text-sm font-semibold">
                         {collection.name || 'Unnamed collection'}
                       </div>
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="text-muted-foreground mt-1 text-xs">
                         {fieldsCount} field{fieldsCount !== 1 ? 's' : ''} ·{' '}
                         {indexesCount} index{indexesCount !== 1 ? 'es' : ''}
                       </p>
@@ -496,11 +496,11 @@ export function EditorStepMongoDBCollections() {
         <div className="space-y-4 rounded-lg border p-4">
           <div className="space-y-3">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-700">
+              <label className="text-foreground text-xs font-semibold">
                 Collection name
               </label>
               <Input
-                className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+                className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
                 value={selectedCollection.name}
                 onChange={(event) =>
                   updateCollection(selectedCollection.id, {
@@ -515,17 +515,17 @@ export function EditorStepMongoDBCollections() {
                 }
                 placeholder="collection_name"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-muted-foreground text-xs">
                 Use lowercase and underscores; no spaces.
               </p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-700">
+              <label className="text-foreground text-xs font-semibold">
                 Tags
               </label>
               <Input
-                className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+                className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
                 value={selectedCollection.tags}
                 onChange={(event) =>
                   updateCollection(selectedCollection.id, {
@@ -536,11 +536,11 @@ export function EditorStepMongoDBCollections() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-700">
+              <label className="text-foreground text-xs font-semibold">
                 Description
               </label>
               <Textarea
-                className="border-stock text-foreground w-full rounded-[1rem] border bg-white p-4 text-sm"
+                className="border-stock text-foreground bg-card w-full rounded-[1rem] border p-4 text-sm"
                 value={selectedCollection.description}
                 onChange={(event) =>
                   updateCollection(selectedCollection.id, {
@@ -553,7 +553,7 @@ export function EditorStepMongoDBCollections() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 border-b border-gray-200">
+          <div className="border-border flex items-center gap-2 border-b">
             <button
               type="button"
               onClick={() => setActiveTab('fields')}
@@ -561,7 +561,7 @@ export function EditorStepMongoDBCollections() {
                 'px-4 py-2 text-sm font-medium transition-colors',
                 activeTab === 'fields'
                   ? 'border-primary text-primary border-b-2'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               Fields
@@ -573,7 +573,7 @@ export function EditorStepMongoDBCollections() {
                 'px-4 py-2 text-sm font-medium transition-colors',
                 activeTab === 'indexes'
                   ? 'border-primary text-primary border-b-2'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               Indexes
@@ -583,14 +583,14 @@ export function EditorStepMongoDBCollections() {
           {activeTab === 'fields' && (
             <div className="space-y-4">
               {selectedCollection.fields.length === 0 ? (
-                <div className="rounded-lg border bg-gray-50 p-4 text-center">
-                  <p className="text-sm text-gray-600">
+                <div className="bg-secondary rounded-lg border p-4 text-center">
+                  <p className="text-muted-foreground text-sm">
                     No fields yet. Click &quot;Add field&quot; to define the
                     document structure.
                   </p>
                 </div>
               ) : (
-                <div className="rounded-lg border bg-gray-50 p-3">
+                <div className="bg-secondary rounded-lg border p-3">
                   <MongoCollectionRecursiveCard
                     isFirstLevel
                     fields={selectedCollection.fields}
@@ -628,13 +628,13 @@ export function EditorStepMongoDBCollections() {
                 </Button>
               </div>
 
-              <div className="space-y-2 rounded-lg border bg-gray-50 p-4">
+              <div className="bg-secondary space-y-2 rounded-lg border p-4">
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p className="text-xs font-semibold text-gray-700">
+                    <p className="text-foreground text-xs font-semibold">
                       Sample document inference
                     </p>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="text-muted-foreground mt-1 text-xs">
                       Paste one or more example JSON documents. We&apos;ll infer
                       fields and types for this collection.
                     </p>
@@ -648,7 +648,7 @@ export function EditorStepMongoDBCollections() {
                   </Button>
                 </div>
                 <Textarea
-                  className="border-stock text-foreground h-32 w-full rounded-[1rem] border bg-white p-4 text-sm"
+                  className="border-stock text-foreground bg-card h-32 w-full rounded-[1rem] border p-4 text-sm"
                   value={sampleDoc}
                   onChange={(event) => setSampleDoc(event.target.value)}
                   placeholder="Paste a sample JSON document"
@@ -660,8 +660,8 @@ export function EditorStepMongoDBCollections() {
           {activeTab === 'indexes' && (
             <div className="space-y-4">
               {selectedCollection.indexes.length === 0 ? (
-                <div className="rounded-lg border bg-gray-50 p-4 text-center">
-                  <p className="text-sm text-gray-600">
+                <div className="bg-secondary rounded-lg border p-4 text-center">
+                  <p className="text-muted-foreground text-sm">
                     No indexes yet. Click &quot;Add index&quot; to define one.
                   </p>
                 </div>
@@ -670,15 +670,15 @@ export function EditorStepMongoDBCollections() {
                   {selectedCollection.indexes.map((index) => (
                     <div
                       key={index.id}
-                      className="space-y-3 rounded-lg border bg-gray-50 p-4"
+                      className="bg-secondary space-y-3 rounded-lg border p-4"
                     >
                       <div className="flex items-center gap-3">
                         <div className="flex-1 space-y-2">
-                          <label className="text-xs font-semibold text-gray-700">
+                          <label className="text-foreground text-xs font-semibold">
                             Index name
                           </label>
                           <Input
-                            className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm"
+                            className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm"
                             value={index.name}
                             onChange={(event) =>
                               updateIndex(selectedCollection.id, index.id, {
@@ -697,24 +697,26 @@ export function EditorStepMongoDBCollections() {
                               })
                             }
                           />
-                          <span className="text-xs text-gray-700">Unique</span>
+                          <span className="text-foreground text-xs">
+                            Unique
+                          </span>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <div className="grid grid-cols-[2fr_1fr_auto] gap-3 border-b border-gray-200 px-2 pb-2">
-                          <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                        <div className="border-border grid grid-cols-[2fr_1fr_auto] gap-3 border-b px-2 pb-2">
+                          <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                             FIELD
                           </div>
-                          <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase">
+                          <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase">
                             ORDER
                           </div>
-                          <div className="text-xs font-semibold tracking-tight text-gray-500 uppercase"></div>
+                          <div className="text-muted-foreground text-xs font-semibold tracking-tight uppercase"></div>
                         </div>
 
                         {index.fields.length === 0 ? (
-                          <div className="rounded-lg border bg-white p-4 text-center">
-                            <p className="text-sm text-gray-600">
+                          <div className="bg-card rounded-lg border p-4 text-center">
+                            <p className="text-muted-foreground text-sm">
                               No index fields yet.
                             </p>
                           </div>
@@ -736,7 +738,7 @@ export function EditorStepMongoDBCollections() {
                                     )
                                   }
                                 >
-                                  <SelectTrigger className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm">
+                                  <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm">
                                     <SelectValue placeholder="Field" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -766,7 +768,7 @@ export function EditorStepMongoDBCollections() {
                                     )
                                   }
                                 >
-                                  <SelectTrigger className="border-stock text-foreground h-[3.5rem] rounded-[1rem] border bg-white px-4 text-sm">
+                                  <SelectTrigger className="border-stock text-foreground bg-card h-[3.5rem] rounded-[1rem] border px-4 text-sm">
                                     <SelectValue placeholder="Order" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -845,8 +847,8 @@ export function EditorStepMongoDBCollections() {
       )}
 
       {!selectedCollection && mongoCollections.length > 0 && (
-        <div className="rounded-lg border bg-gray-50 p-8 text-center">
-          <p className="text-sm text-gray-600">
+        <div className="bg-secondary rounded-lg border p-8 text-center">
+          <p className="text-muted-foreground text-sm">
             Select a collection to edit fields and indexes
           </p>
         </div>

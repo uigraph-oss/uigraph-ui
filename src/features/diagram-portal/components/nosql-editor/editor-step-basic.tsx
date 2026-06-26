@@ -21,11 +21,11 @@ export function EditorStepBasic() {
     <div className="space-y-4 rounded-lg border p-4">
       <div className="flex flex-wrap gap-3">
         <div className="min-w-[240px] flex-1 space-y-2">
-          <label className="text-xs font-semibold text-gray-700">
+          <label className="text-foreground text-xs font-semibold">
             {nameLabel}
           </label>
           <Input
-            className="border-stock text-foreground h-[3.5rem] w-full rounded-[1rem] border bg-white px-4 text-sm"
+            className="border-stock text-foreground bg-card h-[3.5rem] w-full rounded-[1rem] border px-4 text-sm"
             value={coreSchema.name}
             onChange={(event) => setCoreSchema({ name: event.target.value })}
             placeholder={
@@ -36,14 +36,16 @@ export function EditorStepBasic() {
                   : 'BillingDB'
             }
           />
-          {helperText && <p className="text-xs text-gray-500">{helperText}</p>}
+          {helperText && (
+            <p className="text-muted-foreground text-xs">{helperText}</p>
+          )}
         </div>
         <div className="w-full space-y-2">
-          <label className="text-xs font-semibold text-gray-700">
+          <label className="text-foreground text-xs font-semibold">
             Description
           </label>
           <Textarea
-            className="border-stock text-foreground w-full rounded-[1rem] border bg-white p-4 text-sm"
+            className="border-stock text-foreground bg-card w-full rounded-[1rem] border p-4 text-sm"
             value={coreSchema.description}
             onChange={(event) =>
               setCoreSchema({ description: event.target.value })

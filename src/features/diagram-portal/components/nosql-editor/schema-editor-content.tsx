@@ -307,7 +307,7 @@ export function NosqlEditorContent() {
                           ? 'bg-primary text-white'
                           : isCompleted
                             ? 'bg-primary/20 text-primary'
-                            : 'bg-gray-200 text-gray-600'
+                            : 'bg-muted text-muted-foreground'
                       )}
                     >
                       {index + 1}
@@ -333,7 +333,7 @@ export function NosqlEditorContent() {
       </div>
 
       <div className="sticky top-0 flex w-[18rem] overflow-hidden">
-        <div className="absolute flex size-full flex-col overflow-hidden rounded-lg border bg-gray-50">
+        <div className="bg-secondary absolute flex size-full flex-col overflow-hidden rounded-lg border">
           <div className="flex items-center justify-between border-b px-3 py-2">
             <p className="text-sm font-semibold">Generated schema JSON</p>
           </div>
@@ -342,7 +342,7 @@ export function NosqlEditorContent() {
             <OutputEditor />
           ) : (
             <div className="flex h-full items-center justify-center p-6">
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-muted-foreground text-center text-sm">
                 We&apos;ll generate the schema JSON after you configure your
                 database.
               </p>

@@ -36,12 +36,12 @@ const configureServiceSchema = z.object({
   slackChannelName: z.string().optional(),
 
   labels: z.array(z.string()).optional(),
-  teamId: z.string().optional(),
+  teamId: z.string().min(1, 'Team is required'),
 })
 
 type ConfigureServiceModalProps = {
   mode: 'create' | 'update'
-  defaultValues?: z.infer<typeof configureServiceSchema>
+  defaultValues?: Partial<z.infer<typeof configureServiceSchema>>
   onSubmit: (data: z.infer<typeof configureServiceSchema>) => Promise<void>
 }
 
@@ -393,9 +393,7 @@ export function ConfigureServiceModal({
             render={({ field }) => (
               <Select
                 value={field.value}
-                onValueChange={(val) =>
-                  field.onChange(val === 'none' ? null : val)
-                }
+                onValueChange={(val) => field.onChange(val)}
               >
                 <SelectTrigger
                   className={cn(
@@ -410,10 +408,6 @@ export function ConfigureServiceModal({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none" className="text-paragraph!">
-                    No Team
-                  </SelectItem>
-
                   {teams.map((team) => (
                     <SelectItem key={team.id} value={team.id}>
                       {team.name}

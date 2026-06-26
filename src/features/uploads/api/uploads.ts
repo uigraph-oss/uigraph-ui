@@ -1,6 +1,5 @@
 import { graphql } from '@/api'
 import { apolloClientGQL } from '@/api/client'
-import { env } from '@/env'
 import axios from 'axios'
 
 export const CREATE_ASSET_UPLOAD = graphql(`
@@ -11,10 +10,6 @@ export const CREATE_ASSET_UPLOAD = graphql(`
     }
   }
 `)
-
-export function assetUrl(assetId: string) {
-  return `${env.assetsOrigin}/assets/${assetId}`
-}
 
 export async function uploadFile(orgId: string, file: File): Promise<string> {
   const { data } = await apolloClientGQL.mutate({

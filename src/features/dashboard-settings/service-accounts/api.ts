@@ -1,4 +1,5 @@
 import { graphql, type GT } from '@/api'
+import { env } from '@/env'
 
 export type ServiceAccount = GT.ServiceAccountsQuery['serviceAccounts'][number]
 export type ServiceAccountToken =
@@ -98,7 +99,7 @@ export async function setServiceAccountAvatar(
   const form = new FormData()
   form.append('file', file)
   const res = await fetch(
-    `/api/v1/orgs/${orgId}/service-accounts/${saId}/avatar`,
+    `${env.VITE_API_URL}/api/v1/orgs/${orgId}/service-accounts/${saId}/avatar`,
     { method: 'PUT', credentials: 'include', body: form }
   )
   if (!res.ok) {
