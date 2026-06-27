@@ -1,6 +1,11 @@
 import { Button } from '@/components/ui/button'
+import { ConfigureComponentModal } from '@/features/components/components/configure-component'
 import { arrayNonNullable } from 'daily-code'
 import { Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { CgMoreO } from 'react-icons/cg'
+import { LuPlus } from 'react-icons/lu'
+import { toast } from 'sonner'
 import { getFlowDiagramComponentIcon } from '../constants/flow-diagram-node'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
@@ -10,9 +15,21 @@ import { sidebarListItemClassName } from './sidebar-panel-styles'
 export function SidebarCustomComponents() {
   const { flowComponents, setFlowComponents } = useFlowDiagramContext()
 
+  const [isCustomComponentModalOpen, setIsCustomComponentModalOpen] =
+    useState(false)
+
   return (
     <SidebarLayout className="left-18">
       <div className="flex flex-col gap-1.5 p-1">
+        <Button
+          preset="outline"
+          className="h-9 w-[10.5rem] justify-center gap-2 px-3 text-sm"
+          onClick={() => setIsCustomComponentModalOpen(true)}
+        >
+          <LuPlus className="size-4 shrink-0" />
+          Add component
+        </Button>
+
         {flowComponents.map((type, i) => (
           <div
             key={i}
@@ -62,6 +79,39 @@ export function SidebarCustomComponents() {
           </div>
         )}
       </div>
+
+      <ConfigureComponentModal
+        includeCategory={false}
+        includeStepThree={false}
+        includeReadonlyName={true}
+        enableRequired={false}
+        open={isCustomComponentModalOpen}
+        onOpenChange={setIsCustomComponentModalOpen}
+        selectedComponent={null}
+        onSubmit={async (name, _category, description, fields) => {
+          setIsCustomComponentModalOpen(false)
+
+          setFlowComponents((prev) => [
+            ...prev,
+            {
+              name,
+              description,
+              componentId: crypto.randomUUID(),
+              icon: <CgMoreO className="text-muted-foreground" />,
+              componentFields: fields.map((field) => {
+                if (field.label !== 'Name') return field
+
+                return {
+                  ...field,
+                  data: [{ value: name }],
+                }
+              }),
+            },
+          ])
+
+          toast.success('Custom component created successfully')
+        }}
+      />
     </SidebarLayout>
   )
 }
