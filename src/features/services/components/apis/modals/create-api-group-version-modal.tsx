@@ -12,7 +12,7 @@ export function CreateApiGroupVersionModal({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { serviceApiGroupId, createServiceApiGroupVersion } =
+  const { serviceApiGroupId, apiGroup, createServiceApiGroupVersion } =
     useServiceApiEndpointsContext()
   const orgId = useCurrentOrganization().id
 
@@ -20,6 +20,7 @@ export function CreateApiGroupVersionModal({
     <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
       <ConfigureApiGroupModal
         mode="publish"
+        defaultValues={{ name: apiGroup?.name }}
         onSubmit={async (data) => {
           const specAssetId = data.specFile
             ? await uploadSpecFile(orgId!, data.specFile)
