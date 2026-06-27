@@ -21,6 +21,7 @@ type StepTwoComponentProps = ComponentFieldListProps & {
   hideDescription?: boolean
   largeEmptyState?: boolean
   enableRequired?: boolean
+  newItemDefaults?: Record<string, unknown>
 }
 
 export function StepTwoComponent({
@@ -30,6 +31,7 @@ export function StepTwoComponent({
   largeEmptyState,
   enableRequired,
   hideDescription,
+  newItemDefaults,
 }: StepTwoComponentProps) {
   return (
     <div className="leading-[1.3333]">
@@ -164,7 +166,10 @@ export function StepTwoComponent({
         </Button>
       </div>
 
-      <ComponentFieldAdd setComponentFields={setComponentFields} />
+      <ComponentFieldAdd
+        defaults={newItemDefaults}
+        setComponentFields={setComponentFields}
+      />
     </div>
   )
 }

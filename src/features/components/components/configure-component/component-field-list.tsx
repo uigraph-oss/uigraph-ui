@@ -76,8 +76,11 @@ export function ComponentFieldList({
 }
 
 export function ComponentFieldAdd({
+  defaults,
   setComponentFields,
-}: Pick<ComponentFieldListProps, 'setComponentFields'>) {
+}: Pick<ComponentFieldListProps, 'setComponentFields'> & {
+  defaults?: Record<string, unknown>
+}) {
   return (
     <div className="flex items-center justify-between rounded-[16px] border border-[#2A3242] bg-transparent p-2">
       <Button
@@ -86,6 +89,7 @@ export function ComponentFieldAdd({
           setComponentFields((prev) => [
             ...prev,
             {
+              ...defaults,
               componentFieldId: crypto.randomUUID(),
               order: prev.length + 1,
               required: false,
