@@ -1057,12 +1057,8 @@ function EndpointDetailsPanel({
   }
 
   return (
-    <DynamicScrollArea
-      topOffset={164}
-      bottomOffset={12}
-      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-[#141925]"
-    >
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-[#141925] px-4 py-3">
+    <div className="w-full overflow-hidden rounded-lg border bg-[#141925]">
+      <div className="flex items-center justify-between border-b bg-[#141925] px-4 py-3">
         <div className="flex flex-col gap-1">
           <h3 className="font-mono text-sm font-semibold">
             {endpoint.method} {endpoint.path}
@@ -1193,7 +1189,7 @@ function EndpointDetailsPanel({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
+      <div className="border-t bg-[#141925] px-4 py-3">
         {activeTab === 'meta' ? (
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -1213,7 +1209,7 @@ function EndpointDetailsPanel({
           </div>
         ) : null}
       </div>
-    </DynamicScrollArea>
+    </div>
   )
 }
 
