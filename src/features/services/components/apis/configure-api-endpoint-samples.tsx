@@ -4,6 +4,7 @@ import { BetterDeleteConfirmationModal } from '@/components/better-delete-confir
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
+import { cn } from '@/lib/utils'
 import { arrayNonNullable } from 'daily-code'
 import { Code } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -16,6 +17,7 @@ import { useServiceApiEndpointsContext } from '../../contexts/service-api-endpoi
 type ConfigureApiEndpointSamplesProps = {
   endpoint: LegacyApiEndpoint
   readonly?: boolean
+  className?: string
 }
 
 type EditState = {
@@ -32,6 +34,7 @@ type DeleteState = {
 export function ConfigureApiEndpointSamples({
   endpoint,
   readonly = false,
+  className = 'px-6',
 }: ConfigureApiEndpointSamplesProps) {
   const { updateServiceApiEndpoint } = useServiceApiEndpointsContext()
 
@@ -229,7 +232,7 @@ export function ConfigureApiEndpointSamples({
 
   if (!hasSamples) {
     return (
-      <div className="space-y-4 px-6 pb-4">
+      <div className={cn('space-y-4 pb-4', className)}>
         {addButtons && <div className="flex justify-end">{addButtons}</div>}
         <div className="flex h-[240px] flex-col items-center justify-center space-y-3 text-center">
           <Code className="h-10 w-10 text-[#D1D5DB]" />
@@ -242,7 +245,7 @@ export function ConfigureApiEndpointSamples({
   }
 
   return (
-    <div className="m-0 space-y-4 px-6 pb-4" role="tabpanel">
+    <div className={cn('m-0 space-y-4 pb-4', className)} role="tabpanel">
       {addButtons && <div className="flex justify-end">{addButtons}</div>}
       <div className="space-y-5">
         {exampleRequests.map((code, index) => (

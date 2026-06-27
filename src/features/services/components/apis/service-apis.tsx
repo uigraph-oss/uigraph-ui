@@ -1187,6 +1187,7 @@ function EndpointDetailsPanel({
           <ConfigureApiEndpointSamples
             endpoint={endpoint.apiEndpoint}
             readonly={readonly}
+            className="px-0"
           />
         )}
 
@@ -1330,6 +1331,7 @@ function GraphQLOperationDetailsPanel({
           <ConfigureApiEndpointSamples
             endpoint={operation.apiEndpoint}
             readonly={readonly}
+            className="px-0"
           />
         )}
 
@@ -1496,6 +1498,7 @@ function GrpcMethodDetailsPanel({
           <ConfigureApiEndpointSamples
             endpoint={method.apiEndpoint}
             readonly={readonly}
+            className="px-0"
           />
         )}
 

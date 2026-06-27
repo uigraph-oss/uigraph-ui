@@ -13,6 +13,7 @@ import {
   ColorPickerInput,
   ComponentInputType,
   ComponentMetaField,
+  ComponentMetaThemeProvider,
   DatePicker,
   DateRangePicker,
   DropdownMultiSelect,
@@ -165,7 +166,7 @@ export function ConfigureApiEndpointMeta({
   }
 
   return (
-    <>
+    <ComponentMetaThemeProvider theme="modal">
       <div ref={containerRef} className={cn('space-y-4 px-6', className)}>
         {fields.map((field, i) => (
           <Controller
@@ -392,6 +393,6 @@ export function ConfigureApiEndpointMeta({
           </Button>
         </div>
       )}
-    </>
+    </ComponentMetaThemeProvider>
   )
 }

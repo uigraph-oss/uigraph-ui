@@ -461,13 +461,13 @@ function parseSpec(raw: RawSpec): ParsedSpec {
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 const METHOD_STYLES: Record<string, { bg: string; text: string }> = {
-  get: { bg: '#EFF6FF', text: '#2563EB' },
-  post: { bg: '#DCFCE7', text: '#16A34A' },
-  put: { bg: '#FFF7ED', text: '#EA580C' },
-  patch: { bg: '#FEFCE8', text: '#CA8A04' },
-  delete: { bg: '#FEF2F2', text: '#DC2626' },
-  head: { bg: '#F8FAFC', text: '#64748B' },
-  options: { bg: '#F8FAFC', text: '#64748B' },
+  get: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA' },
+  post: { bg: 'rgba(34,197,94,0.15)', text: '#4ADE80' },
+  put: { bg: 'rgba(249,115,22,0.15)', text: '#FB923C' },
+  patch: { bg: 'rgba(234,179,8,0.15)', text: '#FACC15' },
+  delete: { bg: 'rgba(239,68,68,0.15)', text: '#F87171' },
+  head: { bg: 'rgba(100,116,139,0.18)', text: '#94A3B8' },
+  options: { bg: 'rgba(100,116,139,0.18)', text: '#94A3B8' },
 }
 
 function MethodBadge({
@@ -1139,7 +1139,7 @@ function SpecTryItWrapper({
     const px = isExpanded ? 'px-6' : 'px-4'
     const py = 'py-3'
     return (
-      <div className="flex-1 divide-y divide-[#F1F5F9] overflow-y-auto">
+      <div className="flex-1 divide-y divide-[#2A3242] overflow-y-auto">
         {/* Server selector */}
         {spec.servers.length > 1 && (
           <div className={`${px} ${py}`}>
