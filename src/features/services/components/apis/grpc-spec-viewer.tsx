@@ -25,6 +25,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 type GrpcSpecViewerProps = {
   serviceId: string
   apiGroupId: string
+  versionId?: string | null
 }
 
 type GrpcSpecFile = {
@@ -491,7 +492,11 @@ function renderProtoDetails(
   )
 }
 
-export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
+export function GrpcSpecViewer({
+  serviceId,
+  apiGroupId,
+  versionId,
+}: GrpcSpecViewerProps) {
   const orgId = useCurrentOrganization()?.id
   const [specFiles, setSpecFiles] = useState<GrpcSpecFile[]>([])
   const [parsedRoot, setParsedRoot] = useState<ProtoRoot | null>(null)
@@ -525,7 +530,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
 
       const { data } = await apolloClientGQL.query({
         query: API_GROUP_SPEC,
-        variables: { orgId: orgId!, serviceId, apiGroupId },
+        variables: { orgId: orgId!, serviceId, apiGroupId, versionId },
         fetchPolicy: 'network-only',
       })
 
@@ -623,7 +628,7 @@ export function GrpcSpecViewer({ serviceId, apiGroupId }: GrpcSpecViewerProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [orgId, serviceId, apiGroupId])
+  }, [orgId, serviceId, apiGroupId, versionId])
 
   useEffect(() => {
     void fetchSpec()

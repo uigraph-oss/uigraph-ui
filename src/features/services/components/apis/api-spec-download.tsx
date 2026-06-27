@@ -17,19 +17,21 @@ import { toast } from 'sonner'
 type ApiSpecDownloadProps = {
   serviceId: string
   apiGroupId: string
+  versionId?: string | null
 }
 
 async function fetchSpecContent(
   orgId: string,
   serviceId: string,
-  apiGroupId: string
+  apiGroupId: string,
+  versionId?: string | null
 ): Promise<{
   content: string
   fileName: string | null
 }> {
   const { data } = await apolloClientGQL.query({
     query: API_GROUP_SPEC,
-    variables: { orgId, serviceId, apiGroupId },
+    variables: { orgId, serviceId, apiGroupId, versionId },
     fetchPolicy: 'network-only',
   })
 
@@ -69,6 +71,7 @@ function isYamlContent(content: string): boolean {
 export function ApiSpecDownload({
   serviceId,
   apiGroupId,
+  versionId,
 }: ApiSpecDownloadProps) {
   const orgId = useCurrentOrganization()?.id
   const [isDownloading, setIsDownloading] = useState(false)
@@ -79,7 +82,8 @@ export function ApiSpecDownload({
       const { content, fileName } = await fetchSpecContent(
         orgId!,
         serviceId,
-        apiGroupId
+        apiGroupId,
+        versionId
       )
 
       if (format === 'original') {

@@ -1553,11 +1553,13 @@ function SpecIntro({ spec }: { spec: ParsedSpec }) {
 type ApiSpecViewerProps = {
   serviceId: string
   apiGroupId: string
+  versionId?: string | null
 }
 
 export function RestApiSpecViewer({
   serviceId,
   apiGroupId,
+  versionId,
 }: ApiSpecViewerProps) {
   const orgId = useCurrentOrganization()?.id
   const [specContent, setSpecContent] = useState<string | null>(null)
@@ -1582,7 +1584,7 @@ export function RestApiSpecViewer({
       setError(null)
       const { data } = await apolloClientGQL.query({
         query: API_GROUP_SPEC,
-        variables: { orgId: orgId!, serviceId, apiGroupId },
+        variables: { orgId: orgId!, serviceId, apiGroupId, versionId },
         fetchPolicy: 'network-only',
       })
       const content = data?.apiGroupSpec?.content
@@ -1594,7 +1596,7 @@ export function RestApiSpecViewer({
     } finally {
       setIsLoading(false)
     }
-  }, [orgId, serviceId, apiGroupId])
+  }, [orgId, serviceId, apiGroupId, versionId])
 
   useEffect(() => {
     void fetchSpec()

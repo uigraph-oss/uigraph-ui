@@ -32,6 +32,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 type GraphqlSpecViewerProps = {
   serviceId: string
   apiGroupId: string
+  versionId?: string | null
 }
 
 type GraphqlSpecFile = {
@@ -442,6 +443,7 @@ function renderTypeSummary(
 export function GraphqlSpecViewer({
   serviceId,
   apiGroupId,
+  versionId,
 }: GraphqlSpecViewerProps) {
   const orgId = useCurrentOrganization()?.id
   const [specFiles, setSpecFiles] = useState<GraphqlSpecFile[]>([])
@@ -471,7 +473,7 @@ export function GraphqlSpecViewer({
 
       const { data } = await apolloClientGQL.query({
         query: API_GROUP_SPEC,
-        variables: { orgId: orgId!, serviceId, apiGroupId },
+        variables: { orgId: orgId!, serviceId, apiGroupId, versionId },
         fetchPolicy: 'network-only',
       })
 
@@ -493,7 +495,7 @@ export function GraphqlSpecViewer({
     } finally {
       setIsLoading(false)
     }
-  }, [orgId, serviceId, apiGroupId])
+  }, [orgId, serviceId, apiGroupId, versionId])
 
   useEffect(() => {
     void fetchSpec()

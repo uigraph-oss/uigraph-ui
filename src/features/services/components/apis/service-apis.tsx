@@ -141,7 +141,12 @@ export function ServiceApiEndpoints() {
       try {
         const { data } = await apolloClientGQL.query({
           query: API_GROUP_SPEC,
-          variables: { orgId: organizationId!, serviceId, apiGroupId },
+          variables: {
+            orgId: organizationId!,
+            serviceId,
+            apiGroupId,
+            versionId: selectedVersionId,
+          },
           fetchPolicy: 'cache-first',
         })
         const raw = data?.apiGroupSpec?.content
@@ -167,7 +172,7 @@ export function ServiceApiEndpoints() {
     return () => {
       cancelled = true
     }
-  }, [protocol, organizationId, serviceId, apiGroupId])
+  }, [protocol, organizationId, serviceId, apiGroupId, selectedVersionId])
 
   const isGraphQL = protocol === 'graphql'
   const isGrpc = protocol === 'grpc'
