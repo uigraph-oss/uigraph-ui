@@ -24,6 +24,7 @@ import { toast } from 'sonner'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { SidebarAnimatedNodes } from './panel-animated-nodes'
 import { SidebarClouds } from './panel-clouds'
+import { SidebarComments } from './panel-comments'
 import { SidebarComponents } from './panel-components'
 import { SidebarCustomComponents } from './panel-custom-components'
 import { PanelDataSourcesUnified } from './panel-data-sources-unified'
@@ -107,12 +108,17 @@ export function FloatingLeftSidebar() {
           />
 
           <SidebarButton
-            name="Comment"
+            name="Comments"
             icon={<GoComment />}
-            isActive={sidebarActiveTool === 'comment'}
+            isActive={
+              sidebarActiveTool === 'comments' ||
+              sidebarActiveTool === 'add-comment'
+            }
             onClick={() =>
               setSidebarActiveTool((prev) =>
-                prev === 'comment' ? null : 'comment'
+                prev === 'comments' || prev === 'add-comment'
+                  ? null
+                  : 'comments'
               )
             }
           />
@@ -157,6 +163,8 @@ export function FloatingLeftSidebar() {
       {sidebarActiveTool === 'animated' && <SidebarAnimatedNodes />}
       {sidebarActiveTool === 'text' && <SidebarText />}
       {sidebarActiveTool === 'clouds' && <SidebarClouds />}
+      {(sidebarActiveTool === 'comments' ||
+        sidebarActiveTool === 'add-comment') && <SidebarComments />}
       {sidebarActiveTool === 'generate-ai' && <SidebarGenerateWithAI />}
 
       <ConfigureComponentModal

@@ -3,9 +3,12 @@ import { GoComment } from 'react-icons/go'
 
 export function VirtualCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [isOverPane, setIsOverPane] = useState(false)
 
   useEffect(() => {
     function handleMouseMove(event: MouseEvent) {
+      const target = event.target as HTMLElement | null
+      setIsOverPane(!!target?.closest('.react-flow__pane'))
       setPosition({ x: event.clientX, y: event.clientY })
     }
 
@@ -15,6 +18,8 @@ export function VirtualCursor() {
       window.removeEventListener('mousemove', handleMouseMove)
     }
   }, [])
+
+  if (!isOverPane) return null
 
   return (
     <div
