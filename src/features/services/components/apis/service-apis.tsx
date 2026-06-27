@@ -1,6 +1,7 @@
 'use client'
 
 import { apolloClientGQL } from '@/api/client'
+import { MethodBadge } from '@/components/api/method-badge'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'
@@ -140,7 +141,12 @@ export function ServiceApiEndpoints() {
       try {
         const { data } = await apolloClientGQL.query({
           query: API_GROUP_SPEC,
-          variables: { orgId: organizationId!, serviceId, apiGroupId },
+          variables: {
+            orgId: organizationId!,
+            serviceId,
+            apiGroupId,
+            versionId: selectedVersionId,
+          },
           fetchPolicy: 'cache-first',
         })
         const raw = data?.apiGroupSpec?.content
@@ -166,7 +172,7 @@ export function ServiceApiEndpoints() {
     return () => {
       cancelled = true
     }
-  }, [protocol, organizationId, serviceId, apiGroupId])
+  }, [protocol, organizationId, serviceId, apiGroupId, selectedVersionId])
 
   const isGraphQL = protocol === 'graphql'
   const isGrpc = protocol === 'grpc'
@@ -868,14 +874,10 @@ function RestEndpointRow({
       }`}
     >
       <div className="flex min-w-0 items-start gap-3">
-        <Badge
-          variant="outline"
-          className={`mt-0.5 min-w-16 justify-center border-0 text-white ${methodColor(
-            endpoint.method
-          )}`}
-        >
-          {endpoint.method}
-        </Badge>
+        <MethodBadge
+          method={endpoint.method}
+          className="mt-0.5 min-w-16 py-1"
+        />
         <div className="min-w-0">
           <div className="truncate font-mono text-sm font-semibold text-[#F4F7FC]">
             {endpoint.path}
@@ -1060,12 +1062,8 @@ function EndpointDetailsPanel({
   }
 
   return (
-    <DynamicScrollArea
-      topOffset={164}
-      bottomOffset={12}
-      className="sticky top-3 w-full overflow-y-auto rounded-lg border bg-[#141925]"
-    >
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-[#141925] px-4 py-3">
+    <div className="w-full overflow-hidden rounded-lg border bg-[#141925]">
+      <div className="flex items-center justify-between border-b bg-[#141925] px-4 py-3">
         <div className="flex flex-col gap-1">
           <h3 className="font-mono text-sm font-semibold">
             {endpoint.method} {endpoint.path}
@@ -1187,6 +1185,7 @@ function EndpointDetailsPanel({
           <ConfigureApiEndpointSamples
             endpoint={endpoint.apiEndpoint}
             readonly={readonly}
+            className="px-0"
           />
         )}
 
@@ -1195,7 +1194,7 @@ function EndpointDetailsPanel({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
+      <div className="border-t bg-[#141925] px-4 py-3">
         {activeTab === 'meta' ? (
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -1215,7 +1214,7 @@ function EndpointDetailsPanel({
           </div>
         ) : null}
       </div>
-    </DynamicScrollArea>
+    </div>
   )
 }
 
@@ -1330,6 +1329,7 @@ function GraphQLOperationDetailsPanel({
           <ConfigureApiEndpointSamples
             endpoint={operation.apiEndpoint}
             readonly={readonly}
+            className="px-0"
           />
         )}
 
@@ -1496,6 +1496,7 @@ function GrpcMethodDetailsPanel({
           <ConfigureApiEndpointSamples
             endpoint={method.apiEndpoint}
             readonly={readonly}
+            className="px-0"
           />
         )}
 
@@ -1647,23 +1648,6 @@ function authLabel(auth: AuthKind): string {
       return 'OAuth2'
     default:
       return 'Other'
-  }
-}
-
-function methodColor(method: string): string {
-  switch (method) {
-    case 'GET':
-      return 'bg-blue-500'
-    case 'POST':
-      return 'bg-green-500'
-    case 'PUT':
-      return 'bg-orange-500'
-    case 'PATCH':
-      return 'bg-yellow-500'
-    case 'DELETE':
-      return 'bg-red-500'
-    default:
-      return 'bg-gray-500'
   }
 }
 

@@ -4,6 +4,7 @@ import { BetterDeleteConfirmationModal } from '@/components/better-delete-confir
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
+import { cn } from '@/lib/utils'
 import { arrayNonNullable } from 'daily-code'
 import { Code } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -16,6 +17,7 @@ import { useServiceApiEndpointsContext } from '../../contexts/service-api-endpoi
 type ConfigureApiEndpointSamplesProps = {
   endpoint: LegacyApiEndpoint
   readonly?: boolean
+  className?: string
 }
 
 type EditState = {
@@ -32,6 +34,7 @@ type DeleteState = {
 export function ConfigureApiEndpointSamples({
   endpoint,
   readonly = false,
+  className = 'px-6',
 }: ConfigureApiEndpointSamplesProps) {
   const { updateServiceApiEndpoint } = useServiceApiEndpointsContext()
 
@@ -175,14 +178,16 @@ export function ConfigureApiEndpointSamples({
             {editState.mode === 'create' ? sampleLabel : `Edit ${sampleLabel}`}
           </h4>
 
-          <CodeMirrorRaw
-            value={draft}
-            minHeight={'220px'}
-            onChange={(value) => setDraft(value)}
-            placeholder={`Paste a ${editState.type} example`}
-            fontSize={16}
-            lineHeight={2}
-          />
+          <div className="border-stock overflow-hidden rounded-[0.75rem] border">
+            <CodeMirrorRaw
+              value={draft}
+              minHeight={'220px'}
+              onChange={(value) => setDraft(value)}
+              placeholder={`Paste a ${editState.type} example`}
+              fontSize={16}
+              lineHeight={2}
+            />
+          </div>
         </div>
 
         <div className="sticky bottom-0 -mx-6 flex justify-end gap-3 bg-[#141925] px-6 py-3">
@@ -227,7 +232,7 @@ export function ConfigureApiEndpointSamples({
 
   if (!hasSamples) {
     return (
-      <div className="space-y-4">
+      <div className={cn('space-y-4 pb-4', className)}>
         {addButtons && <div className="flex justify-end">{addButtons}</div>}
         <div className="flex h-[240px] flex-col items-center justify-center space-y-3 text-center">
           <Code className="h-10 w-10 text-[#D1D5DB]" />
@@ -240,9 +245,9 @@ export function ConfigureApiEndpointSamples({
   }
 
   return (
-    <div className="m-0 space-y-4" role="tabpanel">
+    <div className={cn('m-0 space-y-4 pb-4', className)} role="tabpanel">
       {addButtons && <div className="flex justify-end">{addButtons}</div>}
-      <div className="space-y-4">
+      <div className="space-y-5">
         {exampleRequests.map((code, index) => (
           <Snippet
             key={`request-${index}`}
@@ -291,8 +296,8 @@ function Snippet({
   onDelete: () => void
 }) {
   return (
-    <div className="border-stock rounded-lg border p-4">
-      <div className="mb-3 flex items-center justify-between">
+    <div>
+      <div className="mb-1.5 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-[#F4F7FC]">{title}</h4>
         {!readonly && (
           <div className="flex gap-1">
@@ -311,13 +316,15 @@ function Snippet({
         )}
       </div>
 
-      <CodeMirrorRaw
-        readOnly={true}
-        editable={false}
-        value={code}
-        fontSize={16}
-        lineHeight={2}
-      />
+      <div className="border-stock overflow-hidden rounded-[0.75rem] border">
+        <CodeMirrorRaw
+          readOnly={true}
+          editable={false}
+          value={code}
+          fontSize={16}
+          lineHeight={2}
+        />
+      </div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { VirtualCursor } from '@/components/virtual-cursor'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { cn } from '@/lib/utils'
 import { AstToUiConverter } from '@uigraph/sdk'
@@ -76,6 +77,8 @@ export function ReactFlowWrapper({
     dataSources,
     tempDiagramState,
   } = useFlowDiagramContext()
+
+  console.log(nodes)
 
   const ref = useAutoRef({
     reactFlowInstance,
@@ -256,18 +259,20 @@ export function ReactFlowWrapper({
 
           const nodes = reactFlowInstance.getNodes()
           const edges = reactFlowInstance.getEdges()
-          const tableId = (newNode.data as DatabaseTableSQLNodeData).localTable
-            ?.tableId
-          const sourceId = (newNode.data as DatabaseTableSQLNodeData).localTable
-            ?.baseId
+          const tableName = (newNode.data as DatabaseTableSQLNodeData)
+            .localTable?.tableName
+          const databaseName = (newNode.data as DatabaseTableSQLNodeData)
+            .localTable?.databaseName
 
-          const schema = dataSources.find((ds) => ds.id === sourceId)?.schemaAst
+          const schema = dataSources.find(
+            (ds) => ds.name === databaseName
+          )?.schemaAst
 
-          if (tableId && sourceId && schema) {
+          if (tableName && databaseName && schema) {
             const updated = AstToUiConverter.updateReactFlow({
               edges,
               nodes: [...nodes, newNode],
-              sourceId,
+              sourceName: databaseName,
               schema,
               oldDataSources: dataSources,
             })
@@ -284,7 +289,7 @@ export function ReactFlowWrapper({
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       if (!reactFlowInstance) return
-      if (sidebarActiveTool !== 'comment') return
+      if (sidebarActiveTool !== 'add-comment') return
 
       const id = generateUUID()
       const position = reactFlowInstance.screenToFlowPosition({
@@ -516,88 +521,95 @@ export function ReactFlowWrapper({
     !drawingMode && !forceReadOnly && tempDiagramState === null
 
   return (
-    <ReactFlow
-      ref={reactFLowRef}
-      nodeTypes={CUSTOM_NODE_TYPES}
-      edgeTypes={CUSTOM_EDGE_TYPES}
-      selectionMode={SelectionMode.Partial}
-      selectNodesOnDrag={false}
-      noWheelClassName="skip-wheel"
-      nodes={nodes}
-      edges={edges}
-      onDrop={onDrop}
-      onConnect={onConnect}
-      onConnectEnd={onConnectEnd}
-      onConnectStart={onConnectStart}
-      onDragOver={onDragOver}
-      onPaneClick={onPaneClick}
-      onReconnect={onReconnect}
-      onReconnectStart={onReconnectStart}
-      onReconnectEnd={onReconnectEnd}
-      onNodeDragStop={onNodeDragStop}
-      isValidConnection={(c) => {
-        if (!c.source || !c.target) return true
-        return c.source !== c.target
-      }}
-      selectionKeyCode={getControlKey()}
-      multiSelectionKeyCode={getControlKey()}
-      className={cn(
-        'relative isolate opacity-0 transition-opacity duration-100',
-        reactFlowInstance && 'opacity-100',
-        sidebarActiveTool === 'comment' &&
-          'cursor-crosshair! [&_*]:cursor-crosshair!'
-      )}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      connectionMode={ConnectionMode.Strict}
-      connectionLineStyle={{ strokeWidth: 3 }}
-      defaultEdgeOptions={{ type: 'default', style: { strokeWidth: 3 } }}
-      viewport={viewport ?? undefined}
-      onViewportChange={setViewport}
-      onInit={async (rf) => {
-        const isEmpty = rf.getNodes().length === 0 && rf.getEdges().length === 0
+    <>
+      {sidebarActiveTool === 'add-comment' && <VirtualCursor />}
+      <ReactFlow
+        ref={reactFLowRef}
+        nodeTypes={CUSTOM_NODE_TYPES}
+        edgeTypes={CUSTOM_EDGE_TYPES}
+        selectionMode={SelectionMode.Partial}
+        selectNodesOnDrag={false}
+        noWheelClassName="skip-wheel"
+        nodes={nodes}
+        edges={edges}
+        onDrop={onDrop}
+        onConnect={onConnect}
+        onConnectEnd={onConnectEnd}
+        onConnectStart={onConnectStart}
+        onDragOver={onDragOver}
+        onPaneClick={onPaneClick}
+        onReconnect={onReconnect}
+        onReconnectStart={onReconnectStart}
+        onReconnectEnd={onReconnectEnd}
+        onNodeDragStop={onNodeDragStop}
+        isValidConnection={(c) => {
+          if (!c.source || !c.target) return true
+          return c.source !== c.target
+        }}
+        selectionKeyCode={getControlKey()}
+        multiSelectionKeyCode={getControlKey()}
+        className={cn(
+          'relative isolate opacity-0 transition-opacity duration-100',
+          reactFlowInstance && 'opacity-100',
+          sidebarActiveTool === 'add-comment' &&
+            'cursor-none! [&_*]:cursor-none!'
+        )}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        connectionMode={ConnectionMode.Strict}
+        connectionLineStyle={{ strokeWidth: 3 }}
+        defaultEdgeOptions={{ type: 'default', style: { strokeWidth: 3 } }}
+        viewport={viewport ?? undefined}
+        onViewportChange={setViewport}
+        onInit={async (rf) => {
+          const isEmpty =
+            rf.getNodes().length === 0 && rf.getEdges().length === 0
 
-        if (!isEmpty && forceAutoFitView) {
-          await rf.fitView(
-            forceAutoFitView
-              ? { padding: '20px', minZoom: forceAutoFitMinZoom }
-              : { maxZoom: 0.8, minZoom: 0.8 }
-          )
-        }
+          if (!isEmpty && forceAutoFitView) {
+            await rf.fitView(
+              forceAutoFitView
+                ? { padding: '20px', minZoom: forceAutoFitMinZoom }
+                : { maxZoom: 0.8, minZoom: 0.8 }
+            )
+          }
 
-        setViewport(rf.getViewport())
-        setReactFlowInstance(rf)
-      }}
-      onPointerDown={() => {
-        setSidebarActiveTool((prev) => (prev === 'comment' ? prev : null))
-      }}
-      nodesDraggable={isNodeWritable}
-      nodesConnectable={isNodeWritable}
-      elementsSelectable={isNodeWritable}
-      edgesReconnectable={isNodeWritable}
-      minZoom={0.1}
-      maxZoom={2}
-    >
-      <EdgeMarkerDefs />
+          setViewport(rf.getViewport())
+          setReactFlowInstance(rf)
+        }}
+        onPointerDown={() => {
+          setSidebarActiveTool((prev) => (prev === 'add-comment' ? prev : null))
+        }}
+        nodesDraggable={isNodeWritable}
+        nodesConnectable={isNodeWritable}
+        elementsSelectable={isNodeWritable}
+        edgesReconnectable={isNodeWritable}
+        minZoom={0.1}
+        maxZoom={2}
+      >
+        <EdgeMarkerDefs />
 
-      {showMinimap && (
-        <MiniMap
-          className="!border !border-[#2A3242] !bg-[#141925] !shadow-sm"
-          maskColor="rgb(11 14 22 / 0.75)"
-          nodeColor="#3859FF"
+        {showMinimap && (
+          <MiniMap
+            className="!border !border-[#2A3242] !bg-[#141925] !shadow-sm"
+            maskColor="rgb(11 14 22 / 0.75)"
+            nodeColor="#3859FF"
+          />
+        )}
+
+        {!forceNoBackground && showGrid && (
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={12}
+            size={1}
+            color="#2A3242"
+          />
+        )}
+
+        <DrawingOverlay
+          isDrawing={drawingMode}
+          onDrawComplete={onDrawComplete}
         />
-      )}
-
-      {!forceNoBackground && showGrid && (
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={12}
-          size={1}
-          color="#2A3242"
-        />
-      )}
-
-      <DrawingOverlay isDrawing={drawingMode} onDrawComplete={onDrawComplete} />
-    </ReactFlow>
+      </ReactFlow>
+    </>
   )
 }

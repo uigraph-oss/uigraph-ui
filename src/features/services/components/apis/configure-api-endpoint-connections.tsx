@@ -1,12 +1,9 @@
 'use client'
 
 import { useQuery } from '@apollo/client'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
-import { apolloClientGQL } from '@/api/client'
-import { FRAME_BY_ID } from '@/features/dashboard-projects/api/frame'
-import { MAP } from '@/features/dashboard-projects/api/map'
-import { FOCAL_POINT_META_BY_LINK } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
+import { COMPONENT_LINK_USAGES } from '@/features/image-frame-canvas-sidebar/api/focal-point-meta'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
 import { useCurrentOrganization } from '@/store/auth-store'
 
@@ -23,64 +20,6 @@ type ConfigureApiEndpointConnectionsProps = {
   readonly?: boolean
 }
 
-type PageMeta = {
-  pageName: string
-  imageUrl?: string
-  projectId?: string
-}
-
-function uniq<T>(arr: T[]) {
-  return Array.from(new Set(arr))
-}
-
-async function fetchPages(pageIds: string[], organizationId: string) {
-  const results = await Promise.all(
-    pageIds.map((pageId) =>
-      apolloClientGQL.query({
-        query: FRAME_BY_ID,
-        variables: { orgId: organizationId, id: pageId },
-        fetchPolicy: 'cache-first',
-      })
-    )
-  )
-
-  const map = new Map<string, PageMeta>()
-  results.forEach((result, idx) => {
-    const pageId = pageIds[idx]
-    const page = result.data?.frameById
-    if (!pageId || !page) return
-
-    map.set(pageId, {
-      pageName: page.name || '',
-      imageUrl: page.screenshotImageUrl || undefined,
-      projectId: page.mapId || undefined,
-    })
-  })
-
-  return map
-}
-
-async function fetchProjects(projectIds: string[], organizationId: string) {
-  const results = await Promise.all(
-    projectIds.map((projectId) =>
-      apolloClientGQL.query({
-        query: MAP,
-        variables: { orgId: organizationId, id: projectId },
-        fetchPolicy: 'cache-first',
-      })
-    )
-  )
-
-  const map = new Map<string, string>()
-  results.forEach((result, idx) => {
-    const projectId = projectIds[idx]
-    const project = result.data?.map
-    if (projectId && project?.name) map.set(projectId, project.name)
-  })
-
-  return map
-}
-
 export function ConfigureApiEndpointConnections({
   endpoint,
   readonly = false,
@@ -88,13 +27,10 @@ export function ConfigureApiEndpointConnections({
   const organizationId = useCurrentOrganization()?.id
   const apiEndpointId = endpoint.apiEndpointId
 
-  // Connections tab is lazy-rendered, so this is effectively lazy-loaded
-  const {
-    data: focalPointsData,
-    loading: focalPointsLoading,
-    error: focalPointsError,
-    refetch,
-  } = useQuery(FOCAL_POINT_META_BY_LINK, {
+  // Connections tab is lazy-rendered, so this is effectively lazy-loaded.
+  // The backend joins meta → focal point → frame → map, so a single query
+  // returns the map, screen, and focal point for each usage.
+  const { data, loading, error, refetch } = useQuery(COMPONENT_LINK_USAGES, {
     variables: {
       orgId: organizationId!,
       linkId: apiEndpointId!,
@@ -103,108 +39,35 @@ export function ConfigureApiEndpointConnections({
     fetchPolicy: 'cache-and-network',
   })
 
-  const focalPoints = useMemo(
-    () => arrayNonNullable(focalPointsData?.focalPointMetaByLink || []),
-    [focalPointsData]
+  const usages = useMemo(
+    () => arrayNonNullable(data?.componentLinkUsages || []),
+    [data]
   )
 
-  const pageIds = useMemo(() => {
-    const ids = focalPoints
-      .map((fp) => fp.frameId)
-      .filter((id): id is string => Boolean(id))
-    return uniq(ids)
-  }, [focalPoints])
-
-  const [pageDataMap, setPageDataMap] = useState<Map<string, PageMeta>>(
-    () => new Map()
-  )
-  const [projectNameMap, setProjectNameMap] = useState<Map<string, string>>(
-    () => new Map()
-  )
-
-  // Fetch pages + projects for the referenced focal points
-  useEffect(() => {
-    let cancelled = false
-
-    async function run() {
-      if (pageIds.length === 0 || !organizationId) {
-        // Clear only if there is something to clear (prevents re-renders)
-        setPageDataMap((prev) => (prev.size ? new Map() : prev))
-        setProjectNameMap((prev) => (prev.size ? new Map() : prev))
-        return
-      }
-
-      const pages = await fetchPages(pageIds, organizationId)
-      if (cancelled) return
-      setPageDataMap(pages)
-
-      const projectIds = uniq(
-        Array.from(pages.values())
-          .map((p) => p.projectId)
-          .filter((id): id is string => Boolean(id))
-      )
-
-      if (!organizationId || projectIds.length === 0) return
-
-      const projects = await fetchProjects(projectIds, organizationId)
-      if (cancelled) return
-      setProjectNameMap(projects)
-    }
-
-    run().catch((err) => {
-      if (!cancelled)
-        console.error('[Connections] Error fetching pages/projects:', err)
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [pageIds, organizationId])
-
-  const focalPointItems = useMemo<ConnectionItem[]>(() => {
-    return arrayNonNullable(
-      focalPoints.map((fp) => {
-        const id = fp.id
-        if (!id) return null
-
-        const pageData = fp.frameId ? pageDataMap.get(fp.frameId) : undefined
-        const fallbackName =
-          pageData?.pageName || fp.id || fp.focalPointId || 'Unknown'
-
-        const projectName = pageData?.projectId
-          ? projectNameMap.get(pageData.projectId)
-          : undefined
-
-        const breadcrumb =
-          projectName && pageData?.pageName
-            ? `${projectName} · ${pageData.pageName}`
-            : projectName
-              ? projectName
-              : pageData?.pageName || undefined
-
-        return {
-          id,
-          name: pageData?.pageName || fallbackName,
-          imageUrl: pageData?.imageUrl,
-          breadcrumb,
-          pageId: fp.frameId || undefined,
-        }
-      })
-    )
-  }, [focalPoints, pageDataMap, projectNameMap])
+  const usageItems = useMemo<ConnectionItem[]>(() => {
+    return usages.map((usage) => ({
+      id: usage.metaId,
+      name: usage.mapName || usage.frameName || 'Untitled map',
+      imageUrl: usage.screenshotImageUrl || undefined,
+      screenName: usage.frameName || undefined,
+      focalPointName: usage.focalPointName || undefined,
+      pageId: usage.frameId,
+    }))
+  }, [usages])
 
   function handleItemClick(id: string) {
-    const fp = focalPoints.find((x) => x.id === id)
-    if (!fp?.frameId) return
-    window.open(
-      `/dashboard/frame/${fp.frameId}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
+    const usage = usages.find((u) => u.metaId === id)
+    if (!usage?.frameId) return
+    // Deep-link straight to the focal point on the frame (?point=<id>),
+    // matching how the canvas selects a target.
+    const url = usage.focalPointId
+      ? `/dashboard/frame/${usage.frameId}?point=${usage.focalPointId}`
+      : `/dashboard/frame/${usage.frameId}`
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
-  if (focalPointsLoading) {
-    return <SectionLoader label="Loading focal points..." />
+  if (loading && usages.length === 0) {
+    return <SectionLoader label="Loading connections..." />
   }
 
   const sections: ConnectionSectionProps[] = [
@@ -213,8 +76,8 @@ export function ConfigureApiEndpointConnections({
       title: 'Used in system maps',
       description: 'Subsystems, flows, or views that depend on this endpoint',
       microcopy: 'Links are managed from System Maps.',
-      items: focalPointItems,
-      error: focalPointsError?.message,
+      items: usageItems,
+      error: error?.message,
       onItemClick: handleItemClick,
       onRetry: refetch,
     },

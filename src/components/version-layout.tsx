@@ -118,7 +118,7 @@ export function CompareVersionsSelector({
         value={displayValue}
         onValueChange={(value) => setSelectedVersionId(value)}
       >
-        <SelectTrigger className="hover:bg-shading-gray h-auto border-0 bg-white px-3 py-1.5 text-sm shadow-lg shadow-black/5 transition-all">
+        <SelectTrigger className="bg-card text-card-foreground hover:bg-accent h-auto border-0 px-3 py-1.5 text-sm shadow-lg shadow-black/5 transition-all">
           <SelectValue placeholder="Select version" />
         </SelectTrigger>
         <SelectContent

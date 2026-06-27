@@ -1,4 +1,4 @@
-import { AstToSqlGenerator, SchemaAST, TableAST } from '@uigraph/sdk'
+import { AstToSqlGenerator } from '@uigraph/sdk'
 import { createContext } from 'daily-code/react'
 import { useState } from 'react'
 import { DataSource } from '../types/db-flow'
@@ -24,45 +24,6 @@ export const [DataSourcesProvider, useDataSources] = createContext(() => {
     setDataSources((prev) => prev.filter((source) => source.id !== id))
   }
 
-  function getDataSourceByTableNodeId(nodeId: string): DataSource | null {
-    for (const source of dataSources) {
-      if (nodeId.startsWith(`${source.id}-table-`)) {
-        return source
-      }
-    }
-    return null
-  }
-
-  function updateTableInDataSource(
-    nodeId: string,
-    tableId: string,
-    astUpdates: Partial<TableAST>
-  ) {
-    const source = getDataSourceByTableNodeId(nodeId)
-    if (!source || !source.schemaAst) return
-
-    const updatedAst: SchemaAST = {
-      ...source.schemaAst,
-      tables: source.schemaAst.tables.map((table) => {
-        if (table.id === tableId) {
-          return {
-            ...table,
-            ...astUpdates,
-            columns: astUpdates.columns || table.columns,
-            constraints: astUpdates.constraints || table.constraints,
-          }
-        }
-
-        return table
-      }),
-    }
-
-    updateDataSource(source.id, {
-      schemaAst: updatedAst,
-      modifiedAt: Date.now(),
-    })
-  }
-
   function regenerateSql(sourceId: string): string {
     const source = dataSources.find((s) => s.id === sourceId)
     if (!source || !source.schemaAst) return ''
@@ -76,8 +37,6 @@ export const [DataSourcesProvider, useDataSources] = createContext(() => {
     addDataSource,
     updateDataSource,
     removeDataSource,
-    getDataSourceByTableNodeId,
-    updateTableInDataSource,
     regenerateSql,
 
     editingSource,

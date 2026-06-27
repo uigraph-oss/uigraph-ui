@@ -13,6 +13,7 @@ import {
   ColorPickerInput,
   ComponentInputType,
   ComponentMetaField,
+  ComponentMetaThemeProvider,
   DatePicker,
   DateRangePicker,
   DropdownMultiSelect,
@@ -165,7 +166,7 @@ export function ConfigureApiEndpointMeta({
   }
 
   return (
-    <>
+    <ComponentMetaThemeProvider theme="modal">
       <div ref={containerRef} className={cn('space-y-4 px-6', className)}>
         {fields.map((field, i) => (
           <Controller
@@ -274,14 +275,12 @@ export function ConfigureApiEndpointMeta({
                   )}
 
                   {field.type === ComponentInputType.CodeEditor && (
-                    <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-[#141925]">
-                      <CodeMirrorWrapped
-                        height={'10rem'}
-                        value={value ?? ''}
-                        readonly={readonly}
-                        setValue={setValue}
-                      />
-                    </div>
+                    <CodeMirrorWrapped
+                      height={'10rem'}
+                      value={value ?? ''}
+                      readonly={readonly}
+                      setValue={setValue}
+                    />
                   )}
 
                   {field.type === ComponentInputType.KeyValueList && (
@@ -394,6 +393,6 @@ export function ConfigureApiEndpointMeta({
           </Button>
         </div>
       )}
-    </>
+    </ComponentMetaThemeProvider>
   )
 }

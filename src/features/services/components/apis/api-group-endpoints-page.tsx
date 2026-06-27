@@ -129,6 +129,7 @@ function ApiGroupEndpointsPageContent() {
             orgId: orgId!,
             serviceId,
             apiGroupId: apiGroup.serviceApiGroupId ?? '',
+            versionId: selectedVersionId,
           },
           fetchPolicy: 'cache-first',
         })
@@ -161,6 +162,7 @@ function ApiGroupEndpointsPageContent() {
     specFileId,
     orgId,
     serviceId,
+    selectedVersionId,
   ])
 
   const openApiRuntime = useMemo(
@@ -327,6 +329,7 @@ function ApiGroupEndpointsPageContent() {
               <ApiSpecDownload
                 serviceId={serviceId}
                 apiGroupId={activeGroupId}
+                versionId={selectedVersionId}
               />
             )}
 
@@ -398,14 +401,20 @@ function ApiGroupEndpointsPageContent() {
             <RestApiSpecViewer
               serviceId={serviceId}
               apiGroupId={activeGroupId}
+              versionId={selectedVersionId}
             />
           ) : apiGroup.protocol === 'GraphQL' ? (
             <GraphqlSpecViewer
               serviceId={serviceId}
               apiGroupId={activeGroupId}
+              versionId={selectedVersionId}
             />
           ) : apiGroup.protocol === 'gRPC' ? (
-            <GrpcSpecViewer serviceId={serviceId} apiGroupId={activeGroupId} />
+            <GrpcSpecViewer
+              serviceId={serviceId}
+              apiGroupId={activeGroupId}
+              versionId={selectedVersionId}
+            />
           ) : (
             <div className="flex size-full items-center justify-center">
               <div className="text-muted-foreground text-sm font-medium">

@@ -19,6 +19,7 @@ import {
 import { openFileExplorer } from 'daily-code/browser'
 import { parse } from 'jsonc-parser'
 import { ComponentProps, ReactNode, useState } from 'react'
+import { BsCamera } from 'react-icons/bs'
 import { LuImport } from 'react-icons/lu'
 import { SiMermaid } from 'react-icons/si'
 import { toast } from 'sonner'
@@ -327,14 +328,14 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip="Export diagram"
+          tooltip="Export Image"
           onClick={handleExport}
           disabled={isDownloading}
         >
           {isDownloading ? (
             <SuperCircleLoader className={'text-sm'} />
           ) : (
-            <icons.DownloadIcon />
+            <BsCamera className="mb-0.5 text-[1.2rem]" />
           )}
         </ToolbarButton>
 

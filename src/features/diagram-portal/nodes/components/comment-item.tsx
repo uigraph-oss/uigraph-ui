@@ -166,14 +166,18 @@ export function CommentItem({
                         <MoreHorizontalIcon className="size-3" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
+                    <DropdownMenuContent
+                      align="start"
+                      className="min-w-40 rounded-lg border-[#2A3242] bg-[#141925] p-1 text-[#F4F7FC] shadow-xl"
+                    >
                       <DropdownMenuItem
                         onClick={() => {
                           if (!comment.commentId) return
                           onEdit(comment.commentId, comment.text ?? '')
                         }}
+                        className="cursor-pointer gap-2 rounded-md px-2.5 py-2 text-sm text-[#F4F7FC] focus:bg-[#1E2533] focus:text-[#F4F7FC]"
                       >
-                        <EditIcon className="size-3" />
+                        <EditIcon className="size-4" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -181,10 +185,10 @@ export function CommentItem({
                           if (!comment.commentId) return
                           setIsDeleteModalOpen(true)
                         }}
-                        className="text-destructive"
+                        className="text-destructive focus:text-destructive cursor-pointer gap-2 rounded-md px-2.5 py-2 text-sm focus:bg-[#1E2533]"
                         disabled={isDeleting}
                       >
-                        <TrashIcon className="size-3" />
+                        <TrashIcon className="size-4" />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>

@@ -100,6 +100,7 @@ function ConfigurePropertiesContent({
               largeEmptyState
               enableRequired={false}
               componentFields={componentFields}
+              newItemDefaults={{ hidden: true }}
               setComponentFields={setComponentFields}
             />
           </div>

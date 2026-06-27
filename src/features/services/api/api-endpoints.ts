@@ -79,11 +79,17 @@ export const API_GROUP = graphql(`
 `)
 
 export const API_ENDPOINTS = graphql(`
-  query APIEndpoints($orgId: ID!, $serviceId: ID!, $apiGroupId: ID!) {
+  query APIEndpoints(
+    $orgId: ID!
+    $serviceId: ID!
+    $apiGroupId: ID!
+    $versionId: ID
+  ) {
     apiEndpoints(
       orgId: $orgId
       serviceId: $serviceId
       apiGroupId: $apiGroupId
+      versionId: $versionId
     ) {
       id
       apiGroupId
@@ -155,6 +161,25 @@ export const SYNC_API_GROUP = graphql(`
     syncAPIGroup(orgId: $orgId, serviceId: $serviceId, input: $input) {
       apiGroupId
       versionCreated
+    }
+  }
+`)
+
+export const RESTORE_API_GROUP_VERSION = graphql(`
+  mutation RestoreAPIGroupVersion(
+    $orgId: ID!
+    $serviceId: ID!
+    $apiGroupId: ID!
+    $versionId: ID!
+  ) {
+    restoreAPIGroupVersion(
+      orgId: $orgId
+      serviceId: $serviceId
+      apiGroupId: $apiGroupId
+      versionId: $versionId
+    ) {
+      id
+      version
     }
   }
 `)

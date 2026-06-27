@@ -137,7 +137,7 @@ export function ConfigureDbSchemaModal({
         sourceContent: null,
         isProcessing: false,
         reactFlowData: {
-          ...AstToUiConverter.toReactFlow(ast, dataSource.id),
+          ...AstToUiConverter.toReactFlow(ast, dataSource.name),
           dataSources: [dataSource],
         },
       })
@@ -184,7 +184,7 @@ export function ConfigureDbSchemaModal({
       sourceContent: schema,
       isProcessing: false,
       reactFlowData: {
-        ...AstToUiConverter.toReactFlow(dynamoAst, dataSource.id),
+        ...AstToUiConverter.toReactFlow(dynamoAst, dataSource.name),
         dataSources: [dataSource],
       },
     })
@@ -217,7 +217,7 @@ export function ConfigureDbSchemaModal({
       sourceContent: schema,
       isProcessing: false,
       reactFlowData: {
-        ...AstToUiConverter.toReactFlow(mongoAst, dataSource.id),
+        ...AstToUiConverter.toReactFlow(mongoAst, dataSource.name),
         dataSources: [dataSource],
       },
     })

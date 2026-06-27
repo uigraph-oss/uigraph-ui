@@ -1,6 +1,7 @@
 'use client'
 
 import { apolloClientGQL } from '@/api/client'
+import { MethodBadge } from '@/components/api/method-badge'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
 import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
@@ -459,37 +460,6 @@ function parseSpec(raw: RawSpec): ParsedSpec {
 }
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
-
-const METHOD_STYLES: Record<string, { bg: string; text: string }> = {
-  get: { bg: '#EFF6FF', text: '#2563EB' },
-  post: { bg: '#DCFCE7', text: '#16A34A' },
-  put: { bg: '#FFF7ED', text: '#EA580C' },
-  patch: { bg: '#FEFCE8', text: '#CA8A04' },
-  delete: { bg: '#FEF2F2', text: '#DC2626' },
-  head: { bg: '#F8FAFC', text: '#64748B' },
-  options: { bg: '#F8FAFC', text: '#64748B' },
-}
-
-function MethodBadge({
-  method,
-  className,
-}: {
-  method: string
-  className?: string
-}) {
-  const style = METHOD_STYLES[method.toLowerCase()] ?? METHOD_STYLES.get!
-  return (
-    <span
-      className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase',
-        className
-      )}
-      style={{ backgroundColor: style.bg, color: style.text }}
-    >
-      {method.toUpperCase()}
-    </span>
-  )
-}
 
 function statusColor(code: string) {
   const n = parseInt(code, 10)
@@ -1139,7 +1109,7 @@ function SpecTryItWrapper({
     const px = isExpanded ? 'px-6' : 'px-4'
     const py = 'py-3'
     return (
-      <div className="flex-1 divide-y divide-[#F1F5F9] overflow-y-auto">
+      <div className="flex-1 divide-y divide-[#2A3242] overflow-y-auto">
         {/* Server selector */}
         {spec.servers.length > 1 && (
           <div className={`${px} ${py}`}>
@@ -1583,11 +1553,13 @@ function SpecIntro({ spec }: { spec: ParsedSpec }) {
 type ApiSpecViewerProps = {
   serviceId: string
   apiGroupId: string
+  versionId?: string | null
 }
 
 export function RestApiSpecViewer({
   serviceId,
   apiGroupId,
+  versionId,
 }: ApiSpecViewerProps) {
   const orgId = useCurrentOrganization()?.id
   const [specContent, setSpecContent] = useState<string | null>(null)
@@ -1612,7 +1584,7 @@ export function RestApiSpecViewer({
       setError(null)
       const { data } = await apolloClientGQL.query({
         query: API_GROUP_SPEC,
-        variables: { orgId: orgId!, serviceId, apiGroupId },
+        variables: { orgId: orgId!, serviceId, apiGroupId, versionId },
         fetchPolicy: 'network-only',
       })
       const content = data?.apiGroupSpec?.content
@@ -1624,7 +1596,7 @@ export function RestApiSpecViewer({
     } finally {
       setIsLoading(false)
     }
-  }, [orgId, serviceId, apiGroupId])
+  }, [orgId, serviceId, apiGroupId, versionId])
 
   useEffect(() => {
     void fetchSpec()

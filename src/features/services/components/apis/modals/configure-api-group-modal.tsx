@@ -193,47 +193,49 @@ export function ConfigureApiGroupModal({
       footerCancel="Cancel"
     >
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-normal">
-            API Group Name
-          </Label>
-          <Controller
-            name="name"
-            control={form.control}
-            render={({ field }) => {
-              const { onBlur, ...restField } = field
-              return (
-                <Input
-                  id="name"
-                  placeholder="e.g. uigraph-adapter-openapi, public, internal"
-                  autoCorrect="off"
-                  autoComplete="off"
-                  autoCapitalize="off"
-                  disabled={isUploading}
-                  className={cn(
-                    'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
-                    (nameError || (nameBlurred && !name.trim())) &&
-                      'border-red-500'
-                  )}
-                  {...restField}
-                  onBlur={() => {
-                    setNameBlurred(true)
-                    onBlur()
-                  }}
-                />
-              )
-            }}
-          />
-          <p className="text-xs text-[#828DA3]">
-            Used to group endpoints (e.g. uigraph-adapter-openapi, public,
-            internal).
-          </p>
-          {(nameError || (nameBlurred && !name.trim())) && (
-            <p className="text-sm text-red-500">
-              {nameError?.message || 'API Group Name is required.'}
+        {mode !== 'publish' && (
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-sm font-normal">
+              API Group Name
+            </Label>
+            <Controller
+              name="name"
+              control={form.control}
+              render={({ field }) => {
+                const { onBlur, ...restField } = field
+                return (
+                  <Input
+                    id="name"
+                    placeholder="e.g. uigraph-adapter-openapi, public, internal"
+                    autoCorrect="off"
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    disabled={isUploading}
+                    className={cn(
+                      'h-[56px] rounded-[16px] border border-[#2A3242] bg-[#141925] px-6 focus:outline-none',
+                      (nameError || (nameBlurred && !name.trim())) &&
+                        'border-red-500'
+                    )}
+                    {...restField}
+                    onBlur={() => {
+                      setNameBlurred(true)
+                      onBlur()
+                    }}
+                  />
+                )
+              }}
+            />
+            <p className="text-xs text-[#828DA3]">
+              Used to group endpoints (e.g. uigraph-adapter-openapi, public,
+              internal).
             </p>
-          )}
-        </div>
+            {(nameError || (nameBlurred && !name.trim())) && (
+              <p className="text-sm text-red-500">
+                {nameError?.message || 'API Group Name is required.'}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="space-y-3">
           <div>

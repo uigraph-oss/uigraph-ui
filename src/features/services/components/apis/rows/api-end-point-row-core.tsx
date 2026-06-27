@@ -1,5 +1,6 @@
 'use client'
 
+import { MethodBadge } from '@/components/api/method-badge'
 import { Badge } from '@/components/ui/badge'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { LegacyComponentMeta } from '@/features/services/api/api-adapters'
@@ -76,7 +77,7 @@ export function ApiEndPointRowCore({
     <>
       <TableRow className="h-20 cursor-pointer" onClick={onViewOpen}>
         <TableCell className="w-0">
-          <MethodBadge method={parsedData.method} />
+          <MethodBadge method={parsedData.method || 'N/A'} />
         </TableCell>
 
         <TableCell className="truncate whitespace-normal">
@@ -118,46 +119,5 @@ export function ApiEndPointRowCore({
 
       {additionalContent}
     </>
-  )
-}
-
-function MethodBadge({ method }: { method: string }) {
-  switch (method) {
-    case 'GET':
-      return (
-        <Badge variant="outline" className="bg-blue-500 text-white">
-          GET
-        </Badge>
-      )
-    case 'POST':
-      return (
-        <Badge variant="outline" className="bg-green-500 text-white">
-          POST
-        </Badge>
-      )
-    case 'PUT':
-      return (
-        <Badge variant="outline" className="bg-orange-500 text-white">
-          PUT
-        </Badge>
-      )
-    case 'PATCH':
-      return (
-        <Badge variant="outline" className="bg-yellow-500 text-white">
-          PATCH
-        </Badge>
-      )
-    case 'DELETE':
-      return (
-        <Badge variant="outline" className="bg-red-500 text-white">
-          DELETE
-        </Badge>
-      )
-  }
-
-  return (
-    <Badge variant="outline" className="bg-gray-500 text-white">
-      N/A
-    </Badge>
   )
 }

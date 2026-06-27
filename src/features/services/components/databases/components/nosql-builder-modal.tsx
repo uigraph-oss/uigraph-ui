@@ -37,7 +37,7 @@ export function NosqlBuilderModal({
     try {
       const { nodes, edges } = AstToUiConverter.toReactFlow(
         dataSource.schemaAst,
-        dataSource.id
+        dataSource.name
       )
 
       const diagramResult = await createDiagram({

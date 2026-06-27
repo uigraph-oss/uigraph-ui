@@ -5,27 +5,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ConfigureComponentModal } from '@/features/components/components/configure-component'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
 import { BsDatabase } from 'react-icons/bs'
-import { CgMoreO } from 'react-icons/cg'
 import { GoComment } from 'react-icons/go'
-import {
-  LuCloudy,
-  LuComponent,
-  LuImage,
-  LuPlus,
-  LuShapes,
-} from 'react-icons/lu'
-import { MdAnimation, MdOutlineDashboardCustomize } from 'react-icons/md'
+import { LuCloudy, LuComponent, LuImage, LuShapes } from 'react-icons/lu'
+import { MdAnimation } from 'react-icons/md'
 import { RxText } from 'react-icons/rx'
-import { toast } from 'sonner'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { SidebarAnimatedNodes } from './panel-animated-nodes'
 import { SidebarClouds } from './panel-clouds'
+import { SidebarComments } from './panel-comments'
 import { SidebarComponents } from './panel-components'
-import { SidebarCustomComponents } from './panel-custom-components'
 import { PanelDataSourcesUnified } from './panel-data-sources-unified'
 import { SidebarGenerateWithAI } from './panel-generate-with-ai'
 import { SidebarImages } from './panel-images'
@@ -34,11 +24,7 @@ import { SidebarText } from './panel-text'
 import { SidebarLayout } from './sidebar-layout'
 
 export function FloatingLeftSidebar() {
-  const { setFlowComponents, sidebarActiveTool, setSidebarActiveTool } =
-    useFlowDiagramContext()
-
-  const [isCustomComponentModalOpen, setIsCustomComponentModalOpen] =
-    useState(false)
+  const { sidebarActiveTool, setSidebarActiveTool } = useFlowDiagramContext()
 
   return (
     <>
@@ -107,12 +93,17 @@ export function FloatingLeftSidebar() {
           />
 
           <SidebarButton
-            name="Comment"
+            name="Comments"
             icon={<GoComment />}
-            isActive={sidebarActiveTool === 'comment'}
+            isActive={
+              sidebarActiveTool === 'comments' ||
+              sidebarActiveTool === 'add-comment'
+            }
             onClick={() =>
               setSidebarActiveTool((prev) =>
-                prev === 'comment' ? null : 'comment'
+                prev === 'comments' || prev === 'add-comment'
+                  ? null
+                  : 'comments'
               )
             }
           />
@@ -129,68 +120,19 @@ export function FloatingLeftSidebar() {
               )
             }}
           />
-
-          <SidebarButton
-            name="Custom Components"
-            icon={<MdOutlineDashboardCustomize />}
-            isActive={sidebarActiveTool === 'custom-components'}
-            onClick={() => {
-              setSidebarActiveTool((prev) =>
-                prev === 'custom-components' ? null : 'custom-components'
-              )
-            }}
-          />
-
-          <SidebarButton
-            name="Add new custom component"
-            icon={<LuPlus />}
-            onClick={() => setIsCustomComponentModalOpen(true)}
-          />
         </div>
       </SidebarLayout>
 
       {sidebarActiveTool === 'components' && <SidebarComponents />}
       {sidebarActiveTool === 'data-sources' && <PanelDataSourcesUnified />}
-      {sidebarActiveTool === 'custom-components' && <SidebarCustomComponents />}
       {sidebarActiveTool === 'shapes' && <SidebarShapes />}
       {sidebarActiveTool === 'images' && <SidebarImages />}
       {sidebarActiveTool === 'animated' && <SidebarAnimatedNodes />}
       {sidebarActiveTool === 'text' && <SidebarText />}
       {sidebarActiveTool === 'clouds' && <SidebarClouds />}
+      {(sidebarActiveTool === 'comments' ||
+        sidebarActiveTool === 'add-comment') && <SidebarComments />}
       {sidebarActiveTool === 'generate-ai' && <SidebarGenerateWithAI />}
-
-      <ConfigureComponentModal
-        includeCategory={false}
-        includeStepThree={false}
-        includeReadonlyName={true}
-        enableRequired={false}
-        open={isCustomComponentModalOpen}
-        onOpenChange={setIsCustomComponentModalOpen}
-        selectedComponent={null}
-        onSubmit={async (name, _category, description, fields) => {
-          setIsCustomComponentModalOpen(false)
-
-          setFlowComponents((prev) => [
-            ...prev,
-            {
-              name,
-              description,
-              componentId: crypto.randomUUID(),
-              icon: <CgMoreO className="text-muted-foreground" />,
-              componentFields: fields.map((field) => {
-                if (field.label !== 'Name') return field
-
-                return {
-                  ...field,
-                  data: [{ value: name }],
-                }
-              }),
-            },
-          ])
-
-          toast.success('Custom component created successfully')
-        }}
-      />
     </>
   )
 }
