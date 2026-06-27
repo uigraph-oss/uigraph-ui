@@ -195,7 +195,7 @@ export function ConnectionSection({
                         onItemClick(item.id)
                       }
                     }}
-                    className="group hover:bg-muted/50 hover:border-muted-foreground/30 focus:ring-ring flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-all hover:shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                    className="group hover:bg-muted/50 hover:border-muted-foreground/30 focus-visible:ring-ring/50 flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-all hover:shadow-sm focus:outline-none focus-visible:ring-2"
                     aria-label={`Open ${item.focalPointName || item.name} in map`}
                   >
                     <div className="bg-muted ring-border/60 flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg ring-1">
