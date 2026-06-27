@@ -274,14 +274,12 @@ export function ConfigureApiEndpointMeta({
                   )}
 
                   {field.type === ComponentInputType.CodeEditor && (
-                    <div className="border-stock w-full overflow-hidden rounded-[0.75rem] border bg-[#141925]">
-                      <CodeMirrorWrapped
-                        height={'10rem'}
-                        value={value ?? ''}
-                        readonly={readonly}
-                        setValue={setValue}
-                      />
-                    </div>
+                    <CodeMirrorWrapped
+                      height={'10rem'}
+                      value={value ?? ''}
+                      readonly={readonly}
+                      setValue={setValue}
+                    />
                   )}
 
                   {field.type === ComponentInputType.KeyValueList && (
