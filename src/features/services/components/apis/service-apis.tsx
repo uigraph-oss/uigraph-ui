@@ -1,6 +1,7 @@
 'use client'
 
 import { apolloClientGQL } from '@/api/client'
+import { MethodBadge } from '@/components/api/method-badge'
 import { CrossButton } from '@/components/cross-button'
 import { DynamicScrollArea } from '@/components/dynamic-scroll-area'
 import { SuperCircleLoader } from '@/components/loader'
@@ -868,14 +869,10 @@ function RestEndpointRow({
       }`}
     >
       <div className="flex min-w-0 items-start gap-3">
-        <Badge
-          variant="outline"
-          className={`mt-0.5 min-w-16 justify-center border-0 text-white ${methodColor(
-            endpoint.method
-          )}`}
-        >
-          {endpoint.method}
-        </Badge>
+        <MethodBadge
+          method={endpoint.method}
+          className="mt-0.5 min-w-16 py-1"
+        />
         <div className="min-w-0">
           <div className="truncate font-mono text-sm font-semibold text-[#F4F7FC]">
             {endpoint.path}
@@ -1650,23 +1647,6 @@ function authLabel(auth: AuthKind): string {
       return 'OAuth2'
     default:
       return 'Other'
-  }
-}
-
-function methodColor(method: string): string {
-  switch (method) {
-    case 'GET':
-      return 'bg-blue-500'
-    case 'POST':
-      return 'bg-green-500'
-    case 'PUT':
-      return 'bg-orange-500'
-    case 'PATCH':
-      return 'bg-yellow-500'
-    case 'DELETE':
-      return 'bg-red-500'
-    default:
-      return 'bg-gray-500'
   }
 }
 

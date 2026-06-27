@@ -1,6 +1,7 @@
 'use client'
 
 import { apolloClientGQL } from '@/api/client'
+import { MethodBadge } from '@/components/api/method-badge'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { SectionLoader } from '@/components/section-loader'
 import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
@@ -459,37 +460,6 @@ function parseSpec(raw: RawSpec): ParsedSpec {
 }
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
-
-const METHOD_STYLES: Record<string, { bg: string; text: string }> = {
-  get: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA' },
-  post: { bg: 'rgba(34,197,94,0.15)', text: '#4ADE80' },
-  put: { bg: 'rgba(249,115,22,0.15)', text: '#FB923C' },
-  patch: { bg: 'rgba(234,179,8,0.15)', text: '#FACC15' },
-  delete: { bg: 'rgba(239,68,68,0.15)', text: '#F87171' },
-  head: { bg: 'rgba(100,116,139,0.18)', text: '#94A3B8' },
-  options: { bg: 'rgba(100,116,139,0.18)', text: '#94A3B8' },
-}
-
-function MethodBadge({
-  method,
-  className,
-}: {
-  method: string
-  className?: string
-}) {
-  const style = METHOD_STYLES[method.toLowerCase()] ?? METHOD_STYLES.get!
-  return (
-    <span
-      className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase',
-        className
-      )}
-      style={{ backgroundColor: style.bg, color: style.text }}
-    >
-      {method.toUpperCase()}
-    </span>
-  )
-}
 
 function statusColor(code: string) {
   const n = parseInt(code, 10)

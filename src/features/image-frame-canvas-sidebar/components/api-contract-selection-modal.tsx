@@ -1,5 +1,5 @@
+import { MethodBadge } from '@/components/api/method-badge'
 import { BetterDialogContent } from '@/components/better-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { SelectSearch } from '@/components/ui/select-search'
 import {
@@ -11,7 +11,6 @@ import {
   API_GROUPS,
 } from '@/features/services/api/api-endpoints'
 import { SERVICES } from '@/features/services/api/services'
-import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,14 +20,6 @@ import { Loader2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
-
-const methodColors: Record<string, string> = {
-  GET: 'bg-blue-500',
-  POST: 'bg-green-500',
-  PUT: 'bg-orange-500',
-  PATCH: 'bg-yellow-500',
-  DELETE: 'bg-red-500',
-}
 
 const selectClassName =
   '!h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-[#F4F7FC] focus:outline-none'
@@ -123,15 +114,7 @@ export function ApiContractSelectionModal({
         label: `${method} ${endpoint.path} ${summary}`,
         node: (
           <span className="flex items-center gap-3">
-            <Badge
-              variant="outline"
-              className={cn(
-                'shrink-0 text-white',
-                methodColors[method] ?? 'bg-gray-500'
-              )}
-            >
-              {method}
-            </Badge>
+            <MethodBadge method={method} />
             <span className="flex flex-col">
               <span className="text-foreground font-mono font-semibold">
                 {endpoint.path}
