@@ -61,9 +61,9 @@ export function SchemaUploadSchemaSection({
         </div>
       </div>
 
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6">
+      <div className="rounded-lg border p-6">
         <div className="flex flex-col items-center gap-2 text-center">
-          <FileText className="h-12 w-12 text-green-600" />
+          <FileText className="h-12 w-12 text-[#828DA3]" />
           <div>
             <p className="font-medium text-[#F4F7FC]">
               {attachedSchema.file.name}
@@ -87,22 +87,22 @@ export function SchemaUploadSchemaSection({
         <div
           className={`rounded-lg p-4 ${
             attachedSchema.ast.tables.length > 0
-              ? 'border border-green-200 bg-green-50'
-              : 'border border-red-200 bg-red-50'
+              ? 'border border-green-500/20 bg-green-500/5'
+              : 'border border-red-500/20 bg-red-500/5'
           }`}
         >
           <div className="flex items-start gap-3">
             {attachedSchema.ast.tables.length > 0 ? (
-              <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-400" />
             ) : (
-              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600" />
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
             )}
             <div className="flex-1">
               <h4
                 className={`font-medium ${
                   attachedSchema.ast.tables.length > 0
-                    ? 'text-green-900'
-                    : 'text-red-900'
+                    ? 'text-green-300'
+                    : 'text-red-300'
                 }`}
               >
                 {attachedSchema.ast.tables.length > 0
@@ -110,13 +110,13 @@ export function SchemaUploadSchemaSection({
                   : 'Validation Failed'}
               </h4>
               {attachedSchema.ast.tables.length > 0 && attachedSchema.ast && (
-                <p className="mt-1 text-sm text-green-700">
+                <p className="mt-1 text-sm text-green-400/80">
                   Found {attachedSchema.ast.tables.length} table(s)
                 </p>
               )}
               {!(attachedSchema.ast.tables.length > 0) &&
                 attachedSchema.ast.tables.length > 0 && (
-                  <p className="mt-1 text-sm text-red-700">
+                  <p className="mt-1 text-sm text-red-400/80">
                     No tables found in the schema
                   </p>
                 )}
