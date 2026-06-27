@@ -79,6 +79,10 @@ export function PanelDataSourcesUnified() {
     servicesDb,
   } = usePanelServicesDb()
 
+  const selectedService = services.find(
+    (service) => service.serviceId === selectedServiceId
+  )
+
   const [selectedSource, setSelectedSource] = useState<string | null>(null)
   const [expandedSources, setExpandedSources] = useState<Set<string>>(new Set())
   const [editContent, setEditContent] = useState('')
@@ -1372,8 +1376,8 @@ export function PanelDataSourcesUnified() {
                                   'databaseTableSQL',
                                   {
                                     serviceTable: {
-                                      serviceId: selectedServiceId!,
-                                      serviceDbId: serviceDb.serviceDBId!,
+                                      serviceName: selectedService!.name!,
+                                      databaseName: serviceDb.dbName!,
                                       tableName: entry.name,
                                     },
                                   },
@@ -1410,8 +1414,8 @@ export function PanelDataSourcesUnified() {
                                     'databaseTableSQL',
                                     {
                                       serviceTable: {
-                                        serviceId: selectedServiceId!,
-                                        serviceDbId: serviceDb.serviceDBId!,
+                                        serviceName: selectedService!.name!,
+                                        databaseName: serviceDb.dbName!,
                                         tableName: table.name!,
                                       },
                                     },

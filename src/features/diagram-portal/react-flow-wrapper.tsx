@@ -78,6 +78,8 @@ export function ReactFlowWrapper({
     tempDiagramState,
   } = useFlowDiagramContext()
 
+  console.log(nodes)
+
   const ref = useAutoRef({
     reactFlowInstance,
     dataSources,

@@ -3,19 +3,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import {
-  SERVICE_DB,
-  serviceDBToLegacy,
-} from '@/features/services/api/service-db'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { cn } from '@/lib/utils'
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
 import { ColumnAST, ConstraintAST, TableAST } from '@uigraph/sdk'
 import { Code2, DatabaseIcon, Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useDatabaseTable } from '../hooks/use-database-table'
+import { useResolveServiceDb } from '../hooks/use-resolve-service-db'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import { TDatabaseTableSQLNode } from '../nodes/database-table-node-sql'
 import { DatabaseColumnInput } from './components/database-column-input'
@@ -315,21 +310,11 @@ function NodeDatabaseTablePropertiesLocalSource() {
 function NodeDatabaseTablePropertiesRemoteSource() {
   const { data } = useSingleSelectedNode<TDatabaseTableSQLNode>()
   const serviceTable = data?.serviceTable
-  const orgId = useCurrentOrganization().id
   const [isCodeMode, setIsCodeMode] = useState(false)
-  const { data: serviceDbData, loading } = useQuery(SERVICE_DB, {
-    variables: {
-      orgId: orgId!,
-      serviceId: serviceTable?.serviceId ?? '',
-      id: serviceTable?.serviceDbId ?? '',
-    },
-    skip: !orgId || !serviceTable?.serviceId || !serviceTable?.serviceDbId,
-    fetchPolicy: 'cache-first',
-  })
-
-  const serviceDb = serviceDbData?.serviceDB
-    ? serviceDBToLegacy(serviceDbData.serviceDB)
-    : undefined
+  const { serviceDb, loading } = useResolveServiceDb(
+    serviceTable?.serviceName,
+    serviceTable?.databaseName
+  )
 
   // Parse noSQLSchema for NoSQL dialects
   const noSQLContent = useMemo(() => {
@@ -440,7 +425,7 @@ function NodeDatabaseTablePropertiesRemoteSource() {
               table={{ name: serviceTable?.tableName ?? '' } as any}
               tableId={serviceTable?.tableName ?? ''}
               dataSource={{
-                id: serviceTable?.serviceDbId ?? '',
+                id: serviceDb?.serviceDBId ?? '',
                 name: serviceTable?.tableName ?? '',
                 sourceType: 'manual' as const,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any

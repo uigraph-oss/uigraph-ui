@@ -1,13 +1,8 @@
-import {
-  SERVICE_DB,
-  serviceDBToLegacy,
-} from '@/features/services/api/service-db'
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
 import { Node, NodeProps, NodeResizeControl } from '@xyflow/react'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 import { useDatabaseTable } from '../hooks/use-database-table'
+import { useResolveServiceDb } from '../hooks/use-resolve-service-db'
 import { DataNodeCode } from './components/data-node-code'
 import { DataNodeNoSQLContent } from './components/data-node-nosql'
 import {
@@ -29,8 +24,8 @@ export interface DatabaseTableSQLNodeData extends Record<string, unknown> {
   }
 
   serviceTable?: {
-    serviceId: string
-    serviceDbId: string
+    serviceName: string
+    databaseName: string
     tableName: string
   }
 }
@@ -180,22 +175,9 @@ function DatabaseTableNodeRemoteSource({
   data,
   selected,
 }: NodeProps<TDatabaseTableSQLNode>) {
-  const { serviceId, serviceDbId, tableName } = data.serviceTable!
-  const orgId = useCurrentOrganization().id
+  const { serviceName, databaseName, tableName } = data.serviceTable!
 
-  const { data: serviceDbData, loading } = useQuery(SERVICE_DB, {
-    fetchPolicy: 'cache-first',
-    skip: !orgId || !serviceId || !serviceDbId,
-    variables: {
-      orgId: orgId!,
-      serviceId,
-      id: serviceDbId,
-    },
-  })
-
-  const serviceDb = serviceDbData?.serviceDB
-    ? serviceDBToLegacy(serviceDbData.serviceDB)
-    : null
+  const { serviceDb, loading } = useResolveServiceDb(serviceName, databaseName)
 
   const [isCodeMode, setIsCodeMode] = useState(false)
 
@@ -258,7 +240,7 @@ function DatabaseTableNodeRemoteSource({
 
   if (noSQLSourceContent) {
     const noSQLDataSource = {
-      id: serviceDbId,
+      id: serviceDb?.serviceDBId ?? '',
       name: tableName,
       sourceType: 'manual' as const,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
