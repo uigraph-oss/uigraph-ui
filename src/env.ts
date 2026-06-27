@@ -7,7 +7,7 @@ const envSchema = z.object({
 
   VITE_DEPLOY_ENV: z
     .enum(['local', 'development', 'production'])
-    .default('local'),
+    .default('production'),
 
   VITE_FEATURE_ENABLE_DEMO_TEST_CASES: z
     .enum(['true', 'false'])
