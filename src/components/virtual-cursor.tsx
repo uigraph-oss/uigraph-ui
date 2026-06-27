@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { GoComment } from 'react-icons/go'
 
 export function VirtualCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -25,14 +26,9 @@ export function VirtualCursor() {
         zIndex: 9999,
       }}
     >
-      <div
-        style={{
-          width: '10px',
-          height: '10px',
-          backgroundColor: 'red',
-          borderRadius: '50%',
-        }}
-      />
+      <div className="flex size-7 -translate-y-full items-center justify-center rounded-full rounded-bl-none border-2 border-blue-500 bg-blue-100 text-blue-600 shadow-lg">
+        <GoComment className="size-3.5" />
+      </div>
     </div>
   )
 }
