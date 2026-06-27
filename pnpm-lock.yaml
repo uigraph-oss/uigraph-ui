@@ -143,8 +143,8 @@ importers:
         specifier: ^15.5.13
         version: 15.5.13
       '@uigraph/sdk':
-        specifier: link:../uigraph-sdk
-        version: link:../uigraph-sdk
+        specifier: ^1.1.37
+        version: 1.1.37(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)
       '@uiw/codemirror-theme-monokai-dimmed':
         specifier: 4.25.3
         version: 4.25.3(@codemirror/language@6.12.3)(@codemirror/state@6.6.0)(@codemirror/view@6.41.1)
@@ -5063,6 +5063,16 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
+  '@uigraph/sdk@1.1.37':
+    resolution:
+      {
+        integrity: sha512-s2zIj2DdavDAktBP87FFOzkrIV4zRdEa5R6fHq6Z4WU1llxHANY6S9Q/gpLgS61EFHwjT1z14ss2c4byofLlHQ==,
+      }
+    peerDependencies:
+      '@xyflow/react': ^12
+      quill: '*'
+      zod: '*'
+
   '@uiw/codemirror-extensions-basic-setup@4.25.9':
     resolution:
       {
@@ -5955,6 +5965,12 @@ packages:
         integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==,
       }
 
+  boolbase@1.0.0:
+    resolution:
+      {
+        integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==,
+      }
+
   brace-expansion@1.1.14:
     resolution:
       {
@@ -6378,6 +6394,12 @@ packages:
         integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==,
       }
     engines: { node: '>= 8' }
+
+  css-selector-parser@3.3.0:
+    resolution:
+      {
+        integrity: sha512-Y2asgMGFqJKF4fq4xHDSlFYIkeVfRsm69lQC1q9kbEsH5XtnINTMrweLkjYMeaUgiXBy/uvKeO/a1JHTNnmB2g==,
+      }
 
   css.escape@1.5.1:
     resolution:
@@ -9070,6 +9092,12 @@ packages:
         integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==,
       }
 
+  markdown-to-quill-delta@1.0.1:
+    resolution:
+      {
+        integrity: sha512-/9LYlvqC38eYYOcvlPsyhYaa2+X9c+7InD0Uthb0UtLCUvfvDwyPlROB1fr164M0B2GxS0alpI04T5PDRTmZOw==,
+      }
+
   marked@16.4.2:
     resolution:
       {
@@ -9562,6 +9590,12 @@ packages:
         integrity: sha512-3pKJwH184Xo/lnH6oyP1q2pMd7HcypqqmRs91/6/i2CGtWwIKGCkOOMTm/zXbgTEWHw1uNpNi/igc3ePOYHb6w==,
       }
     engines: { node: '>=0.10.0' }
+
+  nth-check@2.1.1:
+    resolution:
+      {
+        integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==,
+      }
 
   nuqs@2.8.9:
     resolution:
@@ -11547,6 +11581,12 @@ packages:
     resolution:
       {
         integrity: sha512-fucsC7HjXvkB5R3kTCO7kUjRdrS0BJt3M/FPxmHMBOm8JQi2BsHAHFsy27E0EolP8rp0NzXsJ+jNPyDWvOJZPA==,
+      }
+
+  unist-util-select@5.1.0:
+    resolution:
+      {
+        integrity: sha512-4A5mfokSHG/rNQ4g7gSbdEs+H586xyd24sdJqF1IWamqrLHvYb+DH48fzxowyOhOfK7YSqX+XlCojAyuuyyT2A==,
       }
 
   unist-util-stringify-position@4.0.0:
@@ -15577,6 +15617,18 @@ snapshots:
       '@typescript-eslint/types': 8.58.2
       eslint-visitor-keys: 5.0.1
 
+  '@uigraph/sdk@1.1.37(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)':
+    dependencies:
+      '@xyflow/react': 12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      dagre: 0.8.5
+      daily-code: 1.1.16
+      markdown-to-quill-delta: 1.0.1
+      mermaid: 11.14.0
+      quill: 2.0.3
+      zod: 4.3.6
+    transitivePeerDependencies:
+      - supports-color
+
   '@uiw/codemirror-extensions-basic-setup@4.25.9(@codemirror/autocomplete@6.20.1)(@codemirror/commands@6.10.3)(@codemirror/language@6.12.3)(@codemirror/lint@6.9.5)(@codemirror/search@6.6.0)(@codemirror/state@6.6.0)(@codemirror/view@6.41.1)':
     dependencies:
       '@codemirror/autocomplete': 6.20.1
@@ -16361,6 +16413,8 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
 
+  boolbase@1.0.0: {}
+
   brace-expansion@1.1.14:
     dependencies:
       balanced-match: 1.0.2
@@ -16628,6 +16682,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  css-selector-parser@3.3.0: {}
 
   css.escape@1.5.1: {}
 
@@ -18389,6 +18445,18 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
+  markdown-to-quill-delta@1.0.1:
+    dependencies:
+      lodash-es: 4.18.1
+      mdast-util-from-markdown: 2.0.3
+      mdast-util-gfm: 3.1.0
+      mdast-util-to-markdown: 2.1.2
+      micromark-extension-gfm: 3.0.0
+      quill-delta: 5.1.0
+      unist-util-select: 5.1.0
+    transitivePeerDependencies:
+      - supports-color
+
   marked@16.4.2: {}
 
   math-intrinsics@1.1.0: {}
@@ -18860,6 +18928,10 @@ snapshots:
   normalize-path@2.1.1:
     dependencies:
       remove-trailing-separator: 1.1.0
+
+  nth-check@2.1.1:
+    dependencies:
+      boolbase: 1.0.0
 
   nuqs@2.8.9(react-router-dom@7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-router@7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5):
     dependencies:
@@ -20172,6 +20244,14 @@ snapshots:
   unist-util-position@5.0.0:
     dependencies:
       '@types/unist': 3.0.3
+
+  unist-util-select@5.1.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      css-selector-parser: 3.3.0
+      devlop: 1.1.0
+      nth-check: 2.1.1
+      zwitch: 2.0.4
 
   unist-util-stringify-position@4.0.0:
     dependencies:
