@@ -151,28 +151,31 @@ export function ConnectionSection({
   return (
     <>
       <div className="flex flex-col gap-3 py-2">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-            {title}
-          </h3>
-          {!isEmpty && (
+        {!isEmpty && (
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+              {title}
+            </h3>
             <span className="text-muted-foreground text-xs">
               {items.length}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         <div>
           {isEmpty ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-              <p className="text-muted-foreground text-sm">
-                Not used in any system map yet.
+            <div className="flex flex-col items-center gap-2 py-6 text-center">
+              <p className="text-foreground text-sm font-medium">
+                Not used in any system map yet
+              </p>
+              <p className="text-muted-foreground max-w-xs text-xs">
+                Pin it to a focal point in a system map to see it here.
               </p>
               {!readonly && (
                 <Button
                   onClick={handleGoToSystemMaps}
-                  variant="outline"
-                  size="sm"
+                  preset="primary"
+                  className="mt-1"
                 >
                   Go to System Maps
                 </Button>
