@@ -15,7 +15,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -30,7 +29,8 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  Info,
+  Layers,
+  MapPin,
   Plus,
   Trash2,
 } from 'lucide-react'
@@ -41,6 +41,10 @@ export type ConnectionItem = {
   id: string
   name: string
   imageUrl?: string
+  /** Screen (frame) the usage lives on. */
+  screenName?: string
+  /** Focal point the usage is pinned to — the deep-link target. */
+  focalPointName?: string
   breadcrumb?: string
   pageId?: string
 }
@@ -66,7 +70,6 @@ export function ConnectionSection({
   title,
   description,
   readonly = false,
-  microcopy,
   items,
   error,
   onLink,
@@ -147,60 +150,30 @@ export function ConnectionSection({
 
   return (
     <>
-      <div className="flex flex-col gap-4 rounded-xl border py-4">
-        <div className="px-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-lg font-semibold">{title}</h3>
-                {/* <Badge variant="secondary" className="ml-1">
-                  {items.length}
-                </Badge> */}
-              </div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {description}
-              </p>
-              {microcopy && (
-                <div className="mt-2 flex items-center gap-2">
-                  <p className="text-muted-foreground text-xs">{microcopy}</p>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="inline-flex items-center justify-center"
-                          aria-label="Learn more about system maps"
-                        >
-                          <Info className="text-muted-foreground h-3 w-3" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          System maps show how endpoints are used across
-                          subsystems, flows, and views. Links are managed from
-                          the System Maps page.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              )}
-            </div>
-          </div>
+      <div className="flex flex-col gap-3 py-2">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+            {title}
+          </h3>
+          {!isEmpty && (
+            <span className="text-muted-foreground text-xs">
+              {items.length}
+            </span>
+          )}
         </div>
 
-        <div className="px-6">
+        <div>
           {isEmpty ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-muted-foreground mb-1 text-sm font-medium">
-                No system maps reference this endpoint yet.
-              </p>
-              <p className="text-muted-foreground mb-4 text-xs">
-                Link this endpoint from a system map to capture where it&apos;s
-                used.
+            <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+              <p className="text-muted-foreground text-sm">
+                Not used in any system map yet.
               </p>
               {!readonly && (
-                <Button onClick={handleGoToSystemMaps} preset="primary">
+                <Button
+                  onClick={handleGoToSystemMaps}
+                  variant="outline"
+                  size="sm"
+                >
                   Go to System Maps
                 </Button>
               )}
@@ -222,33 +195,48 @@ export function ConnectionSection({
                         onItemClick(item.id)
                       }
                     }}
-                    className="group hover:bg-muted/50 hover:border-muted-foreground/20 focus:ring-ring flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none"
-                    aria-label={`Open ${item.name} in new tab`}
+                    className="group hover:bg-muted/50 hover:border-muted-foreground/30 focus:ring-ring flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-all hover:shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                    aria-label={`Open ${item.focalPointName || item.name} in map`}
                   >
-                    {item.imageUrl && (
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        className="h-10 w-10 flex-shrink-0 rounded-md object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none'
-                        }}
-                      />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate text-sm font-semibold">
-                          {item.name}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          Map
-                        </Badge>
-                      </div>
-                      {item.breadcrumb && (
-                        <p className="text-muted-foreground mt-0.5 truncate text-xs">
-                          {item.breadcrumb}
-                        </p>
+                    <div className="bg-muted ring-border/60 flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg ring-1">
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        <Layers className="text-muted-foreground h-5 w-5" />
                       )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="truncate text-sm font-medium">
+                        {item.name}
+                      </span>
+                      <div className="text-muted-foreground mt-0.5 flex min-w-0 items-center gap-1 text-xs">
+                        {item.focalPointName && (
+                          <span className="inline-flex min-w-0 items-center gap-1">
+                            <MapPin className="text-primary h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">
+                              {item.focalPointName}
+                            </span>
+                          </span>
+                        )}
+                        {item.focalPointName && item.screenName && (
+                          <span className="text-muted-foreground/50">·</span>
+                        )}
+                        {item.screenName && (
+                          <span className="truncate">{item.screenName}</span>
+                        )}
+                        {!item.focalPointName &&
+                          !item.screenName &&
+                          item.breadcrumb && (
+                            <span className="truncate">{item.breadcrumb}</span>
+                          )}
+                      </div>
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-2">
                       <TooltipProvider>
@@ -256,11 +244,11 @@ export function ConnectionSection({
                           <TooltipTrigger asChild>
                             <ExternalLink
                               className="text-muted-foreground h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
-                              aria-label="Opens in new tab"
+                              aria-label="Opens focal point in map"
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Open in new tab</p>
+                            <p>Open focal point in map</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

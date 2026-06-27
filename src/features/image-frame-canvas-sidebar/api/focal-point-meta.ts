@@ -68,6 +68,25 @@ export const FOCAL_POINT_META_BY_LINK = graphql(`
   }
 `)
 
+export const COMPONENT_LINK_USAGES = graphql(`
+  query ComponentLinkUsages($orgId: ID!, $linkId: ID!) {
+    componentLinkUsages(orgId: $orgId, linkId: $linkId) {
+      metaId
+      orgId
+      componentId
+      mapId
+      mapName
+      frameId
+      frameName
+      screenshotImageUrl
+      focalPointId
+      focalPointName
+      locationX
+      locationY
+    }
+  }
+`)
+
 export const CREATE_FOCAL_POINT_META = graphql(`
   mutation CreateFocalPointMeta(
     $orgId: ID!
