@@ -9,14 +9,13 @@ import { cn } from '@/lib/utils'
 import { BsDatabase } from 'react-icons/bs'
 import { GoComment } from 'react-icons/go'
 import { LuCloudy, LuComponent, LuImage, LuShapes } from 'react-icons/lu'
-import { MdAnimation, MdOutlineDashboardCustomize } from 'react-icons/md'
+import { MdAnimation } from 'react-icons/md'
 import { RxText } from 'react-icons/rx'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { SidebarAnimatedNodes } from './panel-animated-nodes'
 import { SidebarClouds } from './panel-clouds'
 import { SidebarComments } from './panel-comments'
 import { SidebarComponents } from './panel-components'
-import { SidebarCustomComponents } from './panel-custom-components'
 import { PanelDataSourcesUnified } from './panel-data-sources-unified'
 import { SidebarGenerateWithAI } from './panel-generate-with-ai'
 import { SidebarImages } from './panel-images'
@@ -121,23 +120,11 @@ export function FloatingLeftSidebar() {
               )
             }}
           />
-
-          <SidebarButton
-            name="Custom Components"
-            icon={<MdOutlineDashboardCustomize />}
-            isActive={sidebarActiveTool === 'custom-components'}
-            onClick={() => {
-              setSidebarActiveTool((prev) =>
-                prev === 'custom-components' ? null : 'custom-components'
-              )
-            }}
-          />
         </div>
       </SidebarLayout>
 
       {sidebarActiveTool === 'components' && <SidebarComponents />}
       {sidebarActiveTool === 'data-sources' && <PanelDataSourcesUnified />}
-      {sidebarActiveTool === 'custom-components' && <SidebarCustomComponents />}
       {sidebarActiveTool === 'shapes' && <SidebarShapes />}
       {sidebarActiveTool === 'images' && <SidebarImages />}
       {sidebarActiveTool === 'animated' && <SidebarAnimatedNodes />}

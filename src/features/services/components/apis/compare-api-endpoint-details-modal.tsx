@@ -2,6 +2,7 @@
 
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
+import { ComponentMetaThemeProvider } from '@/features/component-meta'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
@@ -412,127 +413,129 @@ export function CompareApiEndpointDetailsModal({
       title="Compare Endpoints"
       description="Compare endpoint details side by side"
     >
-      <div className="grid grid-cols-2 gap-3">
-        <div className="border-stock overflow-hidden rounded-[1rem] border bg-[#141925]">
-          <div className="border-b bg-[#141925] px-6 py-4">
-            <div className="mb-2">{titleA}</div>
-            {descriptionA}
-          </div>
-          <div className="sticky top-[-12px] px-6 py-2">
-            <BetterTabController control={control} className="shadow-sm" />
-          </div>
-          <div>
-            <AnimatePresence mode="sync">
-              {drawerTab === 'meta' && (
-                <motion.div
-                  key="meta"
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                >
-                  <ConfigureApiEndpointMeta
-                    readonly
-                    endpoint={apiEndpointA}
-                    componentMeta={componentMetaA}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+      <ComponentMetaThemeProvider theme="modal">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="border-stock overflow-hidden rounded-[1rem] border bg-[#141925]">
+            <div className="border-b bg-[#141925] px-6 py-4">
+              <div className="mb-2">{titleA}</div>
+              {descriptionA}
+            </div>
+            <div className="sticky top-[-12px] px-6 py-2">
+              <BetterTabController control={control} className="shadow-sm" />
+            </div>
+            <div>
+              <AnimatePresence mode="sync">
+                {drawerTab === 'meta' && (
+                  <motion.div
+                    key="meta"
+                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <ConfigureApiEndpointMeta
+                      readonly
+                      endpoint={apiEndpointA}
+                      componentMeta={componentMetaA}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence mode="sync">
-              {drawerTab === 'samples' && (
-                <motion.div
-                  key="samples"
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                >
-                  <ConfigureApiEndpointSamples
-                    readonly
-                    endpoint={apiEndpointA}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <AnimatePresence mode="sync">
+                {drawerTab === 'samples' && (
+                  <motion.div
+                    key="samples"
+                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <ConfigureApiEndpointSamples
+                      readonly
+                      endpoint={apiEndpointA}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence mode="sync">
-              {drawerTab === 'connections' && (
-                <motion.div
-                  key="connections"
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                >
-                  <ConfigureApiEndpointConnections
-                    readonly
-                    endpoint={apiEndpointA}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <AnimatePresence mode="sync">
+                {drawerTab === 'connections' && (
+                  <motion.div
+                    key="connections"
+                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <ConfigureApiEndpointConnections
+                      readonly
+                      endpoint={apiEndpointA}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="border-stock overflow-hidden rounded-[1rem] border bg-[#141925]">
+            <div className="border-b bg-[#141925] px-6 py-4">
+              <div className="mb-2">{titleB}</div>
+              {descriptionB}
+            </div>
+            <div className="sticky top-[-12px] px-6 py-2">
+              <BetterTabController control={control} className="shadow-sm" />
+            </div>
+            <div>
+              <AnimatePresence mode="sync">
+                {drawerTab === 'meta' && (
+                  <motion.div
+                    key="meta"
+                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <ConfigureApiEndpointMeta
+                      readonly
+                      endpoint={apiEndpointB}
+                      componentMeta={componentMetaB}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence mode="sync">
+                {drawerTab === 'samples' && (
+                  <motion.div
+                    key="samples"
+                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <ConfigureApiEndpointSamples
+                      readonly
+                      endpoint={apiEndpointB}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence mode="sync">
+                {drawerTab === 'connections' && (
+                  <motion.div
+                    key="connections"
+                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <ConfigureApiEndpointConnections
+                      readonly
+                      endpoint={apiEndpointB}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
-
-        <div className="border-stock overflow-hidden rounded-[1rem] border bg-[#141925]">
-          <div className="border-b bg-[#141925] px-6 py-4">
-            <div className="mb-2">{titleB}</div>
-            {descriptionB}
-          </div>
-          <div className="sticky top-[-12px] px-6 py-2">
-            <BetterTabController control={control} className="shadow-sm" />
-          </div>
-          <div>
-            <AnimatePresence mode="sync">
-              {drawerTab === 'meta' && (
-                <motion.div
-                  key="meta"
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                >
-                  <ConfigureApiEndpointMeta
-                    readonly
-                    endpoint={apiEndpointB}
-                    componentMeta={componentMetaB}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence mode="sync">
-              {drawerTab === 'samples' && (
-                <motion.div
-                  key="samples"
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                >
-                  <ConfigureApiEndpointSamples
-                    readonly
-                    endpoint={apiEndpointB}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence mode="sync">
-              {drawerTab === 'connections' && (
-                <motion.div
-                  key="connections"
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                >
-                  <ConfigureApiEndpointConnections
-                    readonly
-                    endpoint={apiEndpointB}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
+      </ComponentMetaThemeProvider>
     </BetterDialogContent>
   )
 }
