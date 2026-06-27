@@ -259,18 +259,20 @@ export function ReactFlowWrapper({
 
           const nodes = reactFlowInstance.getNodes()
           const edges = reactFlowInstance.getEdges()
-          const tableId = (newNode.data as DatabaseTableSQLNodeData).localTable
-            ?.tableId
-          const sourceId = (newNode.data as DatabaseTableSQLNodeData).localTable
-            ?.baseId
+          const tableName = (newNode.data as DatabaseTableSQLNodeData)
+            .localTable?.tableName
+          const databaseName = (newNode.data as DatabaseTableSQLNodeData)
+            .localTable?.databaseName
 
-          const schema = dataSources.find((ds) => ds.id === sourceId)?.schemaAst
+          const schema = dataSources.find(
+            (ds) => ds.name === databaseName
+          )?.schemaAst
 
-          if (tableId && sourceId && schema) {
+          if (tableName && databaseName && schema) {
             const updated = AstToUiConverter.updateReactFlow({
               edges,
               nodes: [...nodes, newNode],
-              sourceId,
+              sourceName: databaseName,
               schema,
               oldDataSources: dataSources,
             })

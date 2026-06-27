@@ -121,7 +121,7 @@ export function PanelDataSourcesUnified() {
         modifiedAt: null,
       }
 
-      const updated = AstToUiConverter.toReactFlow(ast, sourceId)
+      const updated = AstToUiConverter.toReactFlow(ast, newSource.name)
       setNodes((prev) => [...prev, ...updated.nodes])
       setEdges((prev) => [...prev, ...updated.edges])
 
@@ -196,7 +196,7 @@ export function PanelDataSourcesUnified() {
         modifiedAt: null,
       }
 
-      const updated = AstToUiConverter.toReactFlow(schema, sourceId)
+      const updated = AstToUiConverter.toReactFlow(schema, newSource.name)
       setNodes((prev) => [...prev, ...updated.nodes])
       setEdges((prev) => [...prev, ...updated.edges])
       setDataSources((prev) => [...prev, newSource])
@@ -267,7 +267,7 @@ export function PanelDataSourcesUnified() {
       modifiedAt: Date.now(),
     }
 
-    const updated = AstToUiConverter.toReactFlow(ast, sourceId)
+    const updated = AstToUiConverter.toReactFlow(ast, newSource.name)
     setNodes((prev) => [...prev, ...updated.nodes])
     setEdges((prev) => [...prev, ...updated.edges])
 
@@ -534,7 +534,7 @@ export function PanelDataSourcesUnified() {
       modifiedAt: Date.now(),
     }
 
-    const updated = AstToUiConverter.toReactFlow(ast, sourceId)
+    const updated = AstToUiConverter.toReactFlow(ast, newSource.name)
     setNodes((prev) => [...prev, ...updated.nodes])
     setEdges((prev) => [...prev, ...updated.edges])
 
@@ -667,7 +667,7 @@ export function PanelDataSourcesUnified() {
       modifiedAt: Date.now(),
     }
 
-    const updated = AstToUiConverter.toReactFlow(ast, sourceId)
+    const updated = AstToUiConverter.toReactFlow(ast, newSource.name)
     setNodes((prev) => [...prev, ...updated.nodes])
     setEdges((prev) => [...prev, ...updated.edges])
 
@@ -757,7 +757,7 @@ export function PanelDataSourcesUnified() {
 
         const updated = AstToUiConverter.updateReactFlow({
           schema: newAst,
-          sourceId: sourceId,
+          sourceName: source.name,
           nodes: nodes ?? [],
           edges: edges ?? [],
           oldDataSources: dataSources,
@@ -812,7 +812,7 @@ export function PanelDataSourcesUnified() {
 
           const updated = AstToUiConverter.updateReactFlow({
             schema: newAst,
-            sourceId: sourceId,
+            sourceName: source.name,
             nodes: nodes ?? [],
             edges: edges ?? [],
             oldDataSources: dataSources,
@@ -854,7 +854,7 @@ export function PanelDataSourcesUnified() {
 
           const updated = AstToUiConverter.updateReactFlow({
             schema: newAst,
-            sourceId: sourceId,
+            sourceName: source.name,
             nodes: nodes ?? [],
             edges: edges ?? [],
             oldDataSources: dataSources,
@@ -896,7 +896,7 @@ export function PanelDataSourcesUnified() {
 
           const updated = AstToUiConverter.updateReactFlow({
             schema: newAst,
-            sourceId: sourceId,
+            sourceName: source.name,
             nodes: nodes ?? [],
             edges: edges ?? [],
             oldDataSources: dataSources,
@@ -937,7 +937,7 @@ export function PanelDataSourcesUnified() {
 
       const updated = AstToUiConverter.updateReactFlow({
         schema: newAst,
-        sourceId: sourceId,
+        sourceName: source.name,
         nodes: nodes ?? [],
         edges: edges ?? [],
         oldDataSources: dataSources,
@@ -1254,15 +1254,15 @@ export function PanelDataSourcesUnified() {
                                       'databaseTableSQL',
                                       {
                                         localTable: {
-                                          baseId: source.id,
-                                          tableId: table.id,
+                                          databaseName: source.name,
+                                          tableName: table.name,
                                         },
                                       },
                                       {
                                         width: 400,
                                         id: generateTableNodeId(
-                                          source.id,
-                                          table.id
+                                          source.name,
+                                          table.name
                                         ),
                                       },
                                       table.name ?? 'Table'
@@ -1451,7 +1451,7 @@ export function PanelDataSourcesUnified() {
           onSchemaSubmit={async (dataSource) => {
             const updated = AstToUiConverter.toReactFlow(
               dataSource.schemaAst,
-              dataSource.id
+              dataSource.name
             )
 
             setNodes((prev) => [...prev, ...updated.nodes])

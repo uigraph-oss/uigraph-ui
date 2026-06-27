@@ -35,8 +35,8 @@ export function NodeDatabaseTableProperties() {
 function NodeDatabaseTablePropertiesLocalSource() {
   const { data } = useSingleSelectedNode<TDatabaseTableSQLNode>()
   const { table, dataSource, setTable } = useDatabaseTable(
-    data?.localTable!.baseId,
-    data?.localTable!.tableId
+    data?.localTable!.databaseName,
+    data?.localTable!.tableName
   )
 
   const [localTable, setLocalTable] = useEffectState<TableAST | null>(
@@ -52,8 +52,8 @@ function NodeDatabaseTablePropertiesLocalSource() {
   ) {
     return (
       <NodeDatabaseNosqlProperties
-        baseId={data?.localTable!.baseId}
-        tableId={data?.localTable!.tableId}
+        databaseName={data?.localTable!.databaseName}
+        tableName={data?.localTable!.tableName}
       />
     )
   }
@@ -423,7 +423,7 @@ function NodeDatabaseTablePropertiesRemoteSource() {
             <NodeDatabaseNosqlPropertiesUI
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               table={{ name: serviceTable?.tableName ?? '' } as any}
-              tableId={serviceTable?.tableName ?? ''}
+              tableName={serviceTable?.tableName ?? ''}
               dataSource={{
                 id: serviceDb?.serviceDBId ?? '',
                 name: serviceTable?.tableName ?? '',

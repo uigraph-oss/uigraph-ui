@@ -4,28 +4,28 @@ import { useCallback, useMemo, useRef } from 'react'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { DataSource } from '../types/db-flow'
 
-export function useDatabaseTable(baseId: string, tableId: string) {
+export function useDatabaseTable(databaseName: string, tableName: string) {
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
   const { dataTablesMap, setDataSources } = useFlowDiagramContext()
 
   const ref = useAutoRef({
-    baseId,
-    tableId,
+    databaseName,
+    tableName,
     setDataSources,
   })
 
   const data = useMemo(() => {
-    return dataTablesMap.get(`${baseId}@${tableId}`)
-  }, [dataTablesMap, baseId, tableId])
+    return dataTablesMap.get(`${databaseName}@${tableName}`)
+  }, [dataTablesMap, databaseName, tableName])
 
   const setTable = useCallback(
     (table: Partial<TableAST>, debounce = 250) => {
       function execute() {
-        const { baseId, tableId, setDataSources } = ref.current
+        const { databaseName, tableName, setDataSources } = ref.current
 
         setDataSources((prev) =>
           prev.map((source) =>
-            source.id === baseId
+            source.name === databaseName
               ? {
                   ...source,
 
@@ -33,7 +33,7 @@ export function useDatabaseTable(baseId: string, tableId: string) {
                     ...source.schemaAst,
 
                     tables: source.schemaAst.tables.map((t) =>
-                      t.id === tableId ? { ...t, ...table } : t
+                      t.name === tableName ? { ...t, ...table } : t
                     ),
                   },
                 }
@@ -57,11 +57,11 @@ export function useDatabaseTable(baseId: string, tableId: string) {
     (dataSource: Partial<DataSource>) => {
       ref.current.setDataSources((prev) =>
         prev.map((source) =>
-          source.id === baseId ? { ...source, ...dataSource } : source
+          source.name === databaseName ? { ...source, ...dataSource } : source
         )
       )
     },
-    [ref, baseId]
+    [ref, databaseName]
   )
 
   return {

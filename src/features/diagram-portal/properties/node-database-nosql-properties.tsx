@@ -28,13 +28,13 @@ function getString(value: unknown): string | null {
 }
 
 export function NodeDatabaseNosqlProperties({
-  baseId,
-  tableId,
+  databaseName,
+  tableName,
 }: {
-  baseId: string
-  tableId: string
+  databaseName: string
+  tableName: string
 }) {
-  const dbTable = useDatabaseTable(baseId, tableId)
+  const dbTable = useDatabaseTable(databaseName, tableName)
   const [isCodeMode, setIsCodeMode] = useState(false)
 
   return (
@@ -155,7 +155,7 @@ export function NodeDatabaseNosqlProperties({
           }}
         />
       ) : (
-        <NodeDatabaseNosqlPropertiesUI tableId={tableId} {...dbTable} />
+        <NodeDatabaseNosqlPropertiesUI tableName={tableName} {...dbTable} />
       )}
     </div>
   )

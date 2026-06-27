@@ -92,7 +92,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
                 )
               : undefined
 
-          map.set(`${source.id}@${table.id}`, {
+          map.set(`${source.name}@${table.name}`, {
             source,
             table,
             mongoCollectionSource: mongoSource,

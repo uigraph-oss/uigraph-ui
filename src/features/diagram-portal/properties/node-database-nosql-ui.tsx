@@ -46,13 +46,13 @@ function parseTypeInput(input: string): {
 }
 
 type Props = ReturnType<typeof useDatabaseTable> & {
-  tableId: string
+  tableName: string
   readOnly?: boolean
 }
 
 export function NodeDatabaseNosqlPropertiesUI({
   table,
-  tableId,
+  tableName,
   dataSource,
   mongoCollectionSource,
   setDataSource,
@@ -601,7 +601,7 @@ export function NodeDatabaseNosqlPropertiesUI({
             const nextSchemaAst = {
               ...dataSource.schemaAst,
               tables: dataSource.schemaAst.tables.map((t) =>
-                t.id === tableId ? { ...t, name: nextName } : t
+                t.name === tableName ? { ...t, name: nextName } : t
               ),
             }
 

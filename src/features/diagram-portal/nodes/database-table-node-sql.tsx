@@ -19,8 +19,8 @@ export interface DatabaseTableSQLNodeData extends Record<string, unknown> {
   isForcedOpen?: boolean
 
   localTable?: {
-    baseId: string
-    tableId: string
+    databaseName: string
+    tableName: string
   }
 
   serviceTable?: {
@@ -53,8 +53,8 @@ function DatabaseTableNodeLocalSource({
 }: NodeProps<TDatabaseTableSQLNode>) {
   const [isCodeMode, setIsCodeMode] = useState(false)
   const { table, dataSource, mongoCollectionSource } = useDatabaseTable(
-    data.localTable!.baseId,
-    data.localTable!.tableId
+    data.localTable!.databaseName,
+    data.localTable!.tableName
   )
 
   if (
@@ -120,7 +120,7 @@ function DatabaseTableNodeLocalSource({
     return (
       <DatabaseTableNodeInvalid
         selected={selected}
-        tableName={data.localTable?.tableId ?? 'Unknown Table'}
+        tableName={data.localTable?.tableName ?? 'Unknown Table'}
         isLoading={false}
         style={data.style}
       />
