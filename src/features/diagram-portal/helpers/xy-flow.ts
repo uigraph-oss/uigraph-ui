@@ -26,12 +26,6 @@ export function createGroupNode(
           isReadonly: true,
           data: [{ value: 'Group' }],
         },
-        {
-          componentFieldId: 'label',
-          type: ComponentInputType.TextInput,
-          label: 'Label',
-          data: [{ value: 'DEV' }],
-        },
       ],
     } satisfies GroupNodeData,
     style: {

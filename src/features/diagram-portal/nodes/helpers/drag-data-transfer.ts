@@ -49,7 +49,7 @@ export function componentDragDataTransfer<T extends TNodeTypes>(
   const builderNode: BuilderNodeShell = {
     type: type,
     id: generateUUID(),
-    data: { ...data, label: 'DEV' },
+    data: { ...data },
     ...node,
   }
 
