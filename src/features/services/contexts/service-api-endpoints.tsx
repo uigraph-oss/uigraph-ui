@@ -3,17 +3,16 @@
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
-import { env } from '@/env'
 import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
-import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { ArrowLeft } from 'lucide-react'
+import { parseAsString, useQueryState } from 'nuqs'
 import { useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -28,6 +27,7 @@ import {
   API_ENDPOINTS,
   CREATE_API_ENDPOINT,
   DELETE_API_ENDPOINT,
+  RESTORE_API_GROUP_VERSION,
   SYNC_API_GROUP,
   UPDATE_API_ENDPOINT,
 } from '../api/api-endpoints'
@@ -105,10 +105,17 @@ export const [
       )
     }, [apiGroupVersions, selectedVersionId])
 
+    // When a release is selected, show that version's immutable snapshot;
+    // otherwise show the working copy.
+    const endpointVars = {
+      ...listVars,
+      versionId: selectedVersionId ?? null,
+    }
+
     const endpointsRes = useQuery(API_ENDPOINTS, {
       fetchPolicy: 'cache-first',
       skip: !orgId,
-      variables: listVars,
+      variables: endpointVars,
     })
 
     const refetchEndpoints = useCallback(() => {
@@ -119,9 +126,10 @@ export const [
       return groupsRes.refetch()
     }, [groupsRes])
 
+    // Mutations always target the working copy, so refetch the working-copy list.
     const endpointListVars = {
       query: API_ENDPOINTS,
-      variables: listVars,
+      variables: { ...listVars, versionId: null },
     }
 
     const [createServiceApiEndpointMut] = useMutation(CREATE_API_ENDPOINT, {
@@ -140,6 +148,14 @@ export const [
     })
 
     const [syncAPIGroupMut] = useMutation(SYNC_API_GROUP, {
+      awaitRefetchQueries: true,
+      refetchQueries: [
+        endpointListVars,
+        { query: API_GROUP_AND_VERSIONS, variables: listVars },
+      ],
+    })
+
+    const [restoreAPIGroupVersionMut] = useMutation(RESTORE_API_GROUP_VERSION, {
       awaitRefetchQueries: true,
       refetchQueries: [
         endpointListVars,
@@ -279,7 +295,9 @@ export const [
             input: {
               apiGroupId,
               name: apiGroup?.name ?? input.label ?? 'API Group',
-              version: apiGroup?.version ?? 'v1',
+              // Pass the user-supplied label as the version; when empty the
+              // backend auto-derives the next "v{N}".
+              version: input.label || undefined,
               protocol: apiGroup?.protocol ?? input.protocol ?? 'REST',
               specAssetId: input.specAssetId,
             },
@@ -296,41 +314,24 @@ export const [
         const version = apiGroupVersions.find(
           (v) => v.versionNumber === opts.variables.versionNumber
         )
-        if (!version || !apiGroupRaw) {
+        if (!version) {
           throw new Error('Version not found')
         }
-        const specRes = await fetch(
-          `${env.VITE_API_URL}/api/v1/storage/${encodeURIComponent(version.versionId)}`,
-          { credentials: 'include' }
-        ).catch(() => null)
-        let spec = ''
-        if (specRes?.ok) {
-          spec = await specRes.text()
-        }
-        if (!spec) {
-          throw new Error('Could not load version spec for restore')
-        }
-        return syncAPIGroupMut({
+        return restoreAPIGroupVersionMut({
           variables: {
             orgId: orgId!,
             serviceId,
-            input: {
-              apiGroupId,
-              name: apiGroupRaw.name,
-              version: apiGroupRaw.version,
-              protocol: apiGroupRaw.protocol,
-              spec,
-            },
+            apiGroupId,
+            versionId: version.versionId,
           },
         })
       },
       [
-        syncAPIGroupMut,
+        restoreAPIGroupVersionMut,
         orgId,
         serviceId,
         apiGroupId,
         apiGroupVersions,
-        apiGroupRaw,
       ]
     )
 
@@ -450,24 +451,15 @@ export const [
 )
 
 function useSelectedVersionId() {
-  const [searchParams, setSearchParams] = useSearchParamsState(
-    'releaseId',
-    'version'
-  )
+  // No default: an absent releaseId means the working copy and the URL stays
+  // clean. Selecting a release writes it; clearing it removes the param.
+  const [releaseId, setReleaseId] = useQueryState('releaseId', parseAsString)
 
   return {
     selectedVersionId:
-      searchParams.releaseId === 'working-copy'
-        ? null
-        : (searchParams.releaseId ?? searchParams.version),
+      !releaseId || releaseId === 'working-copy' ? null : releaseId,
     setSelectedVersionId: (versionId: string | null) => {
-      void setSearchParams(
-        {
-          releaseId: versionId ?? 'working-copy',
-          version: null,
-        },
-        true
-      )
+      void setReleaseId(versionId)
     },
   }
 }

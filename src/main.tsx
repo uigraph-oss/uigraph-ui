@@ -17,6 +17,7 @@ import { GlobalLoader } from '@/components/loader/global-loader'
 import { ApolloClientProvider } from '@/contexts'
 import { AppRoutes } from '@/router'
 import { bootstrapSession } from '@/store/auth-store'
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7'
 import { Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -28,11 +29,13 @@ bootstrapSession().catch((error) => {
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
-    <ApolloClientProvider>
-      <Suspense fallback={<GlobalLoader />}>
-        <AppRoutes />
-      </Suspense>
-    </ApolloClientProvider>
+    <NuqsAdapter>
+      <ApolloClientProvider>
+        <Suspense fallback={<GlobalLoader />}>
+          <AppRoutes />
+        </Suspense>
+      </ApolloClientProvider>
+    </NuqsAdapter>
 
     <Toaster
       richColors

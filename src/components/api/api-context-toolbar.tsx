@@ -19,7 +19,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -29,12 +28,11 @@ import {
   Copy,
   GitBranch,
 } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { parseAsString, useQueryState } from 'nuqs'
+import { useMemo, useState } from 'react'
 
 const DEFAULT_ENV = 'staging'
-const DEFAULT_AUTH = 'none'
 const ENV_STORAGE_KEY = 'uigraph.apiBehavior.env'
-const AUTH_STORAGE_KEY = 'uigraph.apiBehavior.authProfileId'
 
 export type ApiContextOption = {
   value: string
@@ -83,20 +81,8 @@ export function ApiContextToolbar({
   provenance,
   onReleaseChange,
   environmentOptions: environmentOptionsProp,
-  authOptions: authOptionsProp,
 }: ApiContextToolbarProps) {
-  const [searchParams, setSearchParams] = useSearchParamsState(
-    'releaseId',
-    'env',
-    'authProfileId'
-  )
-
-  const [releaseId, setReleaseId] = useState(currentReleaseId)
-  const [env, setEnv] = useState(DEFAULT_ENV)
-  const [, setAuthProfileId] = useState(DEFAULT_AUTH)
   const [showDetails, setShowDetails] = useState(false)
-
-  const lastReleaseRequestRef = useRef<string | null>(null)
 
   const defaultEnvironmentOptions = useMemo<ApiContextOption[]>(
     () => [
@@ -107,86 +93,34 @@ export function ApiContextToolbar({
     []
   )
 
-  const defaultAuthOptions = useMemo<ApiContextOption[]>(
-    () => [
-      { value: 'none', label: 'No auth' },
-      { value: 'bearer', label: 'Bearer token' },
-      { value: 'api-key', label: 'API key' },
-      { value: 'oauth2', label: 'OAuth2' },
-    ],
-    []
-  )
-
   const environmentOptions =
     environmentOptionsProp && environmentOptionsProp.length > 0
       ? environmentOptionsProp
       : defaultEnvironmentOptions
-  const authOptions =
-    authOptionsProp && authOptionsProp.length > 0
-      ? authOptionsProp
-      : defaultAuthOptions
 
-  useEffect(() => {
-    const initialRelease = resolveValue(
-      searchParams.releaseId,
-      releaseOptions,
-      releaseOptions.find((option) => option.isLatest)?.value ||
-        releaseOptions[0]?.value ||
-        currentReleaseId ||
-        ''
-    )
-    const initialEnv = resolveValue(
-      searchParams.env ?? readStorage(ENV_STORAGE_KEY),
-      environmentOptions,
-      DEFAULT_ENV
-    )
-    const initialAuth = resolveValue(
-      searchParams.authProfileId ?? readStorage(AUTH_STORAGE_KEY),
-      authOptions,
-      DEFAULT_AUTH
-    )
-
-    setReleaseId(initialRelease)
-    setEnv(initialEnv)
-    setAuthProfileId(initialAuth)
-
-    writeStorage(ENV_STORAGE_KEY, initialEnv)
-    writeStorage(AUTH_STORAGE_KEY, initialAuth)
-
-    const shouldSyncQuery =
-      searchParams.releaseId !== initialRelease ||
-      searchParams.env !== initialEnv ||
-      searchParams.authProfileId !== initialAuth
-
-    if (shouldSyncQuery) {
-      void setSearchParams(
-        {
-          releaseId: initialRelease,
-          env: initialEnv,
-          authProfileId: initialAuth,
-        },
-        true
-      )
-    }
-
-    if (
-      initialRelease !== currentReleaseId &&
-      lastReleaseRequestRef.current !== initialRelease
-    ) {
-      lastReleaseRequestRef.current = initialRelease
-      onReleaseChange(initialRelease)
-    }
-  }, [
-    authOptions,
-    currentReleaseId,
+  // URL is the source of truth, but nothing is written until the user picks a
+  // non-default value (clearOnDefault). The default falls back to the last
+  // choice in localStorage, then the hardcoded default.
+  const envDefault = resolveValue(
+    readStorage(ENV_STORAGE_KEY),
     environmentOptions,
-    onReleaseChange,
-    releaseOptions,
-    searchParams.authProfileId,
-    searchParams.env,
-    searchParams.releaseId,
-    setSearchParams,
-  ])
+    DEFAULT_ENV
+  )
+
+  // releaseId is owned by the page (via onReleaseChange); read it here only to
+  // reflect the current selection, falling back to the latest release.
+  const [releaseIdParam] = useQueryState('releaseId', parseAsString)
+  const [env, setEnv] = useQueryState(
+    'env',
+    parseAsString.withDefault(envDefault)
+  )
+
+  const releaseId =
+    resolveValue(releaseIdParam, releaseOptions, '') ||
+    releaseOptions.find((option) => option.isLatest)?.value ||
+    releaseOptions[0]?.value ||
+    currentReleaseId ||
+    ''
 
   const selectedRelease = useMemo(
     () => releaseOptions.find((option) => option.value === releaseId),
@@ -203,8 +137,6 @@ export function ApiContextToolbar({
             value={releaseId}
             options={releaseOptions}
             onValueChange={(value) => {
-              setReleaseId(value)
-              void setSearchParams({ releaseId: value }, true)
               onReleaseChange(value)
             }}
           />
@@ -213,9 +145,8 @@ export function ApiContextToolbar({
             value={env}
             options={environmentOptions}
             onValueChange={(value) => {
-              setEnv(value)
               writeStorage(ENV_STORAGE_KEY, value)
-              void setSearchParams({ env: value }, true)
+              void setEnv(value)
             }}
           />
         </div>
