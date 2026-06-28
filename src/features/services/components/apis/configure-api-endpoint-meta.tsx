@@ -5,7 +5,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -135,7 +134,9 @@ export function ConfigureApiEndpointMeta({
   async function handleSuccessfulSubmit(input: typeof flattenedMemoizedData) {
     const duplicatedMetaData = { ...input }
     const metaDataFiles: Record<string, File> = Object.fromEntries(
-      Object.entries(input).filter(([_, value]) => value instanceof File)
+      Object.entries(input)
+        .filter(([_, value]) => value?.file instanceof File)
+        .map(([key, value]) => [key, value.file])
     )
 
     if (Object.keys(metaDataFiles).length > 0) {
@@ -146,7 +147,7 @@ export function ConfigureApiEndpointMeta({
 
         const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = `${env.VITE_ASSETS_URL}/assets/${assetId}`
+        duplicatedMetaData[file] = { fileId: assetId }
       }
 
       setIsUploading(false)

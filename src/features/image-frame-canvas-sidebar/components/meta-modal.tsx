@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { env } from '@/env'
 import {
   BooleanToggleInput,
   CheckboxGroupInput,
@@ -88,7 +87,9 @@ function FocalPointMetaModalContent({
 
     const duplicatedMetaData = { ...input }
     const metaDataFiles: Record<string, File> = Object.fromEntries(
-      Object.entries(input).filter(([_, value]) => value instanceof File)
+      Object.entries(input)
+        .filter(([_, value]) => value?.file instanceof File)
+        .map(([key, value]) => [key, value.file])
     )
 
     if (Object.keys(metaDataFiles).length > 0) {
@@ -99,7 +100,7 @@ function FocalPointMetaModalContent({
 
         const assetId = await uploadFile(organizationId!, fileData)
 
-        duplicatedMetaData[file] = `${env.VITE_ASSETS_URL}/assets/${assetId}`
+        duplicatedMetaData[file] = { fileId: assetId }
       }
 
       setIsUploading(false)
