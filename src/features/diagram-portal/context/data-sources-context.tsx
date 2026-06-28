@@ -1,12 +1,10 @@
 import { AstToSqlGenerator } from '@uigraph/sdk'
 import { createContext } from 'daily-code/react'
-import { useState } from 'react'
 import { DataSource } from '../types/db-flow'
 import { useFlowDiagramContext } from './flow-diagram-context'
 
 export const [DataSourcesProvider, useDataSources] = createContext(() => {
   const { dataSources, setDataSources } = useFlowDiagramContext()
-  const [editingSource, setEditingSource] = useState<string | null>(null)
 
   function addDataSource(source: DataSource) {
     setDataSources((prev) => [...prev, source])
@@ -38,8 +36,5 @@ export const [DataSourcesProvider, useDataSources] = createContext(() => {
     updateDataSource,
     removeDataSource,
     regenerateSql,
-
-    editingSource,
-    setEditingSource,
   }
 })

@@ -67,8 +67,9 @@ export function PanelDataSourcesUnified() {
   const { setNodes, setEdges, dataSources, setDataSources, reactFlowInstance } =
     useFlowDiagramContext()
 
-  const { removeDataSource, regenerateSql, editingSource, setEditingSource } =
-    useDataSources()
+  const { removeDataSource, regenerateSql } = useDataSources()
+
+  const [editingSource, setEditingSource] = useState<string | null>(null)
 
   const {
     selectedServiceId,
