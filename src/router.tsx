@@ -239,7 +239,6 @@ export function AppRoutes() {
           </UnauthenticatedGuard>
         }
       />
-      <Route path="/signin" element={<Navigate to="/sign-in" replace />} />
       <Route
         path="/onboarding"
         element={
