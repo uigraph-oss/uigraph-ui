@@ -143,8 +143,8 @@ importers:
         specifier: ^15.5.13
         version: 15.5.13
       '@uigraph/sdk':
-        specifier: ^1.1.35
-        version: 1.1.35(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)
+        specifier: ^1.1.37
+        version: 1.1.37(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)
       '@uiw/codemirror-theme-monokai-dimmed':
         specifier: 4.25.3
         version: 4.25.3(@codemirror/language@6.12.3)(@codemirror/state@6.6.0)(@codemirror/view@6.41.1)
@@ -217,6 +217,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      nuqs:
+        specifier: ^2.8.9
+        version: 2.8.9(react-router-dom@7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-router@7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
       protobufjs:
         specifier: ^8.0.1
         version: 8.0.1
@@ -3943,6 +3946,12 @@ packages:
       }
     engines: { node: '>=14.0.0' }
 
+  '@standard-schema/spec@1.0.0':
+    resolution:
+      {
+        integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==,
+      }
+
   '@standard-schema/spec@1.1.0':
     resolution:
       {
@@ -5054,10 +5063,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  '@uigraph/sdk@1.1.35':
+  '@uigraph/sdk@1.1.37':
     resolution:
       {
-        integrity: sha512-ou9Ne10GZskgbiY7Oo1a03O9S6XPJLZpKisPtnpc2g+XsmH3VMCV+O4S8QiwDMdZi6TmXc4bK9b/uSn7Qen7sw==,
+        integrity: sha512-s2zIj2DdavDAktBP87FFOzkrIV4zRdEa5R6fHq6Z4WU1llxHANY6S9Q/gpLgS61EFHwjT1z14ss2c4byofLlHQ==,
       }
     peerDependencies:
       '@xyflow/react': ^12
@@ -9587,6 +9596,30 @@ packages:
       {
         integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==,
       }
+
+  nuqs@2.8.9:
+    resolution:
+      {
+        integrity: sha512-8ou6AEwsxMWSYo2qkfZtYFVzngwbKmg4c00HVxC1fF6CEJv3Fwm6eoZmfVPALB+vw8Udo7KL5uy96PFcYe1BIQ==,
+      }
+    peerDependencies:
+      '@remix-run/react': '>=2'
+      '@tanstack/react-router': ^1
+      next: '>=14.2.0'
+      react: '>=18.2.0 || ^19.0.0-0'
+      react-router: ^5 || ^6 || ^7
+      react-router-dom: ^5 || ^6 || ^7
+    peerDependenciesMeta:
+      '@remix-run/react':
+        optional: true
+      '@tanstack/react-router':
+        optional: true
+      next:
+        optional: true
+      react-router:
+        optional: true
+      react-router-dom:
+        optional: true
 
   nwsapi@2.2.24:
     resolution:
@@ -14884,6 +14917,8 @@ snapshots:
       '@smithy/util-buffer-from': 2.2.0
       tslib: 2.8.1
 
+  '@standard-schema/spec@1.0.0': {}
+
   '@standard-schema/spec@1.1.0': {}
 
   '@standard-schema/utils@0.3.0': {}
@@ -15582,7 +15617,7 @@ snapshots:
       '@typescript-eslint/types': 8.58.2
       eslint-visitor-keys: 5.0.1
 
-  '@uigraph/sdk@1.1.35(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)':
+  '@uigraph/sdk@1.1.37(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)':
     dependencies:
       '@xyflow/react': 12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       dagre: 0.8.5
@@ -18897,6 +18932,14 @@ snapshots:
   nth-check@2.1.1:
     dependencies:
       boolbase: 1.0.0
+
+  nuqs@2.8.9(react-router-dom@7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-router@7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5):
+    dependencies:
+      '@standard-schema/spec': 1.0.0
+      react: 19.2.5
+    optionalDependencies:
+      react-router: 7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-router-dom: 7.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
 
   nwsapi@2.2.24: {}
 
