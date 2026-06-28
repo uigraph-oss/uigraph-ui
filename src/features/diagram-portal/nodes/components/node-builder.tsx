@@ -16,15 +16,8 @@ type NodeBuilderProps = NodeBuilderFieldsProps & {
 
   selected: boolean
 
-  /**
-   * Uniform visual scale for the card. The card chrome (border, handles,
-   * selection outline) keeps its full scaled size so handles stay crisp, while
-   * the inner content is zoomed via a CSS transform.
-   */
   scale?: number
-  /** Intrinsic (scale 1) size of the inner content, used to size the chrome. */
   contentSize?: { width: number; height: number } | null
-  /** Ref to the inner content, so callers can measure its intrinsic size. */
   contentRef?: Ref<HTMLDivElement>
 }
 
@@ -45,16 +38,10 @@ export function NodeBuilderCore({
 }: NodeBuilderProps) {
   const isScaled = scale != null && contentSize != null
 
-  // Both dimensions come from the same scale, so the card always keeps the
-  // natural aspect ratio. That keeps it in lockstep with the NodeResizer box
-  // (which is aspect-locked) — no gap between the selection box and the card.
-  // The content size is measured live, so added fields grow the card too.
   const cardStyle: CSSProperties | undefined = isScaled
     ? {
         width: contentSize.width * scale,
         height: contentSize.height * scale,
-        // Inline size is authoritative — drop the class min/max-width clamps so
-        // the slider can size the card freely without leaving empty space.
         minWidth: 0,
         maxWidth: 'none',
       }
