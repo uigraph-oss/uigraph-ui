@@ -16,6 +16,7 @@ import { ConfigurePropertiesModal } from './configure-properties'
 import { DefaultNode } from './default-node'
 import { EdgeConfigure } from './edge-configure'
 import { NodeBuilderConfigure } from './node-builder-configure'
+import { NodeBuilderStyle } from './node-builder-style'
 import { NodeCloudStyle } from './node-cloud-style'
 import { NodeCodeStyle } from './node-code-style'
 import { NodeDatabaseStyle } from './node-database-style'
@@ -193,6 +194,8 @@ export function FloatingProperties() {
                     <NodeTextStyle />
                   ) : node.type === 'code' ? (
                     <NodeCodeStyle />
+                  ) : node.type === 'builder' ? (
+                    <NodeBuilderStyle />
                   ) : (
                     <p className="text-foreground/70 text-sm">
                       No style available

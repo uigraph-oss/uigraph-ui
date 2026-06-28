@@ -1,5 +1,5 @@
 import { Component } from 'lucide-react'
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode, Ref } from 'react'
 import {
   NodeBuilderFields,
   NodeBuilderFieldsProps,
@@ -15,6 +15,17 @@ type NodeBuilderProps = NodeBuilderFieldsProps & {
   description?: string
 
   selected: boolean
+
+  /**
+   * Uniform visual scale for the card. The card chrome (border, handles,
+   * selection outline) keeps its full scaled size so handles stay crisp, while
+   * the inner content is zoomed via a CSS transform.
+   */
+  scale?: number
+  /** Intrinsic (scale 1) size of the inner content, used to size the chrome. */
+  contentSize?: { width: number; height: number } | null
+  /** Ref to the inner content, so callers can measure its intrinsic size. */
+  contentRef?: Ref<HTMLDivElement>
 }
 
 export function NodeBuilderCore({
@@ -27,52 +38,84 @@ export function NodeBuilderCore({
 
   fields,
   selected,
+
+  scale,
+  contentSize,
+  contentRef,
 }: NodeBuilderProps) {
+  const isScaled = scale != null && contentSize != null
+
+  // Both dimensions come from the same scale, so the card always keeps the
+  // natural aspect ratio. That keeps it in lockstep with the NodeResizer box
+  // (which is aspect-locked) — no gap between the selection box and the card.
+  // The content size is measured live, so added fields grow the card too.
+  const cardStyle: CSSProperties | undefined = isScaled
+    ? {
+        width: contentSize.width * scale,
+        height: contentSize.height * scale,
+        // Inline size is authoritative — drop the class min/max-width clamps so
+        // the slider can size the card freely without leaving empty space.
+        minWidth: 0,
+        maxWidth: 'none',
+      }
+    : undefined
+
+  const contentStyle: CSSProperties | undefined = isScaled
+    ? {
+        width: contentSize.width,
+        transform: `scale(${scale})`,
+        transformOrigin: 'top left',
+      }
+    : undefined
+
   return (
     <NodeCard
       selected={selected}
-      className="max-w-sm overflow-hidden rounded-[0.5rem] border border-[#2A3242] bg-[#141925] text-left"
+      style={cardStyle}
+      className="min-w-xl overflow-hidden rounded-[0.5rem] border border-[#2A3242] bg-[#141925] text-left"
     >
-      <div className="p-5">
-        <div className="grid grid-cols-[auto_1fr] gap-4">
-          <div className="size-12 overflow-hidden rounded-xl bg-[#1E2533] text-white [&>*]:size-full [&>*]:max-h-full [&>*]:min-h-full [&>*]:max-w-full [&>*]:min-w-full">
-            {icon ? (
-              typeof icon === 'string' ? (
-                <img src={icon} alt={name} className="block object-cover" />
+      <div ref={contentRef} style={contentStyle}>
+        <div className="p-5">
+          <div className="grid grid-cols-[auto_1fr] gap-4">
+            <div className="size-12 overflow-hidden rounded-xl bg-[#1E2533] text-white [&>*]:size-full [&>*]:max-h-full [&>*]:min-h-full [&>*]:max-w-full [&>*]:min-w-full">
+              {icon ? (
+                typeof icon === 'string' ? (
+                  <img src={icon} alt={name} className="block object-cover" />
+                ) : (
+                  icon
+                )
               ) : (
-                icon
-              )
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-[#1E2533]">
-                <Component className="h-6 w-6 text-[#F4F7FC]" />
-              </div>
-            )}
+                <div className="flex h-full w-full items-center justify-center bg-[#1E2533]">
+                  <Component className="h-6 w-6 text-[#F4F7FC]" />
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 shrink-0 basis-full">
+              <p className="text-lg font-bold text-[#F4F7FC]">{name}</p>
+
+              {label && (
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span className="bg-primary h-2 w-2 rounded-full" />
+                  <span className="text-primary text-xs font-semibold">
+                    {label}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex-1 shrink-0 basis-full">
-            <p className="text-lg font-bold text-[#F4F7FC]">{name}</p>
-
-            {label && (
-              <div className="mt-1 flex items-center gap-1.5">
-                <span className="bg-primary h-2 w-2 rounded-full" />
-                <span className="text-primary text-xs font-semibold">
-                  {label}
-                </span>
-              </div>
-            )}
-          </div>
+          {description && (
+            <div className="mt-4 text-[15px] leading-relaxed text-balance text-[#828DA3]">
+              <p>{description}</p>
+            </div>
+          )}
         </div>
 
-        {description && (
-          <div className="mt-4 text-[15px] leading-relaxed text-balance text-[#828DA3]">
-            <p>{description}</p>
-          </div>
-        )}
+        {children}
+
+        <NodeBuilderFields fields={fields} />
       </div>
-
-      {children}
-
-      <NodeBuilderFields fields={fields} />
     </NodeCard>
   )
 }
