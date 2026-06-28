@@ -13,7 +13,6 @@ import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { useSingleSelectedEdge } from '../hooks/use-single-selected-edge'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import { ConfigurePropertiesModal } from './configure-properties'
-import { DefaultNode } from './default-node'
 import { EdgeConfigure } from './edge-configure'
 import { NodeBuilderConfigure } from './node-builder-configure'
 import { NodeBuilderStyle } from './node-builder-style'
@@ -168,12 +167,7 @@ export function FloatingProperties() {
                   ) : node.type === 'table' ? (
                     <TableProperties />
                   ) : (
-                    <>
-                      {(!node.type || node.type === 'default') && (
-                        <DefaultNode />
-                      )}
-                      <NodeBuilderConfigure />
-                    </>
+                    <NodeBuilderConfigure />
                   )}
                 </>
               )}
@@ -184,7 +178,7 @@ export function FloatingProperties() {
                     <NodeCloudStyle />
                   ) : node.type === 'group' ? (
                     <NodeGroupStyle />
-                  ) : node.type === 'shape' ? (
+                  ) : node.type === 'shape' || node.type === 'default' ? (
                     <NodeShapeStyle />
                   ) : node.type === 'databaseTableSQL' ? (
                     <NodeDatabaseStyle />
