@@ -27,13 +27,6 @@ export const BUILDER_MIN_WIDTH = 240
 export const BUILDER_MAX_WIDTH = 1000
 export const BUILDER_DEFAULT_WIDTH = 400
 
-const MIN_SCALE = 0.4
-const MAX_SCALE = 4
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
-}
-
 export function BuilderNode({ id, data, selected }: NodeProps<TBuilderNode>) {
   const { updateNode, updateNodeData } = useReactFlow()
   const contentRef = useRef<HTMLDivElement>(null)
@@ -80,9 +73,7 @@ export function BuilderNode({ id, data, selected }: NodeProps<TBuilderNode>) {
     (_, params) => {
       const base = contentWidthRef.current
       if (!base) return
-      updateNodeData(id, {
-        scale: clamp(params.width / base, MIN_SCALE, MAX_SCALE),
-      })
+      updateNodeData(id, { scale: params.width / base })
     },
     [id, updateNodeData]
   )
