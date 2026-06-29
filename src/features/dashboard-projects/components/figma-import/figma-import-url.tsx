@@ -73,33 +73,31 @@ export function FigmaImportUrl({
 
   return (
     <>
-      <SimpleModalContent className="space-y-6">
+      <SimpleModalContent className="space-y-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-3 w-3 rounded-full bg-green-500"></div>
-            <span className="text-sm font-medium text-green-700">
-              Connected to Figma
-            </span>
+          <div className="flex items-center gap-2.5">
+            <div className="bg-success h-2 w-2 rounded-full"></div>
+            <span className="text-success text-sm">Connected to Figma</span>
           </div>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
+            className="text-muted-foreground hover:text-foreground"
             onClick={() => disconnect().catch(console.error)}
           >
             Disconnect
           </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
             <Label htmlFor="figma-url">Figma File URL</Label>
-            <p className="mt-1 mb-3 text-sm text-gray-600">
+            <p className="text-paragraph mt-1 mb-2 text-sm">
               Paste the URL of the Figma file you want to import
             </p>
             <Input
               id="figma-url"
               placeholder="https://www.figma.com/file/..."
-              className="!h-14 rounded-[0.75rem]"
               value={figmaUrl}
               onChange={handleUrlChange}
               disabled={isLoading}
@@ -107,7 +105,7 @@ export function FigmaImportUrl({
           </div>
 
           {errorMessage && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+            <div className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-sm">
               {errorMessage}
             </div>
           )}
@@ -115,7 +113,8 @@ export function FigmaImportUrl({
           <Button
             onClick={handleImport}
             disabled={!figmaUrl.trim() || isLoading}
-            className="!h-11 w-full rounded-[0.75rem]"
+            className="h-11 w-full"
+            preset="cta"
           >
             {isLoading ? 'Importing...' : 'Import from Figma'}
           </Button>
