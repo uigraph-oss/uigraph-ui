@@ -5,41 +5,29 @@ import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { useFigmaOAuthContext } from './figma-oauth-context'
-import { getFigmaAuthUrl } from './helpers/oauth'
+import { FIGMA_CONNECT_URL } from './helpers/figma-api'
 
 export function FigmaOAuth() {
   const [isConnecting, setIsConnecting] = useState(false)
-  const { setRefreshToken, setAccessToken } = useFigmaOAuthContext()
+  const { markConnected, refreshStatus } = useFigmaOAuthContext()
 
   function connectFigma() {
     try {
       setIsConnecting(true)
-      const authUrl = getFigmaAuthUrl()
 
-      const proxyWindow = window.open(authUrl, '_blank')
+      const proxyWindow = window.open(FIGMA_CONNECT_URL, '_blank')
       if (!proxyWindow) {
         setIsConnecting(false)
         return console.error('Failed to open Figma OAuth window')
       }
 
-      async function handleMessage(event: MessageEvent) {
-        if (event.data.type === 'figma-oauth-code') {
-          try {
-            // Mock: no server to exchange the Figma OAuth code in this build.
-            const tokens = {
-              access_token: 'mock-figma-access-token',
-              refresh_token: 'mock-figma-refresh-token',
-              expires_in: 3600,
-              user_id: 'mock-figma-user',
-            }
-            setRefreshToken(tokens.refresh_token)
-            setAccessToken(tokens.access_token)
-          } catch (error) {
-            console.error('Failed to exchange code for token:', error)
-          } finally {
-            window.removeEventListener('message', handleMessage)
-            setIsConnecting(false)
-          }
+      function handleMessage(event: MessageEvent) {
+        if (event.origin !== window.location.origin) return
+
+        if (event.data.type === 'figma-oauth-connected') {
+          markConnected()
+          window.removeEventListener('message', handleMessage)
+          setIsConnecting(false)
         }
 
         if (event.data.type === 'figma-oauth-error') {
@@ -56,6 +44,7 @@ export function FigmaOAuth() {
           clearInterval(checkClosed)
           window.removeEventListener('message', handleMessage)
           setIsConnecting(false)
+          refreshStatus().catch(console.error)
         }
       }, 1000)
     } catch (error) {

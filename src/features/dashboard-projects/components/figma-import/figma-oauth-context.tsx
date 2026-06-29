@@ -2,70 +2,46 @@
 
 import { createContext } from 'daily-code/react'
 import { useEffect, useState } from 'react'
+import { disconnectFigma, getFigmaStatus } from './helpers/figma-api'
 
 const [FigmaOAuthContextProvider, useFigmaOAuthContextCore] = createContext(
   () => {
-    const [refreshToken, setRefreshTokenState] = useState<string | null>(() => {
-      const refreshToken = localStorage.getItem('figma-refresh-token')
-      return refreshToken ?? null
-    })
-
+    const [connected, setConnected] = useState(false)
     const [isAuthLoading, setIsAuthLoading] = useState(false)
     const [isAuthFetched, setIsAuthFetched] = useState(false)
-    const [accessToken, setAccessTokenState] = useState<string | null>(null)
 
-    function setAccessToken(token: string) {
-      setAccessTokenState(token)
-      setIsAuthFetched(true)
-    }
-
-    function setRefreshToken(token: string) {
-      setRefreshTokenState(token)
-      localStorage.setItem('figma-refresh-token', token)
-    }
-
-    function removeRefreshToken() {
-      setAccessTokenState(null)
-      setRefreshTokenState(null)
-      localStorage.removeItem('figma-refresh-token')
-    }
-
-    async function initOAuth(): Promise<void> {
-      if (accessToken) return
-
-      if (!refreshToken) {
-        return setIsAuthFetched(true)
-      }
-
+    async function refreshStatus(): Promise<void> {
       try {
         setIsAuthLoading(true)
-
-        // Mock: no server to refresh the Figma token in this build.
-        const tokens = { access_token: 'mock-figma-access-token' }
-        setAccessToken(tokens.access_token)
+        const isConnected = await getFigmaStatus()
+        setConnected(isConnected)
       } catch (error) {
-        removeRefreshToken()
-        setIsAuthFetched(true)
-
-        console.error('Failed to refresh Figma token:', error)
+        setConnected(false)
+        console.error('Failed to fetch Figma status:', error)
       } finally {
+        setIsAuthFetched(true)
         setIsAuthLoading(false)
       }
     }
 
+    function markConnected() {
+      setConnected(true)
+    }
+
+    async function disconnect(): Promise<void> {
+      await disconnectFigma()
+      setConnected(false)
+    }
+
     return {
-      refreshToken,
-      accessToken,
+      connected,
 
       isAuthLoading,
       isAuthFetched,
 
-      setRefreshToken,
-      removeRefreshToken,
-
-      setAccessToken,
-
-      initOAuth,
+      refreshStatus,
+      markConnected,
+      disconnect,
     }
   }
 )
@@ -77,7 +53,7 @@ function useFigmaOAuthContext(autoFetch = false) {
     if (!autoFetch) return
 
     if (!ctx.isAuthFetched && !ctx.isAuthLoading) {
-      ctx.initOAuth().catch(console.error)
+      ctx.refreshStatus().catch(console.error)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
