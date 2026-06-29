@@ -8,7 +8,7 @@ import { FigmaOAuth } from './figma-oauth'
 import { useFigmaOAuthContext } from './figma-oauth-context'
 
 function FigmaImportModalContent({ exitModal }: { exitModal: () => void }) {
-  const { accessToken, isAuthLoading } = useFigmaOAuthContext(true)
+  const { connected, isAuthLoading } = useFigmaOAuthContext(true)
 
   if (isAuthLoading) {
     return (
@@ -23,7 +23,7 @@ function FigmaImportModalContent({ exitModal }: { exitModal: () => void }) {
     )
   }
 
-  if (!accessToken) return <FigmaOAuth />
+  if (!connected) return <FigmaOAuth />
 
   return <FigmaImportUrl exitFigmaImport={exitModal} />
 }

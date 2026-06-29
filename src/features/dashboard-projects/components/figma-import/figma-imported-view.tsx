@@ -8,7 +8,7 @@ import { FileText } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useSingleProject } from '../../contexts/project-context'
-import { FigmaNodeInfo } from './helpers/import-url'
+import { FigmaNodeInfo } from './helpers/figma-api'
 
 type FigmaImportedViewProps = {
   importedInfo: FigmaNodeInfo

@@ -2,22 +2,22 @@ import { SimpleModalContent } from '@/components'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { AxiosError } from 'axios'
 import { useState } from 'react'
 import { FigmaImportedView } from './figma-imported-view'
 import { useFigmaOAuthContext } from './figma-oauth-context'
 import {
+  FigmaImportError,
   FigmaNodeInfo,
   getFigmaNodeInfo,
   isValidFigmaUrl,
-} from './helpers/import-url'
+} from './helpers/figma-api'
 
 export function FigmaImportUrl({
   exitFigmaImport,
 }: {
   exitFigmaImport: () => void
 }) {
-  const { accessToken, removeRefreshToken } = useFigmaOAuthContext()
+  const { disconnect } = useFigmaOAuthContext()
   const [importedInfo, setImportedInfo] = useState<FigmaNodeInfo | null>(null)
 
   const [figmaUrl, setFigmaUrl] = useState('')
@@ -37,16 +37,14 @@ export function FigmaImportUrl({
       setIsLoading(true)
       setErrorMessage('')
 
-      const nodeInfo = await getFigmaNodeInfo(accessToken!, figmaUrl)
+      const nodeInfo = await getFigmaNodeInfo(figmaUrl)
       setImportedInfo(nodeInfo)
     } catch (err) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 404) {
+      if (err instanceof FigmaImportError) {
+        if (err.status === 404) {
           setErrorMessage('Figma component not found')
         } else {
-          setErrorMessage(
-            err.response?.data.err ?? 'Figma component import failed!'
-          )
+          setErrorMessage(err.message)
         }
       } else {
         setErrorMessage('Import failed')
@@ -83,7 +81,11 @@ export function FigmaImportUrl({
               Connected to Figma
             </span>
           </div>
-          <Button variant="outline" size="sm" onClick={removeRefreshToken}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => disconnect().catch(console.error)}
+          >
             Disconnect
           </Button>
         </div>
