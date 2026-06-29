@@ -2,8 +2,6 @@ import { arrayNonNullable, StringLiteralLoose } from 'daily-code'
 import { ReactNode } from 'react'
 import { BsDatabase, BsDiagram3 } from 'react-icons/bs'
 
-import { env } from '@/env'
-
 const ANCHOR_DIAGRAM_REGEX = /^diagram\/(?<id>diagram_[a-f0-9-]+)$/i
 const ANCHOR_SERVICE_REGEX = /^service\/(?<id>service_[a-f0-9-]+)$/i
 const ANCHOR_FRAME_REGEX =
@@ -37,13 +35,15 @@ const IMAGE_DIAGRAM_REGEX = /^diagram\/diagram_(?<id>[a-f0-9-]+)$/i
 
 export function getImageSourceUrl(input: string): {
   href?: string
+  diagramId?: string
   src: string
 } {
   const match = input.match(IMAGE_DIAGRAM_REGEX)
   if (match?.groups?.id) {
     return {
-      src: `${env.VITE_ASSETS_URL}/file_${match.groups.id}?source=chat`,
+      diagramId: `diagram_${match.groups.id}`,
       href: `${location.origin}/diagram/${match.groups.id}?source=chat`,
+      src: input,
     }
   }
 
