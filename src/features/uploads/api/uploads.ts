@@ -1,5 +1,6 @@
 import { graphql } from '@/api'
 import { apolloClientGQL } from '@/api/client'
+import { useQuery } from '@apollo/client'
 import axios from 'axios'
 
 export const CREATE_ASSET_UPLOAD = graphql(`
@@ -25,6 +26,22 @@ export const ASSET_URLS = graphql(`
     }
   }
 `)
+
+export function useAssetUrls(
+  orgId: string | undefined,
+  assetIds: string[]
+): Record<string, string> {
+  const { data } = useQuery(ASSET_URLS, {
+    variables: { orgId: orgId ?? '', assetIds },
+    skip: !orgId || assetIds.length === 0,
+  })
+
+  const map: Record<string, string> = {}
+  for (const entry of data?.assetUrls ?? []) {
+    map[entry.assetId] = entry.url
+  }
+  return map
+}
 
 export async function uploadFile(orgId: string, file: File): Promise<string> {
   const { data } = await apolloClientGQL.mutate({

@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
+import { useAssetUrls } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { openFileExplorer } from 'daily-code/browser'
 import { Delta } from 'quill'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -48,9 +50,9 @@ function getInitialScreenshots(
 ) {
   return (
     draft?.screenshots ??
-    (existingResult?.screenshotUrls ?? []).map((url) => ({
+    (existingResult?.screenshotUrls ?? []).map((assetId) => ({
       kind: 'uploaded' as const,
-      url,
+      assetId,
     }))
   )
 }
@@ -70,7 +72,7 @@ type TestRunResult = {
 }
 
 export type DraftScreenshot =
-  | { kind: 'uploaded'; url: string }
+  | { kind: 'uploaded'; assetId: string }
   | { kind: 'local'; file: File }
 
 export type TestRunResultDraft = {
@@ -207,6 +209,17 @@ export function TestCaseExecutionCard({
     screenshots,
     selectedStatus,
   ])
+
+  const orgId = useCurrentOrganization()?.id
+  const uploadedAssetIds = screenshots
+    .filter(
+      (
+        screenshot
+      ): screenshot is Extract<DraftScreenshot, { kind: 'uploaded' }> =>
+        screenshot.kind === 'uploaded'
+    )
+    .map((screenshot) => screenshot.assetId)
+  const assetUrlMap = useAssetUrls(orgId, uploadedAssetIds)
 
   const localScreenshotPreviews = screenshots
     .filter(
@@ -467,7 +480,7 @@ export function TestCaseExecutionCard({
                 <img
                   src={
                     screenshot.kind === 'uploaded'
-                      ? screenshot.url
+                      ? (assetUrlMap[screenshot.assetId] ?? '')
                       : (localScreenshotPreviews.find(
                           (preview) => preview.file === screenshot.file
                         )?.url ?? '')

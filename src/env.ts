@@ -2,7 +2,6 @@ import z from 'zod'
 
 const envSchema = z.object({
   VITE_API_URL: z.url(),
-  VITE_ASSETS_URL: z.url(),
   VITE_GRAPHQL_URL: z.url(),
 
   VITE_DEPLOY_ENV: z

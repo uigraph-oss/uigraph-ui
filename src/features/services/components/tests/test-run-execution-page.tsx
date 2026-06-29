@@ -6,7 +6,6 @@ import { SectionLoader } from '@/components/section-loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { env } from '@/env'
 import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -72,9 +71,9 @@ function normalizeExecutionStatus(
 }
 
 function getSavedScreenshots(result?: TestRunResult | null): DraftScreenshot[] {
-  return (result?.screenshotUrls ?? []).map((url) => ({
+  return (result?.screenshotUrls ?? []).map((assetId) => ({
     kind: 'uploaded' as const,
-    url,
+    assetId,
   }))
 }
 
@@ -96,7 +95,7 @@ function areScreenshotsEqual(
     }
 
     if (screenshot.kind === 'uploaded' && other.kind === 'uploaded') {
-      return screenshot.url === other.url
+      return screenshot.assetId === other.assetId
     }
 
     return (
@@ -435,14 +434,14 @@ export function TestRunExecutionPage() {
     )
 
     const uploadedScreenshots = data.screenshots ?? []
-    const uploadedUrls = uploadedScreenshots
+    const existingAssetIds = uploadedScreenshots
       .filter(
         (
           screenshot
         ): screenshot is Extract<DraftScreenshot, { kind: 'uploaded' }> =>
           screenshot.kind === 'uploaded'
       )
-      .map((screenshot) => screenshot.url)
+      .map((screenshot) => screenshot.assetId)
     const localFiles = uploadedScreenshots
       .filter(
         (
@@ -451,7 +450,7 @@ export function TestRunExecutionPage() {
           screenshot.kind === 'local'
       )
       .map((screenshot) => screenshot.file)
-    const newUrls =
+    const newAssetIds =
       localFiles.length > 0 ? await handleScreenshotUpload(localFiles) : []
 
     const input = {
@@ -462,7 +461,7 @@ export function TestRunExecutionPage() {
       notes: data.notes,
       responseStatus: data.responseStatus,
       responseBody: data.responseBody,
-      screenshotUrls: [...uploadedUrls, ...newUrls],
+      screenshotUrls: [...existingAssetIds, ...newAssetIds],
     }
 
     if (existingResult?.testRunResultId) {
@@ -534,18 +533,17 @@ export function TestRunExecutionPage() {
       )
     }
 
-    const urls: string[] = []
+    const assetIds: string[] = []
     for (const file of files) {
       try {
         const assetId = await uploadFile(orgId, file)
-        const url = `${env.VITE_ASSETS_URL}/assets/${assetId}`
-        urls.push(url)
+        assetIds.push(assetId)
       } catch (error) {
         console.error('Failed to upload file:', error)
         throw error
       }
     }
-    return urls
+    return assetIds
   }
 
   async function handleCompleteRun() {

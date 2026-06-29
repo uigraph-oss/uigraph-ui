@@ -6,7 +6,9 @@ import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { TableCell } from '@/components/ui/table'
 import { RichTextEditor } from '@/features/component-meta'
+import { useAssetUrls } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -178,28 +180,35 @@ function EvidenceSection({
   result: TestRunResult
   onImageClick: (url: string) => void
 }) {
-  if (!result.screenshotUrls?.length) return null
+  const orgId = useCurrentOrganization()?.id
+  const assetIds = result.screenshotUrls ?? []
+  const assetUrlMap = useAssetUrls(orgId, assetIds)
+
+  if (!assetIds.length) return null
   return (
     <div className="space-y-2">
       <Label className="text-foreground text-sm font-normal">Evidence</Label>
       <div className="grid grid-cols-3 gap-2">
-        {result.screenshotUrls.map((url, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              onImageClick(url)
-            }}
-            className="relative aspect-video overflow-hidden rounded border transition-opacity hover:opacity-80"
-          >
-            <img
-              src={url}
-              alt={`Screenshot ${index + 1}`}
-              className="h-full w-full object-cover"
-            />
-          </button>
-        ))}
+        {assetIds.map((assetId, index) => {
+          const url = assetUrlMap[assetId] ?? ''
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onImageClick(url)
+              }}
+              className="relative aspect-video overflow-hidden rounded border transition-opacity hover:opacity-80"
+            >
+              <img
+                src={url}
+                alt={`Screenshot ${index + 1}`}
+                className="h-full w-full object-cover"
+              />
+            </button>
+          )
+        })}
       </div>
     </div>
   )
