@@ -1,37 +1,23 @@
 # ── Stage 1: build ────────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
+RUN corepack enable
 
-# Build-time env vars — baked into the JS bundle by Vite's loadEnv.
-# Pass these via --build-arg or docker-compose build.args.
-ARG NEXT_PUBLIC_APP_URL
-ARG NEXT_PUBLIC_ASSETS_URL
-ARG NEXT_PUBLIC_CLIENT_URL
-ARG NEXT_PUBLIC_DEPLOY_ENV=production
-ARG NEXT_PUBLIC_BYPASS_DOMAIN_CHECK
-ARG NEXT_PUBLIC_AI_WS_URL
-ARG NEXT_PUBLIC_FEATURE_SSO_ENABLED
-ARG NEXT_PUBLIC_FEATURE_ENABLE_DEMO_TEST_CASES
-ARG NEXT_PUBLIC_FIGMA_CLIENT_ID
-ARG NEXT_PUBLIC_FIGMA_CLIENT_SECRET
-ARG NEXT_PUBLIC_FIGMA_REDIRECT_URI
+# Build-time env vars baked into the JS bundle by Vite. VITE_API_URL and
+# VITE_GRAPHQL_URL are resolved at runtime from window.location.origin (see
+# src/env.ts), so only VITE_ASSETS_URL must be baked in here.
+ARG VITE_ASSETS_URL
+ARG VITE_DEPLOY_ENV=production
+ARG VITE_FEATURE_ENABLE_DEMO_TEST_CASES=false
+ENV VITE_ASSETS_URL=$VITE_ASSETS_URL \
+    VITE_DEPLOY_ENV=$VITE_DEPLOY_ENV \
+    VITE_FEATURE_ENABLE_DEMO_TEST_CASES=$VITE_FEATURE_ENABLE_DEMO_TEST_CASES \
+    NODE_OPTIONS=--max-old-space-size=4096
 
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
-    NEXT_PUBLIC_ASSETS_URL=$NEXT_PUBLIC_ASSETS_URL \
-    NEXT_PUBLIC_CLIENT_URL=$NEXT_PUBLIC_CLIENT_URL \
-    NEXT_PUBLIC_DEPLOY_ENV=$NEXT_PUBLIC_DEPLOY_ENV \
-    NEXT_PUBLIC_BYPASS_DOMAIN_CHECK=$NEXT_PUBLIC_BYPASS_DOMAIN_CHECK \
-    NEXT_PUBLIC_AI_WS_URL=$NEXT_PUBLIC_AI_WS_URL \
-    NEXT_PUBLIC_FEATURE_SSO_ENABLED=$NEXT_PUBLIC_FEATURE_SSO_ENABLED \
-    NEXT_PUBLIC_FEATURE_ENABLE_DEMO_TEST_CASES=$NEXT_PUBLIC_FEATURE_ENABLE_DEMO_TEST_CASES \
-    NEXT_PUBLIC_FIGMA_CLIENT_ID=$NEXT_PUBLIC_FIGMA_CLIENT_ID \
-    NEXT_PUBLIC_FIGMA_CLIENT_SECRET=$NEXT_PUBLIC_FIGMA_CLIENT_SECRET \
-    NEXT_PUBLIC_FIGMA_REDIRECT_URI=$NEXT_PUBLIC_FIGMA_REDIRECT_URI
-
-COPY package*.json ./
-RUN npm ci --ignore-scripts
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
+RUN pnpm build
 
 # ── Stage 2: serve ────────────────────────────────────────────────────────────
 FROM nginx:alpine
