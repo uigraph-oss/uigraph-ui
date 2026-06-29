@@ -80,7 +80,7 @@ export function StepThreeComponent({
 
                 {field.type === ComponentInputType.LinkOrFileUpload && (
                   <LinkOrFileInput
-                    value=""
+                    value={null}
                     onChange={() => undefined}
                     isViewMode
                   />

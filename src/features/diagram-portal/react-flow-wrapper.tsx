@@ -1,6 +1,7 @@
 'use client'
 
 import { VirtualCursor } from '@/components/virtual-cursor'
+import { ComponentInputType } from '@/features/component-meta'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { cn } from '@/lib/utils'
 import { AstToUiConverter } from '@uigraph/sdk'
@@ -153,9 +154,14 @@ export function ReactFlowWrapper({
           type: 'default',
           origin: [0.5, 0.0],
           data: {
-            name: 'Default',
-            label: 'DEFAULT',
-            description: 'This is a default node.',
+            componentFields: [
+              {
+                componentFieldId: 'name',
+                type: ComponentInputType.TextInput,
+                label: 'Name',
+                data: [{ value: '' }],
+              },
+            ],
           },
           position: reactFlowInstance.screenToFlowPosition({
             x: clientX,

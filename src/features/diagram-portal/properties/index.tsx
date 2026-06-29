@@ -13,9 +13,9 @@ import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { useSingleSelectedEdge } from '../hooks/use-single-selected-edge'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import { ConfigurePropertiesModal } from './configure-properties'
-import { DefaultNode } from './default-node'
 import { EdgeConfigure } from './edge-configure'
 import { NodeBuilderConfigure } from './node-builder-configure'
+import { NodeBuilderStyle } from './node-builder-style'
 import { NodeCloudStyle } from './node-cloud-style'
 import { NodeCodeStyle } from './node-code-style'
 import { NodeDatabaseStyle } from './node-database-style'
@@ -167,12 +167,7 @@ export function FloatingProperties() {
                   ) : node.type === 'table' ? (
                     <TableProperties />
                   ) : (
-                    <>
-                      {(!node.type || node.type === 'default') && (
-                        <DefaultNode />
-                      )}
-                      <NodeBuilderConfigure />
-                    </>
+                    <NodeBuilderConfigure />
                   )}
                 </>
               )}
@@ -183,7 +178,7 @@ export function FloatingProperties() {
                     <NodeCloudStyle />
                   ) : node.type === 'group' ? (
                     <NodeGroupStyle />
-                  ) : node.type === 'shape' ? (
+                  ) : node.type === 'shape' || node.type === 'default' ? (
                     <NodeShapeStyle />
                   ) : node.type === 'databaseTableSQL' ? (
                     <NodeDatabaseStyle />
@@ -193,6 +188,8 @@ export function FloatingProperties() {
                     <NodeTextStyle />
                   ) : node.type === 'code' ? (
                     <NodeCodeStyle />
+                  ) : node.type === 'builder' ? (
+                    <NodeBuilderStyle />
                   ) : (
                     <p className="text-foreground/70 text-sm">
                       No style available

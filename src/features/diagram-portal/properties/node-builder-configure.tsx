@@ -22,12 +22,14 @@ import {
   URLInput,
 } from '@/features/component-meta'
 import { useComponentMetaClasses } from '@/features/component-meta/theme'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { useEffectState } from '@/hooks/use-effect-state'
-import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
+import { buildMetaData, flattenMetaData, LinkOrFileValue } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 import { Maximize2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { nodeVisibleInputFields } from '../constants/flow-diagram-node'
+import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import { TBuilderNode } from '../nodes'
 import { TComponentField } from '../types/component-fields'
@@ -103,7 +105,21 @@ function NodeConfigureField({
   setIsVisible: (isVisible: boolean) => void
 }) {
   const [isExpandedOpen, setIsExpandedOpen] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const { codeEditorWrapper } = useComponentMetaClasses()
+  const { organizationId } = useFlowDiagramContext()
+
+  async function setFileValue(value: LinkOrFileValue) {
+    if (value.file instanceof File && organizationId) {
+      setIsUploading(true)
+      const assetId = await uploadFile(organizationId, value.file)
+      setIsUploading(false)
+      setValue({ fileId: assetId })
+      return
+    }
+    if (value.file instanceof File) return
+    setValue(value)
+  }
 
   const isVisibilityDisabled = useMemo(
     () => !nodeVisibleInputFields.includes(field.type as ComponentInputType),
@@ -153,11 +169,19 @@ function NodeConfigureField({
         )}
 
         {field.type === ComponentInputType.FileUpload && (
-          <FileInput file={value ?? null} onChange={setValue} />
+          <FileInput
+            file={value ?? null}
+            onChange={setFileValue}
+            isViewMode={isUploading}
+          />
         )}
 
         {field.type === ComponentInputType.LinkOrFileUpload && (
-          <LinkOrFileInput value={value ?? null} onChange={setValue} />
+          <LinkOrFileInput
+            value={value ?? null}
+            onChange={setFileValue}
+            isViewMode={isUploading}
+          />
         )}
 
         {field.type === ComponentInputType.DropdownSelect && (
