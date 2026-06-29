@@ -15,8 +15,8 @@ function FigmaImportModalContent({ exitModal }: { exitModal: () => void }) {
       <SimpleModalContent>
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            <p className="text-gray-600">Connecting to Figma...</p>
+            <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2"></div>
+            <p className="text-paragraph">Connecting to Figma...</p>
           </div>
         </div>
       </SimpleModalContent>

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { fileToDataUrl } from '@/helpers/file-to-data-url'
 import { convertImageUrlToServerBuffer } from '@/helpers/image-url-to-buffer'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { FileText } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useSingleProject } from '../../contexts/project-context'
@@ -55,8 +54,8 @@ export function FigmaImportedView({
 
       exitFigmaImport()
     } catch (error) {
-      console.error('Failed to create page:', error)
-      toast.error('Failed to create page')
+      console.error('Failed to create frame:', error)
+      toast.error('Failed to create frame')
     } finally {
       setIsCreatingPage(false)
     }
@@ -65,15 +64,9 @@ export function FigmaImportedView({
   return (
     <>
       <SimpleModalContent hasFooter className="space-y-4 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
-            <FileText className="text-primary h-4 w-4" />
-          </div>
-
-          <h3 className="text-lg font-semibold text-gray-900">
-            {importedInfo.name}
-          </h3>
-        </div>
+        <h3 className="text-foreground text-lg font-semibold">
+          {importedInfo.name}
+        </h3>
 
         {importedInfo.imageUrl && (
           <img
@@ -86,9 +79,8 @@ export function FigmaImportedView({
 
       <SimpleModalFooter>
         <Button
-          variant="outline"
           onClick={() => setImportedInfo(null)}
-          className="!h-11 rounded-[0.75rem] bg-transparent !px-4"
+          preset="outline"
           disabled={isCreatingPage}
         >
           Cancel
@@ -96,11 +88,11 @@ export function FigmaImportedView({
 
         <Button
           onClick={handleCreatePage}
-          className="!h-11 rounded-[0.75rem] !px-6"
+          preset="cta"
           disabled={isCreatingPage}
         >
           {isCreatingPage && <SuperCircleLoader />}
-          Import as Page
+          Import as Frame
         </Button>
       </SimpleModalFooter>
     </>
