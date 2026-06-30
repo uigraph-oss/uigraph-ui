@@ -40,7 +40,12 @@ export function SavingsFilters({
         variant="outline"
       >
         {PERIODS.map((p) => (
-          <ToggleGroupItem key={p.value} value={p.value} aria-label={p.label}>
+          <ToggleGroupItem
+            key={p.value}
+            value={p.value}
+            aria-label={p.label}
+            className="hover:bg-muted hover:text-foreground px-5"
+          >
             {p.label}
           </ToggleGroupItem>
         ))}

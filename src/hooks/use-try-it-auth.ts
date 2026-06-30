@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  inferAuthConfig,
-  type AuthConfig,
-} from '@/utils/api/auth-resolver'
+import { inferAuthConfig, type AuthConfig } from '@/utils/api/auth-resolver'
 import type { AuthKind } from '@/utils/api/openapi-runtime'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -49,9 +46,9 @@ export function loadAuthForScheme(
     try {
       const parsed = JSON.parse(stored) as AuthConfig
       return {
-        kind,
         ...inferAuthConfig({ [schemeName]: scheme }, schemeName),
         ...parsed,
+        kind,
       }
     } catch {
       // ignore invalid storage

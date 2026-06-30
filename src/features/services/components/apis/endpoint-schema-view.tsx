@@ -43,27 +43,31 @@ function tryParseJSON<T>(value: string | undefined | null): T | null {
 function typeColor(type?: string) {
   switch (type) {
     case 'string':
-      return 'text-green-600'
+      return 'text-emerald-400'
     case 'integer':
     case 'number':
-      return 'text-blue-600'
+      return 'text-sky-400'
     case 'boolean':
-      return 'text-amber-600'
+      return 'text-amber-400'
     case 'array':
-      return 'text-purple-600'
+      return 'text-purple-400'
     case 'object':
-      return 'text-orange-600'
+      return 'text-orange-400'
     default:
       return 'text-muted-foreground'
   }
 }
 
 function statusCodeColor(code: string) {
-  if (code.startsWith('2')) return 'bg-green-100 text-green-700'
-  if (code.startsWith('3')) return 'bg-blue-100 text-blue-700'
-  if (code.startsWith('4')) return 'bg-amber-100 text-amber-700'
-  if (code.startsWith('5')) return 'bg-red-100 text-red-700'
-  return 'bg-[#1E2533] text-[#D2D9E6]'
+  if (code.startsWith('2'))
+    return 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
+  if (code.startsWith('3'))
+    return 'bg-sky-500/15 text-sky-400 ring-1 ring-sky-500/30'
+  if (code.startsWith('4'))
+    return 'bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30'
+  if (code.startsWith('5'))
+    return 'bg-red-500/15 text-red-400 ring-1 ring-red-500/30'
+  return 'bg-[#1E2533] text-[#D2D9E6] ring-1 ring-[#2A3242]'
 }
 
 // ─── SchemaTree (recursive) ──────────────────────────────────
@@ -121,7 +125,7 @@ function SchemaProperty({
         </span>
 
         {showRequired && isRequired && (
-          <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-600">
+          <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-medium text-red-400 ring-1 ring-red-500/30">
             required
           </span>
         )}
@@ -296,7 +300,10 @@ function ParametersTable({ parameters }: { parameters: ParsedParameter[] }) {
               </thead>
               <tbody>
                 {params.map((p) => (
-                  <tr key={p.Name} className="border-b border-gray-50">
+                  <tr
+                    key={p.Name}
+                    className="border-b border-[#2A3242] last:border-0"
+                  >
                     <td className="px-3 py-2 font-mono text-xs font-medium text-[#F4F7FC]">
                       {p.Name}
                     </td>
@@ -310,7 +317,7 @@ function ParametersTable({ parameters }: { parameters: ParsedParameter[] }) {
                     </td>
                     <td className="px-3 py-2">
                       {p.Required ? (
-                        <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-600">
+                        <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-medium text-red-400 ring-1 ring-red-500/30">
                           required
                         </span>
                       ) : (
@@ -356,7 +363,7 @@ function StatusCodesView({ statusCodes }: { statusCodes: StatusCodeMap }) {
         </thead>
         <tbody>
           {sorted.map(([code, desc]) => (
-            <tr key={code} className="border-b border-gray-50">
+            <tr key={code} className="border-b border-[#2A3242] last:border-0">
               <td className="px-3 py-2">
                 <span
                   className={cn(

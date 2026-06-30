@@ -2,6 +2,7 @@ import { MoreVerticalIcon } from '@/assets/svgs'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
+import { SuperCircleLoader } from '@/components/loader/super-circle-loader'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,12 +10,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
 import { Calendar } from 'lucide-react'
 import { useState } from 'react'
-import { LuCloudUpload } from 'react-icons/lu'
+import { LuCloudUpload, LuTriangleAlert } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { DashboardDiagram } from './api/diagrams'
@@ -44,6 +50,7 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
   const [imageError, setImageError] = useState(false)
 
   const previewSrc = diagram.previewImageUrl ?? undefined
+  const previewStatus = diagram.previewStatus ?? undefined
 
   function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth, naturalHeight } = e.currentTarget
@@ -107,6 +114,28 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
               </span>
             </div>
           )}
+          {previewStatus === 'pending' && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="absolute right-2 bottom-2 flex size-7 items-center justify-center rounded-lg bg-[#1E2533]/80 shadow-sm backdrop-blur-sm">
+                  <SuperCircleLoader className="size-4 text-[#5C84FF]" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Generating preview…</TooltipContent>
+            </Tooltip>
+          )}
+
+          {previewStatus === 'failed' && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="absolute right-2 bottom-2 flex size-7 items-center justify-center rounded-lg bg-[#1E2533]/80 shadow-sm backdrop-blur-sm">
+                  <LuTriangleAlert className="size-4 text-[#F0556D]" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Preview generation failed</TooltipContent>
+            </Tooltip>
+          )}
+
           {/* Bottom fade for smooth transition into content */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/30 to-transparent" />
         </div>

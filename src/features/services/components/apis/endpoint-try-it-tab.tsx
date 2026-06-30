@@ -221,13 +221,10 @@ export function EndpointTryItTab({
   useEffect(() => {
     function handleAuthChanged(event: Event) {
       const key = getTryItAuthStorageKey(serviceId, authKind)
-      const detail = (event as CustomEvent<{ key?: string; legacyKey?: string }>)
-        .detail
-      if (
-        !detail?.key ||
-        detail.key === key ||
-        detail.legacyKey === key
-      ) {
+      const detail = (
+        event as CustomEvent<{ key?: string; legacyKey?: string }>
+      ).detail
+      if (!detail?.key || detail.key === key || detail.legacyKey === key) {
         const stored = localStorage.getItem(key)
         if (!stored) return
         try {

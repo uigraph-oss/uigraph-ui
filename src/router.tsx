@@ -39,6 +39,11 @@ const SignInForm = lazy(() =>
     default: mod.SignInForm,
   }))
 )
+const AuthorizePage = lazy(() =>
+  import('@/routes/authorize-page').then((mod) => ({
+    default: mod.AuthorizePage,
+  }))
+)
 const OnboardingPage = lazy(() =>
   import('@/routes/onboarding-page').then((mod) => ({
     default: mod.OnboardingPage,
@@ -239,6 +244,7 @@ export function AppRoutes() {
           </UnauthenticatedGuard>
         }
       />
+      <Route path="/authorize" element={<AuthorizePage />} />
       <Route
         path="/onboarding"
         element={

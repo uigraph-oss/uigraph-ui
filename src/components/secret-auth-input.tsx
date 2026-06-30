@@ -36,11 +36,7 @@ export function SecretAuthInput({
         className="absolute top-1/2 right-2.5 flex -translate-y-1/2 cursor-pointer items-center text-[#828DA3] transition-colors hover:text-[#D2D9E6]"
         aria-label={visible ? 'Hide value' : 'Show value'}
       >
-        {visible ? (
-          <EyeOff className="h-4 w-4" />
-        ) : (
-          <Eye className="h-4 w-4" />
-        )}
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>
     </div>
   )

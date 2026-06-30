@@ -156,9 +156,24 @@ export function DashboardInsightsPageInner() {
                 }
                 variant="outline"
               >
-                <ToggleGroupItem value="tool">By Tool</ToggleGroupItem>
-                <ToggleGroupItem value="model">By Model</ToggleGroupItem>
-                <ToggleGroupItem value="user">By User</ToggleGroupItem>
+                <ToggleGroupItem
+                  value="tool"
+                  className="hover:bg-muted hover:text-foreground px-5"
+                >
+                  By Tool
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="model"
+                  className="hover:bg-muted hover:text-foreground px-5"
+                >
+                  By Model
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="user"
+                  className="hover:bg-muted hover:text-foreground px-5"
+                >
+                  By User
+                </ToggleGroupItem>
               </ToggleGroup>
 
               <SavingsExportButton
