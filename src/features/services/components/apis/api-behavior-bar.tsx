@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { OpenApiRuntime } from '@/utils/api/openapi-runtime'
 import { Copy, Lock, LockOpen } from 'lucide-react'
@@ -55,8 +55,7 @@ export function ApiBehaviorBar({
   const versionOptions = useMemo(() => {
     return apiGroupVersions.map((version, index) => {
       const num = version.versionNumber
-      const label =
-        num != null ? `v${num}` : version.label?.trim() || 'Latest'
+      const label = num != null ? `v${num}` : version.label?.trim() || 'Latest'
       return {
         value: version.versionId!,
         label,
@@ -203,11 +202,8 @@ function ServerControls({
   return (
     <>
       <div className="flex min-w-0 items-center gap-2">
-        <Select
-          value={selectedServerIndex}
-          onValueChange={onServerIndexChange}
-        >
-          <SelectTrigger className="border-stock h-8 min-w-[18rem] max-w-[28rem] gap-2 rounded-full bg-[#141925] px-3 text-xs shadow-none [&_[data-slot=select-value]]:hidden">
+        <Select value={selectedServerIndex} onValueChange={onServerIndexChange}>
+          <SelectTrigger className="border-stock h-8 max-w-[28rem] min-w-[18rem] gap-2 rounded-full bg-[#141925] px-3 text-xs shadow-none [&_[data-slot=select-value]]:hidden">
             <span className="shrink-0 text-[#828DA3]">Servers</span>
             <span className="min-w-0 flex-1 truncate font-medium">
               {selectedServer?.url ?? 'Select server'}

@@ -1,8 +1,11 @@
 import { GT } from '@/api'
+import {
+  canonicalizeSampleJson,
+  parseJsonDeep,
+} from '@/utils/api/openapi-display'
 import { ComponentInputType } from '@uigraph/sdk'
 import type { DashboardAPIEndpoint, DashboardAPIGroup } from './api-endpoints'
 import type { DashboardAPIGroupVersion } from './api-group-version'
-import { canonicalizeSampleJson, parseJsonDeep } from '@/utils/api/openapi-display'
 
 export type LegacyApiEndpoint = {
   apiEndpointId?: string | null

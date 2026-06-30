@@ -84,7 +84,10 @@ type OpenApiSpecLike = {
   }
   definitions?: Record<string, Record<string, unknown>>
   security?: Array<Record<string, string[]>>
-  paths?: Record<string, Record<string, RawOperation> & { parameters?: RawParameter[] }>
+  paths?: Record<
+    string,
+    Record<string, RawOperation> & { parameters?: RawParameter[] }
+  >
 }
 
 type ServerConfig = NonNullable<OpenApiSpecLike['servers']>[number]
@@ -317,7 +320,14 @@ function resolveBaseUrlFromServer(
 }
 
 const HTTP_METHODS = new Set([
-  'get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace',
+  'get',
+  'post',
+  'put',
+  'patch',
+  'delete',
+  'head',
+  'options',
+  'trace',
 ])
 
 function buildPathMethodRequestBodyMap(
@@ -367,7 +377,7 @@ function buildPathMethodParametersMap(
 
   for (const [specPath, pathItem] of Object.entries(paths)) {
     const pathLevelParams: RawParameter[] =
-      (pathItem as Record<string, unknown>).parameters as RawParameter[] ?? []
+      ((pathItem as Record<string, unknown>).parameters as RawParameter[]) ?? []
 
     for (const [method, operation] of Object.entries(pathItem ?? {})) {
       if (!HTTP_METHODS.has(method.toLowerCase())) continue
@@ -416,18 +426,24 @@ function buildPathMethodResponsesMap(
         if (jsonContent) {
           if (jsonContent.schema) schema = jsonContent.schema
           if (jsonContent.example !== undefined) {
-            try { example = JSON.stringify(jsonContent.example, null, 2) } catch {}
+            try {
+              example = JSON.stringify(jsonContent.example, null, 2)
+            } catch {}
           } else if (jsonContent.examples) {
             const firstVal = Object.values(jsonContent.examples)[0]?.value
             if (firstVal !== undefined) {
-              try { example = JSON.stringify(firstVal, null, 2) } catch {}
+              try {
+                example = JSON.stringify(firstVal, null, 2)
+              } catch {}
             }
           }
         }
 
         if (!schema && resp.schema) schema = resp.schema
         if (!example && resp.examples?.['application/json'] !== undefined) {
-          try { example = JSON.stringify(resp.examples['application/json'], null, 2) } catch {}
+          try {
+            example = JSON.stringify(resp.examples['application/json'], null, 2)
+          } catch {}
         }
 
         // Always store every response code, even description-only ones
@@ -472,12 +488,14 @@ function buildOperationAuthMap(
   const paths = spec?.paths ?? {}
 
   for (const pathItem of Object.values(paths)) {
-    for (const operation of Object.values(pathItem ?? {})) {
-      const operationId = operation?.operationId?.trim()
+    for (const [method, operation] of Object.entries(pathItem ?? {})) {
+      if (method === 'parameters') continue
+      const op = operation as RawOperation
+      const operationId = op?.operationId?.trim()
       if (!operationId) continue
       map.set(
         operationId,
-        resolveOperationAuth(operation?.security, globalSecurity, schemes)
+        resolveOperationAuth(op?.security, globalSecurity, schemes)
       )
     }
   }
@@ -544,7 +562,7 @@ function buildOperationParametersMap(
 
   for (const pathItem of Object.values(paths)) {
     const pathLevelParams: RawParameter[] =
-      (pathItem as Record<string, unknown>).parameters as RawParameter[] ?? []
+      ((pathItem as Record<string, unknown>).parameters as RawParameter[]) ?? []
 
     for (const [method, operation] of Object.entries(pathItem ?? {})) {
       if (method === 'parameters') continue
@@ -552,10 +570,7 @@ function buildOperationParametersMap(
       const operationId = op?.operationId?.trim()
       if (!operationId) continue
 
-      const merged = [
-        ...pathLevelParams,
-        ...(op.parameters ?? []),
-      ]
+      const merged = [...pathLevelParams, ...(op.parameters ?? [])]
 
       const params: SpecParameterData[] = merged
         .filter((p) => p?.name)
@@ -583,13 +598,15 @@ function buildOperationResponsesMap(
 
   for (const pathItem of Object.values(paths)) {
     if (!pathItem) continue
-    for (const operation of Object.values(pathItem)) {
-      if (!operation) continue
-      const operationId = operation.operationId?.trim()
-      if (!operationId || !operation.responses) continue
+    for (const [method, operation] of Object.entries(pathItem)) {
+      if (method === 'parameters') continue
+      const op = operation as RawOperation
+      if (!op) continue
+      const operationId = op.operationId?.trim()
+      if (!operationId || !op.responses) continue
 
       const responseData: Record<string, SpecResponseData> = {}
-      for (const [statusCode, resp] of Object.entries(operation.responses)) {
+      for (const [statusCode, resp] of Object.entries(op.responses)) {
         if (!resp) continue
 
         let schema: Record<string, unknown> | null = null
@@ -617,16 +634,16 @@ function buildOperationResponsesMap(
         if (!schema && resp.schema) schema = resp.schema
         if (!example && resp.examples?.['application/json'] !== undefined) {
           try {
-            example = JSON.stringify(
-              resp.examples['application/json'],
-              null,
-              2
-            )
+            example = JSON.stringify(resp.examples['application/json'], null, 2)
           } catch {}
         }
 
         // Always store — even description-only responses matter for status pills
-        responseData[statusCode] = { schema, example, description: resp.description ?? null }
+        responseData[statusCode] = {
+          schema,
+          example,
+          description: resp.description ?? null,
+        }
       }
 
       if (Object.keys(responseData).length > 0) {

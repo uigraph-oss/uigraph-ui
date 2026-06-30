@@ -196,7 +196,9 @@ export function ApiAuthorizeDialog({
                     <Label className="text-xs text-[#828DA3]">Value:</Label>
                     <SecretAuthInput
                       value={draft.token}
-                      onChange={(value) => updateAuthDraft(name, 'token', value)}
+                      onChange={(value) =>
+                        updateAuthDraft(name, 'token', value)
+                      }
                       placeholder="Bearer token"
                       className="h-9 bg-[#141925]"
                     />

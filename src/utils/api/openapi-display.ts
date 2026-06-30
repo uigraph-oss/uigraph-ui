@@ -126,10 +126,12 @@ export function schemaToExample(
 
 function exampleFromNormalizedResponse(raw: string): string | null {
   const parsed = tryParseJson(raw)
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+    return null
 
   const entries = Object.entries(parsed as Record<string, unknown>)
-  if (!entries.length || !entries.every(([k]) => isStatusCodeKey(k))) return null
+  if (!entries.length || !entries.every(([k]) => isStatusCodeKey(k)))
+    return null
 
   const payload: Record<string, unknown> = {}
   for (const [status, entry] of entries) {

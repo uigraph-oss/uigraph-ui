@@ -14,6 +14,7 @@ export type DashboardDiagram = {
   previewAssetId?: string | null
   previewImageUrl?: string | null
   previewContentHash?: string | null
+  previewStatus?: string | null
   createdAt?: string | null
   updatedAt?: string | null
   createdByActor?: DashboardActor | null
@@ -51,6 +52,7 @@ export const DIAGRAMS = graphql(`
         previewAssetId
         previewImageUrl
         previewContentHash
+        previewStatus
         createdBy
         updatedBy
         createdAt

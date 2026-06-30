@@ -5,7 +5,10 @@ import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
 import { cn } from '@/lib/utils'
-import { canonicalizeSampleJson, formatSampleForDisplay } from '@/utils/api/openapi-display'
+import {
+  canonicalizeSampleJson,
+  formatSampleForDisplay,
+} from '@/utils/api/openapi-display'
 import { arrayNonNullable } from 'daily-code'
 import { Code } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -336,11 +339,7 @@ function Snippet({
       </div>
 
       <div className="border-stock overflow-hidden rounded-[0.75rem] border">
-        <CodeMirrorRaw
-          readOnly={true}
-          editable={false}
-          value={formattedCode}
-        />
+        <CodeMirrorRaw readOnly={true} editable={false} value={formattedCode} />
       </div>
     </div>
   )
