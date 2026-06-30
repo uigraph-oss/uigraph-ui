@@ -5,6 +5,7 @@ export const Paths = {
     signup: '/signup',
     emailConfirm: '/confirm-email',
     forgotPassword: '/forgot-password',
+    authorize: '/authorize',
   },
   workspace: {
     create: '/create-workspace',

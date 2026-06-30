@@ -43,15 +43,6 @@ export function SignInForm() {
   useEffect(() => {
     if (status === 'authenticated' && user) {
       void navigate(Paths.dashboard.root)
-      return
-    }
-
-    const query = new URLSearchParams(window.location.search)
-    const redirect = query.get('redirect')
-    const withToken = query.get('withToken')
-
-    if (redirect) {
-      localStorage.setItem('redirect', JSON.stringify({ redirect, withToken }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
@@ -61,6 +52,12 @@ export function SignInForm() {
       setLoading(true)
       setError('')
       await signIn(values.email, values.password)
+
+      const next = new URLSearchParams(window.location.search).get('next')
+      if (next) {
+        window.location.href = next
+        return
+      }
 
       void navigate(Paths.dashboard.root)
     } catch (e) {

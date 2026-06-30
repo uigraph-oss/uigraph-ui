@@ -67,6 +67,20 @@ export async function signIn(email: string, password: string) {
   return { token: data.token, mustChangePassword: data.mustChangePassword }
 }
 
+export async function mintSessionToken() {
+  const res = await fetch('/api/v1/auth/session-token', {
+    method: 'POST',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error('Failed to mint session token')
+  }
+
+  const data = (await res.json()) as { token: string; expiresAt: string }
+  return data.token
+}
+
 export async function signOut() {
   try {
     await fetch('/api/v1/auth/logout', {
