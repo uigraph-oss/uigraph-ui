@@ -1619,118 +1619,120 @@ function EndpointSpecView({
           </div>
 
           {/* Expanded response detail */}
-          {responses.map(([code, desc]) => {
-            const specData = openApiRuntime?.operationResponsesByPath(
-              endpoint.method,
-              endpoint.path
-            )[code]
-            const label = desc || specData?.description || ''
-            const isExpanded = expandedCode === code || expandedCode === null
-            if (!isExpanded) return null
+          <div className="space-y-2">
+            {responses.map(([code, desc]) => {
+              const specData = openApiRuntime?.operationResponsesByPath(
+                endpoint.method,
+                endpoint.path
+              )[code]
+              const label = desc || specData?.description || ''
+              const isExpanded = expandedCode === code || expandedCode === null
+              if (!isExpanded) return null
 
-            const respSchema = (specData?.schema as SchemaNode | null) ?? null
-            const resolvedRespSchema =
-              respSchema && resolveRef
-                ? resolveSchemaRefs(respSchema, resolveRef)
-                : respSchema
-            const respExample =
-              specData?.example ??
-              (resolvedRespSchema
-                ? JSON.stringify(
-                    schemaToExample(
-                      resolvedRespSchema as SchemaObj,
-                      0,
-                      resolveRef
-                    ),
-                    null,
-                    2
-                  )
-                : null)
-            const hasContent = resolvedRespSchema || respExample
-            const currentView = getResponseView(code)
+              const respSchema = (specData?.schema as SchemaNode | null) ?? null
+              const resolvedRespSchema =
+                respSchema && resolveRef
+                  ? resolveSchemaRefs(respSchema, resolveRef)
+                  : respSchema
+              const respExample =
+                specData?.example ??
+                (resolvedRespSchema
+                  ? JSON.stringify(
+                      schemaToExample(
+                        resolvedRespSchema as SchemaObj,
+                        0,
+                        resolveRef
+                      ),
+                      null,
+                      2
+                    )
+                  : null)
+              const hasContent = resolvedRespSchema || respExample
+              const currentView = getResponseView(code)
 
-            return (
-              <div
-                key={code}
-                className="rounded-lg border border-[#2A3242] bg-[#141925]"
-              >
-                {/* Header row: pill + description + Example/Schema toggle */}
-                <div className="flex items-center justify-between gap-2 border-b border-[#2A3242] px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={cn(
-                        'rounded-full px-2 py-0.5 text-xs font-semibold',
-                        statusPillColor(code)
+              return (
+                <div
+                  key={code}
+                  className="rounded-lg border border-[#2A3242] bg-[#141925]"
+                >
+                  {/* Header row: pill + description + Example/Schema toggle */}
+                  <div className="flex items-center justify-between gap-2 border-b border-[#2A3242] px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'rounded-full px-2 py-0.5 text-xs font-semibold',
+                          statusPillColor(code)
+                        )}
+                      >
+                        {code}
+                      </span>
+                      {label && (
+                        <span className="text-xs text-[#D2D9E6]">{label}</span>
                       )}
-                    >
-                      {code}
-                    </span>
-                    {label && (
-                      <span className="text-xs text-[#D2D9E6]">{label}</span>
+                    </div>
+                    {/* Example / Schema toggle — mirrors request body toggle */}
+                    {hasContent && (
+                      <div className="flex items-center rounded-md border border-[#2A3242] text-[10px]">
+                        <button
+                          type="button"
+                          onClick={() => setResponseView(code, 'example')}
+                          className={cn(
+                            'rounded-l-md px-2 py-1 transition',
+                            currentView === 'example'
+                              ? 'bg-[#2A3242] text-[#D2D9E6]'
+                              : 'text-[#828DA3] hover:text-[#D2D9E6]'
+                          )}
+                        >
+                          Example
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setResponseView(code, 'schema')}
+                          className={cn(
+                            'rounded-r-md px-2 py-1 transition',
+                            currentView === 'schema'
+                              ? 'bg-[#2A3242] text-[#D2D9E6]'
+                              : 'text-[#828DA3] hover:text-[#D2D9E6]'
+                          )}
+                        >
+                          Schema
+                        </button>
+                      </div>
                     )}
                   </div>
-                  {/* Example / Schema toggle — mirrors request body toggle */}
-                  {hasContent && (
-                    <div className="flex items-center rounded-md border border-[#2A3242] text-[10px]">
-                      <button
-                        type="button"
-                        onClick={() => setResponseView(code, 'example')}
-                        className={cn(
-                          'rounded-l-md px-2 py-1 transition',
-                          currentView === 'example'
-                            ? 'bg-[#2A3242] text-[#D2D9E6]'
-                            : 'text-[#828DA3] hover:text-[#D2D9E6]'
-                        )}
-                      >
-                        Example
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setResponseView(code, 'schema')}
-                        className={cn(
-                          'rounded-r-md px-2 py-1 transition',
-                          currentView === 'schema'
-                            ? 'bg-[#2A3242] text-[#D2D9E6]'
-                            : 'text-[#828DA3] hover:text-[#D2D9E6]'
-                        )}
-                      >
-                        Schema
-                      </button>
-                    </div>
-                  )}
-                </div>
 
-                {/* Body */}
-                {!hasContent ? (
-                  <p className="px-3 py-3 text-xs text-[#586378]">
-                    No schema defined.
-                  </p>
-                ) : currentView === 'example' && respExample ? (
-                  <div className="relative px-3 py-3">
-                    <button
-                      type="button"
-                      className="absolute top-5 right-5 text-[#828DA3] hover:text-[#D2D9E6]"
-                      onClick={() =>
-                        void copyToClipboard(respExample, 'Example copied')
-                      }
-                    >
-                      <Copy className="h-3 w-3" />
-                    </button>
-                    <pre className="overflow-x-auto rounded-lg bg-[#1E2533] p-3 font-mono text-[11px] leading-relaxed text-[#D2D9E6]">
-                      {respExample}
-                    </pre>
-                  </div>
-                ) : resolvedRespSchema ? (
-                  <div className="px-3 py-3">
-                    <SchemaTree
-                      schema={resolvedRespSchema}
-                      showRequired={false}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            )
-          })}
+                  {/* Body */}
+                  {!hasContent ? (
+                    <p className="px-3 py-3 text-xs text-[#586378]">
+                      No schema defined.
+                    </p>
+                  ) : currentView === 'example' && respExample ? (
+                    <div className="relative px-3 py-3">
+                      <button
+                        type="button"
+                        className="absolute top-5 right-5 text-[#828DA3] hover:text-[#D2D9E6]"
+                        onClick={() =>
+                          void copyToClipboard(respExample, 'Example copied')
+                        }
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                      <pre className="overflow-x-auto rounded-lg bg-[#1E2533] p-3 font-mono text-[11px] leading-relaxed text-[#D2D9E6]">
+                        {respExample}
+                      </pre>
+                    </div>
+                  ) : resolvedRespSchema ? (
+                    <div className="px-3 py-3">
+                      <SchemaTree
+                        schema={resolvedRespSchema}
+                        showRequired={false}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              )
+            })}
+          </div>
         </section>
       )}
     </div>
@@ -1878,7 +1880,7 @@ function EndpointDetailsPanel({
   )
 
   return (
-    <div className="flex w-full flex-col rounded-lg border bg-[#141925]">
+    <div className="flex w-full flex-col overflow-hidden rounded-lg border bg-[#141925]">
       <div className="flex items-start justify-between border-b bg-[#141925] px-4 py-3">
         <div className="flex flex-col gap-1">
           <h3 className="font-mono text-sm font-semibold">
