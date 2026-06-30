@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { apolloClientGQL } from '@/api/client'
 import { MethodBadge } from '@/components/api/method-badge'
 import { CrossButton } from '@/components/cross-button'
@@ -21,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Table, TableBody } from '@/components/ui/table'
 import {
   LegacyApiEndpoint,
   LegacyComponentMeta,
@@ -29,27 +29,34 @@ import {
 import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useScopedStorage } from '@/hooks/use-scoped-storage'
-import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { parseAsString, useQueryState } from 'nuqs'
 import { normalizePath } from '@/utils/api/display'
-import { createOpenApiRuntime } from '@/utils/api/openapi-runtime'
+import {
+  SpecResponseData,
+  SpecRequestBodyData,
+  SpecParameterData,
+  createOpenApiRuntime,
+} from '@/utils/api/openapi-runtime'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Copy, EllipsisVertical, Link2, Search, Terminal } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import {
+  ChevronDown,
+  Copy,
+  EllipsisVertical,
+  Search,
+} from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useServiceApiEndpointsContext } from '../../contexts/service-api-endpoints'
 import { ConfigureApiEndpointConnections } from './configure-api-endpoint-connections'
 import { ConfigureApiEndpointMeta } from './configure-api-endpoint-meta'
 import { ConfigureApiEndpointSamples } from './configure-api-endpoint-samples'
-import { EndpointSchemaView } from './endpoint-schema-view'
+import { EndpointSchemaView, SchemaNode, SchemaTree } from './endpoint-schema-view'
 import { EndpointTryItTab } from './endpoint-try-it-tab'
-import {
-  GraphQLOperationItem,
-  GraphQLOperationRow,
-} from './rows/graphql-operation-row'
-import { GrpcMethodItem, GrpcMethodRow } from './rows/grpc-method-row'
+import { ApiBehaviorBar } from './api-behavior-bar'
+import { GraphQLOperationItem } from './rows/graphql-operation-row'
+import { GrpcMethodItem } from './rows/grpc-method-row'
 
 type RestEndpointItem = {
   selectionKey: string
@@ -85,16 +92,15 @@ export function ServiceApiEndpoints() {
     grpcMethods,
     isGrpcLoading,
     selectedVersionId,
+    setSelectedVersionId,
+    apiGroupVersions,
     deleteServiceApiEndpoint,
     serviceId,
     apiGroup,
   } = useServiceApiEndpointsContext()
   const organizationId = useCurrentOrganization()?.id
   const apiGroupId = apiGroup?.serviceApiGroupId ?? ''
-  const [queryParams, setQueryParams] = useSearchParamsState(
-    'endpointId',
-    'env'
-  )
+  const [endpointId, setEndpointId] = useQueryState('endpointId', parseAsString)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [authFilter, setAuthFilter] = useScopedStorage(
@@ -117,6 +123,22 @@ export function ServiceApiEndpoints() {
     string,
     unknown
   > | null>(null)
+  const [selectedServerIndex, setSelectedServerIndex] = useState('0')
+  const prevVersionIdRef = useRef<string | null | undefined>(undefined)
+
+  useEffect(() => {
+    setSelectedServerIndex('0')
+
+    if (prevVersionIdRef.current === undefined) {
+      prevVersionIdRef.current = selectedVersionId
+      return
+    }
+
+    if (prevVersionIdRef.current !== selectedVersionId) {
+      prevVersionIdRef.current = selectedVersionId
+      void setEndpointId(null)
+    }
+  }, [selectedVersionId, setEndpointId])
 
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery)
   useEffect(() => {
@@ -176,12 +198,13 @@ export function ServiceApiEndpoints() {
 
   const isGraphQL = protocol === 'graphql'
   const isGrpc = protocol === 'grpc'
-  const selectedEnv = (queryParams.env || 'staging').toLowerCase()
 
   const openApiRuntime = useMemo(
     () => createOpenApiRuntime(openApiSpec),
     [openApiSpec]
   )
+
+  const selectedEnv = openApiRuntime.defaultEnv ?? 'production'
 
   const restEndpoints = useMemo<RestEndpointItem[]>(() => {
     return apiEndpoints.map((endpoint) => {
@@ -241,10 +264,16 @@ export function ServiceApiEndpoints() {
     return idx > 0 ? firstWithUrl.fullUrl.slice(0, idx) : firstWithUrl.fullUrl
   }, [restEndpoints])
 
-  const baseUrl = useMemo(
-    () => openApiRuntime.resolveBaseUrl(selectedEnv, fallbackBaseUrl),
-    [fallbackBaseUrl, openApiRuntime, selectedEnv]
-  )
+  const baseUrl = useMemo(() => {
+    const server =
+      openApiRuntime.servers[Number(selectedServerIndex)] ??
+      openApiRuntime.defaultServer
+    return openApiRuntime.resolveServerUrl(
+      server,
+      selectedEnv,
+      fallbackBaseUrl
+    )
+  }, [fallbackBaseUrl, openApiRuntime, selectedEnv, selectedServerIndex])
 
   const authOptions = useMemo(() => {
     const values = new Set<AuthKind>()
@@ -305,7 +334,7 @@ export function ServiceApiEndpoints() {
   }, [filteredRestEndpoints, groupBy])
 
   const selectedRestEndpoint = useMemo(() => {
-    const selected = queryParams.endpointId
+    const selected = endpointId
     if (!selected) return null
     return (
       restEndpoints.find(
@@ -315,40 +344,40 @@ export function ServiceApiEndpoints() {
           item.endpointId === selected
       ) ?? null
     )
-  }, [queryParams.endpointId, restEndpoints])
+  }, [endpointId, restEndpoints])
 
   const selectedGraphQLOperation = useMemo(() => {
-    const selected = queryParams.endpointId
+    const selected = endpointId
     if (!selected) return null
     return (
       graphQLOperations.find(
         (item) => item.apiEndpoint.apiEndpointId === selected
       ) ?? null
     )
-  }, [graphQLOperations, queryParams.endpointId])
+  }, [graphQLOperations, endpointId])
 
   const selectedGrpcMethod = useMemo(() => {
-    const selected = queryParams.endpointId
+    const selected = endpointId
     if (!selected) return null
     return (
       grpcMethods.find((item) => item.apiEndpoint.apiEndpointId === selected) ??
       null
     )
-  }, [grpcMethods, queryParams.endpointId])
+  }, [grpcMethods, endpointId])
 
   useEffect(() => {
-    if (!queryParams.endpointId) return
+    if (!endpointId) return
     const selectedEndpoint =
       selectedRestEndpoint ?? selectedGraphQLOperation ?? selectedGrpcMethod
     if (!selectedEndpoint) {
-      void setQueryParams({ endpointId: null }, true)
+      void setEndpointId(null)
     }
   }, [
-    queryParams.endpointId,
+    endpointId,
     selectedGraphQLOperation,
     selectedGrpcMethod,
     selectedRestEndpoint,
-    setQueryParams,
+    setEndpointId,
   ])
 
   const filteredGraphQLOperations = useMemo(() => {
@@ -452,44 +481,42 @@ export function ServiceApiEndpoints() {
   }, [grpcMethods, debouncedSearch])
 
   return (
-    <div className="flex h-[calc(100vh-310px)] flex-col">
-      <div className="border-stock space-y-3 border-b bg-[#141925] p-4 shadow-xs">
-        <div className="flex items-center justify-between gap-3">
-          <div className="relative max-w-md flex-1">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#828DA3]" />
-            <Input
-              id="endpoint-search"
-              placeholder={
-                isGraphQL
-                  ? 'Search operations (operation name, signature)'
-                  : isGrpc
-                    ? 'Search methods (method name, service name)'
-                    : 'Search endpoints (path, method, summary, operationId, tags)'
-              }
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-stock h-11! !rounded-[0.8rem] bg-[#141925] pl-10 shadow-none"
-              aria-label={
-                isGraphQL
-                  ? 'Search operations'
-                  : isGrpc
-                    ? 'Search methods'
-                    : 'Search endpoints'
-              }
-            />
-          </div>
+    <div className="flex h-full flex-col">
+      <ApiBehaviorBar
+        apiGroupVersions={apiGroupVersions}
+        selectedVersionId={selectedVersionId}
+        onSelectedVersionIdChange={setSelectedVersionId}
+        showServerControls={!isGraphQL && !isGrpc}
+        openApiRuntime={openApiRuntime}
+        baseUrl={baseUrl}
+        selectedEnv={selectedEnv}
+        fallbackBaseUrl={fallbackBaseUrl}
+        serviceId={serviceId}
+        selectedServerIndex={selectedServerIndex}
+        onServerIndexChange={setSelectedServerIndex}
+      />
 
-          <div className="flex items-center gap-3">
-            {isGraphQL ? (
-              <Select
-                value={operationTypeFilter}
-                onValueChange={setOperationTypeFilter}
-              >
-                <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
-                  <SelectValue
-                    placeholder="All Types"
-                    className="bg-[#141925]"
-                  />
+      {isGraphQLLoading || isGrpcLoading ? (
+        <div className="flex h-[400px] items-center justify-center px-6 py-4">
+          <SuperCircleLoader />
+        </div>
+      ) : isGraphQL ? (
+        <div className="rest-endpoints-shell grid min-h-0 flex-1 xl:grid-cols-[264px_minmax(0,1fr)]">
+          <aside className="rest-endpoints-sidebar overflow-y-auto border-r">
+            <div className="border-b p-3 space-y-2">
+              <div className="relative">
+                <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[#828DA3]" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search operations..."
+                  className="border-stock h-8! !rounded-[0.65rem] bg-[#1E2533] pl-8 text-xs shadow-none"
+                  aria-label="Search operations"
+                />
+              </div>
+              <Select value={operationTypeFilter} onValueChange={setOperationTypeFilter}>
+                <SelectTrigger className="border-stock h-8! w-full !rounded-[0.65rem] bg-[#1E2533]! text-xs shadow-none">
+                  <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
@@ -498,266 +525,132 @@ export function ServiceApiEndpoints() {
                   <SelectItem value="Subscription">Subscription</SelectItem>
                 </SelectContent>
               </Select>
-            ) : isGrpc ? null : (
-              <>
-                <Select value={methodFilter} onValueChange={setMethodFilter}>
-                  <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
-                    <SelectValue
-                      placeholder="Method"
-                      className="bg-[#141925]"
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Methods</SelectItem>
-                    <SelectItem value="GET">GET</SelectItem>
-                    <SelectItem value="POST">POST</SelectItem>
-                    <SelectItem value="PUT">PUT</SelectItem>
-                    <SelectItem value="PATCH">PATCH</SelectItem>
-                    <SelectItem value="DELETE">DELETE</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {openApiRuntime.hasSecuritySchemes && (
-                  <Select value={authFilter} onValueChange={setAuthFilter}>
-                    <SelectTrigger className="border-stock h-11! w-[140px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
-                      <SelectValue
-                        placeholder="Auth"
-                        className="bg-[#141925]"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Auth</SelectItem>
-                      {authOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {authLabel(option)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-
-                <Select
-                  value={groupBy}
-                  onValueChange={(value) => setGroupBy(value as GroupByKind)}
-                >
-                  <SelectTrigger className="border-stock h-11! w-[160px] !rounded-[0.8rem] bg-[#141925]! shadow-none">
-                    <SelectValue
-                      placeholder="Group by"
-                      className="bg-[#141925]"
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tags">Group by: Tags</SelectItem>
-                    <SelectItem value="none">Group by: None</SelectItem>
-                  </SelectContent>
-                </Select>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {!isGraphQL && !isGrpc && (
-        <div className="border-stock border-b bg-[#1E2533] px-6 py-2">
-          <div className="flex items-center justify-between gap-2 text-xs">
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <p className="text-[#828DA3]">
-                  Base URL:{' '}
-                  <span className="font-mono font-medium text-[#F4F7FC]">
-                    {baseUrl || 'Unavailable'}
-                  </span>
-                </p>
-                {!baseUrl && (
-                  <span className="text-[11px] text-amber-600">
-                    Cannot resolve base URL from spec
-                  </span>
-                )}
-              </div>
-              {openApiRuntime.defaultServer?.url && (
-                <p className="text-[11px] text-[#828DA3]">
-                  Template:{' '}
-                  <span className="font-mono">
-                    {openApiRuntime.defaultServer.url}
-                  </span>
-                </p>
+            </div>
+            <div className="space-y-1 px-3 py-3">
+              {filteredGraphQLOperations.length === 0 ? (
+                <div className="rest-endpoints-empty rounded-[14px] border border-dashed px-4 py-6 text-center text-sm">
+                  <p className="mb-2 text-[#828DA3]">No operations match these filters</p>
+                  <Button
+                    variant="link"
+                    onClick={() => { setSearchQuery(''); setOperationTypeFilter('all') }}
+                    className="h-auto p-0 text-[#3B82F6]"
+                  >
+                    Clear filters
+                  </Button>
+                </div>
+              ) : (
+                filteredGraphQLOperations.map((operation) => (
+                  <GraphQLOperationSidebarRow
+                    key={operation.apiEndpoint.apiEndpointId}
+                    operation={operation}
+                    selected={selectedGraphQLOperation?.apiEndpoint.apiEndpointId === operation.apiEndpoint.apiEndpointId}
+                    onSelect={() => void setEndpointId(operation.apiEndpoint.apiEndpointId)}
+                  />
+                ))
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2"
-              onClick={() =>
-                void copyToClipboard(baseUrl || '', 'Base URL copied')
-              }
-              disabled={!baseUrl}
-            >
-              <Copy className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {isGraphQLLoading || isGrpcLoading ? (
-        <div className="flex h-[400px] items-center justify-center px-6 py-4">
-          <SuperCircleLoader />
-        </div>
-      ) : isGraphQL ? (
-        <div className="flex px-6 py-4">
-          <div className="min-w-0 flex-1 pr-1">
-            {filteredGraphQLOperations.length === 0 ? (
-              <div className="flex h-[400px] items-center justify-center text-center">
-                <div>
-                  <p className="mb-2 text-sm text-[#828DA3]">
-                    No operations match these filters
-                  </p>
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      setSearchQuery('')
-                      setOperationTypeFilter('all')
-                    }}
-                    className="text-[#3B82F6]"
-                  >
-                    Clear filters
-                  </Button>
-                </div>
-              </div>
+          </aside>
+          <main className="min-w-0 overflow-y-auto p-4">
+            {selectedGraphQLOperation ? (
+              <GraphQLOperationDetailsPanel
+                operation={selectedGraphQLOperation}
+                readonly={selectedVersionId !== null}
+                onClose={() => void setEndpointId(null)}
+              />
             ) : (
-              <div className="h-full rounded-lg border bg-[#141925] p-1">
-                <Table>
-                  <TableBody>
-                    {filteredGraphQLOperations.map((operation) => (
-                      <GraphQLOperationRow
-                        key={operation.apiEndpoint.apiEndpointId}
-                        operation={operation}
-                        selected={
-                          selectedGraphQLOperation?.apiEndpoint
-                            .apiEndpointId ===
-                          operation.apiEndpoint.apiEndpointId
-                        }
-                        onSelect={() =>
-                          void setQueryParams(
-                            {
-                              endpointId: operation.apiEndpoint.apiEndpointId,
-                            },
-                            true
-                          )
-                        }
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="rest-endpoints-empty flex h-full items-center justify-center rounded-[16px] border border-dashed p-10 text-sm">
+                Select an operation to view its details
               </div>
             )}
-          </div>
-
-          <AnimatePresence>
-            {selectedGraphQLOperation && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: '40%' }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="h-full min-w-[360px] shrink-0"
-              >
-                <GraphQLOperationDetailsPanel
-                  operation={selectedGraphQLOperation}
-                  readonly={selectedVersionId !== null}
-                  onClose={() =>
-                    void setQueryParams({ endpointId: null }, true)
-                  }
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          </main>
         </div>
       ) : isGrpc ? (
-        <div className="flex px-6 py-4">
-          <div className="min-w-0 flex-1 pr-1">
-            {groupedGrpcMethods.length === 0 ? (
-              <div className="flex h-[400px] items-center justify-center text-center">
-                <div>
-                  <p className="mb-2 text-sm text-[#828DA3]">
-                    No methods match these filters
-                  </p>
+        <div className="rest-endpoints-shell grid min-h-0 flex-1 xl:grid-cols-[264px_minmax(0,1fr)]">
+          <aside className="rest-endpoints-sidebar overflow-y-auto border-r">
+            <div className="border-b p-3">
+              <div className="relative">
+                <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[#828DA3]" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search methods..."
+                  className="border-stock h-8! !rounded-[0.65rem] bg-[#1E2533] pl-8 text-xs shadow-none"
+                  aria-label="Search methods"
+                />
+              </div>
+            </div>
+            <div className="py-3">
+              {groupedGrpcMethods.every(g => g.methods.length === 0) ? (
+                <div className="rest-endpoints-empty mx-3 rounded-[14px] border border-dashed px-4 py-6 text-center text-sm">
+                  <p className="mb-2 text-[#828DA3]">No methods match these filters</p>
                   <Button
                     variant="link"
-                    onClick={() => {
-                      setSearchQuery('')
-                    }}
-                    className="text-[#3B82F6]"
+                    onClick={() => setSearchQuery('')}
+                    className="h-auto p-0 text-[#3B82F6]"
                   >
                     Clear filters
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <div className="h-full space-y-6">
-                {groupedGrpcMethods.map(({ serviceKey, methods }) => (
-                  <div key={serviceKey} className="space-y-2">
-                    <h3 className="px-2 text-sm font-semibold text-[#F4F7FC]">
-                      {serviceKey}
-                    </h3>
-                    <div className="rounded-lg border bg-[#141925] p-1">
-                      <Table>
-                        <TableBody>
-                          {methods.map((method) => (
-                            <GrpcMethodRow
-                              key={method.apiEndpoint.apiEndpointId}
-                              method={method}
-                              selected={
-                                selectedGrpcMethod?.apiEndpoint
-                                  .apiEndpointId ===
-                                method.apiEndpoint.apiEndpointId
-                              }
-                              onSelect={() =>
-                                void setQueryParams(
-                                  {
-                                    endpointId:
-                                      method.apiEndpoint.apiEndpointId,
-                                  },
-                                  true
-                                )
-                              }
-                            />
-                          ))}
-                        </TableBody>
-                      </Table>
+              ) : (
+                groupedGrpcMethods.map(({ serviceKey, methods }) => (
+                  methods.length > 0 && (
+                    <div key={serviceKey} className="mb-4">
+                      <div className="rest-endpoints-section-label px-5 pb-1 text-[11px] font-medium uppercase tracking-wide">
+                        {serviceKey}
+                      </div>
+                      <div className="space-y-1 px-3">
+                        {methods.map((method) => (
+                          <GrpcMethodSidebarRow
+                            key={method.apiEndpoint.apiEndpointId}
+                            method={method}
+                            selected={selectedGrpcMethod?.apiEndpoint.apiEndpointId === method.apiEndpoint.apiEndpointId}
+                            onSelect={() => void setEndpointId(method.apiEndpoint.apiEndpointId)}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                ))
+              )}
+            </div>
+          </aside>
+          <main className="min-w-0 overflow-y-auto p-4">
+            {selectedGrpcMethod ? (
+              <GrpcMethodDetailsPanel
+                method={selectedGrpcMethod}
+                readonly={selectedVersionId !== null}
+                onClose={() => void setEndpointId(null)}
+              />
+            ) : (
+              <div className="rest-endpoints-empty flex h-full items-center justify-center rounded-[16px] border border-dashed p-10 text-sm">
+                Select a method to view its details
               </div>
             )}
-          </div>
-
-          <AnimatePresence>
-            {selectedGrpcMethod && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: '40%' }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="h-full min-w-[360px] shrink-0"
-              >
-                <GrpcMethodDetailsPanel
-                  method={selectedGrpcMethod}
-                  readonly={selectedVersionId !== null}
-                  onClose={() =>
-                    void setQueryParams({ endpointId: null }, true)
-                  }
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          </main>
         </div>
       ) : (
-        <div className="flex px-6 py-4">
-          <div className="min-w-0 flex-1 pr-1">
-            {filteredRestEndpoints.length === 0 ? (
-              <div className="flex h-[400px] items-center justify-center text-center">
-                <div>
-                  <p className="mb-2 text-sm text-[#828DA3]">
+        <>
+          {/* ── Sidebar + main grid ───────────────────────────── */}
+          <div className="rest-endpoints-shell grid min-h-0 flex-1 xl:grid-cols-[264px_minmax(0,1fr)]">
+            <aside className="rest-endpoints-sidebar overflow-y-auto border-r">
+              {/* Search */}
+              <div className="border-b p-3">
+                <div className="relative">
+                  <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[#828DA3]" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search endpoints..."
+                    className="border-stock h-8! !rounded-[0.65rem] bg-[#1E2533] pl-8 text-xs shadow-none"
+                    aria-label="Search endpoints"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4 px-3 py-3">
+              {filteredRestEndpoints.length === 0 ? (
+                <div className="rest-endpoints-empty rounded-[14px] border border-dashed px-4 py-6 text-center text-sm">
+                  <p className="mb-2 text-[#828DA3]">
                     No endpoints match these filters
                   </p>
                   <Button
@@ -767,89 +660,122 @@ export function ServiceApiEndpoints() {
                       setAuthFilter('all')
                       setMethodFilter('all')
                     }}
-                    className="text-[#3B82F6]"
+                    className="h-auto p-0 text-[#3B82F6]"
                   >
                     Clear filters
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-5">
-                {groupedRestEndpoints.map((group) => (
-                  <div key={group.group} className="space-y-2">
-                    {groupBy === 'tags' && group.group !== 'Ungrouped' && (
-                      <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                        {group.group}
-                      </h3>
+              ) : (
+                groupedRestEndpoints.map((group) => (
+                  <div key={group.group} className="space-y-1">
+                    {groupBy === 'tags' && (
+                      <div className="rest-endpoints-section-label flex items-center justify-between px-2 text-[11px] font-medium uppercase tracking-wide">
+                        <span>{group.group}</span>
+                        <span className="tabular-nums">
+                          {group.endpoints.length}
+                        </span>
+                      </div>
                     )}
-                    <div className="space-y-1 rounded-lg border bg-[#141925] p-1">
-                      {group.endpoints.map((endpoint) => (
-                        <RestEndpointRow
-                          key={endpoint.endpointId}
-                          endpoint={endpoint}
-                          selected={
-                            selectedRestEndpoint?.selectionKey ===
-                            endpoint.selectionKey
-                          }
-                          onSelect={() =>
-                            void setQueryParams(
-                              { endpointId: endpoint.selectionKey },
-                              true
-                            )
-                          }
-                          baseUrl={baseUrl}
-                          readonly={selectedVersionId !== null}
-                          onDelete={async () => {
-                            if (
-                              !endpoint.endpointId ||
-                              selectedVersionId !== null
-                            )
-                              return
-                            await deleteServiceApiEndpoint({
-                              variables: {
-                                organizationId,
-                                apiEndpointId: endpoint.endpointId,
-                              },
-                            })
-                            toast.success('API endpoint deleted successfully')
-                          }}
-                        />
-                      ))}
-                    </div>
+                    {group.endpoints.map((endpoint) => (
+                      <RestEndpointSidebarRow
+                        key={endpoint.endpointId}
+                        endpoint={endpoint}
+                        selected={
+                          selectedRestEndpoint?.selectionKey ===
+                          endpoint.selectionKey
+                        }
+                        onSelect={() =>
+                          void setEndpointId(endpoint.selectionKey)
+                        }
+                        baseUrl={baseUrl}
+                        readonly={selectedVersionId !== null}
+                        onDelete={async () => {
+                          if (
+                            !endpoint.endpointId ||
+                            selectedVersionId !== null
+                          )
+                            return
+                          await deleteServiceApiEndpoint({
+                            variables: {
+                              organizationId,
+                              apiEndpointId: endpoint.endpointId,
+                            },
+                          })
+                          toast.success('API endpoint deleted successfully')
+                        }}
+                      />
+                    ))}
                   </div>
-                ))}
+                ))
+              )}
+            </div>
+          </aside>
+
+          <main className="min-w-0 overflow-y-auto p-4">
+            {selectedRestEndpoint ? (
+              <EndpointDetailsPanel
+                endpoint={selectedRestEndpoint}
+                baseUrl={baseUrl}
+                readonly={selectedVersionId !== null}
+                openApiRuntime={openApiRuntime}
+                onClose={() =>
+                  void setEndpointId(null)
+                }
+              />
+            ) : (
+              <div className="rest-endpoints-empty flex h-full items-center justify-center rounded-[16px] border border-dashed p-10 text-sm">
+                Select an endpoint to view its details
               </div>
             )}
+          </main>
           </div>
-
-          <AnimatePresence>
-            {selectedRestEndpoint && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: '40%' }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="h-full min-w-[360px] shrink-0 pl-4"
-              >
-                <EndpointDetailsPanel
-                  endpoint={selectedRestEndpoint}
-                  baseUrl={baseUrl}
-                  readonly={selectedVersionId !== null}
-                  openApiRuntime={openApiRuntime}
-                  onClose={() =>
-                    void setQueryParams({ endpointId: null }, true)
-                  }
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        </>
       )}
+
+      <style>{`
+        .rest-endpoints-shell {
+          flex: 1;
+          min-height: 0;
+        }
+
+        .rest-endpoints-sidebar {
+          border-right: 1px solid var(--border);
+          background: var(--card);
+        }
+
+        .rest-endpoints-section-label {
+          color: var(--muted-foreground);
+        }
+
+        .rest-endpoints-empty {
+          border-color: var(--border);
+          color: var(--muted-foreground);
+        }
+
+        .rest-nav-button {
+          border-radius: 10px;
+          width: 100%;
+        }
+
+        .rest-nav-button-active {
+          background: var(--accent);
+          box-shadow: inset 0 0 0 1px var(--border);
+          color: var(--foreground);
+        }
+
+        .rest-nav-button-inactive {
+          color: var(--foreground);
+        }
+
+        .rest-nav-button-inactive:hover {
+          background: var(--secondary);
+        }
+      `}</style>
     </div>
   )
 }
 
-function RestEndpointRow({
+function RestEndpointSidebarRow({
   endpoint,
   selected,
   onSelect,
@@ -867,87 +793,60 @@ function RestEndpointRow({
   return (
     <div
       onClick={onSelect}
-      className={`group flex cursor-pointer items-start justify-between rounded-md border px-3 py-2.5 transition-colors ${
-        selected
-          ? 'border-blue-500 bg-blue-500/10'
-          : 'border-transparent hover:bg-[#1E2533]'
+      className={`rest-nav-button group flex w-full cursor-pointer items-center gap-2 px-3 py-2.5 text-left transition ${
+        selected ? 'rest-nav-button-active' : 'rest-nav-button-inactive'
       }`}
     >
-      <div className="flex min-w-0 items-start gap-3">
-        <MethodBadge
-          method={endpoint.method}
-          className="mt-0.5 min-w-16 py-1"
-        />
-        <div className="min-w-0">
-          <div className="truncate font-mono text-sm font-semibold text-[#F4F7FC]">
-            {endpoint.path}
+      <MethodBadge method={endpoint.method} className="min-w-14 shrink-0 py-0.5 text-[10px]" />
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-mono text-xs font-semibold text-[#F4F7FC]">
+          {endpoint.path}
+        </div>
+        {endpoint.summary && (
+          <div className="truncate text-[10px] text-[#828DA3]">
+            {endpoint.summary}
           </div>
-          {endpoint.summary && (
-            <div className="text-muted-foreground truncate text-xs">
-              {endpoint.summary}
-            </div>
-          )}
-        </div>
+        )}
       </div>
-
-      <div className="ml-3 flex shrink-0 items-center gap-1">
-        <Badge variant="secondary" className="text-[10px]">
-          {endpoint.protocol || 'REST'}
-        </Badge>
-        <div
-          className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() => void copyToClipboard(endpoint.path, 'Path copied')}
-          >
-            <Copy className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() =>
-              void copyToClipboard(
-                buildFullUrl(baseUrl, endpoint.path),
-                'Full URL copied'
-              )
-            }
-            disabled={!baseUrl}
-          >
-            <Link2 className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() =>
-              void copyToClipboard(
-                buildCurlSkeleton(
-                  baseUrl,
-                  endpoint.path,
-                  endpoint.method,
-                  endpoint.auth
-                ),
-                'cURL skeleton copied'
-              )
-            }
-            disabled={!baseUrl}
-          >
-            <Terminal className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+      <div
+        className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={(e) => e.stopPropagation()}
+      >
         <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon" className="size-7">
-              <EllipsisVertical className="h-3.5 w-3.5" />
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="size-6">
+              <EllipsisVertical className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onSelect}>Open docs</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                void copyToClipboard(
+                  buildFullUrl(baseUrl, endpoint.path),
+                  'Full URL copied'
+                )
+              }
+              disabled={!baseUrl}
+            >
+              Copy URL
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                void copyToClipboard(
+                  buildCurlSkeleton(
+                    baseUrl,
+                    endpoint.path,
+                    endpoint.method,
+                    endpoint.auth
+                  ),
+                  'cURL skeleton copied'
+                )
+              }
+              disabled={!baseUrl}
+            >
+              Copy cURL
+            </DropdownMenuItem>
             {!readonly && (
               <DropdownMenuItem
                 className="text-destructive"
@@ -963,13 +862,925 @@ function RestEndpointRow({
   )
 }
 
-type EndpointTab = 'meta' | 'tryit' | 'samples' | 'connections'
+function GraphQLOperationSidebarRow({
+  operation,
+  selected,
+  onSelect,
+}: {
+  operation: GraphQLOperationItem
+  selected: boolean
+  onSelect: () => void
+}) {
+  const fields = useMemo(
+    () => arrayNonNullable(operation.componentMeta.componentModalFields),
+    [operation.componentMeta.componentModalFields]
+  )
+  const flattened = useMemo(() => flattenMetaData(fields, fields), [fields])
+
+  const nameField = fields.find((f) => f?.label?.toLowerCase() === 'name')
+  const kindField = fields.find(
+    (f) =>
+      f?.label?.toLowerCase() === 'graphql operation type' ||
+      f?.label?.toLowerCase() === 'operation type' ||
+      f?.label?.toLowerCase() === 'kind'
+  )
+  const signatureField = fields.find(
+    (f) => f?.label?.toLowerCase() === 'signature'
+  )
+
+  const name = nameField?.componentFieldId
+    ? (flattened[nameField.componentFieldId] as string)
+    : 'N/A'
+  const kind = (
+    kindField?.componentFieldId
+      ? (flattened[kindField.componentFieldId] as string)
+      : 'Query'
+  ) as 'Query' | 'Mutation' | 'Subscription'
+  const signature = signatureField?.componentFieldId
+    ? (flattened[signatureField.componentFieldId] as string)
+    : undefined
+
+  return (
+    <div
+      onClick={onSelect}
+      className={`rest-nav-button group flex w-full cursor-pointer items-center gap-2 px-3 py-2.5 text-left transition ${
+        selected ? 'rest-nav-button-active' : 'rest-nav-button-inactive'
+      }`}
+    >
+      <Badge
+        variant="outline"
+        className={`${getGraphQLOperationTypeColor(kind)} shrink-0 px-1.5 py-0 text-[10px] text-white`}
+      >
+        {kind.slice(0, 1)}
+      </Badge>
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-mono text-xs font-semibold text-[#F4F7FC]">
+          {name}
+        </div>
+        {signature && (
+          <div className="truncate text-[10px] text-[#828DA3]">{signature}</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function GrpcMethodSidebarRow({
+  method,
+  selected,
+  onSelect,
+}: {
+  method: GrpcMethodItem
+  selected: boolean
+  onSelect: () => void
+}) {
+  const fields = useMemo(
+    () => arrayNonNullable(method.componentMeta.componentModalFields),
+    [method.componentMeta.componentModalFields]
+  )
+  const flattened = useMemo(() => flattenMetaData(fields, fields), [fields])
+
+  const methodNameField = fields.find(
+    (f) =>
+      f?.label?.toLowerCase() === 'grpc method name' ||
+      f?.label?.toLowerCase() === 'method name'
+  )
+  const rpcTypeField = fields.find(
+    (f) =>
+      f?.label?.toLowerCase() === 'grpc rpc type' ||
+      f?.label?.toLowerCase() === 'streaming type' ||
+      f?.label?.toLowerCase() === 'rpc type'
+  )
+  const requestTypeField = fields.find(
+    (f) => f?.label?.toLowerCase() === 'request type'
+  )
+  const responseTypeField = fields.find(
+    (f) => f?.label?.toLowerCase() === 'response type'
+  )
+
+  const methodName = methodNameField?.componentFieldId
+    ? (flattened[methodNameField.componentFieldId] as string)
+    : 'N/A'
+  const streamingType = rpcTypeField?.componentFieldId
+    ? mapGrpcRpcType(flattened[rpcTypeField.componentFieldId] as string)
+    : 'UNARY'
+  const requestType = requestTypeField?.componentFieldId
+    ? (flattened[requestTypeField.componentFieldId] as string)
+    : undefined
+  const responseType = responseTypeField?.componentFieldId
+    ? (flattened[responseTypeField.componentFieldId] as string)
+    : undefined
+
+  const streamingShortLabel: Record<string, string> = {
+    UNARY: 'Unary',
+    SERVER_STREAMING: 'S-Stream',
+    CLIENT_STREAMING: 'C-Stream',
+    BIDIRECTIONAL_STREAMING: 'Bidi',
+  }
+
+  return (
+    <div
+      onClick={onSelect}
+      className={`rest-nav-button group flex w-full cursor-pointer items-center gap-2 px-3 py-2.5 text-left transition ${
+        selected ? 'rest-nav-button-active' : 'rest-nav-button-inactive'
+      }`}
+    >
+      <Badge
+        variant="outline"
+        className={`${getGrpcStreamingTypeColor(streamingType)} shrink-0 px-1.5 py-0 text-[10px] text-white`}
+      >
+        {streamingShortLabel[streamingType] ?? streamingType}
+      </Badge>
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-mono text-xs font-semibold text-[#F4F7FC]">
+          {methodName}
+        </div>
+        {(requestType || responseType) && (
+          <div className="truncate font-mono text-[10px] text-[#828DA3]">
+            {requestType} → {responseType}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+type EndpointTab = 'spec' | 'meta' | 'tryit' | 'samples' | 'connections'
+
+function isJsonSchemaDocument(obj: unknown): boolean {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false
+  const o = obj as Record<string, unknown>
+  if ('openapi' in o || 'swagger' in o) return true
+  if (typeof o.$schema === 'string') return true
+  if ('$ref' in o) return true
+  if ('properties' in o || 'items' in o || 'allOf' in o || 'oneOf' in o || 'anyOf' in o) {
+    return true
+  }
+  if (typeof o.type === 'string' && (o.properties || o.items)) return true
+  return false
+}
+
+function unescapeDisplayText(value: string): string {
+  return value.replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+}
+
+function formatPayloadJson(data: unknown): string {
+  return unescapeDisplayText(JSON.stringify(data, null, 2))
+}
+
+function JsonPayloadEntry({
+  name,
+  value,
+  depth,
+}: {
+  name: string
+  value: unknown
+  depth: number
+}) {
+  const [expanded, setExpanded] = useState(depth < 2)
+  const isObject = value !== null && typeof value === 'object'
+  const isArray = Array.isArray(value)
+  const entries = isObject
+    ? isArray
+      ? (value as unknown[]).map((v, i) => [String(i), v] as const)
+      : Object.entries(value as Record<string, unknown>)
+    : []
+  const hasChildren = isObject && entries.length > 0
+
+  const valueType = value === null ? 'null' : isArray ? 'array' : isObject ? 'object' : typeof value
+  const leafDisplay =
+    valueType === 'string'
+      ? `"${String(value)}"`
+      : value === null
+        ? 'null'
+        : String(value)
+
+  const valueColor =
+    valueType === 'string'
+      ? 'text-green-400'
+      : valueType === 'number'
+        ? 'text-blue-400'
+        : valueType === 'boolean'
+          ? 'text-amber-400'
+          : 'text-[#828DA3]'
+
+  return (
+    <div className={cn(depth > 0 && 'ml-4 border-l border-[#2A3242]')}>
+      <div
+        className={cn(
+          'flex items-baseline gap-2 px-3 py-1.5',
+          hasChildren && 'cursor-pointer select-none hover:bg-[#1E2533]'
+        )}
+        onClick={() => hasChildren && setExpanded((v) => !v)}
+      >
+        {hasChildren ? (
+          <ChevronDown
+            className={cn(
+              'h-3 w-3 shrink-0 text-[#586378] transition-transform',
+              !expanded && '-rotate-90'
+            )}
+          />
+        ) : (
+          <span className="w-3 shrink-0" />
+        )}
+        <span className="font-mono text-xs font-medium text-[#F4F7FC]">{name}</span>
+        {hasChildren ? (
+          <span className="font-mono text-[10px] text-[#828DA3]">{valueType}</span>
+        ) : (
+          <span className={cn('font-mono text-xs', valueColor)}>{leafDisplay}</span>
+        )}
+      </div>
+      {hasChildren && expanded && (
+        <div>
+          {entries.map(([key, child]) => (
+            <JsonPayloadEntry key={key} name={key} value={child} depth={depth + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function JsonPayloadTree({ data }: { data: unknown }) {
+  if (data === null || data === undefined) {
+    return (
+      <div className="text-muted-foreground px-3 py-2 text-xs">No payload defined</div>
+    )
+  }
+
+  if (typeof data !== 'object') {
+    return (
+      <pre className="overflow-x-auto px-3 py-2.5 font-mono text-xs text-[#C9D1D9]">
+        {String(data)}
+      </pre>
+    )
+  }
+
+  const entries = Array.isArray(data)
+    ? data.map((v, i) => [String(i), v] as const)
+    : Object.entries(data as Record<string, unknown>)
+
+  if (entries.length === 0) {
+    return (
+      <div className="text-muted-foreground px-3 py-2 font-mono text-xs">
+        {Array.isArray(data) ? '[]' : '{}'}
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-md border border-[#2A3242] bg-[#141925] py-1">
+      {entries.map(([key, value]) => (
+        <JsonPayloadEntry key={key} name={key} value={value} depth={0} />
+      ))}
+    </div>
+  )
+}
+
+/**
+ * Renders a raw schema/payload string in the Spec tab.
+ * JSON Schema documents use SchemaTree; example payloads use JsonPayloadTree;
+ * GraphQL operation documents render as formatted query text.
+ */
+function SpecSchemaBlock({ label, raw }: { label: string; raw: string }) {
+  const parsed = useMemo(() => {
+    try {
+      return JSON.parse(raw) as unknown
+    } catch {
+      return null
+    }
+  }, [raw])
+
+  const graphqlQuery =
+    parsed &&
+    typeof parsed === 'object' &&
+    !Array.isArray(parsed) &&
+    typeof (parsed as Record<string, unknown>).query === 'string'
+      ? unescapeDisplayText((parsed as Record<string, string>).query)
+      : null
+
+  const payloadData = useMemo(() => {
+    if (parsed === null) return null
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      !Array.isArray(parsed) &&
+      'data' in (parsed as Record<string, unknown>)
+    ) {
+      return (parsed as Record<string, unknown>).data
+    }
+    return parsed
+  }, [parsed])
+
+  const displayText = useMemo(() => {
+    if (parsed !== null) return formatPayloadJson(parsed)
+    return unescapeDisplayText(raw)
+  }, [parsed, raw])
+
+  return (
+    <div className="space-y-2">
+      <p className="text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+        {label}
+      </p>
+      {parsed !== null && isJsonSchemaDocument(parsed) ? (
+        <div className="rounded-md border border-[#2A3242]">
+          <SchemaTree schema={parsed as SchemaNode} showRequired={false} />
+        </div>
+      ) : graphqlQuery ? (
+        <pre className="overflow-x-auto rounded-md bg-[#0D1017] px-3 py-2.5 font-mono text-xs leading-relaxed whitespace-pre-wrap text-[#C9D1D9]">
+          {graphqlQuery}
+        </pre>
+      ) : parsed !== null ? (
+        <JsonPayloadTree data={payloadData} />
+      ) : (
+        <pre className="overflow-x-auto rounded-md bg-[#0D1017] px-3 py-2.5 font-mono text-xs leading-relaxed text-[#C9D1D9]">
+          {displayText}
+        </pre>
+      )}
+    </div>
+  )
+}
+
+function ResponseRow({
+  status,
+  description,
+  specData,
+}: {
+  status: string
+  description: string
+  specData: SpecResponseData | undefined
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const hasSpec = !!(specData?.schema || specData?.example)
+
+  return (
+    <div className="border-b last:border-b-0">
+      <div
+        className={cn(
+          'flex items-center gap-2 px-3 py-2 text-sm',
+          hasSpec && 'cursor-pointer select-none hover:bg-[#1E2533]'
+        )}
+        onClick={() => hasSpec && setExpanded((v) => !v)}
+      >
+        <span className="font-mono font-medium shrink-0">{status}</span>
+        <span className="text-muted-foreground flex-1">
+          {description || 'Response'}
+        </span>
+        {hasSpec && (
+          <ChevronDown
+            className={cn(
+              'h-3.5 w-3.5 shrink-0 text-[#586378] transition-transform duration-150',
+              expanded && 'rotate-180'
+            )}
+          />
+        )}
+      </div>
+      {expanded && hasSpec && (
+        <div className="space-y-4 border-t border-[#2A3242] px-3 py-3">
+          {specData?.schema && (
+            <div>
+              <p className="mb-2 text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                Response Schema
+              </p>
+              <SchemaTree schema={specData.schema as SchemaNode} showRequired={false} />
+            </div>
+          )}
+          {specData?.example && (
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <p className="text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                  Example
+                </p>
+                <button
+                  type="button"
+                  className="text-[#828DA3] hover:text-[#D2D9E6]"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    void copyToClipboard(specData.example!, 'Example copied')
+                  }}
+                >
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+              <pre className="overflow-x-auto rounded-lg bg-[#1E2533] p-3 font-mono text-[11px] leading-relaxed text-[#D2D9E6]">
+                {specData.example}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const endpointTabs: { id: EndpointTab; label: string }[] = [
+  { id: 'spec', label: 'Spec' },
   { id: 'meta', label: 'Meta' },
   { id: 'tryit', label: 'Try it' },
   { id: 'samples', label: 'Samples' },
   { id: 'connections', label: 'Connections' },
 ]
+
+// ─── Spec tab: swagger-style reference view ───────────────────
+
+type SchemaObj = Record<string, unknown>
+
+type RefResolver = (ref: string) => SchemaObj | null
+
+/**
+ * Walk a SchemaNode tree and inline every $ref so that SchemaTree
+ * (which doesn't resolve refs itself) can render the full structure.
+ */
+function resolveSchemaRefs(
+  schema: SchemaNode,
+  resolveRef: RefResolver,
+  visited = new Set<string>(),
+  depth = 0
+): SchemaNode {
+  if (depth > 8) return schema
+
+  if (schema.$ref) {
+    if (visited.has(schema.$ref)) {
+      // Circular reference guard — return a placeholder object
+      return { type: 'object' }
+    }
+    const resolved = resolveRef(schema.$ref) as SchemaNode | null
+    if (resolved) {
+      const next = new Set(visited)
+      next.add(schema.$ref)
+      return resolveSchemaRefs(resolved, resolveRef, next, depth + 1)
+    }
+    return schema
+  }
+
+  const result: SchemaNode = { ...schema }
+
+  if (schema.properties) {
+    result.properties = Object.fromEntries(
+      Object.entries(schema.properties).map(([k, v]) => [
+        k,
+        resolveSchemaRefs(v, resolveRef, visited, depth + 1),
+      ])
+    )
+  }
+
+  if (schema.items) {
+    result.items = resolveSchemaRefs(schema.items, resolveRef, visited, depth + 1)
+  }
+
+  if (schema.allOf) {
+    result.allOf = schema.allOf.map((s) =>
+      resolveSchemaRefs(s, resolveRef, visited, depth + 1)
+    )
+  }
+  if (schema.oneOf) {
+    result.oneOf = schema.oneOf.map((s) =>
+      resolveSchemaRefs(s, resolveRef, visited, depth + 1)
+    )
+  }
+  if (schema.anyOf) {
+    result.anyOf = schema.anyOf.map((s) =>
+      resolveSchemaRefs(s, resolveRef, visited, depth + 1)
+    )
+  }
+
+  return result
+}
+
+function schemaToExample(
+  schema: SchemaObj | null | undefined,
+  depth = 0,
+  resolveRef?: RefResolver
+): unknown {
+  if (!schema || depth > 6) return null
+
+  // Resolve $ref before anything else
+  if (schema['$ref'] && resolveRef) {
+    const resolved = resolveRef(schema['$ref'] as string) as SchemaObj | null
+    if (resolved) return schemaToExample(resolved, depth + 1, resolveRef)
+    return {}
+  }
+  if (schema['$ref']) return {}
+
+  if (schema.example !== undefined) return schema.example
+
+  if (schema.enum) {
+    const vals = schema.enum as unknown[]
+    return vals[0] ?? null
+  }
+
+  // allOf / anyOf / oneOf — use the first concrete schema
+  for (const combiner of ['allOf', 'anyOf', 'oneOf'] as const) {
+    const list = schema[combiner] as SchemaObj[] | undefined
+    if (Array.isArray(list) && list.length > 0) {
+      // Merge allOf into one object for better examples
+      if (combiner === 'allOf') {
+        const merged: SchemaObj = {}
+        for (const sub of list) {
+          const resolved = sub['$ref'] && resolveRef
+            ? (resolveRef(sub['$ref'] as string) as SchemaObj | null) ?? sub
+            : sub
+          Object.assign(merged, resolved)
+        }
+        return schemaToExample(merged, depth + 1, resolveRef)
+      }
+      return schemaToExample(list[0] as SchemaObj, depth + 1, resolveRef)
+    }
+  }
+
+  const type = schema.type as string | undefined
+
+  if (type === 'object' || schema.properties) {
+    const props = (schema.properties ?? {}) as Record<string, SchemaObj>
+    const result: Record<string, unknown> = {}
+    for (const [key, propSchema] of Object.entries(props)) {
+      result[key] = schemaToExample(propSchema, depth + 1, resolveRef)
+    }
+    return result
+  }
+
+  if (type === 'array' || schema.items) {
+    const items = (schema.items ?? {}) as SchemaObj
+    return [schemaToExample(items, depth + 1, resolveRef)]
+  }
+
+  const format = schema.format as string | undefined
+  switch (type) {
+    case 'string':
+      if (format === 'email') return 'user@example.com'
+      if (format === 'date-time') return '2024-01-01T00:00:00Z'
+      if (format === 'date') return '2024-01-01'
+      if (format === 'password') return '********'
+      if (format === 'uuid') return '00000000-0000-0000-0000-000000000000'
+      if (format === 'uri') return 'https://example.com'
+      return 'string'
+    case 'integer':
+      return 0
+    case 'number':
+      return 0
+    case 'boolean':
+      return true
+    default:
+      return null
+  }
+}
+
+function statusPillColor(code: string) {
+  if (code.startsWith('2')) return 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
+  if (code.startsWith('3')) return 'bg-sky-500/15 text-sky-400 ring-1 ring-sky-500/30'
+  if (code.startsWith('4')) return 'bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30'
+  if (code.startsWith('5')) return 'bg-red-500/15 text-red-400 ring-1 ring-red-500/30'
+  return 'bg-[#1E2533] text-[#D2D9E6] ring-1 ring-[#2A3242]'
+}
+
+function EndpointSpecView({
+  endpoint,
+  responses,
+  openApiRuntime,
+}: {
+  endpoint: RestEndpointItem
+  responses: Array<[string, string]>
+  openApiRuntime?: ReturnType<typeof createOpenApiRuntime> | null
+}) {
+  const [expandedCode, setExpandedCode] = useState<string | null>(null)
+  const [bodyView, setBodyView] = useState<'example' | 'schema'>('schema')
+  const [responseViews, setResponseViews] = useState<Record<string, 'example' | 'schema'>>({})
+
+  function getResponseView(code: string): 'example' | 'schema' {
+    return responseViews[code] ?? 'schema'
+  }
+  function setResponseView(code: string, view: 'example' | 'schema') {
+    setResponseViews((prev) => ({ ...prev, [code]: view }))
+  }
+
+  // Use path+method as the primary lookup — much more reliable than operationId
+  const auth = openApiRuntime
+    ? openApiRuntime.operationAuthByPath(endpoint.method, endpoint.path)
+    : endpoint.auth
+
+  const requestBody: SpecRequestBodyData | null =
+    openApiRuntime?.operationRequestBodyByPath(endpoint.method, endpoint.path) ?? null
+  const specParams: SpecParameterData[] =
+    openApiRuntime?.operationParametersByPath(endpoint.method, endpoint.path) ?? []
+
+  const pathParams = specParams.filter((p) => p.in === 'path')
+  const queryParams = specParams.filter((p) => p.in === 'query')
+  const headerParams = specParams.filter((p) => p.in === 'header')
+
+  const resolveRef: RefResolver | undefined = openApiRuntime
+    ? (ref) => openApiRuntime.resolveRef(ref) as SchemaObj | null
+    : undefined
+
+  const requestSchema = requestBody?.schema as SchemaNode | null
+  const resolvedRequestSchema = requestSchema && resolveRef
+    ? resolveSchemaRefs(requestSchema, resolveRef)
+    : requestSchema
+  const requestExample = resolvedRequestSchema
+    ? JSON.stringify(schemaToExample(resolvedRequestSchema as SchemaObj, 0, resolveRef), null, 2)
+    : null
+
+  return (
+    <div className="space-y-5">
+      {/* Auth badge ────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1',
+            auth === 'none'
+              ? 'bg-[#1E2533] text-[#828DA3] ring-[#2A3242]'
+              : 'bg-amber-500/15 text-amber-400 ring-amber-500/30'
+          )}
+        >
+          {auth === 'none' ? (
+            <svg className="h-3 w-3" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M5.5 5a2.5 2.5 0 0 1 5 0H12V4a4 4 0 0 0-8 0v1h1.5Zm-3 2a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2.5Z" />
+            </svg>
+          ) : (
+            <svg className="h-3 w-3" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 1a4 4 0 0 0-4 4v1H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1V5a4 4 0 0 0-4-4Zm2.5 5H5.5V5a2.5 2.5 0 0 1 5 0v1Z" />
+            </svg>
+          )}
+          {authLabel(auth)}
+        </span>
+        {endpoint.description && (
+          <span className="text-xs text-[#828DA3]">{endpoint.description}</span>
+        )}
+      </div>
+
+      {/* Path parameters ───────────────────── */}
+      {pathParams.length > 0 && (
+        <section>
+          <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+            Path Parameters
+          </h4>
+          <SpecParamList params={pathParams} />
+        </section>
+      )}
+
+      {/* Query parameters ──────────────────── */}
+      {queryParams.length > 0 && (
+        <section>
+          <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+            Query Parameters
+          </h4>
+          <SpecParamList params={queryParams} />
+        </section>
+      )}
+
+      {/* Header parameters ─────────────────── */}
+      {headerParams.length > 0 && (
+        <section>
+          <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+            Headers
+          </h4>
+          <SpecParamList params={headerParams} />
+        </section>
+      )}
+
+      {/* Request body ──────────────────────── */}
+      {requestBody && (
+        <section>
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+                Request Body
+              </h4>
+              <span className="text-[10px] text-[#586378]">
+                {requestBody.contentType}
+                {requestBody.required ? ' · required' : ' · optional'}
+              </span>
+            </div>
+            {/* Example / Schema toggle */}
+            {requestExample && (
+              <div className="flex items-center rounded-md border border-[#2A3242] text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => setBodyView('example')}
+                  className={cn(
+                    'rounded-l-md px-2 py-1 transition',
+                    bodyView === 'example'
+                      ? 'bg-[#2A3242] text-[#D2D9E6]'
+                      : 'text-[#828DA3] hover:text-[#D2D9E6]'
+                  )}
+                >
+                  Example
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBodyView('schema')}
+                  className={cn(
+                    'rounded-r-md px-2 py-1 transition',
+                    bodyView === 'schema'
+                      ? 'bg-[#2A3242] text-[#D2D9E6]'
+                      : 'text-[#828DA3] hover:text-[#D2D9E6]'
+                  )}
+                >
+                  Schema
+                </button>
+              </div>
+            )}
+          </div>
+          {bodyView === 'example' && requestExample ? (
+            <div className="relative">
+              <button
+                type="button"
+                className="absolute top-2 right-2 text-[#828DA3] hover:text-[#D2D9E6]"
+                onClick={() => void copyToClipboard(requestExample, 'Example copied')}
+              >
+                <Copy className="h-3 w-3" />
+              </button>
+              <pre className="overflow-x-auto rounded-lg bg-[#1E2533] p-3 font-mono text-[11px] leading-relaxed text-[#D2D9E6]">
+                {requestExample}
+              </pre>
+            </div>
+          ) : resolvedRequestSchema ? (
+            <SchemaTree schema={resolvedRequestSchema} />
+          ) : (
+            <p className="text-xs text-[#586378]">No schema defined.</p>
+          )}
+        </section>
+      )}
+
+      {/* Responses ─────────────────────────── */}
+      {responses.length > 0 && (
+        <section>
+          <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+            Responses
+          </h4>
+          {/* Status pills */}
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {responses.map(([code, desc]) => {
+              const specDesc = openApiRuntime?.operationResponsesByPath(
+                endpoint.method,
+                endpoint.path
+              )[code]?.description ?? ''
+              const label = desc || specDesc
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() =>
+                    setExpandedCode(expandedCode === code ? null : code)
+                  }
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition',
+                    statusPillColor(code),
+                    expandedCode === code && 'opacity-100',
+                    expandedCode !== null && expandedCode !== code && 'opacity-50'
+                  )}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                  {code}{label ? ` — ${label}` : ''}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Expanded response detail */}
+          {responses.map(([code, desc]) => {
+            const specData = openApiRuntime?.operationResponsesByPath(
+              endpoint.method,
+              endpoint.path
+            )[code]
+            const label = desc || specData?.description || ''
+            const isExpanded = expandedCode === code || expandedCode === null
+            if (!isExpanded) return null
+
+            const respSchema = specData?.schema as SchemaNode | null ?? null
+            const resolvedRespSchema = respSchema && resolveRef
+              ? resolveSchemaRefs(respSchema, resolveRef)
+              : respSchema
+            const respExample =
+              specData?.example ??
+              (resolvedRespSchema
+                ? JSON.stringify(schemaToExample(resolvedRespSchema as SchemaObj, 0, resolveRef), null, 2)
+                : null)
+            const hasContent = resolvedRespSchema || respExample
+            const currentView = getResponseView(code)
+
+            return (
+              <div
+                key={code}
+                className="rounded-lg border border-[#2A3242] bg-[#141925]"
+              >
+                {/* Header row: pill + description + Example/Schema toggle */}
+                <div className="flex items-center justify-between gap-2 border-b border-[#2A3242] px-3 py-2">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        'rounded-full px-2 py-0.5 text-xs font-semibold',
+                        statusPillColor(code)
+                      )}
+                    >
+                      {code}
+                    </span>
+                    {label && (
+                      <span className="text-xs text-[#D2D9E6]">{label}</span>
+                    )}
+                  </div>
+                  {/* Example / Schema toggle — mirrors request body toggle */}
+                  {hasContent && (
+                    <div className="flex items-center rounded-md border border-[#2A3242] text-[10px]">
+                      <button
+                        type="button"
+                        onClick={() => setResponseView(code, 'example')}
+                        className={cn(
+                          'rounded-l-md px-2 py-1 transition',
+                          currentView === 'example'
+                            ? 'bg-[#2A3242] text-[#D2D9E6]'
+                            : 'text-[#828DA3] hover:text-[#D2D9E6]'
+                        )}
+                      >
+                        Example
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setResponseView(code, 'schema')}
+                        className={cn(
+                          'rounded-r-md px-2 py-1 transition',
+                          currentView === 'schema'
+                            ? 'bg-[#2A3242] text-[#D2D9E6]'
+                            : 'text-[#828DA3] hover:text-[#D2D9E6]'
+                        )}
+                      >
+                        Schema
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Body */}
+                {!hasContent ? (
+                  <p className="px-3 py-3 text-xs text-[#586378]">
+                    No schema defined.
+                  </p>
+                ) : currentView === 'example' && respExample ? (
+                  <div className="relative px-3 py-3">
+                    <button
+                      type="button"
+                      className="absolute top-5 right-5 text-[#828DA3] hover:text-[#D2D9E6]"
+                      onClick={() => void copyToClipboard(respExample, 'Example copied')}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </button>
+                    <pre className="overflow-x-auto rounded-lg bg-[#1E2533] p-3 font-mono text-[11px] leading-relaxed text-[#D2D9E6]">
+                      {respExample}
+                    </pre>
+                  </div>
+                ) : resolvedRespSchema ? (
+                  <div className="px-3 py-3">
+                    <SchemaTree schema={resolvedRespSchema} showRequired={false} />
+                  </div>
+                ) : null}
+              </div>
+            )
+          })}
+        </section>
+      )}
+    </div>
+  )
+}
+
+function SpecParamList({ params }: { params: SpecParameterData[] }) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-[#2A3242] bg-[#141925]">
+      {params.map((p, i) => {
+        const typeLabel =
+          (p.schema?.type as string | undefined) ??
+          (p.schema?.['$ref'] as string | undefined)?.split('/').pop() ??
+          'string'
+        return (
+          <div
+            key={`${p.in}-${p.name}`}
+            className={cn(
+              'flex flex-wrap items-baseline gap-x-2 gap-y-1 px-3 py-2.5 text-sm',
+              i < params.length - 1 && 'border-b border-[#2A3242]'
+            )}
+          >
+            <span className="font-mono font-semibold text-[#F4F7FC]">
+              {p.name}
+            </span>
+            <span className="font-mono text-xs text-[#828DA3]">
+              {typeLabel}
+            </span>
+            {p.required ? (
+              <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-medium text-red-400 ring-1 ring-red-500/30">
+                required
+              </span>
+            ) : (
+              <span className="text-[10px] text-[#586378]">optional</span>
+            )}
+            {p.description && (
+              <span className="w-full text-xs text-[#828DA3]">
+                {p.description}
+              </span>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 function EndpointDetailsPanel({
   endpoint,
@@ -981,23 +1792,26 @@ function EndpointDetailsPanel({
   endpoint: RestEndpointItem
   baseUrl: string
   readonly: boolean
-  openApiRuntime: ReturnType<typeof createOpenApiRuntime>
+  openApiRuntime?: ReturnType<typeof createOpenApiRuntime> | null
   onClose: () => void
 }) {
   const { updateServiceApiEndpoint, serviceId } =
     useServiceApiEndpointsContext()
 
-  const [control, activeTab] = useBetterTabs(endpointTabs, 'meta')
-  const [isMetaDirty, setIsMetaDirty] = useState(false)
-  const [metaActions, setMetaActions] = useState<{
-    submit: () => Promise<boolean>
-    reset: () => void
-  } | null>(null)
-  const isSpecOwned =
-    (endpoint.sourceType || '')
-      .toLowerCase()
-      .match(/openapi|swagger|spec|imported/) !== null
-  const responses = parseStatusCodesMap(endpoint.statusCodes)
+  const [control, activeTab] = useBetterTabs(endpointTabs, 'spec')
+  // Merge status codes: spec-defined responses take priority over stored meta
+  const metaResponses = parseStatusCodesMap(endpoint.statusCodes)
+  const specResponsesMap = openApiRuntime
+    ? openApiRuntime.operationResponsesByPath(endpoint.method, endpoint.path)
+    : {}
+  const specResponseCodes = Object.keys(specResponsesMap)
+  const responses: Array<[string, string]> = specResponseCodes.length > 0
+    ? specResponseCodes.map((code) => {
+        const fromMeta = metaResponses.find(([c]) => c === code)
+        if (fromMeta) return fromMeta
+        return [code, specResponsesMap[code]?.description ?? '']
+      })
+    : metaResponses
   const updatedAt =
     endpoint.apiEndpoint.updatedAt || endpoint.apiEndpoint.createdAt
 
@@ -1061,20 +1875,20 @@ function EndpointDetailsPanel({
     toast.success('Response sample saved')
   }
 
+  const fullUrl = buildFullUrl(
+    baseUrl || getBaseFromUrl(endpoint.fullUrl, endpoint.path),
+    endpoint.path
+  )
+
   return (
-    <div className="w-full overflow-hidden rounded-lg border bg-[#141925]">
-      <div className="flex items-center justify-between border-b bg-[#141925] px-4 py-3">
+    <div className="flex w-full flex-col rounded-lg border bg-[#141925]">
+      <div className="flex items-start justify-between border-b bg-[#141925] px-4 py-3">
         <div className="flex flex-col gap-1">
           <h3 className="font-mono text-sm font-semibold">
             {endpoint.method} {endpoint.path}
           </h3>
 
-          <p className="text-muted-foreground text-xs">
-            {buildFullUrl(
-              baseUrl || getBaseFromUrl(endpoint.fullUrl, endpoint.path),
-              endpoint.path
-            )}
-          </p>
+          <p className="text-muted-foreground text-xs">{fullUrl}</p>
 
           <p className="text-muted-foreground mt-1 text-[11px]">
             {updatedAt
@@ -1083,7 +1897,17 @@ function EndpointDetailsPanel({
           </p>
         </div>
 
-        <div>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1.5 px-2 text-xs"
+            onClick={() => void copyToClipboard(fullUrl, 'URL copied')}
+            disabled={!baseUrl}
+          >
+            <Copy className="h-3.5 w-3.5" />
+            Copy URL
+          </Button>
           <CrossButton onClick={onClose} />
         </div>
       </div>
@@ -1099,66 +1923,23 @@ function EndpointDetailsPanel({
       </div>
 
       <div className="space-y-4 px-4 py-4">
+        {activeTab === 'spec' && (
+          <EndpointSpecView
+            endpoint={endpoint}
+            responses={responses}
+            openApiRuntime={openApiRuntime}
+          />
+        )}
+
         {activeTab === 'meta' && (
-          <>
-            <section>
-              <h4 className="mb-1 text-xs font-semibold tracking-wide uppercase">
-                Auth requirement
-              </h4>
-              <p className="text-sm text-[#D2D9E6]">
-                {authLabel(endpoint.auth)}
-              </p>
-            </section>
-
-            <section>
-              <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
-                API schema
-              </h4>
-              <EndpointSchemaView
-                data={{
-                  requestSchema: endpoint.requestSchema,
-                  responseSchema: endpoint.responseSchema,
-                  statusCodes: endpoint.statusCodes,
-                  parameters: endpoint.parameters,
-                }}
-              />
-            </section>
-
-            {responses.length > 0 && (
-              <section>
-                <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
-                  Responses
-                </h4>
-                <div className="overflow-hidden rounded-md border">
-                  {responses.map(([status, description]) => (
-                    <div
-                      key={status}
-                      className="flex items-start justify-between gap-2 border-b px-3 py-2 text-sm last:border-b-0"
-                    >
-                      <span className="font-mono font-medium">{status}</span>
-                      <span className="text-muted-foreground text-right">
-                        {description || 'Response'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            <ConfigureApiEndpointMeta
-              key={endpoint.endpointId}
-              endpoint={endpoint.apiEndpoint}
-              componentMeta={endpoint.componentMeta}
-              readonly={readonly}
-              className="px-0"
-              hideFooter
-              lockedFieldLabels={
-                isSpecOwned ? ['method', 'url', 'protocol'] : []
-              }
-              onDirtyChange={setIsMetaDirty}
-              onBindActions={setMetaActions}
-            />
-          </>
+          <ConfigureApiEndpointMeta
+            key={endpoint.endpointId}
+            endpoint={endpoint.apiEndpoint}
+            componentMeta={endpoint.componentMeta}
+            readonly
+            className="px-0"
+            hideFooter
+          />
         )}
 
         {activeTab === 'tryit' && (
@@ -1168,8 +1949,13 @@ function EndpointDetailsPanel({
             baseUrl={baseUrl || getBaseFromUrl(endpoint.fullUrl, endpoint.path)}
             operationId={endpoint.operationId}
             authKind={
-              openApiRuntime.hasSecuritySchemes
-                ? openApiRuntime.operationAuth(endpoint.operationId)
+              openApiRuntime?.hasSecuritySchemes
+                ? endpoint.operationId
+                  ? openApiRuntime.operationAuth(endpoint.operationId)
+                  : openApiRuntime.operationAuthByPath(
+                      endpoint.method,
+                      endpoint.path
+                    )
                 : endpoint.auth
             }
             requestSchema={endpoint.requestSchema}
@@ -1193,27 +1979,6 @@ function EndpointDetailsPanel({
           <ConfigureApiEndpointConnections endpoint={endpoint.apiEndpoint} />
         )}
       </div>
-
-      <div className="border-t bg-[#141925] px-4 py-3">
-        {activeTab === 'meta' ? (
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              preset="outline"
-              disabled={!isMetaDirty || readonly}
-              onClick={() => metaActions?.reset()}
-            >
-              Cancel changes
-            </Button>
-            <Button
-              preset="primary"
-              disabled={!isMetaDirty || readonly}
-              onClick={() => void metaActions?.submit()}
-            >
-              Update Endpoint
-            </Button>
-          </div>
-        ) : null}
-      </div>
     </div>
   )
 }
@@ -1234,17 +1999,13 @@ function GraphQLOperationDetailsPanel({
   const flattened = useMemo(() => flattenMetaData(fields, fields), [fields])
   const [control, activeTab] = useBetterTabs(
     [
+      { id: 'spec', label: 'Spec' },
       { id: 'meta', label: 'Meta' },
       { id: 'samples', label: 'Samples' },
       { id: 'connections', label: 'Connections' },
     ],
-    'meta'
+    'spec'
   )
-  const [isMetaDirty, setIsMetaDirty] = useState(false)
-  const [metaActions, setMetaActions] = useState<{
-    submit: () => Promise<boolean>
-    reset: () => void
-  } | null>(null)
 
   const nameField = fields.find(
     (field) => field?.label?.toLowerCase() === 'name'
@@ -1255,6 +2016,9 @@ function GraphQLOperationDetailsPanel({
       field?.label?.toLowerCase() === 'operation type' ||
       field?.label?.toLowerCase() === 'kind'
   )
+  const descriptionField = fields.find(
+    (field) => field?.label?.toLowerCase() === 'description' || field?.label?.toLowerCase() === 'summary'
+  )
 
   const operationName = nameField?.componentFieldId
     ? (flattened[nameField.componentFieldId] as string)
@@ -1263,8 +2027,34 @@ function GraphQLOperationDetailsPanel({
   const operationKind = kindField?.componentFieldId
     ? (flattened[kindField.componentFieldId] as string)
     : 'Query'
+  const description = descriptionField?.componentFieldId
+    ? (flattened[descriptionField.componentFieldId] as string)
+    : undefined
+  const requestSchemaRaw = getMetaValue(flattened, fields, ['request schema'])
+  const responseSchemaRaw = getMetaValue(flattened, fields, ['response schema'])
+  const variablesRaw = getMetaValue(flattened, fields, ['parameters'])
   const updatedAt =
     operation.apiEndpoint.updatedAt || operation.apiEndpoint.createdAt
+
+  // Parse arguments and return type from the signature string
+  // e.g. "createDashboard(input: DashboardInput!): Dashboard!"
+  const parsedSignature = useMemo(() => {
+    if (!signature) return null
+    const argsMatch = signature.match(/\(([^)]*)\)/)
+    const returnMatch = signature.match(/\):\s*(.+)$/)
+    const args = argsMatch?.[1]
+      ? argsMatch[1]
+          .split(',')
+          .map((a) => a.trim())
+          .filter(Boolean)
+          .map((a) => {
+            const [argName, argType] = a.split(':').map((s) => s.trim())
+            return { name: argName, type: argType }
+          })
+      : []
+    const returnType = returnMatch?.[1]?.trim() ?? null
+    return { args, returnType }
+  }, [signature])
 
   return (
     <DynamicScrollArea
@@ -1278,7 +2068,7 @@ function GraphQLOperationDetailsPanel({
             <div className="flex min-w-0 items-center gap-2">
               <Badge
                 variant="outline"
-                className={`${getGraphQLOperationTypeColor(operationKind)} text-white`}
+                className={`${getGraphQLOperationTypeColor(operationKind)} shrink-0 text-white`}
               >
                 {operationKind}
               </Badge>
@@ -1311,17 +2101,100 @@ function GraphQLOperationDetailsPanel({
       </div>
 
       <div className="space-y-4 px-4 py-4">
+        {activeTab === 'spec' && (
+          <div className="space-y-5">
+            {/* Operation kind pill */}
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className={`${getGraphQLOperationTypeColor(operationKind)} text-white`}
+              >
+                {operationKind}
+              </Badge>
+              <span className="font-mono text-sm font-semibold text-[#F4F7FC]">
+                {operationName}
+              </span>
+            </div>
+
+            {/* Description */}
+            {description && (
+              <p className="text-sm text-[#A0ADBE]">{description}</p>
+            )}
+
+            {/* Full signature block */}
+            {signature && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                  Signature
+                </p>
+                <pre className="overflow-x-auto rounded-md bg-[#0D1017] px-3 py-2.5 font-mono text-xs text-[#C9D1D9]">
+                  {operationKind.toLowerCase()} {signature}
+                </pre>
+              </div>
+            )}
+
+            {/* Arguments */}
+            {parsedSignature && parsedSignature.args.length > 0 && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                  Arguments
+                </p>
+                <div className="divide-y divide-[#2A3242] rounded-md border border-[#2A3242]">
+                  {parsedSignature.args.map((arg, i) => (
+                    <div key={i} className="flex items-baseline gap-2 px-3 py-2">
+                      <span className="font-mono text-xs font-semibold text-[#F4F7FC]">
+                        {arg.name}
+                      </span>
+                      {arg.type && (
+                        <span className="font-mono text-xs text-[#3B82F6]">
+                          {arg.type}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Return type */}
+            {parsedSignature?.returnType && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                  Returns
+                </p>
+                <div className="inline-flex items-center gap-1.5 rounded-md bg-[#0D1017] px-3 py-1.5">
+                  <span className="font-mono text-xs text-[#3B82F6]">
+                    {parsedSignature.returnType}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Variables / input payload */}
+            {variablesRaw && variablesRaw !== '{}' && (
+              <SpecSchemaBlock label="Variables" raw={variablesRaw} />
+            )}
+
+            {/* GraphQL operation document */}
+            {requestSchemaRaw && (
+              <SpecSchemaBlock label="Operation" raw={requestSchemaRaw} />
+            )}
+
+            {/* Response example */}
+            {responseSchemaRaw && (
+              <SpecSchemaBlock label="Response" raw={responseSchemaRaw} />
+            )}
+          </div>
+        )}
+
         {activeTab === 'meta' && (
           <ConfigureApiEndpointMeta
             key={operation.apiEndpoint.apiEndpointId}
             endpoint={operation.apiEndpoint}
             componentMeta={operation.componentMeta}
-            readonly={readonly}
+            readonly
             className="px-0"
             hideFooter
-            lockedFieldLabels={['name', 'graphql operation type', 'signature']}
-            onDirtyChange={setIsMetaDirty}
-            onBindActions={setMetaActions}
           />
         )}
 
@@ -1336,27 +2209,6 @@ function GraphQLOperationDetailsPanel({
         {activeTab === 'connections' && (
           <ConfigureApiEndpointConnections endpoint={operation.apiEndpoint} />
         )}
-      </div>
-
-      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
-        {activeTab === 'meta' ? (
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              preset="outline"
-              disabled={!isMetaDirty || readonly}
-              onClick={() => metaActions?.reset()}
-            >
-              Cancel changes
-            </Button>
-            <Button
-              preset="primary"
-              disabled={!isMetaDirty || readonly}
-              onClick={() => void metaActions?.submit()}
-            >
-              Update Operation
-            </Button>
-          </div>
-        ) : null}
       </div>
     </DynamicScrollArea>
   )
@@ -1378,17 +2230,13 @@ function GrpcMethodDetailsPanel({
   const flattened = useMemo(() => flattenMetaData(fields, fields), [fields])
   const [control, activeTab] = useBetterTabs(
     [
+      { id: 'spec', label: 'Spec' },
       { id: 'meta', label: 'Meta' },
       { id: 'samples', label: 'Samples' },
       { id: 'connections', label: 'Connections' },
     ],
-    'meta'
+    'spec'
   )
-  const [isMetaDirty, setIsMetaDirty] = useState(false)
-  const [metaActions, setMetaActions] = useState<{
-    submit: () => Promise<boolean>
-    reset: () => void
-  } | null>(null)
 
   const methodNameField = fields.find(
     (field) =>
@@ -1409,6 +2257,18 @@ function GrpcMethodDetailsPanel({
       field?.label?.toLowerCase() === 'streaming type' ||
       field?.label?.toLowerCase() === 'rpc type'
   )
+  const requestTypeField = fields.find(
+    (field) => field?.label?.toLowerCase() === 'request type'
+  )
+  const responseTypeField = fields.find(
+    (field) => field?.label?.toLowerCase() === 'response type'
+  )
+  const protoSnippetField = fields.find(
+    (field) => field?.label?.toLowerCase() === 'proto snippet'
+  )
+  const descriptionField = fields.find(
+    (field) => field?.label?.toLowerCase() === 'description' || field?.label?.toLowerCase() === 'summary'
+  )
 
   const methodName = methodNameField?.componentFieldId
     ? (flattened[methodNameField.componentFieldId] as string)
@@ -1422,10 +2282,32 @@ function GrpcMethodDetailsPanel({
   const streamingType = rpcTypeField?.componentFieldId
     ? mapGrpcRpcType(flattened[rpcTypeField.componentFieldId] as string)
     : 'UNARY'
+  const requestType = requestTypeField?.componentFieldId
+    ? (flattened[requestTypeField.componentFieldId] as string)
+    : undefined
+  const responseType = responseTypeField?.componentFieldId
+    ? (flattened[responseTypeField.componentFieldId] as string)
+    : undefined
+  const protoSnippet = protoSnippetField?.componentFieldId
+    ? (flattened[protoSnippetField.componentFieldId] as string)
+    : undefined
+  const description = descriptionField?.componentFieldId
+    ? (flattened[descriptionField.componentFieldId] as string)
+    : undefined
+  const requestSchemaRaw = getMetaValue(flattened, fields, ['request schema'])
+  const responseSchemaRaw = getMetaValue(flattened, fields, ['response schema'])
+
   const updatedAt = method.apiEndpoint.updatedAt || method.apiEndpoint.createdAt
   const servicePath = packageName
     ? `${packageName}.${serviceName || ''}`
     : serviceName || 'N/A'
+
+  const streamingLabel: Record<string, string> = {
+    UNARY: 'Unary',
+    SERVER_STREAMING: 'Server Streaming',
+    CLIENT_STREAMING: 'Client Streaming',
+    BIDIRECTIONAL_STREAMING: 'Bidirectional Streaming',
+  }
 
   return (
     <DynamicScrollArea
@@ -1439,9 +2321,9 @@ function GrpcMethodDetailsPanel({
             <div className="flex min-w-0 items-center gap-2">
               <Badge
                 variant="outline"
-                className={`${getGrpcStreamingTypeColor(streamingType)} text-white`}
+                className={`${getGrpcStreamingTypeColor(streamingType)} shrink-0 text-white`}
               >
-                {streamingType}
+                {streamingLabel[streamingType] ?? streamingType}
               </Badge>
               <h3 className="truncate font-mono text-sm font-semibold">
                 {methodName}
@@ -1470,25 +2352,107 @@ function GrpcMethodDetailsPanel({
       </div>
 
       <div className="space-y-4 px-4 py-4">
+        {activeTab === 'spec' && (
+          <div className="space-y-5">
+            {/* Header info */}
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className={`${getGrpcStreamingTypeColor(streamingType)} text-white`}
+              >
+                {streamingLabel[streamingType] ?? streamingType}
+              </Badge>
+              <span className="font-mono text-sm font-semibold text-[#F4F7FC]">
+                {methodName}
+              </span>
+            </div>
+
+            <p className="font-mono text-xs text-[#828DA3]">{servicePath}</p>
+
+            {description && (
+              <p className="text-sm text-[#A0ADBE]">{description}</p>
+            )}
+
+            {/* Request / Response */}
+            {(requestType || responseType) && (
+              <div className="space-y-3">
+                <p className="text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                  Message Types
+                </p>
+                <div className="divide-y divide-[#2A3242] rounded-md border border-[#2A3242]">
+                  {requestType && (
+                    <div className="flex items-center gap-3 px-3 py-2.5">
+                      <span className="w-16 shrink-0 text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+                        Request
+                      </span>
+                      <span className="font-mono text-xs text-[#3B82F6]">
+                        {requestType}
+                      </span>
+                    </div>
+                  )}
+                  {responseType && (
+                    <div className="flex items-center gap-3 px-3 py-2.5">
+                      <span className="w-16 shrink-0 text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+                        Response
+                      </span>
+                      <span className="font-mono text-xs text-[#3B82F6]">
+                        {responseType}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Streaming mode info */}
+            {streamingType !== 'UNARY' && (
+              <div className="rounded-md border border-[#2A3242] bg-[#0D1017] px-3 py-2.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#828DA3]">
+                  Streaming Mode
+                </p>
+                <p className="mt-1 text-xs text-[#A0ADBE]">
+                  {streamingType === 'SERVER_STREAMING' &&
+                    'The server sends a stream of messages in response to a single client request.'}
+                  {streamingType === 'CLIENT_STREAMING' &&
+                    'The client sends a stream of messages and the server replies with a single response.'}
+                  {streamingType === 'BIDIRECTIONAL_STREAMING' &&
+                    'Both client and server send streams of messages independently.'}
+                </p>
+              </div>
+            )}
+
+            {/* Proto snippet */}
+            {protoSnippet && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold tracking-wider uppercase text-[#828DA3]">
+                  Proto Definition
+                </p>
+                <pre className="overflow-x-auto rounded-md bg-[#0D1017] px-3 py-2.5 font-mono text-xs text-[#C9D1D9]">
+                  {protoSnippet.replace(/\\n/g, '\n')}
+                </pre>
+              </div>
+            )}
+
+            {/* Request payload */}
+            {requestSchemaRaw && (
+              <SpecSchemaBlock label="Request" raw={requestSchemaRaw} />
+            )}
+
+            {/* Response payload */}
+            {responseSchemaRaw && (
+              <SpecSchemaBlock label="Response" raw={responseSchemaRaw} />
+            )}
+          </div>
+        )}
+
         {activeTab === 'meta' && (
           <ConfigureApiEndpointMeta
             key={method.apiEndpoint.apiEndpointId}
             endpoint={method.apiEndpoint}
             componentMeta={method.componentMeta}
-            readonly={readonly}
+            readonly
             className="px-0"
             hideFooter
-            lockedFieldLabels={[
-              'grpc method name',
-              'grpc service name',
-              'package name',
-              'grpc rpc type',
-              'request type',
-              'response type',
-              'proto snippet',
-            ]}
-            onDirtyChange={setIsMetaDirty}
-            onBindActions={setMetaActions}
           />
         )}
 
@@ -1503,27 +2467,6 @@ function GrpcMethodDetailsPanel({
         {activeTab === 'connections' && (
           <ConfigureApiEndpointConnections endpoint={method.apiEndpoint} />
         )}
-      </div>
-
-      <div className="sticky bottom-0 border-t bg-[#141925] px-4 py-3">
-        {activeTab === 'meta' ? (
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              preset="outline"
-              disabled={!isMetaDirty || readonly}
-              onClick={() => metaActions?.reset()}
-            >
-              Cancel changes
-            </Button>
-            <Button
-              preset="primary"
-              disabled={!isMetaDirty || readonly}
-              onClick={() => void metaActions?.submit()}
-            >
-              Update Method
-            </Button>
-          </div>
-        ) : null}
       </div>
     </DynamicScrollArea>
   )

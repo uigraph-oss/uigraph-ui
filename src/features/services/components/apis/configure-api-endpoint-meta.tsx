@@ -38,6 +38,7 @@ import {
 import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { formatMetaSchemaForDisplay } from '@/utils/api/openapi-display'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { buildDynamicZodSchema } from '@uigraph/sdk/browser'
@@ -47,6 +48,38 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm, useFormState } from 'react-hook-form'
 import { toast } from 'sonner'
 import { useServiceApiEndpointsContext } from '../../contexts/service-api-endpoints'
+
+function formatJsonForDisplay(value: unknown): string {
+  if (typeof value !== 'string' || !value.trim()) return (value as string) ?? ''
+  try {
+    const formatted = JSON.stringify(JSON.parse(value), null, 2)
+    // Replace JSON-escaped \n with real newlines so multiline content
+    // (GraphQL queries, proto snippets, etc.) is human-readable in the editor.
+    // JSON.stringify will re-escape on the next save cycle, preserving integrity.
+    return formatted.replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+  } catch {
+    return value.replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+  }
+}
+
+function formatCodeEditorDefaults(
+  fields: LegacyComponentMeta['componentModalFields'],
+  data: Record<string, unknown>
+): Record<string, unknown> {
+  const formatted = { ...data }
+  for (const field of arrayNonNullable(fields)) {
+    if (
+      field.type === ComponentInputType.CodeEditor &&
+      field.componentFieldId &&
+      typeof formatted[field.componentFieldId] === 'string'
+    ) {
+      formatted[field.componentFieldId] = formatJsonForDisplay(
+        formatted[field.componentFieldId]
+      )
+    }
+  }
+  return formatted
+}
 
 type ConfigureApiEndpointMetaProps = {
   endpoint: LegacyApiEndpoint
@@ -71,7 +104,8 @@ export function ConfigureApiEndpointMeta({
   onDirtyChange,
   onBindActions,
 }: ConfigureApiEndpointMetaProps) {
-  const { updateServiceApiEndpointMeta } = useServiceApiEndpointsContext()
+  const { updateServiceApiEndpointMeta, protocol } =
+    useServiceApiEndpointsContext()
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -83,13 +117,18 @@ export function ConfigureApiEndpointMeta({
     return flattenMetaData(fields, fields)
   }, [fields])
 
+  const formattedDefaultValues = useMemo(
+    () => formatCodeEditorDefaults(fields, flattenedMemoizedData),
+    [fields, flattenedMemoizedData]
+  )
+
   const memoizedSchema = useMemo(() => {
     return buildDynamicZodSchema(fields)
   }, [fields])
 
   const { handleSubmit, control, reset } = useForm({
     resolver: zodResolver(memoizedSchema),
-    defaultValues: flattenedMemoizedData,
+    defaultValues: formattedDefaultValues,
   })
   const { isDirty, errors, isSubmitting } = useFormState({ control })
 
@@ -126,11 +165,11 @@ export function ConfigureApiEndpointMeta({
   useEffect(() => {
     onBindActions?.({
       submit: submitForm,
-      reset: () => reset(flattenedMemoizedData),
+      reset: () => reset(formattedDefaultValues),
     })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flattenedMemoizedData, onBindActions, reset])
+  }, [formattedDefaultValues, onBindActions, reset])
 
   async function handleSuccessfulSubmit(input: typeof flattenedMemoizedData) {
     const duplicatedMetaData = { ...input }
@@ -276,9 +315,13 @@ export function ConfigureApiEndpointMeta({
 
                   {field.type === ComponentInputType.CodeEditor && (
                     <CodeMirrorWrapped
-                      height={'10rem'}
-                      value={value ?? ''}
-                      readonly={readonly}
+                      height={'16rem'}
+                      value={formatMetaSchemaForDisplay(
+                        field.label ?? '',
+                        (value ?? '') as string,
+                        protocol
+                      )}
+                      readonly={readonly || isLocked}
                       setValue={setValue}
                     />
                   )}

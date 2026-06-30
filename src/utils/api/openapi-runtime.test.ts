@@ -68,4 +68,31 @@ describe('createOpenApiRuntime', () => {
     expect(runtime.hasSecuritySchemes).toBe(false)
     expect(runtime.operationAuth('v1GetServices')).toBe('none')
   })
+
+  it('treats explicit empty operation security as no auth', () => {
+    const runtime = createOpenApiRuntime({
+      components: {
+        securitySchemes: {
+          bearerAuth: { type: 'http', scheme: 'bearer' },
+        },
+      },
+      security: [{ bearerAuth: [] }],
+      paths: {
+        '/auth/login': {
+          post: {
+            operationId: 'login',
+            security: [],
+          },
+        },
+        '/orders': {
+          get: { operationId: 'listOrders' },
+        },
+      },
+    })
+
+    expect(runtime.operationAuth('login')).toBe('none')
+    expect(runtime.operationAuth('listOrders')).toBe('bearer')
+    expect(runtime.operationAuthByPath('POST', '/auth/login')).toBe('none')
+    expect(runtime.operationAuthByPath('GET', '/orders')).toBe('bearer')
+  })
 })

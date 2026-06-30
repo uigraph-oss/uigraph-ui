@@ -31,6 +31,8 @@ export type DashboardAPIEndpoint = {
   parameters: string
   requestBody: string
   responses: string
+  exampleRequests: string
+  exampleResponses: string
   order: number
   createdBy: string
   updatedBy?: string | null
@@ -104,6 +106,8 @@ export const API_ENDPOINTS = graphql(`
       parameters
       requestBody
       responses
+      exampleRequests
+      exampleResponses
       order
       createdBy
       updatedBy
