@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getTryItAuthStorageKey } from '@/hooks/use-try-it-auth'
 import { resolveAuth, type AuthConfig } from '@/utils/api/auth-resolver'
 import { AuthKind } from '@/utils/api/openapi-runtime'
 import {
@@ -205,9 +206,7 @@ export function EndpointTryItTab({
 
   // Load auth config from localStorage (per service + auth scheme)
   useEffect(() => {
-    const key = serviceId
-      ? `tryit-auth-${serviceId}-${authKind}`
-      : `tryit-auth-${authKind}`
+    const key = getTryItAuthStorageKey(serviceId, authKind)
     const stored = localStorage.getItem(key)
     if (stored) {
       try {
@@ -219,17 +218,30 @@ export function EndpointTryItTab({
     }
   }, [authKind, serviceId])
 
-  // Save auth config to localStorage (per service + auth scheme)
-  const saveAuthConfig = useCallback(
-    (config: AuthConfig) => {
-      setAuthConfig(config)
-      const key = serviceId
-        ? `tryit-auth-${serviceId}-${config.kind}`
-        : `tryit-auth-${config.kind}`
-      localStorage.setItem(key, JSON.stringify(config))
-    },
-    [serviceId]
-  )
+  useEffect(() => {
+    function handleAuthChanged(event: Event) {
+      const key = getTryItAuthStorageKey(serviceId, authKind)
+      const detail = (event as CustomEvent<{ key?: string; legacyKey?: string }>)
+        .detail
+      if (
+        !detail?.key ||
+        detail.key === key ||
+        detail.legacyKey === key
+      ) {
+        const stored = localStorage.getItem(key)
+        if (!stored) return
+        try {
+          const parsed = JSON.parse(stored) as AuthConfig
+          setAuthConfig((prev) => ({ ...prev, ...parsed, kind: authKind }))
+        } catch {
+          // ignore
+        }
+      }
+    }
+    window.addEventListener('tryit-auth-changed', handleAuthChanged)
+    return () =>
+      window.removeEventListener('tryit-auth-changed', handleAuthChanged)
+  }, [authKind, serviceId])
 
   const resolvedUrl = useMemo(() => {
     let urlPath = path
@@ -419,68 +431,6 @@ export function EndpointTryItTab({
           </code>
         </div>
       </div>
-
-      {/* Auth Configuration */}
-      {authKind !== 'none' && (
-        <div className="space-y-2 rounded-lg border bg-[#1E2533] p-3">
-          <Label className="text-xs font-semibold tracking-wide uppercase">
-            {authKind === 'bearer' || authKind === 'oauth2'
-              ? 'Authentication (Bearer Token)'
-              : authKind === 'api-key'
-                ? 'Authentication (API Key)'
-                : 'Authentication'}
-          </Label>
-          {authKind === 'bearer' || authKind === 'oauth2' ? (
-            <Input
-              type="text"
-              placeholder="Paste your Bearer token here"
-              value={authConfig.token || ''}
-              onChange={(e) =>
-                saveAuthConfig({ ...authConfig, token: e.target.value })
-              }
-            />
-          ) : authKind === 'api-key' ? (
-            <div className="space-y-2">
-              <Input
-                placeholder="API key value"
-                value={authConfig.apiKey || ''}
-                onChange={(e) =>
-                  saveAuthConfig({ ...authConfig, apiKey: e.target.value })
-                }
-              />
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Key name (e.g., x-api-key)"
-                  value={authConfig.apiKeyName || ''}
-                  onChange={(e) =>
-                    saveAuthConfig({
-                      ...authConfig,
-                      apiKeyName: e.target.value,
-                    })
-                  }
-                />
-                <Select
-                  value={authConfig.apiKeyIn || 'header'}
-                  onValueChange={(value) =>
-                    saveAuthConfig({
-                      ...authConfig,
-                      apiKeyIn: value as 'header' | 'query',
-                    })
-                  }
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="header">Header</SelectItem>
-                    <SelectItem value="query">Query</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ) : null}
-        </div>
-      )}
 
       {/* Request Builder */}
       <div className="space-y-3">

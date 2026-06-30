@@ -2,15 +2,9 @@
 
 import { apolloClientGQL } from '@/api/client'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { API_GROUP_SPEC } from '@/features/services/api/api-spec'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { Download, FileJson, FileText } from 'lucide-react'
+import { Download } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -147,27 +141,13 @@ export function ApiSpecDownload({
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button preset="outline" disabled={isDownloading}>
-          <Download className="h-4 w-4" />
-          {isDownloading ? 'Downloading...' : 'Download'}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => void handleDownload('original')}>
-          <FileText className="h-4 w-4" />
-          Original
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void handleDownload('json')}>
-          <FileJson className="h-4 w-4" />
-          JSON
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void handleDownload('yaml')}>
-          <FileText className="h-4 w-4" />
-          YAML
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      preset="outline"
+      disabled={isDownloading}
+      onClick={() => void handleDownload('original')}
+    >
+      <Download className="h-4 w-4" />
+      {isDownloading ? 'Downloading...' : 'Download'}
+    </Button>
   )
 }

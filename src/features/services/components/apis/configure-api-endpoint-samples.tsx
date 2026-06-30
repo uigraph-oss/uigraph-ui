@@ -5,6 +5,7 @@ import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
 import { LegacyApiEndpoint } from '@/features/services/api/api-adapters'
 import { cn } from '@/lib/utils'
+import { canonicalizeSampleJson, formatSampleForDisplay } from '@/utils/api/openapi-display'
 import { arrayNonNullable } from 'daily-code'
 import { Code } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -36,7 +37,7 @@ export function ConfigureApiEndpointSamples({
   readonly = false,
   className = 'px-6',
 }: ConfigureApiEndpointSamplesProps) {
-  const { updateServiceApiEndpoint } = useServiceApiEndpointsContext()
+  const { updateServiceApiEndpoint, protocol } = useServiceApiEndpointsContext()
 
   const [editState, setEditState] = useState<EditState | null>(null)
   const [deleteState, setDeleteState] = useState<DeleteState | null>(null)
@@ -63,7 +64,7 @@ export function ConfigureApiEndpointSamples({
   function startUpdate(type: 'request' | 'response', index: number) {
     const samples = type === 'request' ? exampleRequests : exampleResponses
     setEditState({ mode: 'update', type, index })
-    setDraft(samples[index] ?? '')
+    setDraft(formatSampleForDisplay(samples[index] ?? '', protocol, type))
   }
 
   async function handleDelete() {
@@ -87,20 +88,25 @@ export function ConfigureApiEndpointSamples({
         ? exampleResponses.filter((_, i) => i !== deleteState.index)
         : exampleResponses
 
-    await updateServiceApiEndpoint({
-      variables: {
-        apiEndpointId: endpoint.apiEndpointId,
-        input: {
-          serviceApiGroupId: endpoint.serviceApiGroupId,
-          componentMetaId: endpoint.componentMetaId,
-          order: endpoint.order ?? 0,
-          exampleRequests: nextRequests,
-          exampleResponses: nextResponses,
+    try {
+      await updateServiceApiEndpoint({
+        variables: {
+          apiEndpointId: endpoint.apiEndpointId,
+          input: {
+            serviceApiGroupId: endpoint.serviceApiGroupId,
+            componentMetaId: endpoint.componentMetaId,
+            order: endpoint.order ?? 0,
+            exampleRequests: nextRequests,
+            exampleResponses: nextResponses,
+          },
         },
-      },
-    })
-
-    toast.success('Sample deleted')
+      })
+      toast.success('Sample deleted')
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unable to delete sample'
+      toast.error(message || 'Unable to delete sample')
+    }
   }
 
   async function handleSave() {
@@ -122,7 +128,7 @@ export function ConfigureApiEndpointSamples({
       return
     }
 
-    const trimmedValue = draft.trim()
+    const trimmedValue = canonicalizeSampleJson(draft.trim())
 
     let nextRequests = [...exampleRequests]
     let nextResponses = [...exampleResponses]
@@ -160,8 +166,10 @@ export function ConfigureApiEndpointSamples({
       toast.success('Sample saved')
       setEditState(null)
       setDraft('')
-    } catch (_error) {
-      toast.error('Unable to save sample')
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unable to save sample'
+      toast.error(message || 'Unable to save sample')
     } finally {
       setIsSaving(false)
     }
@@ -184,8 +192,6 @@ export function ConfigureApiEndpointSamples({
               minHeight={'220px'}
               onChange={(value) => setDraft(value)}
               placeholder={`Paste a ${editState.type} example`}
-              fontSize={16}
-              lineHeight={2}
             />
           </div>
         </div>
@@ -253,6 +259,8 @@ export function ConfigureApiEndpointSamples({
             key={`request-${index}`}
             title={`Request Sample ${index + 1}`}
             code={code}
+            kind="request"
+            protocol={protocol}
             readonly={readonly}
             onEdit={() => startUpdate('request', index)}
             onDelete={() => setDeleteState({ type: 'request', index })}
@@ -264,6 +272,8 @@ export function ConfigureApiEndpointSamples({
             key={`response-${index}`}
             title={`Response Sample ${index + 1}`}
             code={code}
+            kind="response"
+            protocol={protocol}
             readonly={readonly}
             onEdit={() => startUpdate('response', index)}
             onDelete={() => setDeleteState({ type: 'response', index })}
@@ -285,16 +295,25 @@ export function ConfigureApiEndpointSamples({
 function Snippet({
   title,
   code,
+  kind,
+  protocol,
   onEdit,
   onDelete,
   readonly,
 }: {
   title: string
   code: string
+  kind: 'request' | 'response'
+  protocol: string
   readonly: boolean
   onEdit: () => void
   onDelete: () => void
 }) {
+  const formattedCode = useMemo(
+    () => formatSampleForDisplay(code, protocol, kind),
+    [code, protocol, kind]
+  )
+
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between">
@@ -320,9 +339,7 @@ function Snippet({
         <CodeMirrorRaw
           readOnly={true}
           editable={false}
-          value={code}
-          fontSize={16}
-          lineHeight={2}
+          value={formattedCode}
         />
       </div>
     </div>

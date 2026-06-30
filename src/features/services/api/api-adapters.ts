@@ -2,6 +2,7 @@ import { GT } from '@/api'
 import { ComponentInputType } from '@uigraph/sdk'
 import type { DashboardAPIEndpoint, DashboardAPIGroup } from './api-endpoints'
 import type { DashboardAPIGroupVersion } from './api-group-version'
+import { canonicalizeSampleJson, parseJsonDeep } from '@/utils/api/openapi-display'
 
 export type LegacyApiEndpoint = {
   apiEndpointId?: string | null
@@ -52,19 +53,35 @@ export type LegacyAPIGroupView = {
   updatedAt?: string | null
 }
 
-function toExampleSamples(value?: string | null): string[] | null {
-  if (!value) return null
-  try {
-    const parsed = JSON.parse(value) as unknown
-    if (Array.isArray(parsed)) {
-      return parsed.map((item) =>
-        typeof item === 'string' ? item : JSON.stringify(item)
-      )
-    }
-    return [value]
-  } catch {
-    return [value]
+function toExampleSamples(
+  examplesField?: string | null,
+  legacySchemaField?: string | null
+): string[] | null {
+  const fromExamples = parseExampleSamplesField(examplesField)
+  if (fromExamples && fromExamples.length > 0) return fromExamples
+  return parseExampleSamplesField(legacySchemaField)
+}
+
+function parseExampleSamplesField(value?: string | null): string[] | null {
+  if (!value || value === '[]') return null
+
+  const parsed = parseJsonDeep(value)
+  if (parsed === null) return [value]
+
+  if (Array.isArray(parsed)) {
+    if (parsed.length === 0) return null
+    return parsed.map((item) =>
+      typeof item === 'string'
+        ? canonicalizeSampleJson(item)
+        : JSON.stringify(item)
+    )
   }
+
+  if (typeof parsed === 'object') {
+    return [JSON.stringify(parsed)]
+  }
+
+  return [value]
 }
 
 function metaField(
@@ -263,8 +280,14 @@ export function endpointToLegacyWithMeta(
       apiEndpointId: endpoint.id,
       serviceApiGroupId: endpoint.apiGroupId,
       componentMetaId: endpoint.id,
-      exampleRequests: toExampleSamples(endpoint.requestBody),
-      exampleResponses: toExampleSamples(endpoint.responses),
+      exampleRequests: toExampleSamples(
+        endpoint.exampleRequests,
+        endpoint.requestBody
+      ),
+      exampleResponses: toExampleSamples(
+        endpoint.exampleResponses,
+        endpoint.responses
+      ),
       order: endpoint.order,
       createdAt: endpoint.createdAt,
       updatedAt: endpoint.updatedAt,

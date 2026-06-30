@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react'
 
 // ─── Schema types ────────────────────────────────────────────
 
-type SchemaNode = {
+export type SchemaNode = {
   type?: string
   format?: string
   required?: string[]
@@ -73,11 +73,13 @@ function SchemaProperty({
   schema,
   isRequired,
   depth = 0,
+  showRequired = true,
 }: {
   name: string
   schema: SchemaNode
   isRequired: boolean
   depth?: number
+  showRequired?: boolean
 }) {
   const [isExpanded, setIsExpanded] = useState(depth < 2)
   const hasChildren =
@@ -118,7 +120,7 @@ function SchemaProperty({
           {displayType}
         </span>
 
-        {isRequired && (
+        {showRequired && isRequired && (
           <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-600">
             required
           </span>
@@ -147,6 +149,7 @@ function SchemaProperty({
                 schema={propSchema}
                 isRequired={schema.required?.includes(propName) ?? false}
                 depth={depth + 1}
+                showRequired={showRequired}
               />
             ))}
 
@@ -157,6 +160,7 @@ function SchemaProperty({
               schema={schema.items}
               isRequired={false}
               depth={depth + 1}
+              showRequired={showRequired}
             />
           )}
 
@@ -168,6 +172,7 @@ function SchemaProperty({
               schema={s}
               isRequired={false}
               depth={depth + 1}
+              showRequired={showRequired}
             />
           ))}
           {schema.oneOf?.map((s, i) => (
@@ -177,6 +182,7 @@ function SchemaProperty({
               schema={s}
               isRequired={false}
               depth={depth + 1}
+              showRequired={showRequired}
             />
           ))}
           {schema.anyOf?.map((s, i) => (
@@ -186,6 +192,7 @@ function SchemaProperty({
               schema={s}
               isRequired={false}
               depth={depth + 1}
+              showRequired={showRequired}
             />
           ))}
         </div>
@@ -194,7 +201,13 @@ function SchemaProperty({
   )
 }
 
-function SchemaTree({ schema }: { schema: SchemaNode }) {
+export function SchemaTree({
+  schema,
+  showRequired = true,
+}: {
+  schema: SchemaNode
+  showRequired?: boolean
+}) {
   if (!schema.properties && !schema.items && !schema.allOf) {
     return (
       <div className="text-muted-foreground py-2 text-xs">
@@ -217,6 +230,7 @@ function SchemaTree({ schema }: { schema: SchemaNode }) {
             schema={propSchema}
             isRequired={schema.required?.includes(name) ?? false}
             depth={0}
+            showRequired={showRequired}
           />
         ))}
       {schema.items && (
@@ -225,6 +239,7 @@ function SchemaTree({ schema }: { schema: SchemaNode }) {
           schema={schema.items}
           isRequired={false}
           depth={0}
+          showRequired={showRequired}
         />
       )}
       {schema.allOf?.map((s, i) => (
@@ -234,6 +249,7 @@ function SchemaTree({ schema }: { schema: SchemaNode }) {
           schema={s}
           isRequired={false}
           depth={0}
+          showRequired={showRequired}
         />
       ))}
     </div>
@@ -455,7 +471,7 @@ export function EndpointSchemaView({ data }: { data: EndpointSchemaData }) {
           <div className="mb-2 text-xs font-medium tracking-wider text-[#828DA3] uppercase">
             Response Body
           </div>
-          <SchemaTree schema={responseSchema} />
+          <SchemaTree schema={responseSchema} showRequired={false} />
         </div>
       )}
 

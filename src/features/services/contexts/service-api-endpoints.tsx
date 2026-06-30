@@ -13,6 +13,7 @@ import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
 import { ArrowLeft } from 'lucide-react'
 import { parseAsString, useQueryState } from 'nuqs'
+import { serializeExampleSamples } from '@/utils/api/openapi-display'
 import { useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -210,8 +211,7 @@ export const [
       }) => {
         const { apiEndpointId, input } = opts.variables
         function serializeSamples(value?: string | string[] | null) {
-          if (value == null) return undefined
-          return Array.isArray(value) ? JSON.stringify(value) : value
+          return serializeExampleSamples(value)
         }
         return updateServiceApiEndpointMut({
           variables: {
@@ -220,8 +220,8 @@ export const [
             apiGroupId,
             id: apiEndpointId,
             input: {
-              requestBody: serializeSamples(input.exampleRequests),
-              responses: serializeSamples(input.exampleResponses),
+              exampleRequests: serializeSamples(input.exampleRequests),
+              exampleResponses: serializeSamples(input.exampleResponses),
               order: input.order ?? undefined,
             },
           },
@@ -352,7 +352,8 @@ export const [
     }, [apiGroup])
 
     const _allEndpoints = useMemo((): LegacyEndpointWithMeta[] => {
-      const raw = arrayNonNullable(endpointsRes.data?.apiEndpoints)
+      const raw = arrayNonNullable(endpointsRes.data?.apiEndpoints).slice()
+      raw.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       return endpointsToLegacyWithMeta(raw, orgId!, protocol)
     }, [endpointsRes.data?.apiEndpoints, orgId, protocol])
 
