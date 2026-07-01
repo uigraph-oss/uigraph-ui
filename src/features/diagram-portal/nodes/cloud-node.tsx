@@ -47,7 +47,7 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
       />
 
       <div
-        className="flex h-full flex-col items-center justify-center gap-2 overflow-hidden p-3"
+        className="flex h-full flex-col items-center justify-center gap-3 overflow-hidden p-4"
         style={{
           backgroundColor:
             data?.fill && data.fill !== 'transparent' ? data.fill : '#1E2533',
@@ -55,11 +55,11 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
         }}
       >
         {data.iconSrc && (
-          <div className="flex size-16 shrink-0 items-center justify-center">
+          <div className="flex min-h-0 w-full flex-1 items-center justify-center">
             <img
               alt={name ?? ''}
               src={data.iconSrc}
-              className="max-h-full max-w-full object-contain"
+              className="size-full object-contain"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.src = '/placeholder.svg'
@@ -70,7 +70,7 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
 
         {name && (
           <p
-            className="text-center text-sm leading-tight font-medium break-words text-[#F4F7FC]"
+            className="shrink-0 text-center text-sm leading-tight font-medium break-words text-[#F4F7FC]"
             style={{
               fontSize: Math.max(12, (width ?? 0) / 10),
             }}
