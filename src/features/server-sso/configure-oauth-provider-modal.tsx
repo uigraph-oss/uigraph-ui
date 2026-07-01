@@ -98,51 +98,59 @@ function IconUploadField({
   }
 
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium text-[#D2D9E6]">Icon</Label>
-      <div className="flex items-center gap-4">
-        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#1E2533]">
-          {iconUrl ? (
-            <img
-              src={iconUrl}
-              alt={displayName}
-              className="size-full object-contain"
-            />
-          ) : (
-            <ImageIcon className="size-6 text-[#828DA3]" />
-          )}
+    <div className="flex flex-col items-center gap-3 rounded-[16px] border border-[#2A3242] bg-[#161C28] px-4 py-6">
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={isBusy}
+        className="group relative flex size-24 items-center justify-center overflow-hidden rounded-full border border-[#2A3242] bg-[#1E2533] transition-colors hover:border-[#015AEB] disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {iconUrl ? (
+          <img
+            src={iconUrl}
+            alt={displayName}
+            className="size-full object-cover"
+          />
+        ) : (
+          <ImageIcon className="size-8 text-[#828DA3]" />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+          <Upload className="size-5 text-white" />
         </div>
-        <div className="flex items-center gap-3">
+      </button>
+
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isBusy}
+          className="flex h-9 items-center gap-2 rounded-[10px] border border-[#2A3242] bg-[#1E2533] px-4 text-sm font-medium text-[#D2D9E6] transition-colors hover:border-[#3A4252] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Upload className="size-4" />
+          {iconUrl ? 'Replace' : 'Upload'}
+        </button>
+        {iconUrl && (
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={handleRemove}
             disabled={isBusy}
-            className="flex h-10 items-center gap-2 rounded-[10px] border border-[#2A3242] bg-[#1E2533] px-4 text-sm font-medium text-[#D2D9E6] transition-colors hover:border-[#3A4252] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-9 items-center gap-1.5 rounded-[10px] px-2 text-sm text-red-600 transition-colors hover:text-red-700 disabled:cursor-not-allowed disabled:text-gray-400"
           >
-            <Upload className="size-4" />
-            {iconUrl ? 'Replace' : 'Upload'}
+            <Trash2 className="size-3.5" />
+            Remove
           </button>
-          {iconUrl && (
-            <button
-              type="button"
-              onClick={handleRemove}
-              disabled={isBusy}
-              className="flex items-center gap-1.5 text-sm text-red-600 transition-colors hover:text-red-700 disabled:cursor-not-allowed disabled:text-gray-400"
-            >
-              <Trash2 className="size-3.5" />
-              Remove
-            </button>
-          )}
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleSelected}
-        />
+        )}
       </div>
+
       <p className="text-sm text-[#828DA3]">Logo shown on the login button</p>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleSelected}
+      />
     </div>
   )
 }
@@ -194,6 +202,15 @@ export function ConfigureOAuthProviderModal({
       footerCancel
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {mode === 'edit' && onUploadIcon && onRemoveIcon && (
+          <IconUploadField
+            iconUrl={iconUrl}
+            displayName={form.watch('displayName')}
+            onUploadIcon={onUploadIcon}
+            onRemoveIcon={onRemoveIcon}
+          />
+        )}
+
         <Controller
           name="providerName"
           control={form.control}
@@ -223,15 +240,6 @@ export function ConfigureOAuthProviderModal({
             </Field>
           )}
         />
-
-        {mode === 'edit' && onUploadIcon && onRemoveIcon && (
-          <IconUploadField
-            iconUrl={iconUrl}
-            displayName={form.watch('displayName')}
-            onUploadIcon={onUploadIcon}
-            onRemoveIcon={onRemoveIcon}
-          />
-        )}
 
         <Controller
           name="clientId"
