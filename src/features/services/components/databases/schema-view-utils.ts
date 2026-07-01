@@ -64,7 +64,8 @@ function countDynamoAttributes(
   return attrs.reduce((count, attr) => {
     let nested = 0
     if (attr.fields?.length) nested += countDynamoAttributes(attr.fields)
-    if (attr.itemFields?.length) nested += countDynamoAttributes(attr.itemFields)
+    if (attr.itemFields?.length)
+      nested += countDynamoAttributes(attr.itemFields)
     return count + 1 + nested
   }, 0)
 }
@@ -105,19 +106,17 @@ export function getSchemaSummaryStats(
           )
 
     const totalFields = collections.reduce(
-      (sum, collection) =>
+      (sum: number, collection) =>
         sum +
-        arrayNonNullable(
-          (collection as { fields?: unknown[] | null }).fields
-        ).length,
+        arrayNonNullable((collection as { fields?: unknown[] | null }).fields)
+          .length,
       0
     )
     const totalIndexes = collections.reduce(
-      (sum, collection) =>
+      (sum: number, collection) =>
         sum +
-        arrayNonNullable(
-          (collection as { indexes?: unknown[] | null }).indexes
-        ).length,
+        arrayNonNullable((collection as { indexes?: unknown[] | null }).indexes)
+          .length,
       0
     )
 

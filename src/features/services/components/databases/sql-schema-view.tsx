@@ -1,9 +1,9 @@
+import { Badge } from '@/components/ui/badge'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
-import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -14,9 +14,9 @@ import {
 } from '@/components/ui/table'
 import { arrayNonNullable } from 'daily-code'
 import { ChevronDown } from 'lucide-react'
-import { DbTable } from '../../../api/service-db'
-import { SchemaViewShell } from './schema-view-shared'
 import { CiViewTable } from 'react-icons/ci'
+import { DbTable } from '../../api/service-db'
+import { SchemaViewShell } from './schema-view-shared'
 
 export function SqlSchemaView({
   db,
@@ -114,7 +114,7 @@ function SqlTablePanel({
                       {column.name ?? 'Unnamed column'}
                     </TableCell>
                     <TableCell className="h-11 w-[15%] px-3!">
-                      <span className="font-mono text-[11px] text-muted-foreground">
+                      <span className="text-muted-foreground font-mono text-[11px]">
                         {column.type ?? 'unknown'}
                       </span>
                     </TableCell>
@@ -170,7 +170,8 @@ function SqlTablePanel({
                   <div>{indexDef.name}</div>
                   <div className="text-[12px] text-[#828DA3]">
                     {indexDef.type ?? 'index'} •{' '}
-                    {arrayNonNullable(indexDef.fields).join(', ') || 'no fields'}
+                    {arrayNonNullable(indexDef.fields).join(', ') ||
+                      'no fields'}
                   </div>
                 </div>
               ))}

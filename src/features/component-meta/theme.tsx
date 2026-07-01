@@ -99,10 +99,10 @@ export function useComponentMetaClasses() {
     ),
     fieldLabel: cn(
       'mb-2 block text-sm',
-      isModal ? 'font-normal text-muted-foreground/70' : 'text-foreground mb-3 font-medium capitalize'
+      isModal
+        ? 'font-normal text-muted-foreground/70'
+        : 'text-foreground mb-3 font-medium capitalize'
     ),
-    fieldValue: cn(
-      isModal ? 'text-foreground font-medium' : ''
-    ),
+    fieldValue: cn(isModal ? 'text-foreground font-medium' : ''),
   }
 }

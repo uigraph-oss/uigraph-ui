@@ -14,11 +14,11 @@ import {
 import { MongoCollectionSchema } from '@/features/diagram-portal/components/nosql-editor/nosql-schema'
 import { arrayNonNullable } from 'daily-code'
 import { ChevronDown } from 'lucide-react'
+import { BsCollection } from 'react-icons/bs'
 import { RxCornerBottomLeft } from 'react-icons/rx'
 import { z } from 'zod'
 import { ServiceDbSchema } from '../../api/service-db'
 import { SchemaEmptyState, SchemaViewShell } from './schema-view-shared'
-import { BsCollection } from 'react-icons/bs'
 
 type CollectionIndex = {
   id?: string
@@ -54,7 +54,9 @@ function normalizeMongoCollections(
   }))
 }
 
-function normalizeJsonCollections(collections: unknown[]): NormalizedCollection[] {
+function normalizeJsonCollections(
+  collections: unknown[]
+): NormalizedCollection[] {
   return collections.map((collection, index) => {
     const item = collection as {
       id?: string
@@ -159,7 +161,7 @@ function NosqlCollectionPanel({
                       </div>
                     </TableCell>
                     <TableCell className="h-11 w-[50%] px-3!">
-                      <span className="font-mono text-[11px] text-muted-foreground">
+                      <span className="text-muted-foreground font-mono text-[11px]">
                         {getFieldType(field)}
                       </span>
                     </TableCell>

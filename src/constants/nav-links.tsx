@@ -64,6 +64,7 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     label: 'Insights',
     icon: <GoGraph />,
     nested: true,
+    hidden: true,
   },
   {
     id: '/settings',

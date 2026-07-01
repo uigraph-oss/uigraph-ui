@@ -1,7 +1,7 @@
+import { CiViewTable } from 'react-icons/ci'
 import { ServiceDbSchema } from '../../api/service-db'
 import { RenderDynamoTable } from './components/render-dynamo-table'
 import { SchemaEmptyState, SchemaViewShell } from './schema-view-shared'
-import { CiViewTable } from 'react-icons/ci'
 
 export function DynamoSchemaView({ db }: { db: ServiceDbSchema }) {
   const table = db.noSQLSchema?.dynamo?.table

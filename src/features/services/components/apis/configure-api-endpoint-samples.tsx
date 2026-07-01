@@ -215,10 +215,7 @@ export function ConfigureApiEndpointSamples({
     editState?.type === 'response' ? 'Response Sample' : 'Request Sample'
 
   return (
-    <div
-      className={cn('relative m-0 pb-16', className)}
-      role="tabpanel"
-    >
+    <div className={cn('relative m-0 pb-16', className)} role="tabpanel">
       <SampleTabBar
         activeTab={activeTab}
         requestCount={exampleRequests.length}
@@ -272,9 +269,7 @@ export function ConfigureApiEndpointSamples({
       <EditSampleModal
         open={editState !== null}
         title={
-          editState?.mode === 'create'
-            ? sampleLabel
-            : `Edit ${sampleLabel}`
+          editState?.mode === 'create' ? sampleLabel : `Edit ${sampleLabel}`
         }
         draft={draft}
         sampleType={editState?.type ?? 'request'}

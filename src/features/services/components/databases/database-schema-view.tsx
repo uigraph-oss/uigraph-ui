@@ -1,3 +1,4 @@
+import { BsCollection } from 'react-icons/bs'
 import { ServiceDbSchema } from '../../api/service-db'
 import { RenderDynamoTable } from './components/render-dynamo-table'
 import { DynamoSchemaView } from './dynamo-schema-view'
@@ -6,12 +7,13 @@ import {
   JsonTablesSchemaView,
   MongoSchemaView,
 } from './nosql-collections-schema-view'
-import { getSchemaViewKind } from './schema-view-utils'
 import { SchemaEmptyState, SchemaViewShell } from './schema-view-shared'
+import { getSchemaViewKind } from './schema-view-utils'
 import { SqlSchemaView } from './sql-schema-view'
-import { BsCollection } from 'react-icons/bs'
 
-export function getSchemaSectionTitle(kind: ReturnType<typeof getSchemaViewKind>) {
+export function getSchemaSectionTitle(
+  kind: ReturnType<typeof getSchemaViewKind>
+) {
   switch (kind) {
     case 'dynamodb':
       return 'Table schema'
