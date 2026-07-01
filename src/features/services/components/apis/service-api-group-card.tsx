@@ -22,15 +22,31 @@ const PROTOCOL_COLORS: Record<
   string,
   { border: string; badge: string; text: string }
 > = {
-  rest: { border: '#2563EB', badge: '#EFF6FF', text: '#2563EB' },
-  graphql: { border: '#DB2777', badge: '#FDF2F8', text: '#DB2777' },
-  grpc: { border: '#0D9488', badge: '#F0FDFA', text: '#0D9488' },
-  serverless: { border: '#EA580C', badge: '#FFF7ED', text: '#EA580C' },
+  rest: {
+    border: '#2563EB',
+    badge: 'rgba(37,99,235,0.15)',
+    text: '#93B4FF',
+  },
+  graphql: {
+    border: '#DB2777',
+    badge: 'rgba(219,39,119,0.15)',
+    text: '#F9A8D4',
+  },
+  grpc: {
+    border: '#0D9488',
+    badge: 'rgba(13,148,136,0.15)',
+    text: '#5EEAD4',
+  },
+  serverless: {
+    border: '#EA580C',
+    badge: 'rgba(234,88,12,0.15)',
+    text: '#FDBA74',
+  },
 }
 const DEFAULT_PROTOCOL_COLOR = {
   border: '#94A3B8',
-  badge: '#F8FAFC',
-  text: '#64748B',
+  badge: 'rgba(148,163,184,0.15)',
+  text: '#CBD5E1',
 }
 
 function getProtocolColor(protocol: string | null) {
