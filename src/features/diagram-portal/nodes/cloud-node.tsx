@@ -34,7 +34,7 @@ export function CloudNode({ data, selected, width }: NodeProps<TCloudNode>) {
         minWidth={125}
         minHeight={125}
         isVisible={selected}
-        keepAspectRatio={false}
+        keepAspectRatio={true}
       />
 
       <StrokeFakeAnimation

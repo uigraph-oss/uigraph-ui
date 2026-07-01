@@ -38,7 +38,7 @@ export function CloudIconItem({
           },
           {
             width: 150,
-            height: 150,
+            height: 160,
           }
         )
       }}
