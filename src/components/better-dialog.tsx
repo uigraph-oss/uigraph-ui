@@ -96,7 +96,10 @@ export function BetterDialogContent({
   ) : title || description ? (
     <DialogHeader className="flex min-h-18 w-full flex-row items-center justify-between border-b border-[#2A3242] px-6">
       <div className="flex flex-col gap-1">
-        <DialogTitle className="text-base font-medium">{title}</DialogTitle>
+        <DialogTitle className="text-left text-base font-medium">
+          {title}
+        </DialogTitle>
+
         <DialogDescription>{description}</DialogDescription>
       </div>
 
