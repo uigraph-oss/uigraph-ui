@@ -21,6 +21,9 @@ export type ServiceDbNoSQLSchema = {
   mongo?: {
     collections?: z.infer<typeof MongoCollectionSchema>[] | null
   } | null
+  json?: {
+    collections?: unknown[] | null
+  } | null
 } | null
 
 export type ServiceDbSchema = {

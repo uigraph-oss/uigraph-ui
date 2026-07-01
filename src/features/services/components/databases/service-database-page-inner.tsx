@@ -26,6 +26,7 @@ import {
 } from '../../contexts/service-db-context'
 import { CompareServiceDbModal } from './components/compare-service-db-modal'
 import { DBVersionPublishModal } from './components/db-version-publish-modal'
+import { SelectedDatabaseQueriesSection } from './queries/selected-database-queries-section'
 import { SelectedDatabaseDiagramSection } from './selected-database-diagram-section'
 import { SelectedDatabaseSchemaSection } from './selected-database-schema-section'
 
@@ -54,6 +55,7 @@ function ServiceDatabasePageContent() {
   const [control] = useBetterTabs([
     { id: 'schema', label: 'Schema' },
     { id: 'diagrams', label: 'Data model' },
+    { id: 'queries', label: 'Queries' },
   ])
 
   return (
@@ -188,6 +190,10 @@ function ServiceDatabasePageContent() {
 
         {control.activeTab === 'diagrams' && (
           <SelectedDatabaseDiagramSection db={serviceDb} />
+        )}
+
+        {control.activeTab === 'queries' && (
+          <SelectedDatabaseQueriesSection db={serviceDb} />
         )}
       </DashboardSectionContent>
 

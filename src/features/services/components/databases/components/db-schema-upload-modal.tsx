@@ -53,6 +53,11 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
               ? (attachedSchema.sourceContent?.collections ?? [])
               : undefined
 
+          const jsonCollections =
+            attachedSchema.sourceContent?.dialect === 'json'
+              ? (attachedSchema.sourceContent?.collections ?? [])
+              : undefined
+
           const dynamoTable =
             attachedSchema.sourceContent?.dialect === 'dynamodb'
               ? attachedSchema.sourceContent
@@ -87,6 +92,9 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
                   dynamo: dynamoTable ? { table: dynamoTable } : undefined,
                   mongo: mongoCollections
                     ? { collections: mongoCollections }
+                    : undefined,
+                  json: jsonCollections
+                    ? { collections: jsonCollections }
                     : undefined,
                 },
               }),
