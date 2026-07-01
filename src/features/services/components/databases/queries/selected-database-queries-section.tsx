@@ -9,6 +9,7 @@ import {
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
@@ -884,60 +885,94 @@ function SaveQueryModal({
         footerSubmit="Save Query"
         onFooterSubmitClick={onSave}
       >
-        <div className="space-y-4">
-          <Input
-            value={draft.title}
-            onChange={(e) => onDraftChange({ ...draft, title: e.target.value })}
-            placeholder="Query title"
-          />
-
-          <Textarea
-            value={draft.description}
-            onChange={(e) =>
-              onDraftChange({ ...draft, description: e.target.value })
-            }
-            placeholder="What is this query for? (optional)"
-            className="min-h-16"
-          />
-
-          <div className="overflow-hidden rounded-[0.75rem] border border-[#2A3242]">
-            <CodeMirrorRaw
-              value={draft.queryText}
-              minHeight="220px"
-              maxHeight="320px"
-              onChange={(value) =>
-                onDraftChange({ ...draft, queryText: value })
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <Label
+              htmlFor="save-query-title"
+              className="text-sm font-medium text-[#D2D9E6]"
+            >
+              Title
+            </Label>
+            <Input
+              id="save-query-title"
+              value={draft.title}
+              onChange={(e) =>
+                onDraftChange({ ...draft, title: e.target.value })
               }
-              placeholder="Paste or write the query"
+              placeholder="Query title"
+              className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
             />
           </div>
 
-          <Select
-            value={draft.folderId ?? 'none'}
-            onValueChange={(value) =>
-              onDraftChange({
-                ...draft,
-                folderId: value === 'none' ? null : value,
-              })
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="No folder" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No folder</SelectItem>
-              {folders.map((folder) => (
-                <SelectItem key={folder.id} value={folder.id}>
-                  {folder.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            <Label
+              htmlFor="save-query-description"
+              className="text-sm font-medium text-[#D2D9E6]"
+            >
+              Description
+            </Label>
+            <Textarea
+              id="save-query-description"
+              value={draft.description}
+              onChange={(e) =>
+                onDraftChange({ ...draft, description: e.target.value })
+              }
+              placeholder="What is this query for? (optional)"
+              className="min-h-24 resize-none rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 py-3"
+            />
+          </div>
 
-          <TagsField
-            tags={draft.tags}
-            onChange={(tags) => onDraftChange({ ...draft, tags })}
-          />
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-[#D2D9E6]">Query</Label>
+            <div className="overflow-hidden rounded-[12px] border border-[#2A3242]">
+              <CodeMirrorRaw
+                value={draft.queryText}
+                minHeight="180px"
+                maxHeight="280px"
+                onChange={(value) =>
+                  onDraftChange({ ...draft, queryText: value })
+                }
+                placeholder="Paste or write the query"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-[#D2D9E6]">
+                Folder
+              </Label>
+              <Select
+                value={draft.folderId ?? 'none'}
+                onValueChange={(value) =>
+                  onDraftChange({
+                    ...draft,
+                    folderId: value === 'none' ? null : value,
+                  })
+                }
+              >
+                <SelectTrigger className="h-[48px] w-full rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4">
+                  <SelectValue placeholder="No folder" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No folder</SelectItem>
+                  {folders.map((folder) => (
+                    <SelectItem key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-[#D2D9E6]">Tags</Label>
+              <TagsField
+                tags={draft.tags}
+                onChange={(tags) => onDraftChange({ ...draft, tags })}
+              />
+            </div>
+          </div>
         </div>
       </BetterDialogContent>
     </BetterDialogProvider>
@@ -961,38 +996,36 @@ function TagsField({
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-[#2A3242] bg-transparent p-2">
-        {tags.map((tag) => (
-          <span
-            key={tag}
-            className="bg-primary text-primary-foreground flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
+    <div className="flex min-h-[48px] flex-wrap items-center gap-1.5 rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-3 py-2">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="bg-primary text-primary-foreground flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
+        >
+          {tag}
+          <button
+            type="button"
+            onClick={() => onChange(tags.filter((t) => t !== tag))}
+            className="text-primary-foreground/80 hover:text-primary-foreground"
+            aria-label={`Remove ${tag} tag`}
           >
-            {tag}
-            <button
-              type="button"
-              onClick={() => onChange(tags.filter((t) => t !== tag))}
-              className="text-primary-foreground/80 hover:text-primary-foreground"
-              aria-label={`Remove ${tag} tag`}
-            >
-              ×
-            </button>
-          </span>
-        ))}
-        <Input
-          value={draftTag}
-          onChange={(e) => setDraftTag(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              addTag()
-            }
-          }}
-          onBlur={addTag}
-          placeholder={tags.length === 0 ? 'Add tags (press Enter)' : ''}
-          className="h-7 min-w-[120px] flex-1 border-0 bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
-        />
-      </div>
+            ×
+          </button>
+        </span>
+      ))}
+      <Input
+        value={draftTag}
+        onChange={(e) => setDraftTag(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            addTag()
+          }
+        }}
+        onBlur={addTag}
+        placeholder={tags.length === 0 ? 'Add tags (press Enter)' : ''}
+        className="h-6 min-w-[100px] flex-1 border-0 bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
+      />
     </div>
   )
 }
