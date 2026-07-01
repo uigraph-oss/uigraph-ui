@@ -108,7 +108,7 @@ export function ProjectGrid({ projects }: { projects: DashboardMap[] }) {
 
   return (
     <div
-      className="grid gap-6"
+      className="grid gap-6 pb-4"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}
     >
       {projects.map((project) => (

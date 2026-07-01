@@ -247,7 +247,7 @@ function DiagramGrid({
   return (
     <div className="space-y-4">
       <div
-        className="grid gap-4"
+        className="grid gap-4 pb-4"
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
       >
         {diagrams.map((diagram) => (

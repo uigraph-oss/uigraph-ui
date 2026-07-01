@@ -240,7 +240,7 @@ function DocGrid({
   const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-4">
       <div
         className="grid gap-4"
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
