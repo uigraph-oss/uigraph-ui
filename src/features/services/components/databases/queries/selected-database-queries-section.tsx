@@ -201,7 +201,7 @@ export function SelectedDatabaseQueriesSection({
   }
 
   return (
-    <div className="m-0 space-y-4 px-6 pt-5 pb-6">
+    <div className="m-0 space-y-4 pt-5 pb-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <QueryScopeTabBar
           activeScope={activeScope}
