@@ -6,7 +6,6 @@ export type DashboardService = {
   folderId?: string | null
   teamId?: string | null
   name: string
-  slug: string
   description: string
   status: string
   tier: string
@@ -52,7 +51,6 @@ export const SERVICES = graphql(`
         folderId
         teamId
         name
-        slug
         description
         status
         tier
@@ -81,7 +79,6 @@ export const SERVICE = graphql(`
       folderId
       teamId
       name
-      slug
       description
       status
       tier
@@ -106,7 +103,6 @@ export const CREATE_SERVICE = graphql(`
     createService(orgId: $orgId, input: $input) {
       id
       name
-      slug
     }
   }
 `)

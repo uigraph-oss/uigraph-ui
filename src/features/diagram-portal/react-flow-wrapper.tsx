@@ -526,6 +526,8 @@ export function ReactFlowWrapper({
   const isNodeWritable =
     !drawingMode && !forceReadOnly && tempDiagramState === null
 
+  console.log(nodes)
+
   return (
     <>
       {sidebarActiveTool === 'add-comment' && <VirtualCursor />}
