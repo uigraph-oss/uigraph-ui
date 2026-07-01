@@ -42,6 +42,11 @@ export function DBVersionPublishModal({
               ? (attachedSchema.sourceContent?.collections ?? [])
               : undefined
 
+          const jsonCollections =
+            attachedSchema.sourceContent?.dialect === 'json'
+              ? (attachedSchema.sourceContent?.collections ?? [])
+              : undefined
+
           const dynamoTable =
             attachedSchema.sourceContent?.dialect === 'dynamodb'
               ? attachedSchema.sourceContent
@@ -75,6 +80,9 @@ export function DBVersionPublishModal({
                 dynamo: dynamoTable ? { table: dynamoTable } : undefined,
                 mongo: mongoCollections
                   ? { collections: mongoCollections }
+                  : undefined,
+                json: jsonCollections
+                  ? { collections: jsonCollections }
                   : undefined,
               },
             },

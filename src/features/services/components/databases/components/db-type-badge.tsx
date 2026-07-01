@@ -46,6 +46,14 @@ function getDbTypeStyle(type?: string | null): DbTypeStyle {
       iconClassName: 'text-violet-400',
     }
   }
+  if (value === 'json') {
+    return {
+      label: 'NoSQL JSON',
+      Icon: Database,
+      className: 'border-teal-500/30 bg-teal-500/10 text-teal-300',
+      iconClassName: 'text-teal-400',
+    }
+  }
   if (value === 'sqlite') {
     return {
       label: 'SQLite',

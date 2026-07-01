@@ -9,11 +9,12 @@ import { useServiceDbContext } from '@/features/services/contexts/service-db-con
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
-import { RenderDynamoTable } from './render-dynamo-table'
-import { RenderMongoCollections } from './render-mongo-collections'
-import { RenderSQLTable } from './render-sql-table'
+import {
+  DatabaseSchemaContent,
+  getSchemaSectionTitle,
+} from '../database-schema-view'
+import { getSchemaViewKind } from '../schema-view-utils'
 
 type DiagramCompareSideProps = {
   selectedVersion: string
@@ -98,28 +99,15 @@ function DataTableCompareSide({ selectedVersion }: DiagramCompareSideProps) {
     )
   }
 
-  const sqlTablesContent = db.tables != null && (
-    <RenderSQLTable tables={arrayNonNullable(db.tables)} />
-  )
-
-  const dynamoTablesContent = db.noSQLSchema?.dynamo?.table != null && (
-    <RenderDynamoTable tables={db.noSQLSchema?.dynamo?.table} />
-  )
-
-  const mongoCollectionsContent = db.noSQLSchema?.mongo?.collections !=
-    null && (
-    <RenderMongoCollections collections={db.noSQLSchema?.mongo?.collections} />
-  )
+  const kind = getSchemaViewKind(db)
 
   return (
     <>
       <h3 className="px-6 py-2 text-right text-[1.385rem] font-semibold text-[#F4F7FC]">
-        Tables
+        {getSchemaSectionTitle(kind)}
       </h3>
 
-      {sqlTablesContent}
-      {dynamoTablesContent}
-      {mongoCollectionsContent}
+      <DatabaseSchemaContent db={db} />
     </>
   )
 }

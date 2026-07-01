@@ -25,7 +25,7 @@ export function ComponentMetaField({
         {label} {required && <span className="text-destructive">*</span>}
       </label>
 
-      <div>{children}</div>
+      <div className={classes.fieldValue}>{children}</div>
 
       {error && (
         <p className="text-destructive mt-2 overflow-hidden text-xs">{error}</p>
