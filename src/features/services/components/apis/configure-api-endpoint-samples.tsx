@@ -1,15 +1,12 @@
 'use client'
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import {
+  BetterDialogContent,
+  BetterDialogProvider,
+} from '@/components/better-dialog'
 import { CodeMirrorRaw } from '@/components/code-mirror'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import {
   Tooltip,
   TooltipContent,
@@ -254,7 +251,7 @@ export function ConfigureApiEndpointSamples({
               preset="primary"
               size="icon"
               aria-label={`Add ${activeTab} sample`}
-              className="absolute right-0 bottom-0 h-11 w-11 rounded-full shadow-lg"
+              className="fixed right-6 bottom-6 z-50 h-11 w-11 rounded-full shadow-lg"
               onClick={() => startCreate(activeTab)}
             >
               <Plus className="h-5 w-5" />
@@ -411,14 +408,7 @@ function SampleCard({
   )
 
   return (
-    <article
-      className={cn(
-        'overflow-hidden rounded-[16px] border border-[#2A3242] bg-[#1A2030]/60 shadow-sm',
-        kind === 'request'
-          ? 'border-l-[3px] border-l-blue-500'
-          : 'border-l-[3px] border-l-emerald-500'
-      )}
-    >
+    <article className="overflow-hidden rounded-[16px] border border-[#2A3242] bg-[#1A2030]/60">
       <div className="flex items-center justify-between border-b border-[#2A3242] px-4 py-2.5">
         <h4 className="text-sm font-medium text-[#F4F7FC]">{title}</h4>
         {!readonly && (
@@ -474,49 +464,28 @@ function EditSampleModal({
   onCancel: () => void
 }) {
   return (
-    <Dialog
+    <BetterDialogProvider
       open={open}
       onOpenChange={(nextOpen) => {
         if (!nextOpen) onCancel()
       }}
     >
-      <DialogContent className="max-w-2xl gap-0 border-[#2A3242] bg-[#141925] p-0 sm:max-w-2xl">
-        <DialogHeader className="border-b border-[#2A3242] px-6 py-4">
-          <DialogTitle className="text-[#F4F7FC]">{title}</DialogTitle>
-        </DialogHeader>
-
-        <div className="px-6 py-4">
-          <div className="overflow-hidden rounded-[0.75rem] border border-[#2A3242]">
-            <CodeMirrorRaw
-              value={draft}
-              minHeight="220px"
-              onChange={onDraftChange}
-              placeholder={`Paste a ${sampleType} example`}
-            />
-          </div>
+      <BetterDialogContent
+        title={title}
+        footerCancel
+        footerSubmit={isSaving ? 'Saving...' : 'Save Sample'}
+        footerSubmitLoading={isSaving}
+        onFooterSubmitClick={onSave}
+      >
+        <div className="overflow-hidden rounded-[0.75rem] border border-[#2A3242]">
+          <CodeMirrorRaw
+            value={draft}
+            minHeight="220px"
+            onChange={onDraftChange}
+            placeholder={`Paste a ${sampleType} example`}
+          />
         </div>
-
-        <DialogFooter className="border-t border-[#2A3242] px-6 py-4">
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-11"
-            onClick={onCancel}
-            disabled={isSaving}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            preset="primary"
-            className="h-11 rounded-[0.8125rem]"
-            onClick={onSave}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Saving...' : 'Save Sample'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </BetterDialogContent>
+    </BetterDialogProvider>
   )
 }

@@ -100,23 +100,21 @@ function SchemaProperty({
       : 'unknown'
 
   return (
-    <div className={cn('border-l border-[#2A3242]', depth > 0 && 'ml-4')}>
+    <div className={cn(depth > 0 && 'ml-4 border-l border-[#2A3242] pl-1')}>
       <div
         className={cn(
-          'flex items-center gap-2 py-1 pr-3 pl-2',
+          'flex items-center gap-2 rounded-md px-3 py-1.5',
           hasChildren && 'cursor-pointer hover:bg-[#1E2533]'
         )}
         onClick={() => hasChildren && setIsExpanded(!isExpanded)}
       >
         {hasChildren ? (
           isExpanded ? (
-            <ChevronDown className="h-3 w-3 shrink-0 text-[#586378]" />
+            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#586378]" />
           ) : (
-            <ChevronRight className="h-3 w-3 shrink-0 text-[#586378]" />
+            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#586378]" />
           )
-        ) : (
-          <span className="w-3" />
-        )}
+        ) : null}
 
         <span className="text-sm font-medium text-[#F4F7FC]">{name}</span>
 
@@ -125,7 +123,7 @@ function SchemaProperty({
         </span>
 
         {showRequired && isRequired && (
-          <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-medium text-red-400 ring-1 ring-red-500/30">
+          <span className="rounded bg-red-500/15 px-1.5 py-px text-[10px] leading-4 font-medium text-red-400 ring-1 ring-red-500/30">
             required
           </span>
         )}
@@ -225,7 +223,7 @@ export function SchemaTree({
   }
 
   return (
-    <div className="rounded-lg border border-[#2A3242] bg-[#141925]">
+    <div className="rounded-lg border border-[#2A3242] bg-[#141925] p-2">
       {schema.properties &&
         Object.entries(schema.properties).map(([name, propSchema]) => (
           <SchemaProperty
