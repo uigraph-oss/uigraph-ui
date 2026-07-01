@@ -1,5 +1,5 @@
 import { graphql, type GT } from '@/api'
-import { env } from '@/env'
+import { clientAxios } from '@/api/axios'
 
 export type ServiceAccount = GT.ServiceAccountsQuery['serviceAccounts'][number]
 export type ServiceAccountToken =
@@ -98,11 +98,8 @@ export async function setServiceAccountAvatar(
 ) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(
-    `${env.VITE_API_URL}/api/v1/orgs/${orgId}/service-accounts/${saId}/avatar`,
-    { method: 'PUT', credentials: 'include', body: form }
+  await clientAxios.put(
+    `/v1/orgs/${orgId}/service-accounts/${saId}/avatar`,
+    form
   )
-  if (!res.ok) {
-    throw new Error(`upload avatar failed (${res.status})`)
-  }
 }

@@ -1,5 +1,5 @@
 import { graphql } from '@/api'
-import { env } from '@/env'
+import { clientAxios } from '@/api/axios'
 
 export type OAuthProvider = {
   id: string
@@ -66,30 +66,11 @@ export const OAUTH_PROVIDERS = graphql(`
 export async function setOAuthProviderIcon(provider: string, file: File) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(
-    `${env.VITE_API_URL}/api/v1/sso/oauth/${provider}/icon`,
-    {
-      method: 'PUT',
-      credentials: 'include',
-      body: form,
-    }
-  )
-  if (!res.ok) {
-    throw new Error(`upload icon failed (${res.status})`)
-  }
+  await clientAxios.put(`/v1/sso/oauth/${provider}/icon`, form)
 }
 
 export async function removeOAuthProviderIcon(provider: string) {
-  const res = await fetch(
-    `${env.VITE_API_URL}/api/v1/sso/oauth/${provider}/icon`,
-    {
-      method: 'DELETE',
-      credentials: 'include',
-    }
-  )
-  if (!res.ok) {
-    throw new Error(`remove icon failed (${res.status})`)
-  }
+  await clientAxios.delete(`/v1/sso/oauth/${provider}/icon`)
 }
 
 export const UPSERT_OAUTH_PROVIDER = graphql(`

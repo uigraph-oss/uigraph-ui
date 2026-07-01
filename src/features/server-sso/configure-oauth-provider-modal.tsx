@@ -238,7 +238,12 @@ export function ConfigureOAuthProviderModal({
           control={form.control}
           render={({ field }) => (
             <Field label="Client ID" message={errors.clientId?.message}>
-              <Input {...field} className={inputClassName} autoComplete="off" />
+              <Input
+                {...field}
+                placeholder="Client ID from your identity provider"
+                className={inputClassName}
+                autoComplete="off"
+              />
             </Field>
           )}
         />
@@ -261,6 +266,7 @@ export function ConfigureOAuthProviderModal({
               <Input
                 {...field}
                 type="password"
+                placeholder="Client secret from your identity provider"
                 className={inputClassName}
                 autoComplete="new-password"
               />
@@ -273,7 +279,12 @@ export function ConfigureOAuthProviderModal({
           control={form.control}
           render={({ field }) => (
             <Field label="Authorization URL" message={errors.authUrl?.message}>
-              <Input {...field} className={inputClassName} autoComplete="off" />
+              <Input
+                {...field}
+                placeholder="https://idp.example.com/oauth2/authorize"
+                className={inputClassName}
+                autoComplete="off"
+              />
             </Field>
           )}
         />
@@ -283,7 +294,12 @@ export function ConfigureOAuthProviderModal({
           control={form.control}
           render={({ field }) => (
             <Field label="Token URL" message={errors.tokenUrl?.message}>
-              <Input {...field} className={inputClassName} autoComplete="off" />
+              <Input
+                {...field}
+                placeholder="https://idp.example.com/oauth2/token"
+                className={inputClassName}
+                autoComplete="off"
+              />
             </Field>
           )}
         />
@@ -293,7 +309,12 @@ export function ConfigureOAuthProviderModal({
           control={form.control}
           render={({ field }) => (
             <Field label="Userinfo URL" message={errors.userinfoUrl?.message}>
-              <Input {...field} className={inputClassName} autoComplete="off" />
+              <Input
+                {...field}
+                placeholder="https://idp.example.com/oauth2/userinfo"
+                className={inputClassName}
+                autoComplete="off"
+              />
             </Field>
           )}
         />
@@ -303,7 +324,12 @@ export function ConfigureOAuthProviderModal({
           control={form.control}
           render={({ field }) => (
             <Field label="Scopes" message={errors.scopes?.message}>
-              <Input {...field} className={inputClassName} autoComplete="off" />
+              <Input
+                {...field}
+                placeholder="openid email profile"
+                className={inputClassName}
+                autoComplete="off"
+              />
             </Field>
           )}
         />

@@ -1,5 +1,5 @@
 import { graphql } from '@/api'
-import { env } from '@/env'
+import { clientAxios } from '@/api/axios'
 
 export type ServerOrg = {
   id: string
@@ -28,24 +28,11 @@ export const SERVER_ORGS = graphql(`
 export async function setServerOrgLogo(orgId: string, file: File) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`${env.VITE_API_URL}/api/v1/orgs/${orgId}/logo`, {
-    method: 'PUT',
-    credentials: 'include',
-    body: form,
-  })
-  if (!res.ok) {
-    throw new Error(`upload logo failed (${res.status})`)
-  }
+  await clientAxios.put(`/v1/server/orgs/${orgId}/logo`, form)
 }
 
 export async function removeServerOrgLogo(orgId: string) {
-  const res = await fetch(`${env.VITE_API_URL}/api/v1/orgs/${orgId}/logo`, {
-    method: 'DELETE',
-    credentials: 'include',
-  })
-  if (!res.ok) {
-    throw new Error(`remove logo failed (${res.status})`)
-  }
+  await clientAxios.delete(`/v1/server/orgs/${orgId}/logo`)
 }
 
 export const CREATE_SERVER_ORG = graphql(`

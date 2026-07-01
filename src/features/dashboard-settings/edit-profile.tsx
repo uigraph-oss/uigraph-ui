@@ -1,13 +1,12 @@
 'use client'
 
+import { clientAxios } from '@/api/axios'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { env } from '@/env'
 import { bootstrapSession, useAuthenticatedUser } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
-import axios from 'axios'
 import { Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -51,9 +50,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
       const form = new FormData()
       form.append('file', file)
 
-      await axios.put(`${env.VITE_API_URL}/api/v1/users/me/avatar`, form, {
-        withCredentials: true,
-      })
+      await clientAxios.put(`/v1/users/me/avatar`, form)
 
       await bootstrapSession()
       toast.success('Avatar updated')
