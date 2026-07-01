@@ -10,10 +10,11 @@ import {
   GoOrganization,
   GoProject,
   GoProjectTemplate,
+  GoShieldLock,
   GoStack,
 } from 'react-icons/go'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { LuBot, LuFingerprint, LuServer } from 'react-icons/lu'
+import { LuBot, LuFingerprint } from 'react-icons/lu'
 
 type NavLinkMeta = {
   icon: ReactNode
@@ -74,8 +75,8 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
   },
   {
     id: '/server',
-    label: 'Server',
-    icon: <LuServer />,
+    label: 'Admin',
+    icon: <GoShieldLock />,
     nested: true,
   }
 )
