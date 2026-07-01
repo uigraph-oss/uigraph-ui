@@ -1887,7 +1887,9 @@ function EndpointDetailsPanel({
             {endpoint.method} {endpoint.path}
           </h3>
 
-          <p className="text-muted-foreground text-xs">{fullUrl}</p>
+          {baseUrl && (
+            <p className="text-muted-foreground text-xs">{fullUrl}</p>
+          )}
 
           <p className="text-muted-foreground mt-1 text-[11px]">
             {updatedAt
@@ -2648,6 +2650,6 @@ function parseStatusCodesMap(
 function getBaseFromUrl(url: string, path: string): string {
   if (!url) return ''
   const idx = url.indexOf(path)
-  if (idx <= 0) return url
+  if (idx < 0) return url
   return url.slice(0, idx)
 }
