@@ -59,13 +59,22 @@ export function DashboardServiceOverview({
             description: service.description || '',
           })}
           onSubmit={async (data) => {
-            await updateService({
-              variables: {
-                orgId,
-                id: serviceId,
-                input: toUpdateServiceInput(data),
-              },
-            })
+            try {
+              await updateService({
+                variables: {
+                  orgId,
+                  id: serviceId,
+                  input: toUpdateServiceInput(data),
+                },
+              })
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to update service'
+              )
+              return
+            }
 
             toast.success('Service updated successfully')
             setIsUpdateServiceModalOpen(false)

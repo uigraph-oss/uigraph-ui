@@ -191,12 +191,21 @@ export function DashboardServices() {
         <ConfigureServiceModal
           mode="create"
           onSubmit={async (data) => {
-            await createService({
-              variables: {
-                orgId: orgId!,
-                input: toCreateServiceInput(data),
-              },
-            })
+            try {
+              await createService({
+                variables: {
+                  orgId: orgId!,
+                  input: toCreateServiceInput(data),
+                },
+              })
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to create service'
+              )
+              return
+            }
             toast.success('Service created successfully')
             setCreateServiceOpen(false)
           }}

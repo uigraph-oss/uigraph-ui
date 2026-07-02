@@ -341,7 +341,16 @@ export function ServiceCard({
             description: service.description || '',
           })}
           onSubmit={async (data) => {
-            await updateService(data)
+            try {
+              await updateService(data)
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to update service'
+              )
+              return
+            }
             toast.success('Service updated')
             setIsUpdateModalOpen(false)
           }}
