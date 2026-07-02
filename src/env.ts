@@ -1,8 +1,8 @@
 import z from 'zod'
 
 const envSchema = z.object({
-  VITE_API_URL: z.url(),
-  VITE_GRAPHQL_URL: z.url(),
+  API_URL: z.url(),
+  GRAPHQL_URL: z.url(),
 
   VITE_DEPLOY_ENV: z
     .enum(['local', 'development', 'production'])
@@ -16,6 +16,6 @@ const envSchema = z.object({
 
 export const env = envSchema.parse({
   ...import.meta.env,
-  VITE_API_URL: `${window.location.origin}/api`,
-  VITE_GRAPHQL_URL: `${window.location.origin}/graphql`,
+  API_URL: `${window.location.origin}/api`,
+  GRAPHQL_URL: `${window.location.origin}/graphql`,
 })
