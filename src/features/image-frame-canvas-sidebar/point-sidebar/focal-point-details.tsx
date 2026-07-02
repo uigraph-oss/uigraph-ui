@@ -1,0 +1,167 @@
+'use client'
+
+import { SuperCircleLoader } from '@/components/loader'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
+import { useEffectState } from '@/hooks/use-effect-state'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { FocalPointComponentsSection } from '../components/focal-point-component-group'
+import { useFocalPointSidebarContext } from '../contexts/focal-point-sidebar-context'
+import { DeleteFocalPointConfirmationModal } from './delete-focal-point-confirm-modal'
+
+const inputClassName =
+  '!h-14 w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-[#F4F7FC] placeholder:text-[#828DA3] focus:outline-none'
+
+export type FocalPointDetailsApi = {
+  updateFocalPoint: (
+    pointId: string,
+    input: {
+      name?: string
+      locationX?: number
+      locationY?: number
+      visibility?: string
+      isActive?: boolean
+    }
+  ) => Promise<void>
+
+  deleteFocalPoint: (pointId: string) => Promise<void>
+}
+
+type FocalPointDetailsProps = FocalPointDetailsApi & {
+  focalPoint: FocalPoint
+  unselectFocalPoint: () => void
+}
+
+export function FocalPointDetails({
+  focalPoint,
+  unselectFocalPoint,
+  updateFocalPoint,
+  deleteFocalPoint,
+}: FocalPointDetailsProps) {
+  const { pointMeta, createPointMeta, updatePointMeta, deletePointMeta } =
+    useFocalPointSidebarContext()
+
+  const [isUpdatingFocalPoint, setIsUpdatingFocalPoint] = useState(false)
+  const [isDeletingFocalPoint, setIsDeletingFocalPoint] = useState(false)
+
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false)
+
+  const [localName, setLocalName] = useEffectState(focalPoint.name || '')
+
+  const hasChanges = localName !== focalPoint.name
+
+  return (
+    <div>
+      <Accordion
+        type="single"
+        collapsible
+        className={'border-b'}
+        defaultValue="basics"
+      >
+        <AccordionItem value="basics">
+          <AccordionTrigger className="group flex w-full items-center justify-between px-4 text-base text-[#F4F7FC]">
+            Basics
+          </AccordionTrigger>
+
+          <AccordionContent className="space-y-4 px-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-[#F4F7FC]">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={localName}
+                autoCorrect="off"
+                autoComplete="off"
+                autoCapitalize="off"
+                disabled={isUpdatingFocalPoint}
+                onChange={(e) => setLocalName(e.target.value)}
+                placeholder="Enter focal point name"
+                className={inputClassName}
+              />
+            </div>
+
+            {hasChanges && (
+              <div className="flex justify-start">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-11 rounded-[0.75rem]"
+                  onClick={async () => {
+                    try {
+                      setIsUpdatingFocalPoint(true)
+                      await updateFocalPoint(focalPoint.id, {
+                        name: localName,
+                      })
+                    } catch {
+                      toast.error('Failed to update focal point')
+                    } finally {
+                      setIsUpdatingFocalPoint(false)
+                    }
+                  }}
+                >
+                  <SuperCircleLoader loading={isUpdatingFocalPoint} />
+                  Save Changes
+                </Button>
+              </div>
+            )}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <FocalPointComponentsSection
+        pointMetaList={pointMeta}
+        createPointMeta={async (componentId, input) => {
+          await createPointMeta(componentId, input)
+        }}
+        deletePointMeta={async (pointMetaId) => {
+          await deletePointMeta(pointMetaId)
+        }}
+        updatePointMeta={async (pointMetaId, componentId, input) => {
+          await updatePointMeta(pointMetaId, componentId, input)
+        }}
+      />
+
+      <div className="mt-6 px-4 pb-2">
+        <Button
+          preset="outline"
+          className="text-destructive border-destructive/30 hover:bg-destructive w-full rounded-lg hover:text-white"
+          disabled={isDeletingFocalPoint}
+          onClick={async () => setIsDeleteConfirmModalOpen(true)}
+        >
+          <SuperCircleLoader loading={isDeletingFocalPoint} />
+          Delete Focal Point
+        </Button>
+
+        <DeleteFocalPointConfirmationModal
+          open={isDeleteConfirmModalOpen}
+          onOpenChange={setIsDeleteConfirmModalOpen}
+          onConfirm={async () => {
+            try {
+              setIsDeletingFocalPoint(true)
+              await deleteFocalPoint(focalPoint.id)
+              toast.success('Focal point deleted successfully')
+              unselectFocalPoint()
+            } catch {
+              toast.error(
+                'Failed to delete focal point. Please try again later.'
+              )
+            } finally {
+              setIsDeletingFocalPoint(false)
+            }
+          }}
+        />
+      </div>
+    </div>
+  )
+}

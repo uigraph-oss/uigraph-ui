@@ -1,0 +1,35 @@
+import { useComponentMetaClasses } from '../theme'
+
+export function ComponentMetaField({
+  error,
+  label,
+  required,
+  children,
+  componentType,
+}: {
+  label: React.ReactNode
+  required: boolean
+  componentType: string
+  children: React.ReactNode
+  error: string | undefined | null
+}) {
+  const classes = useComponentMetaClasses()
+
+  return (
+    <div className="mb-6">
+      <label
+        data-component-type={componentType}
+        data-has-error={error ? 'true' : null}
+        className={classes.fieldLabel}
+      >
+        {label} {required && <span className="text-destructive">*</span>}
+      </label>
+
+      <div className={classes.fieldValue}>{children}</div>
+
+      {error && (
+        <p className="text-destructive mt-2 overflow-hidden text-xs">{error}</p>
+      )}
+    </div>
+  )
+}

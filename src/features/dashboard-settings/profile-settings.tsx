@@ -1,0 +1,119 @@
+'use client'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { useAuthenticatedUser } from '@/store/auth-store'
+import { SquarePen } from 'lucide-react'
+import { useState } from 'react'
+import { SettingsHeader } from './components/settings-header'
+import { EditProfile } from './edit-profile'
+
+export function ProfileSettings() {
+  const user = useAuthenticatedUser()
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const initials = (user.name || '')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+
+  if (isEditMode) {
+    return (
+      <EditProfile
+        onCancel={() => setIsEditMode(false)}
+        initialData={{
+          name: user.name || '',
+          email: user.email || '',
+          image: user.avatarUrl || '',
+        }}
+      />
+    )
+  }
+
+  return (
+    <>
+      <SettingsHeader
+        title="Profile Settings"
+        description="Manage your personal profile and preferences"
+        cta={
+          <Button
+            className="h-[44px] rounded-[12.85px] bg-[#015AEB] text-sm leading-[1.33] text-white hover:bg-blue-700"
+            onClick={() => setIsEditMode(true)}
+          >
+            <SquarePen className="mr-0.5 h-4 w-4" />
+            Edit Profile
+          </Button>
+        }
+      />
+      <div className="space-y-3 p-6">
+        <div className="bg-card rounded-[12px] border border-[#2A3242] p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-20 w-20">
+                <AvatarImage
+                  src={user.avatarUrl || ''}
+                  alt="Profile"
+                  className="object-cover"
+                />
+                <AvatarFallback className="text-lg font-bold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-[#F4F7FC]">
+                  {user.name}
+                </h2>
+              </div>
+            </div>
+            <button
+              className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] font-normal text-[#D2D9E6] hover:bg-[#3B4658]"
+              onClick={() => setIsEditMode(true)}
+            >
+              <SquarePen className="mr-0.5 h-4 w-4" />
+              Edit
+            </button>
+          </div>
+        </div>
+        <div className="bg-card rounded-[12px] border border-[#2A3242] p-6">
+          <div className="mb-6 flex items-center justify-between">
+            <h3 className="text-[16px] leading-[1.33] font-semibold text-[#F4F7FC]">
+              Personal Information
+            </h3>
+            <button
+              className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] font-normal text-[#D2D9E6] hover:bg-[#3B4658]"
+              onClick={() => setIsEditMode(true)}
+            >
+              <SquarePen className="mr-0.5 h-4 w-4" />
+              Edit
+            </button>
+          </div>
+
+          <div className="grid max-w-[40rem] grid-cols-2 gap-x-[64px] gap-y-6">
+            <div>
+              <Label className="text-sm leading-[1.33] font-normal text-[#828DA3]">
+                Name
+              </Label>
+              <p className="text-[1rem] leading-[1.33] font-normal text-[#F4F7FC]">
+                {user.name}
+              </p>
+            </div>
+
+            <div>
+              <Label className="text-sm leading-[1.33] font-normal text-[#828DA3]">
+                Email address
+              </Label>
+              <p className="text-[1rem] leading-[1.33] font-normal text-[#F4F7FC]">
+                {user.email}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}

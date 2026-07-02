@@ -1,0 +1,4 @@
+@property --frame-image-canvas-width {
+  syntax: '<length>';
+  inherits: false;
+}

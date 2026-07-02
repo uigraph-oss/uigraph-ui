@@ -1,0 +1,129 @@
+.root {
+  :global(.ql-toolbar) {
+    background-color: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.ql-container) {
+    background-color: transparent;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+  }
+
+  :global(.ql-editor) {
+    height: 9.625rem;
+    word-break: break-all;
+  }
+
+  :global(.ql-code-block-container) {
+    font-family: var(--font-fira-code);
+  }
+
+  :global(.ql-code-block-container select) {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    top: 0;
+    right: 0;
+    padding: 0.2rem 0.5rem;
+  }
+
+  :global(.ql-code-block-container option) {
+    color: black;
+  }
+
+  :global(.ql-toolbar) {
+    padding: 0.2rem !important;
+  }
+
+  :global(.ql-formats) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center;
+    justify-content: start;
+    gap: 0.25rem;
+  }
+
+  :global(.ql-formats > *) {
+    border: 1px solid var(--border) !important;
+    height: 1.75rem !important;
+    width: 1.75rem !important;
+    border-radius: 0.375rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  :global(.ql-toolbar button .ql-stroke),
+  :global(.ql-toolbar .ql-picker .ql-stroke) {
+    stroke: #98a2b3;
+  }
+
+  :global(.ql-toolbar button .ql-fill),
+  :global(.ql-toolbar .ql-picker .ql-fill) {
+    fill: #98a2b3;
+  }
+
+  :global(.ql-toolbar .ql-picker-label) {
+    color: #98a2b3;
+  }
+
+  :global(.ql-toolbar button:hover),
+  :global(.ql-toolbar button:focus),
+  :global(.ql-toolbar button.ql-active) {
+    background-color: rgba(141, 180, 255, 0.12);
+  }
+
+  :global(.ql-toolbar button:hover .ql-stroke),
+  :global(.ql-toolbar button:focus .ql-stroke),
+  :global(.ql-toolbar button.ql-active .ql-stroke) {
+    stroke: #8db4ff;
+  }
+
+  :global(.ql-toolbar button:hover .ql-fill),
+  :global(.ql-toolbar button:focus .ql-fill),
+  :global(.ql-toolbar button.ql-active .ql-fill) {
+    fill: #8db4ff;
+  }
+
+  :global(.ql-editor.ql-blank::before) {
+    color: #586378;
+    font-style: normal;
+  }
+}
+
+.root :global(.ql-toolbar:not(:has(+ .ql-toolbar))) {
+  display: block;
+}
+
+.root :global(.ql-toolbar:has(+ .ql-toolbar)) {
+  display: none;
+}
+
+.noOverflow {
+  :global(.ql-editor) {
+    height: auto !important;
+    overflow: initial !important;
+  }
+}
+
+.modal {
+  :global(.ql-toolbar) {
+    background-color: transparent;
+    border: 1px solid #2a3242;
+    border-radius: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.ql-container) {
+    background-color: transparent;
+    border: 1px solid #2a3242;
+    border-radius: 1rem;
+  }
+
+  :global(.ql-formats > *) {
+    border: 1px solid #2a3242 !important;
+  }
+}

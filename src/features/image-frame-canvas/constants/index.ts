@@ -1,0 +1,3 @@
+export const CANVAS_IMAGE_WIDTH = 400
+export const CANVAS_IMAGE_DEFAULT_GAP = 20
+export const FOCAL_POINT_RESOLUTION = 3000
