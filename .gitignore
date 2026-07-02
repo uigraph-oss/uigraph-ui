@@ -48,7 +48,6 @@ yarn-error.log*
 next-env.d.ts
 
 # Custom
-.gql
 .npmrc
 .serverless
 ___REF___*
