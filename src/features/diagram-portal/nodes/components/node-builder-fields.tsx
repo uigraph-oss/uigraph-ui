@@ -21,7 +21,7 @@ export function NodeBuilderFields({ fields }: NodeBuilderFieldsProps) {
       .filter(
         (f) =>
           nodeVisibleInputFields.includes(f.type as ComponentInputType) &&
-          !f.hidden &&
+          f.hidden === false &&
           f.label !== 'Name' &&
           f.label !== 'Label' &&
           f.label !== 'Description'

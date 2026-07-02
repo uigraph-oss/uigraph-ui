@@ -70,7 +70,7 @@ export function NodeBuilderConfigure() {
                 ),
               })
             }}
-            isVisible={!field.hidden}
+            isVisible={field.hidden === false}
             setIsVisible={(isVisible: boolean) => {
               updateData({
                 ...data,

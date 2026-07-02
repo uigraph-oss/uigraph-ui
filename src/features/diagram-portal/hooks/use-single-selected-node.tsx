@@ -91,11 +91,6 @@ function mergeNode(node: Node, newNode: Partial<Node>) {
     data: {
       ...node.data,
       ...newNode.data,
-
-      hide: {
-        ...(node.data.hide ?? {}),
-        ...(newNode.data?.hide ?? {}),
-      },
     },
   }
 }

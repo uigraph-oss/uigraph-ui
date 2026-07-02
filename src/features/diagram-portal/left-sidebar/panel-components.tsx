@@ -116,6 +116,7 @@ export function SidebarComponents() {
                                           type.flowDiagramComponentFields
                                         ).map((field) => ({
                                           ...field,
+                                          hidden: false,
 
                                           componentFieldId:
                                             field.flowDiagramComponentFieldId,
