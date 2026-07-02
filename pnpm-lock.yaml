@@ -146,8 +146,8 @@ importers:
         specifier: ^15.5.13
         version: 15.5.13
       '@uigraph/sdk':
-        specifier: ^1.1.40
-        version: 1.1.40(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)
+        specifier: ^1.1.43
+        version: 1.1.43(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)
       '@uiw/codemirror-theme-monokai-dimmed':
         specifier: 4.25.3
         version: 4.25.3(@codemirror/language@6.12.3)(@codemirror/state@6.7.0)(@codemirror/view@6.41.1)
@@ -5086,10 +5086,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  '@uigraph/sdk@1.1.40':
+  '@uigraph/sdk@1.1.43':
     resolution:
       {
-        integrity: sha512-c3g3SfegTtLFswWONqZ18Qfk86uTYnNc/LJQzRHbJEih7Q1uXvRmGGxV3BeGCdYwwyDHXEFl+u7UP3cDUGs+jg==,
+        integrity: sha512-/Qnhmf54RFQkHewwMI/ghd8v5BeeW4GntCpCRAkXa5TSEFTfa26P89Cl0HqVTBRPcKsYH5d9XPBtR5xdkzgvTQ==,
       }
     peerDependencies:
       '@xyflow/react': ^12
@@ -15661,7 +15661,7 @@ snapshots:
       '@typescript-eslint/types': 8.58.2
       eslint-visitor-keys: 5.0.1
 
-  '@uigraph/sdk@1.1.40(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)':
+  '@uigraph/sdk@1.1.43(@xyflow/react@12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(quill@2.0.3)(zod@4.3.6)':
     dependencies:
       '@xyflow/react': 12.10.2(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       dagre: 0.8.5
