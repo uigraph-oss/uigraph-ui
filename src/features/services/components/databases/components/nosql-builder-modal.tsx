@@ -11,8 +11,9 @@ import {
 } from '@/features/services/api/service-db'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { AstToUiConverter } from '@uigraph/sdk'
+import { arrayNonNullable } from 'daily-code'
 import { toast } from 'sonner'
 
 export function NosqlBuilderModal({
@@ -27,6 +28,12 @@ export function NosqlBuilderModal({
 
   const listVars = { orgId: orgId!, serviceId }
 
+  const { data: existingData } = useQuery(SERVICE_DBS, {
+    variables: listVars,
+    fetchPolicy: 'cache-first',
+    skip: !orgId || !serviceId,
+  })
+
   const [createDiagram] = useMutation(CREATE_DIAGRAM)
   const [createServiceDb] = useMutation(CREATE_SERVICE_DB, {
     awaitRefetchQueries: true,
@@ -34,6 +41,16 @@ export function NosqlBuilderModal({
   })
 
   async function handleSchemaSubmit(dataSource: DataSource) {
+    const nameTaken = arrayNonNullable(existingData?.serviceDBs).some(
+      (db) =>
+        db.dbName.trim().toLowerCase() === dataSource.name.trim().toLowerCase()
+    )
+    if (nameTaken) {
+      toast.error(
+        `A data source named "${dataSource.name}" already exists in this service`
+      )
+      return
+    }
     try {
       const { nodes, edges } = AstToUiConverter.toReactFlow(
         dataSource.schemaAst,

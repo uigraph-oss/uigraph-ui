@@ -8,7 +8,8 @@ import {
 } from '@/features/services/api/service-db'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
+import { arrayNonNullable } from 'daily-code'
 import { toast } from 'sonner'
 import { ConfigureDbSchemaModal } from './configure-db-schema-modal'
 
@@ -22,6 +23,12 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
 
   const listVars = { orgId: orgId!, serviceId }
 
+  const { data: existingData } = useQuery(SERVICE_DBS, {
+    variables: listVars,
+    fetchPolicy: 'cache-first',
+    skip: !orgId || !serviceId,
+  })
+
   const [createDiagram] = useMutation(CREATE_DIAGRAM)
   const [createServiceDb] = useMutation(CREATE_SERVICE_DB, {
     awaitRefetchQueries: true,
@@ -32,6 +39,16 @@ export function DBSchemaUploadModal({ onOpenChange }: SchemaUploadModalProps) {
     <ConfigureDbSchemaModal
       mode="upload"
       onSubmit={async ({ data, attachedSchema, componentFlowDiagram }) => {
+        const nameTaken = arrayNonNullable(existingData?.serviceDBs).some(
+          (db) =>
+            db.dbName.trim().toLowerCase() === data.dbName.trim().toLowerCase()
+        )
+        if (nameTaken) {
+          toast.error(
+            `A data source named "${data.dbName}" already exists in this service`
+          )
+          return
+        }
         try {
           const diagramResult = await createDiagram({
             variables: {
