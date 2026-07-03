@@ -19,22 +19,56 @@ import {
   isValidElement,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactElement,
+  type ReactNode,
 } from 'react'
-import { FiCheck, FiCopy } from 'react-icons/fi'
+import {
+  FiAlertCircle,
+  FiAlertOctagon,
+  FiAlertTriangle,
+  FiCheck,
+  FiCopy,
+  FiInfo,
+  FiLink,
+} from 'react-icons/fi'
 import { IoImageOutline } from 'react-icons/io5'
-import { PiFileSvgLight } from 'react-icons/pi'
+import { PiFileSvgLight, PiLightbulbFilamentLight } from 'react-icons/pi'
 import { SiMermaid } from 'react-icons/si'
 import ReactMarkdown, { type Components } from 'react-markdown'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import rehypeKatex from 'rehype-katex'
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import { toast } from 'sonner'
 
+import 'katex/dist/katex.min.css'
 import 'react-photo-view/dist/react-photo-view.css'
+
+// Raw HTML (e.g. hybrid tables with rowspan/colspan) is parsed by
+// rehype-raw, then sanitized before rehype-katex injects its own
+// (trusted, programmatically generated) markup — so KaTeX's output is
+// never subject to the sanitizer, only user-authored HTML is.
+const SANITIZE_SCHEMA = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    span: [
+      ...(defaultSchema.attributes?.span ?? []),
+      ['className', /^math(-inline|-display)?$/],
+    ],
+    div: [
+      ...(defaultSchema.attributes?.div ?? []),
+      ['className', /^math(-inline|-display)?$/],
+    ],
+  },
+}
 
 function isKvBlock(text: string): boolean {
   const lines = text.trim().split('\n').filter(Boolean)
@@ -77,6 +111,174 @@ function getCodeLanguage(className?: string): string {
   return match?.[1] ?? 'text'
 }
 
+// ── Headings: stable slug ids + hover-to-copy anchor links ────────────────
+
+const HeadingSlugsContext = createContext<Map<string, number> | null>(null)
+
+function slugify(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-') || 'section'
+  )
+}
+
+function getPlainText(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') return String(node)
+  if (Array.isArray(node)) return node.map(getPlainText).join('')
+  if (isValidElement(node)) {
+    return getPlainText((node.props as { children?: ReactNode }).children)
+  }
+  return ''
+}
+
+function useHeadingSlug(children: ReactNode): string {
+  const slugs = useContext(HeadingSlugsContext)
+  const base = slugify(getPlainText(children))
+  if (!slugs) return base
+
+  const seen = slugs.get(base) ?? 0
+  slugs.set(base, seen + 1)
+  return seen === 0 ? base : `${base}-${seen}`
+}
+
+function copyHeadingLink(id: string) {
+  const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${id}`
+  void navigator.clipboard.writeText(url)
+  window.history.replaceState(null, '', `#${id}`)
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  toast.success('Link copied')
+}
+
+const HEADING_STYLES: Record<number, string> = {
+  1: 'text-[1.75em] mt-9 mb-3 first:mt-0',
+  2: 'text-[1.4em] mt-8 mb-2.5 first:mt-0',
+  3: 'text-[1.2em] mt-6 mb-2 first:mt-0',
+  4: 'text-[1.05em] mt-5 mb-1.5 first:mt-0',
+  5: 'text-[0.92em] mt-4 mb-1 first:mt-0 text-muted-foreground uppercase tracking-wide',
+  6: 'text-[0.85em] mt-4 mb-1 first:mt-0 text-muted-foreground uppercase tracking-wide',
+}
+
+function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
+  const Tag = `h${level}` as const
+
+  return function Heading({ children }: { children?: ReactNode }) {
+    const id = useHeadingSlug(children)
+
+    return (
+      <Tag
+        id={id}
+        className={cn(
+          'group text-foreground scroll-mt-16 leading-[1.3] font-semibold tracking-tight',
+          HEADING_STYLES[level]
+        )}
+      >
+        {children}
+        <a
+          href={`#${id}`}
+          aria-label="Copy link to heading"
+          onClick={(e) => {
+            e.preventDefault()
+            copyHeadingLink(id)
+          }}
+          className="text-muted-foreground hover:text-primary ml-2 inline-block align-middle opacity-0 transition-opacity group-hover:opacity-100"
+        >
+          <FiLink className="size-[0.65em]" />
+        </a>
+      </Tag>
+    )
+  }
+}
+
+// ── Callouts: GitHub-style `> [!NOTE]` blockquote alerts ───────────────────
+
+type CalloutKind = 'NOTE' | 'TIP' | 'IMPORTANT' | 'WARNING' | 'CAUTION'
+
+const CALLOUT_CONFIG: Record<
+  CalloutKind,
+  { label: string; icon: typeof FiInfo; classes: string; iconClass: string }
+> = {
+  NOTE: {
+    label: 'Note',
+    icon: FiInfo,
+    classes: 'border-blue-500/30 bg-blue-500/10',
+    iconClass: 'text-blue-400',
+  },
+  TIP: {
+    label: 'Tip',
+    icon: PiLightbulbFilamentLight,
+    classes: 'border-emerald-500/30 bg-emerald-500/10',
+    iconClass: 'text-emerald-400',
+  },
+  IMPORTANT: {
+    label: 'Important',
+    icon: FiAlertCircle,
+    classes: 'border-violet-500/30 bg-violet-500/10',
+    iconClass: 'text-violet-400',
+  },
+  WARNING: {
+    label: 'Warning',
+    icon: FiAlertTriangle,
+    classes: 'border-amber-500/30 bg-amber-500/10',
+    iconClass: 'text-amber-400',
+  },
+  CAUTION: {
+    label: 'Caution',
+    icon: FiAlertOctagon,
+    classes: 'border-red-500/30 bg-red-500/10',
+    iconClass: 'text-red-400',
+  },
+}
+
+const CALLOUT_MARKER_RE = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*\n?/i
+
+function extractCallout(
+  children: ReactNode
+): { kind: CalloutKind; rest: ReactNode[] } | null {
+  // react-markdown interleaves insignificant whitespace text nodes ("\n")
+  // between block-level children, so the paragraph isn't necessarily index 0.
+  const childArray = Children.toArray(children)
+  const paragraphIndex = childArray.findIndex(isValidElement)
+  const firstParagraph = childArray[paragraphIndex]
+  if (paragraphIndex === -1 || !isValidElement(firstParagraph)) return null
+
+  const pChildren = Children.toArray(
+    (firstParagraph.props as { children?: ReactNode }).children
+  )
+  // Skip any purely-whitespace text nodes leading the paragraph.
+  let textIndex = 0
+  while (
+    textIndex < pChildren.length &&
+    typeof pChildren[textIndex] === 'string' &&
+    (pChildren[textIndex] as string).trim() === ''
+  ) {
+    textIndex++
+  }
+  const firstText = pChildren[textIndex]
+  if (typeof firstText !== 'string') return null
+
+  const match = CALLOUT_MARKER_RE.exec(firstText)
+  if (!match) return null
+
+  const kind = match[1].toUpperCase() as CalloutKind
+  const newPChildren = [...pChildren]
+  newPChildren[textIndex] = firstText.slice(match[0].length)
+  const newParagraph = cloneElement(
+    firstParagraph as ReactElement<{ children?: ReactNode }>,
+    {},
+    ...newPChildren
+  )
+
+  const rest = [...childArray]
+  rest[paragraphIndex] = newParagraph
+  return { kind, rest }
+}
+
 const MERMAID_CACHE = new Map<string, string>()
 
 function MermaidContent({ code }: { code: string }) {
@@ -88,6 +290,7 @@ function MermaidContent({ code }: { code: string }) {
       mermaid.initialize({
         suppressErrorRendering: true,
         startOnLoad: false,
+        theme: 'dark',
       })
 
       if (MERMAID_CACHE.has(code)) {
@@ -215,12 +418,54 @@ function ImageBlock({ src, alt }: { src: string; alt?: string }) {
 }
 
 const OrderedListContext = createContext(false)
+const ListDepthContext = createContext(0)
 
 const MARKDOWN_COMPONENTS: Components = {
-  blockquote: ({ children }) => (
-    <blockquote className="border-border bg-muted/40 text-muted-foreground my-2 border-l-2 py-1.5 pl-4">
-      {children}
-    </blockquote>
+  h1: createHeading(1),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  h5: createHeading(5),
+  h6: createHeading(6),
+
+  blockquote: ({ children }) => {
+    const callout = extractCallout(children)
+
+    if (callout) {
+      const {
+        label,
+        icon: Icon,
+        classes,
+        iconClass,
+      } = CALLOUT_CONFIG[callout.kind]
+
+      return (
+        <div
+          className={cn(
+            'my-3 flex gap-2.5 rounded-lg border px-4 py-3',
+            classes
+          )}
+        >
+          <Icon className={cn('mt-0.5 size-4 shrink-0', iconClass)} />
+          <div className="min-w-0 flex-1 [&>p]:mb-1.5 [&>p:last-child]:mb-0">
+            <p className={cn('mb-1 text-[13px] font-semibold', iconClass)}>
+              {label}
+            </p>
+            {callout.rest}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <blockquote className="border-border bg-muted/40 text-muted-foreground my-2 border-l-2 py-1.5 pl-4">
+        {children}
+      </blockquote>
+    )
+  },
+
+  del: ({ children }) => (
+    <del className="text-muted-foreground decoration-1">{children}</del>
   ),
 
   input: ({ type, checked, disabled }) => {
@@ -254,17 +499,35 @@ const MARKDOWN_COMPONENTS: Components = {
     return <>{children}</>
   },
 
-  ol: ({ children }) => (
-    <OrderedListContext.Provider value={true}>
-      <ol className="step-list my-2.5">{children}</ol>
-    </OrderedListContext.Provider>
-  ),
+  ol: ({ children }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const depth = useContext(ListDepthContext)
 
-  ul: ({ children }) => (
-    <OrderedListContext.Provider value={false}>
-      <ul className="my-1.5 space-y-1.5">{children}</ul>
-    </OrderedListContext.Provider>
-  ),
+    return (
+      <OrderedListContext.Provider value={true}>
+        <ListDepthContext.Provider value={depth + 1}>
+          <ol className={cn('step-list my-2.5', depth > 0 && 'pl-5')}>
+            {children}
+          </ol>
+        </ListDepthContext.Provider>
+      </OrderedListContext.Provider>
+    )
+  },
+
+  ul: ({ children }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const depth = useContext(ListDepthContext)
+
+    return (
+      <OrderedListContext.Provider value={false}>
+        <ListDepthContext.Provider value={depth + 1}>
+          <ul className={cn('my-1.5 space-y-1.5', depth > 0 && 'pl-5')}>
+            {children}
+          </ul>
+        </ListDepthContext.Provider>
+      </OrderedListContext.Provider>
+    )
+  },
 
   li: ({ children }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -281,8 +544,7 @@ const MARKDOWN_COMPONENTS: Components = {
 
     const childArray = Children.toArray(children)
     const firstValid = childArray.find(isValidElement) as
-      | ReactElement<{ type?: string; 'data-task-checkbox'?: string }>
-      | undefined
+      ReactElement<{ type?: string; 'data-task-checkbox'?: string }> | undefined
     const hasCheckbox =
       firstValid?.props?.type === 'checkbox' ||
       firstValid?.props?.['data-task-checkbox'] !== undefined
@@ -440,7 +702,7 @@ const MARKDOWN_COMPONENTS: Components = {
   ),
 }
 
-const STEP_LIST_STYLE = `
+const MARKDOWN_DOC_STYLE = `
   .markdown-doc .step-list {
     counter-reset: step-counter;
     list-style: none;
@@ -467,11 +729,24 @@ const STEP_LIST_STYLE = `
   .markdown-doc .step-body > p:not(:last-child) {
     margin-bottom: 6px;
   }
+
+  .markdown-doc .katex-display {
+    margin: 0.75em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0;
+  }
+
+  .markdown-doc .katex {
+    font-size: 1.05em;
+  }
 `
 
 export function MarkdownRenderer({ fileURL }: { fileURL: string }) {
   const [content, setContent] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- reset slug counts whenever content changes
+  const headingSlugs = useMemo(() => new Map<string, number>(), [content])
 
   useEffect(() => {
     let cancelled = false
@@ -520,14 +795,21 @@ export function MarkdownRenderer({ fileURL }: { fileURL: string }) {
   }
 
   return (
-    <div className="markdown-doc text-foreground px-2 text-[15px] leading-[1.75]">
-      <style>{STEP_LIST_STYLE}</style>
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={MARKDOWN_COMPONENTS}
-      >
-        {content}
-      </ReactMarkdown>
+    <div className="markdown-doc text-foreground mx-auto max-w-[820px] px-2 text-[15px] leading-[1.75]">
+      <style>{MARKDOWN_DOC_STYLE}</style>
+      <HeadingSlugsContext.Provider value={headingSlugs}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[
+            rehypeRaw,
+            [rehypeSanitize, SANITIZE_SCHEMA],
+            rehypeKatex,
+          ]}
+          components={MARKDOWN_COMPONENTS}
+        >
+          {content}
+        </ReactMarkdown>
+      </HeadingSlugsContext.Provider>
     </div>
   )
 }
