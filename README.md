@@ -65,4 +65,3 @@ BUSL is not an OSI-approved open source license during the initial term. For com
 - [uigraph-mcp](https://github.com/uigraph-oss/uigraph-mcp) — MCP server for AI assistants
 - [uigraph-sdk](https://github.com/uigraph-oss/uigraph-sdk) — TypeScript SDK
 - [uigraph-deploy](https://github.com/uigraph-oss/uigraph-deploy) — self-hosted deployment
-- [uigraph-scripts](https://github.com/uigraph-oss/uigraph-scripts) — database seed utilities
