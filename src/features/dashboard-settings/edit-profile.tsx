@@ -5,7 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { bootstrapSession, useAuthenticatedUser } from '@/store/auth-store'
+import { uploadFile } from '@/features/uploads/api/uploads'
+import {
+  bootstrapSession,
+  useAuthenticatedUser,
+  useCurrentOrganization,
+} from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -24,6 +29,7 @@ interface EditProfileProps {
 
 export function EditProfile({ onCancel, initialData }: EditProfileProps) {
   const user = useAuthenticatedUser()
+  const orgId = useCurrentOrganization().id
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [updateUser, { loading: isUpdating }] = useMutation(UPDATE_USER, {
@@ -47,10 +53,12 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
   async function handleImageUpload(file: File) {
     setIsUploadingImage(true)
     try {
-      const form = new FormData()
-      form.append('file', file)
+      const assetId = await uploadFile(orgId!, file)
 
-      await clientAxios.put(`/v1/users/me/avatar`, form)
+      await clientAxios.put(`/v1/users/me/avatar`, {
+        assetId,
+        contentType: file.type,
+      })
 
       await bootstrapSession()
       toast.success('Avatar updated')

@@ -55,13 +55,3 @@ export type ServiceLinkedDoc = {
   createdAt?: string | null
   updatedAt?: string | null
 }
-
-export async function readFileAsBase64(file: File): Promise<string> {
-  const buffer = await file.arrayBuffer()
-  const bytes = new Uint8Array(buffer)
-  let binary = ''
-  for (const i of bytes) {
-    binary += String.fromCharCode(i)
-  }
-  return btoa(binary)
-}

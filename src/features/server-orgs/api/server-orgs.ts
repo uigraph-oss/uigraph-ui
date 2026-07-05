@@ -1,5 +1,6 @@
 import { graphql } from '@/api'
 import { clientAxios } from '@/api/axios'
+import { uploadFile } from '@/features/uploads/api/uploads'
 
 export type ServerOrg = {
   id: string
@@ -26,9 +27,11 @@ export const SERVER_ORGS = graphql(`
 `)
 
 export async function setServerOrgLogo(orgId: string, file: File) {
-  const form = new FormData()
-  form.append('file', file)
-  await clientAxios.put(`/v1/server/orgs/${orgId}/logo`, form)
+  const assetId = await uploadFile(orgId, file)
+  await clientAxios.put(`/v1/server/orgs/${orgId}/logo`, {
+    assetId,
+    contentType: file.type,
+  })
 }
 
 export async function removeServerOrgLogo(orgId: string) {

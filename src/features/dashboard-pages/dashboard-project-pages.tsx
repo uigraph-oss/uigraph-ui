@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { fileToDataUrl } from '@/helpers/file-to-data-url'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
@@ -191,8 +191,8 @@ function DashboardProjectContent() {
         ctaLabel="Add Frame"
         description="Create a new frame for this map."
         submitForm={async (data) => {
-          const screenshot = data.imageFile
-            ? await fileToDataUrl(data.imageFile)
+          const screenshotAssetId = data.imageFile
+            ? await uploadFile(organizationId!, data.imageFile)
             : undefined
 
           await createFrame({
@@ -203,7 +203,7 @@ function DashboardProjectContent() {
                 name: data.name,
                 description: data.description,
                 templateType: data.profileId,
-                screenshot,
+                screenshotAssetId,
               },
             },
           })

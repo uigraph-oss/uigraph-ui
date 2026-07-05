@@ -1,5 +1,6 @@
 import { graphql } from '@/api'
 import { clientAxios } from '@/api/axios'
+import { uploadFile } from '@/features/uploads/api/uploads'
 
 export type OAuthProvider = {
   id: string
@@ -63,10 +64,16 @@ export const OAUTH_PROVIDERS = graphql(`
   }
 `)
 
-export async function setOAuthProviderIcon(provider: string, file: File) {
-  const form = new FormData()
-  form.append('file', file)
-  await clientAxios.put(`/v1/sso/oauth/${provider}/icon`, form)
+export async function setOAuthProviderIcon(
+  orgId: string,
+  provider: string,
+  file: File
+) {
+  const assetId = await uploadFile(orgId, file)
+  await clientAxios.put(`/v1/sso/oauth/${provider}/icon`, {
+    assetId,
+    contentType: file.type,
+  })
 }
 
 export async function removeOAuthProviderIcon(provider: string) {

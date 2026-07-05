@@ -6,6 +6,7 @@ import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ServerSectionHeader } from '@/features/server-dashboard/server-section-header'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -33,6 +34,7 @@ import {
 import { ConfigureSamlModal } from './configure-saml-modal'
 
 export function ServerSSOPage() {
+  const orgId = useCurrentOrganization().id
   const providersQuery = useQuery(OAUTH_PROVIDERS)
   const ldapQuery = useQuery(LDAP_CONFIG)
   const samlQuery = useQuery(SAML_CONFIG)
@@ -251,7 +253,11 @@ export function ServerSSOPage() {
             mode="edit"
             iconUrl={editProvider.iconUrl}
             onUploadIcon={async (file) => {
-              await setOAuthProviderIcon(editProvider.providerName, file)
+              await setOAuthProviderIcon(
+                orgId!,
+                editProvider.providerName,
+                file
+              )
               const { data } = await providersQuery.refetch()
               const updated = data?.oauthProviders.find(
                 (p) => p.providerName === editProvider.providerName

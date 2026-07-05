@@ -1,5 +1,6 @@
 import { graphql, type GT } from '@/api'
 import { clientAxios } from '@/api/axios'
+import { uploadFile } from '@/features/uploads/api/uploads'
 
 export type ServiceAccount = GT.ServiceAccountsQuery['serviceAccounts'][number]
 export type ServiceAccountToken =
@@ -96,10 +97,9 @@ export async function setServiceAccountAvatar(
   saId: string,
   file: File
 ) {
-  const form = new FormData()
-  form.append('file', file)
-  await clientAxios.put(
-    `/v1/orgs/${orgId}/service-accounts/${saId}/avatar`,
-    form
-  )
+  const assetId = await uploadFile(orgId, file)
+  await clientAxios.put(`/v1/orgs/${orgId}/service-accounts/${saId}/avatar`, {
+    assetId,
+    contentType: file.type,
+  })
 }

@@ -292,8 +292,9 @@ export type CreateDiagramInput = {
 };
 
 export type CreateDocInput = {
-  contentBase64: Scalars['String']['input'];
+  contentBase64?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fileAssetId?: InputMaybe<Scalars['String']['input']>;
   fileName: Scalars['String']['input'];
   fileType?: InputMaybe<Scalars['String']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
@@ -342,6 +343,7 @@ export type CreateFrameInput = {
   order?: InputMaybe<Scalars['Float']['input']>;
   parentFrameId?: InputMaybe<Scalars['ID']['input']>;
   screenshot?: InputMaybe<Scalars['String']['input']>;
+  screenshotAssetId?: InputMaybe<Scalars['String']['input']>;
   templateType: Scalars['String']['input'];
 };
 
@@ -433,6 +435,7 @@ export type CreateServiceDocInput = {
   contentBase64?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   docId?: InputMaybe<Scalars['ID']['input']>;
+  fileAssetId?: InputMaybe<Scalars['String']['input']>;
   fileName?: InputMaybe<Scalars['String']['input']>;
   fileType?: InputMaybe<Scalars['String']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
@@ -2861,6 +2864,7 @@ export type UpdateDiagramInput = {
 export type UpdateDocInput = {
   contentBase64?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fileAssetId?: InputMaybe<Scalars['String']['input']>;
   fileName?: InputMaybe<Scalars['String']['input']>;
   fileType?: InputMaybe<Scalars['String']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
@@ -2907,6 +2911,7 @@ export type UpdateFrameInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Scalars['Float']['input']>;
   screenshot?: InputMaybe<Scalars['String']['input']>;
+  screenshotAssetId?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   templateType?: InputMaybe<Scalars['String']['input']>;
 };

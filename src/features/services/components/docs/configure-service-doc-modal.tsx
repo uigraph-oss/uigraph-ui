@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatBytesToHumanReadable } from 'daily-code'
@@ -20,7 +21,6 @@ import { openFileExplorer } from 'daily-code/browser'
 import { FileText, TrashIcon } from 'lucide-react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
-import { readFileAsBase64 } from '../../api/service-doc'
 import {
   DOCUMENT_FILE_TYPES,
   getDocumentFileTypeKey,
@@ -38,7 +38,6 @@ export const configureServiceDocSchema = z.object({
 
 export type ServiceDocFormData = {
   fileId?: string
-  contentBase64?: string
   fileName?: string
   fileType?: string
   description?: string
@@ -46,12 +45,14 @@ export type ServiceDocFormData = {
 
 type ConfigureServiceDocModalProps = {
   mode: 'create' | 'update'
+  orgId: string
   defaultValues?: Partial<ServiceDocFormData>
   onSubmit: SubmitHandler<ServiceDocFormData>
 }
 
 export function ConfigureServiceDocModal({
   mode,
+  orgId,
   defaultValues,
   onSubmit,
 }: ConfigureServiceDocModalProps) {
@@ -67,22 +68,20 @@ export function ConfigureServiceDocModal({
 
   async function handleSubmit(data: z.infer<typeof configureServiceDocSchema>) {
     try {
-      let contentBase64: string | undefined
       let fileId: string | undefined
 
       if (data.file instanceof File) {
-        contentBase64 = await readFileAsBase64(data.file)
+        fileId = await uploadFile(orgId, data.file)
       } else if (typeof data.file === 'string') {
         fileId = data.file
       }
 
-      if (mode === 'create' && !contentBase64) {
+      if (mode === 'create' && !fileId) {
         throw new Error('File content is required')
       }
 
       await onSubmit({
         fileId,
-        contentBase64,
         fileName: data.fileName,
         fileType: data.fileType,
         description: data.description,
