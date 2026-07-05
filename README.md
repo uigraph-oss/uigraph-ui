@@ -37,14 +37,14 @@ Vite proxies API requests to `VITE_API_TARGET` (default `http://localhost:8080`)
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start Vite dev server with GraphQL codegen watch |
-| `pnpm build` | Production build |
-| `pnpm preview` | Preview production build on port 3000 |
-| `pnpm test` | Run tests |
-| `pnpm typecheck` | TypeScript check |
-| `pnpm lint` | ESLint |
+| Command          | Description                                      |
+| ---------------- | ------------------------------------------------ |
+| `pnpm dev`       | Start Vite dev server with GraphQL codegen watch |
+| `pnpm build`     | Production build                                 |
+| `pnpm preview`   | Preview production build on port 3000            |
+| `pnpm test`      | Run tests                                        |
+| `pnpm typecheck` | TypeScript check                                 |
+| `pnpm lint`      | ESLint                                           |
 
 ## License
 
@@ -65,4 +65,3 @@ BUSL is not an OSI-approved open source license during the initial term. For com
 - [uigraph-mcp](https://github.com/uigraph-oss/uigraph-mcp) — MCP server for AI assistants
 - [uigraph-sdk](https://github.com/uigraph-oss/uigraph-sdk) — TypeScript SDK
 - [uigraph-deploy](https://github.com/uigraph-oss/uigraph-deploy) — self-hosted deployment
-- [uigraph-scripts](https://github.com/uigraph-oss/uigraph-scripts) — database seed utilities
