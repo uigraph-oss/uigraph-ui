@@ -48,7 +48,7 @@ export function ImageFrameCanvas({
       <img
         src={frame.screenshotImageUrl ?? undefined}
         alt={frame.name ?? 'Default'}
-        className="!h-auto !w-full rounded-sm"
+        className="!h-auto !w-full rounded-[0.4rem]"
         onClick={onEmptyClick}
         onLoad={(e) => {
           if (setCanvasSize) {

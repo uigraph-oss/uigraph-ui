@@ -30,7 +30,7 @@ export function FocalPointEditor() {
   const isSidebarOpen = Boolean(selectedFrameGroup || selectedFocalPoint)
 
   return (
-    <div className={'h-full p-4 pt-2'}>
+    <div className={'h-full p-4'}>
       <div
         id="focal-point-editor"
         className={cn(
@@ -40,8 +40,14 @@ export function FocalPointEditor() {
             : 'grid-cols-[1fr_0] gap-0'
         )}
       >
-        <div className="relative grid grid-rows-[auto_1fr] gap-2">
-          <div className="flex items-center gap-1 justify-self-center">
+        <div className="relative grid">
+          <GridScrollBody className="border-stock bg-shading-gray flex-1 rounded-[0.75rem] border p-4 transition-opacity duration-200">
+            <div className="p-2">
+              <FocalPointCanvas />
+            </div>
+          </GridScrollBody>
+
+          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-2xl border border-[#2A3242] bg-[#141925] p-1 shadow-sm">
             <button
               onClick={() => setPreset(preset === 'mobile' ? null : 'mobile')}
               className={cn(
@@ -78,17 +84,11 @@ export function FocalPointEditor() {
               <LuFullscreen className="scale-125" />
             </button>
           </div>
-
-          <GridScrollBody className="border-stock bg-shading-gray min-h-0 rounded-[0.75rem] border border-[#2A3242] p-4 transition-opacity duration-200">
-            <div className="p-2">
-              <FocalPointCanvas />
-            </div>
-          </GridScrollBody>
         </div>
 
         <div className="h-full overflow-hidden">
           {selectedFocalPoint && (
-            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border border-[#2A3242] bg-[#141925]">
+            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-[#141925]">
               <FocalPointSidebarContextProvider
                 focalPoint={selectedFocalPoint}
                 mapId={mapId}
@@ -103,7 +103,7 @@ export function FocalPointEditor() {
           )}
 
           {selectedFrameGroup && (
-            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border border-[#2A3242] bg-[#141925]">
+            <GridScrollBody className="border-stock h-full w-[27.25rem] rounded-[0.75rem] border bg-[#141925]">
               <GroupSidebar
                 frame={frame!}
                 frameGroup={selectedFrameGroup}
