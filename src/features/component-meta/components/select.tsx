@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useComponentMetaClasses } from '../theme'
 
@@ -26,6 +26,7 @@ export function DropdownSelectInput({
   placeholder,
   className,
   readonly,
+  required,
 }: {
   placeholder?: string | null
   value: string
@@ -33,6 +34,7 @@ export function DropdownSelectInput({
   options: string[]
   className?: string
   readonly?: boolean
+  required?: boolean
 }) {
   const classes = useComponentMetaClasses()
   const validOptions = options.filter(Boolean)
@@ -48,6 +50,17 @@ export function DropdownSelectInput({
       </SelectTrigger>
 
       <SelectContent className={className}>
+        {!required && value && (
+          <button
+            type="button"
+            className="text-muted-foreground hover:bg-accent hover:text-accent-foreground border-border mb-1 flex w-full cursor-pointer items-center gap-2 rounded-sm border-b py-1.5 pr-8 pl-2 text-sm"
+            onClick={() => onChange('')}
+          >
+            <X className="size-4" />
+            Clear selection
+          </button>
+        )}
+
         {validOptions.filter(Boolean).map((option, j) => (
           <SelectItem key={j} value={option}>
             {option}
@@ -70,12 +83,14 @@ export function DropdownSearchSelect({
   options,
   placeholder,
   readonly,
+  required,
 }: {
   placeholder?: string | null
   value: string
   onChange: (value: string) => void
   options: string[]
   readonly?: boolean
+  required?: boolean
 }) {
   const classes = useComponentMetaClasses()
   const [open, setOpen] = useState(false)
@@ -115,6 +130,17 @@ export function DropdownSearchSelect({
             e.nativeEvent.stopImmediatePropagation()
           }}
         />
+
+        {!required && value && (
+          <button
+            type="button"
+            className="text-muted-foreground hover:bg-accent hover:text-accent-foreground border-border mb-1 flex w-full cursor-pointer items-center gap-2 rounded-sm border-b py-1.5 pr-8 pl-2 text-sm"
+            onClick={() => onChange('')}
+          >
+            <X className="size-4" />
+            Clear selection
+          </button>
+        )}
 
         {options.filter(Boolean).map((option, j) => (
           <SelectItem

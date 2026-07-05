@@ -208,6 +208,7 @@ function FocalPointMetaModalContent({
                           options={arrayNonNullable(field.options)}
                           value={value ?? ''}
                           onChange={setValue}
+                          required={field.required ?? undefined}
                         />
                       )}
 
@@ -253,6 +254,7 @@ function FocalPointMetaModalContent({
                           options={arrayNonNullable(field.options)}
                           value={value ?? ''}
                           onChange={setValue}
+                          required={field.required ?? undefined}
                         />
                       )}
 
