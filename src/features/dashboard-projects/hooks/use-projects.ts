@@ -55,7 +55,7 @@ export function useProjects() {
 
   const [createProject] = useMutation(CREATE_MAP, {
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: MAPS, variables: mapsVariables }],
+    refetchQueries: [MAPS],
   })
 
   return {
