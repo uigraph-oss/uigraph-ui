@@ -80,7 +80,7 @@ export function FocalPointEditor() {
           </div>
 
           <GridScrollBody className="border-stock bg-shading-gray min-h-0 rounded-[0.75rem] border border-[#2A3242] p-4 transition-opacity duration-200">
-            <div className="p-4">
+            <div className="p-2">
               <FocalPointCanvas />
             </div>
           </GridScrollBody>

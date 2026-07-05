@@ -10,13 +10,10 @@ export const useAuthStore = create(() => ({
 
   organizations: [] as UserOrganization[],
   currentOrganizationId: localStorage.getItem('currentOrganizationId') as
-    | string
-    | null,
+    string | null,
 
   dashboard: localStorage.getItem('dashboard') as
-    | 'organization'
-    | 'server'
-    | null,
+    'organization' | 'server' | null,
 }))
 
 export function useAuthenticatedUser() {

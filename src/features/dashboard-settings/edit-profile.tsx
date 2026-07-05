@@ -114,7 +114,7 @@ export function EditProfile({ onCancel, initialData }: EditProfileProps) {
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="h-[44px] rounded-[12.85px] border-border bg-transparent text-sm leading-[1.33] text-muted-foreground hover:bg-[#1E2533]"
+              className="border-border text-muted-foreground h-[44px] rounded-[12.85px] bg-transparent text-sm leading-[1.33] hover:bg-[#1E2533]"
               onClick={onCancel}
               disabled={isUpdating || isUploadingImage}
             >

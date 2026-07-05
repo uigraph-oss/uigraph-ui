@@ -224,12 +224,7 @@ export function RunDetailsView({
   }, [stepResults, statusFilter, typeFilter])
 
   const displayRunStatus = useMemo(():
-    | 'running'
-    | 'passed'
-    | 'failed'
-    | 'issues'
-    | 'aborted'
-    | 'none' => {
+    'running' | 'passed' | 'failed' | 'issues' | 'aborted' | 'none' => {
     if (!testRun) return 'none'
     const runStatus = testRun.status?.toLowerCase()
     if (runStatus === 'running') return 'running'

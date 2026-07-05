@@ -85,8 +85,7 @@ export const MARKDOWN_COMPONENTS: Components = {
 
     const childArray = Children.toArray(children)
     const firstValid = childArray.find(isValidElement) as
-      | ReactElement<{ type?: string; 'data-task-checkbox'?: string }>
-      | undefined
+      ReactElement<{ type?: string; 'data-task-checkbox'?: string }> | undefined
     const hasCheckbox =
       firstValid?.props?.type === 'checkbox' ||
       firstValid?.props?.['data-task-checkbox'] !== undefined

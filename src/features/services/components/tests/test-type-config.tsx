@@ -10,13 +10,7 @@ import {
 } from 'lucide-react'
 
 export type TestTypeKey =
-  | 'all'
-  | 'manual'
-  | 'api'
-  | 'graphql'
-  | 'grpc'
-  | 'database'
-  | 'other'
+  'all' | 'manual' | 'api' | 'graphql' | 'grpc' | 'database' | 'other'
 
 export type TestTypeConfig = {
   label: string

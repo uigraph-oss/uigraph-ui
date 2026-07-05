@@ -72,8 +72,7 @@ type TestRunResult = {
 }
 
 export type DraftScreenshot =
-  | { kind: 'uploaded'; assetId: string }
-  | { kind: 'local'; file: File }
+  { kind: 'uploaded'; assetId: string } | { kind: 'local'; file: File }
 
 export type TestRunResultDraft = {
   status?: 'passed' | 'failed' | 'skipped' | 'blocked'
