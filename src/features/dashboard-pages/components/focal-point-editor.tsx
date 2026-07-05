@@ -10,9 +10,6 @@ import { LuFullscreen } from 'react-icons/lu'
 import { useFocalPointContext } from '../context/focal-point-context'
 import { FocalPointCanvas } from './focal-point-canvas'
 
-const presetButtonClassName =
-  'flex size-10 items-center justify-center rounded-[0.8125rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-4'
-
 export function FocalPointEditor() {
   const {
     frame,
@@ -33,7 +30,7 @@ export function FocalPointEditor() {
   const isSidebarOpen = Boolean(selectedFrameGroup || selectedFocalPoint)
 
   return (
-    <div className={'h-full p-4 pt-6'}>
+    <div className={'h-full p-4 pt-2'}>
       <div
         id="focal-point-editor"
         className={cn(
@@ -43,18 +40,12 @@ export function FocalPointEditor() {
             : 'grid-cols-[1fr_0] gap-0'
         )}
       >
-        <div className="relative grid">
-          <GridScrollBody className="border-stock bg-shading-gray flex-1 rounded-[0.75rem] border border-[#2A3242] p-4 transition-opacity duration-200">
-            <div className="p-4">
-              <FocalPointCanvas />
-            </div>
-          </GridScrollBody>
-
-          <div className="absolute top-3 right-3 flex h-12 items-center gap-1 rounded-2xl border border-[#2A3242] bg-[#141925] p-1 shadow-sm">
+        <div className="relative grid grid-rows-[auto_1fr] gap-2">
+          <div className="flex items-center gap-1 justify-self-center">
             <button
               onClick={() => setPreset(preset === 'mobile' ? null : 'mobile')}
               className={cn(
-                presetButtonClassName,
+                'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-3.5',
                 preset === 'mobile'
                   ? 'border-primary/30 bg-primary/10 text-primary'
                   : 'hover:bg-[#1E2533]'
@@ -66,7 +57,7 @@ export function FocalPointEditor() {
             <button
               onClick={() => setPreset(preset === 'tablet' ? null : 'tablet')}
               className={cn(
-                presetButtonClassName,
+                'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-3.5',
                 preset === 'tablet'
                   ? 'border-primary/30 bg-primary/10 text-primary'
                   : 'hover:bg-[#1E2533]'
@@ -78,7 +69,7 @@ export function FocalPointEditor() {
             <button
               onClick={() => setPreset(preset === 'desktop' ? null : 'desktop')}
               className={cn(
-                presetButtonClassName,
+                'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-3.5',
                 preset === 'desktop'
                   ? 'border-primary/30 bg-primary/10 text-primary'
                   : 'hover:bg-[#1E2533]'
@@ -87,6 +78,12 @@ export function FocalPointEditor() {
               <LuFullscreen className="scale-125" />
             </button>
           </div>
+
+          <GridScrollBody className="border-stock bg-shading-gray min-h-0 rounded-[0.75rem] border border-[#2A3242] p-4 transition-opacity duration-200">
+            <div className="p-4">
+              <FocalPointCanvas />
+            </div>
+          </GridScrollBody>
         </div>
 
         <div className="h-full overflow-hidden">
