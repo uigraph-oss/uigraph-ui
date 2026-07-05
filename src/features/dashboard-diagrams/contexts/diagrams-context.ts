@@ -171,6 +171,20 @@ export const [DiagramsContextProvider, useDiagramsContext] = createContext(
       [diagramsQuery.data?.diagrams.items]
     )
 
+    const hasPendingPreview = diagrams.some(
+      (d) => d.previewStatus === 'pending'
+    )
+
+    const { startPolling, stopPolling } = diagramsQuery
+    useEffect(() => {
+      if (!hasPendingPreview) {
+        return stopPolling()
+      }
+
+      startPolling(3000)
+      return () => stopPolling()
+    }, [hasPendingPreview, startPolling, stopPolling])
+
     const totalCount = diagramsQuery.data?.diagrams.totalCount ?? 0
 
     const isFolderDataLoading =
