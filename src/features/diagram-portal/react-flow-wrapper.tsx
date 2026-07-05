@@ -379,13 +379,17 @@ export function ReactFlowWrapper({
   )
 
   const onNodeDragStop = useCallback(
-    (event: React.MouseEvent, node: Node) => {
+    (event: MouseEvent | TouchEvent, node: Node) => {
       if (!reactFlowInstance) return
 
       if (node.type === 'group') {
         handleOnGroupDrag(node, reactFlowInstance)
       } else {
-        handleOnNodeDrag(event, node, reactFlowInstance)
+        handleOnNodeDrag(
+          event as unknown as React.MouseEvent,
+          node,
+          reactFlowInstance
+        )
       }
     },
     [reactFlowInstance]
