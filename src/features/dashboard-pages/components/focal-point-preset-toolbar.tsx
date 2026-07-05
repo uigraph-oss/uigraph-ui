@@ -9,7 +9,7 @@ import {
   HiOutlineDevicePhoneMobile,
   HiOutlineDeviceTablet,
 } from 'react-icons/hi2'
-import { SlScreenDesktop } from 'react-icons/sl'
+import { RxDesktop } from 'react-icons/rx'
 import { FocalPointPreset } from '../types'
 
 interface FocalPointPresetToolbarProps {
@@ -35,7 +35,7 @@ const PRESET_OPTIONS: {
   {
     value: 'desktop',
     label: 'Desktop',
-    Icon: SlScreenDesktop,
+    Icon: RxDesktop,
   },
 ]
 
