@@ -76,6 +76,8 @@ type Documents = {
     "\n  mutation UpdateTeam($orgId: ID!, $teamId: ID!, $input: UpdateTeamInput!) {\n    updateTeam(orgId: $orgId, teamId: $teamId, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateTeamDocument,
     "\n  mutation DeleteTeam($orgId: ID!, $teamId: ID!) {\n    deleteTeam(orgId: $orgId, teamId: $teamId)\n  }\n": typeof types.DeleteTeamDocument,
     "\n  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      name\n    }\n  }\n": typeof types.UpdateUserDocument,
+    "\n  mutation PrepareUserAvatarUpload {\n    prepareUserAvatarUpload {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareUserAvatarUploadDocument,
+    "\n  mutation SetMyAvatar {\n    setMyAvatar\n  }\n": typeof types.SetMyAvatarDocument,
     "\n  query ServiceAccounts($orgId: ID!) {\n    serviceAccounts(orgId: $orgId) {\n      id\n      orgId\n      name\n      description\n      scopes\n      disabled\n      isInternal\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServiceAccountsDocument,
     "\n  query ServiceAccountScopes($orgId: ID!) {\n    serviceAccountScopes(orgId: $orgId)\n  }\n": typeof types.ServiceAccountScopesDocument,
     "\n  query ServiceAccountTokens($orgId: ID!, $saId: ID!) {\n    serviceAccountTokens(orgId: $orgId, saId: $saId) {\n      id\n      serviceAccountId\n      name\n      prefix\n      expiresAt\n      lastUsedAt\n      revoked\n      createdAt\n    }\n  }\n": typeof types.ServiceAccountTokensDocument,
@@ -84,6 +86,8 @@ type Documents = {
     "\n  mutation DeleteServiceAccount($orgId: ID!, $id: ID!) {\n    deleteServiceAccount(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteServiceAccountDocument,
     "\n  mutation CreateServiceAccountToken(\n    $orgId: ID!\n    $saId: ID!\n    $input: CreateTokenInput!\n  ) {\n    createServiceAccountToken(orgId: $orgId, saId: $saId, input: $input) {\n      id\n      name\n      token\n    }\n  }\n": typeof types.CreateServiceAccountTokenDocument,
     "\n  mutation RevokeServiceAccountToken($orgId: ID!, $saId: ID!, $tokenId: ID!) {\n    revokeServiceAccountToken(orgId: $orgId, saId: $saId, tokenId: $tokenId)\n  }\n": typeof types.RevokeServiceAccountTokenDocument,
+    "\n  mutation PrepareServiceAccountAvatarUpload($orgId: ID!, $saId: ID!) {\n    prepareServiceAccountAvatarUpload(orgId: $orgId, saId: $saId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareServiceAccountAvatarUploadDocument,
+    "\n  mutation SetServiceAccountAvatar($orgId: ID!, $saId: ID!) {\n    setServiceAccountAvatar(orgId: $orgId, saId: $saId)\n  }\n": typeof types.SetServiceAccountAvatarDocument,
     "\n  query Diagram($orgId: ID!, $id: ID!) {\n    diagram(orgId: $orgId, id: $id) {\n      id\n      orgId\n      folderId\n      teamId\n      name\n      previewAssetId\n      previewImageUrl\n      previewContentHash\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.DiagramDocument,
     "\n  query DiagramContent($orgId: ID!, $id: ID!) {\n    diagramContent(orgId: $orgId, id: $id) {\n      diagramId\n      content\n    }\n  }\n": typeof types.DiagramContentDocument,
     "\n  mutation UpdateDiagram($orgId: ID!, $id: ID!, $input: UpdateDiagramInput!) {\n    updateDiagram(orgId: $orgId, id: $id, input: $input) {\n      id\n      updatedAt\n    }\n  }\n": typeof types.UpdateDiagramDocument,
@@ -107,10 +111,16 @@ type Documents = {
     "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n": typeof types.DeleteFocalPointMetaDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
+    "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareServerOrgLogoUploadDocument,
+    "\n  mutation SetServerOrgLogo($orgId: ID!) {\n    setServerOrgLogo(orgId: $orgId)\n  }\n": typeof types.SetServerOrgLogoDocument,
+    "\n  mutation RemoveServerOrgLogo($orgId: ID!) {\n    removeServerOrgLogo(orgId: $orgId)\n  }\n": typeof types.RemoveServerOrgLogoDocument,
     "\n  mutation CreateServerOrg($input: CreateServerOrgInput!) {\n    createServerOrg(input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateServerOrgDocument,
     "\n  mutation UpdateServerOrg($id: ID!, $input: UpdateServerOrgInput!) {\n    updateServerOrg(id: $id, input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateServerOrgDocument,
     "\n  mutation DeleteServerOrg($id: ID!) {\n    deleteServerOrg(id: $id)\n  }\n": typeof types.DeleteServerOrgDocument,
     "\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n": typeof types.OAuthProvidersDocument,
+    "\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareOAuthProviderIconUploadDocument,
+    "\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n": typeof types.SetOAuthProviderIconDocument,
+    "\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n": typeof types.RemoveOAuthProviderIconDocument,
     "\n  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {\n    upsertOAuthProvider(provider: $provider, input: $input)\n  }\n": typeof types.UpsertOAuthProviderDocument,
     "\n  mutation DeleteOAuthProvider($provider: String!) {\n    deleteOAuthProvider(provider: $provider)\n  }\n": typeof types.DeleteOAuthProviderDocument,
     "\n  query LdapConfig {\n    ldap {\n      id\n      host\n      port\n      useSsl\n      startTls\n      skipTlsVerify\n      bindDn\n      searchBaseDn\n      searchFilter\n      usernameAttribute\n      emailAttribute\n      nameAttribute\n      memberOfAttribute\n      allowSignUp\n    }\n  }\n": typeof types.LdapConfigDocument,
@@ -249,6 +259,8 @@ const documents: Documents = {
     "\n  mutation UpdateTeam($orgId: ID!, $teamId: ID!, $input: UpdateTeamInput!) {\n    updateTeam(orgId: $orgId, teamId: $teamId, input: $input) {\n      id\n    }\n  }\n": types.UpdateTeamDocument,
     "\n  mutation DeleteTeam($orgId: ID!, $teamId: ID!) {\n    deleteTeam(orgId: $orgId, teamId: $teamId)\n  }\n": types.DeleteTeamDocument,
     "\n  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      name\n    }\n  }\n": types.UpdateUserDocument,
+    "\n  mutation PrepareUserAvatarUpload {\n    prepareUserAvatarUpload {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareUserAvatarUploadDocument,
+    "\n  mutation SetMyAvatar {\n    setMyAvatar\n  }\n": types.SetMyAvatarDocument,
     "\n  query ServiceAccounts($orgId: ID!) {\n    serviceAccounts(orgId: $orgId) {\n      id\n      orgId\n      name\n      description\n      scopes\n      disabled\n      isInternal\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServiceAccountsDocument,
     "\n  query ServiceAccountScopes($orgId: ID!) {\n    serviceAccountScopes(orgId: $orgId)\n  }\n": types.ServiceAccountScopesDocument,
     "\n  query ServiceAccountTokens($orgId: ID!, $saId: ID!) {\n    serviceAccountTokens(orgId: $orgId, saId: $saId) {\n      id\n      serviceAccountId\n      name\n      prefix\n      expiresAt\n      lastUsedAt\n      revoked\n      createdAt\n    }\n  }\n": types.ServiceAccountTokensDocument,
@@ -257,6 +269,8 @@ const documents: Documents = {
     "\n  mutation DeleteServiceAccount($orgId: ID!, $id: ID!) {\n    deleteServiceAccount(orgId: $orgId, id: $id)\n  }\n": types.DeleteServiceAccountDocument,
     "\n  mutation CreateServiceAccountToken(\n    $orgId: ID!\n    $saId: ID!\n    $input: CreateTokenInput!\n  ) {\n    createServiceAccountToken(orgId: $orgId, saId: $saId, input: $input) {\n      id\n      name\n      token\n    }\n  }\n": types.CreateServiceAccountTokenDocument,
     "\n  mutation RevokeServiceAccountToken($orgId: ID!, $saId: ID!, $tokenId: ID!) {\n    revokeServiceAccountToken(orgId: $orgId, saId: $saId, tokenId: $tokenId)\n  }\n": types.RevokeServiceAccountTokenDocument,
+    "\n  mutation PrepareServiceAccountAvatarUpload($orgId: ID!, $saId: ID!) {\n    prepareServiceAccountAvatarUpload(orgId: $orgId, saId: $saId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareServiceAccountAvatarUploadDocument,
+    "\n  mutation SetServiceAccountAvatar($orgId: ID!, $saId: ID!) {\n    setServiceAccountAvatar(orgId: $orgId, saId: $saId)\n  }\n": types.SetServiceAccountAvatarDocument,
     "\n  query Diagram($orgId: ID!, $id: ID!) {\n    diagram(orgId: $orgId, id: $id) {\n      id\n      orgId\n      folderId\n      teamId\n      name\n      previewAssetId\n      previewImageUrl\n      previewContentHash\n      createdAt\n      updatedAt\n    }\n  }\n": types.DiagramDocument,
     "\n  query DiagramContent($orgId: ID!, $id: ID!) {\n    diagramContent(orgId: $orgId, id: $id) {\n      diagramId\n      content\n    }\n  }\n": types.DiagramContentDocument,
     "\n  mutation UpdateDiagram($orgId: ID!, $id: ID!, $input: UpdateDiagramInput!) {\n    updateDiagram(orgId: $orgId, id: $id, input: $input) {\n      id\n      updatedAt\n    }\n  }\n": types.UpdateDiagramDocument,
@@ -280,10 +294,16 @@ const documents: Documents = {
     "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n": types.DeleteFocalPointMetaDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
+    "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareServerOrgLogoUploadDocument,
+    "\n  mutation SetServerOrgLogo($orgId: ID!) {\n    setServerOrgLogo(orgId: $orgId)\n  }\n": types.SetServerOrgLogoDocument,
+    "\n  mutation RemoveServerOrgLogo($orgId: ID!) {\n    removeServerOrgLogo(orgId: $orgId)\n  }\n": types.RemoveServerOrgLogoDocument,
     "\n  mutation CreateServerOrg($input: CreateServerOrgInput!) {\n    createServerOrg(input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateServerOrgDocument,
     "\n  mutation UpdateServerOrg($id: ID!, $input: UpdateServerOrgInput!) {\n    updateServerOrg(id: $id, input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateServerOrgDocument,
     "\n  mutation DeleteServerOrg($id: ID!) {\n    deleteServerOrg(id: $id)\n  }\n": types.DeleteServerOrgDocument,
     "\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n": types.OAuthProvidersDocument,
+    "\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareOAuthProviderIconUploadDocument,
+    "\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n": types.SetOAuthProviderIconDocument,
+    "\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n": types.RemoveOAuthProviderIconDocument,
     "\n  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {\n    upsertOAuthProvider(provider: $provider, input: $input)\n  }\n": types.UpsertOAuthProviderDocument,
     "\n  mutation DeleteOAuthProvider($provider: String!) {\n    deleteOAuthProvider(provider: $provider)\n  }\n": types.DeleteOAuthProviderDocument,
     "\n  query LdapConfig {\n    ldap {\n      id\n      host\n      port\n      useSsl\n      startTls\n      skipTlsVerify\n      bindDn\n      searchBaseDn\n      searchFilter\n      usernameAttribute\n      emailAttribute\n      nameAttribute\n      memberOfAttribute\n      allowSignUp\n    }\n  }\n": types.LdapConfigDocument,
@@ -625,6 +645,14 @@ export function graphql(source: "\n  mutation UpdateUser($id: ID!, $input: Updat
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation PrepareUserAvatarUpload {\n    prepareUserAvatarUpload {\n      assetId\n      uploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation PrepareUserAvatarUpload {\n    prepareUserAvatarUpload {\n      assetId\n      uploadUrl\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SetMyAvatar {\n    setMyAvatar\n  }\n"): (typeof documents)["\n  mutation SetMyAvatar {\n    setMyAvatar\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query ServiceAccounts($orgId: ID!) {\n    serviceAccounts(orgId: $orgId) {\n      id\n      orgId\n      name\n      description\n      scopes\n      disabled\n      isInternal\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ServiceAccounts($orgId: ID!) {\n    serviceAccounts(orgId: $orgId) {\n      id\n      orgId\n      name\n      description\n      scopes\n      disabled\n      isInternal\n      createdAt\n      updatedAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -654,6 +682,14 @@ export function graphql(source: "\n  mutation CreateServiceAccountToken(\n    $o
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation RevokeServiceAccountToken($orgId: ID!, $saId: ID!, $tokenId: ID!) {\n    revokeServiceAccountToken(orgId: $orgId, saId: $saId, tokenId: $tokenId)\n  }\n"): (typeof documents)["\n  mutation RevokeServiceAccountToken($orgId: ID!, $saId: ID!, $tokenId: ID!) {\n    revokeServiceAccountToken(orgId: $orgId, saId: $saId, tokenId: $tokenId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation PrepareServiceAccountAvatarUpload($orgId: ID!, $saId: ID!) {\n    prepareServiceAccountAvatarUpload(orgId: $orgId, saId: $saId) {\n      assetId\n      uploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation PrepareServiceAccountAvatarUpload($orgId: ID!, $saId: ID!) {\n    prepareServiceAccountAvatarUpload(orgId: $orgId, saId: $saId) {\n      assetId\n      uploadUrl\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SetServiceAccountAvatar($orgId: ID!, $saId: ID!) {\n    setServiceAccountAvatar(orgId: $orgId, saId: $saId)\n  }\n"): (typeof documents)["\n  mutation SetServiceAccountAvatar($orgId: ID!, $saId: ID!) {\n    setServiceAccountAvatar(orgId: $orgId, saId: $saId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -749,6 +785,18 @@ export function graphql(source: "\n  query ServerOrgs {\n    orgs {\n      id\n 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SetServerOrgLogo($orgId: ID!) {\n    setServerOrgLogo(orgId: $orgId)\n  }\n"): (typeof documents)["\n  mutation SetServerOrgLogo($orgId: ID!) {\n    setServerOrgLogo(orgId: $orgId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RemoveServerOrgLogo($orgId: ID!) {\n    removeServerOrgLogo(orgId: $orgId)\n  }\n"): (typeof documents)["\n  mutation RemoveServerOrgLogo($orgId: ID!) {\n    removeServerOrgLogo(orgId: $orgId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation CreateServerOrg($input: CreateServerOrgInput!) {\n    createServerOrg(input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateServerOrg($input: CreateServerOrgInput!) {\n    createServerOrg(input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -762,6 +810,18 @@ export function graphql(source: "\n  mutation DeleteServerOrg($id: ID!) {\n    d
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n"): (typeof documents)["\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n"): (typeof documents)["\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n"): (typeof documents)["\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

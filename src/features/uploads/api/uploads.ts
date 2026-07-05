@@ -2,7 +2,6 @@ import { graphql } from '@/api'
 import { apolloClientGQL } from '@/api/client'
 import { useQuery } from '@apollo/client'
 import axios from 'axios'
-import { useCallback, useState } from 'react'
 
 export const CREATE_ASSET_UPLOAD = graphql(`
   mutation CreateAssetUpload($orgId: ID!) {
@@ -44,18 +43,12 @@ export function useAssetUrls(
   return map
 }
 
-export async function uploadFile(
-  orgId: string,
+export async function putToPresigned(
+  prepare: () => Promise<{ assetId?: string; uploadUrl?: string }>,
   file: File,
   onProgress?: (percent: number) => void
 ): Promise<string> {
-  const { data } = await apolloClientGQL.mutate({
-    mutation: CREATE_ASSET_UPLOAD,
-    variables: { orgId },
-  })
-
-  const assetId = data?.createAssetUpload?.assetId
-  const uploadUrl = data?.createAssetUpload?.uploadUrl
+  const { assetId, uploadUrl } = await prepare()
   if (!assetId || !uploadUrl) throw new Error('Failed to get upload URL')
 
   await axios.put(uploadUrl, file, {
@@ -72,32 +65,23 @@ export async function uploadFile(
   return assetId
 }
 
-export function useUploadFile(orgId: string | undefined) {
-  const [isUploading, setIsUploading] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [error, setError] = useState<Error | null>(null)
-
-  const upload = useCallback(
-    async (file: File): Promise<string> => {
-      if (!orgId) {
-        throw new Error('Organization is required to upload')
-      }
-      setIsUploading(true)
-      setProgress(0)
-      setError(null)
-      try {
-        return await uploadFile(orgId, file, setProgress)
-      } catch (err) {
-        const normalized =
-          err instanceof Error ? err : new Error('Failed to upload file')
-        setError(normalized)
-        throw normalized
-      } finally {
-        setIsUploading(false)
+export async function uploadFile(
+  orgId: string,
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<string> {
+  return putToPresigned(
+    async () => {
+      const { data } = await apolloClientGQL.mutate({
+        mutation: CREATE_ASSET_UPLOAD,
+        variables: { orgId },
+      })
+      return {
+        assetId: data?.createAssetUpload?.assetId,
+        uploadUrl: data?.createAssetUpload?.uploadUrl,
       }
     },
-    [orgId]
+    file,
+    onProgress
   )
-
-  return { upload, isUploading, progress, error }
 }

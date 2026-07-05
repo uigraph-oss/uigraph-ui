@@ -1,6 +1,6 @@
 import { graphql } from '@/api'
-import { clientAxios } from '@/api/axios'
-import { uploadFile } from '@/features/uploads/api/uploads'
+import { apolloClientGQL } from '@/api/client'
+import { putToPresigned } from '@/features/uploads/api/uploads'
 
 export type OAuthProvider = {
   id: string
@@ -64,20 +64,50 @@ export const OAUTH_PROVIDERS = graphql(`
   }
 `)
 
-export async function setOAuthProviderIcon(
-  orgId: string,
-  provider: string,
-  file: File
-) {
-  const assetId = await uploadFile(orgId, file)
-  await clientAxios.put(`/v1/sso/oauth/${provider}/icon`, {
-    assetId,
-    contentType: file.type,
+export const PREPARE_OAUTH_ICON_UPLOAD = graphql(`
+  mutation PrepareOAuthProviderIconUpload($provider: String!) {
+    prepareOAuthProviderIconUpload(provider: $provider) {
+      assetId
+      uploadUrl
+    }
+  }
+`)
+
+export const SET_OAUTH_PROVIDER_ICON = graphql(`
+  mutation SetOAuthProviderIcon($provider: String!) {
+    setOAuthProviderIcon(provider: $provider)
+  }
+`)
+
+export const REMOVE_OAUTH_PROVIDER_ICON = graphql(`
+  mutation RemoveOAuthProviderIcon($provider: String!) {
+    removeOAuthProviderIcon(provider: $provider)
+  }
+`)
+
+export async function setOAuthProviderIcon(provider: string, file: File) {
+  await putToPresigned(async () => {
+    const { data } = await apolloClientGQL.mutate({
+      mutation: PREPARE_OAUTH_ICON_UPLOAD,
+      variables: { provider },
+    })
+    return {
+      assetId: data?.prepareOAuthProviderIconUpload?.assetId,
+      uploadUrl: data?.prepareOAuthProviderIconUpload?.uploadUrl,
+    }
+  }, file)
+
+  await apolloClientGQL.mutate({
+    mutation: SET_OAUTH_PROVIDER_ICON,
+    variables: { provider },
   })
 }
 
 export async function removeOAuthProviderIcon(provider: string) {
-  await clientAxios.delete(`/v1/sso/oauth/${provider}/icon`)
+  await apolloClientGQL.mutate({
+    mutation: REMOVE_OAUTH_PROVIDER_ICON,
+    variables: { provider },
+  })
 }
 
 export const UPSERT_OAUTH_PROVIDER = graphql(`

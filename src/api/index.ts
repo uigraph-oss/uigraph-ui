@@ -1,4 +1,3 @@
-export * from './axios'
 export * from './client'
 
 export { graphql } from './.gql'
