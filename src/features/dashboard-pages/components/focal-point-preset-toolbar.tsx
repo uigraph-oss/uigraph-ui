@@ -1,8 +1,15 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { FaMobileAlt, FaTabletAlt } from 'react-icons/fa'
-import { LuFullscreen } from 'react-icons/lu'
+import { ComputerPhoneSyncIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ReactNode, useState } from 'react'
+import {
+  HiOutlineDevicePhoneMobile,
+  HiOutlineDeviceTablet,
+} from 'react-icons/hi2'
+import { SlScreenDesktop } from 'react-icons/sl'
 import { FocalPointPreset } from '../types'
 
 interface FocalPointPresetToolbarProps {
@@ -10,47 +17,92 @@ interface FocalPointPresetToolbarProps {
   setPreset: (preset: FocalPointPreset | null) => void
 }
 
+const PRESET_OPTIONS: {
+  value: FocalPointPreset
+  label: string
+  Icon: (props: { className?: string }) => ReactNode
+}[] = [
+  {
+    value: 'mobile',
+    label: 'Mobile',
+    Icon: HiOutlineDevicePhoneMobile,
+  },
+  {
+    value: 'tablet',
+    label: 'Tablet',
+    Icon: HiOutlineDeviceTablet,
+  },
+  {
+    value: 'desktop',
+    label: 'Desktop',
+    Icon: SlScreenDesktop,
+  },
+]
+
+const spring = { type: 'spring', stiffness: 500, damping: 34 } as const
+
 export function FocalPointPresetToolbar({
   preset,
   setPreset,
 }: FocalPointPresetToolbarProps) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  const activeOption = PRESET_OPTIONS.find((option) => option.value === preset)
+
   return (
-    <div className="absolute top-3 right-3 flex items-center gap-1 rounded-2xl border border-[#2A3242] bg-[#141925] p-1 shadow-sm">
-      <button
-        onClick={() => setPreset(preset === 'mobile' ? null : 'mobile')}
-        className={cn(
-          'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-3.5',
-          preset === 'mobile'
-            ? 'border-primary/30 bg-primary/10 text-primary'
-            : 'hover:bg-[#1E2533]'
-        )}
-      >
-        <FaMobileAlt />
-      </button>
+    <motion.div
+      layout
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      transition={spring}
+      className={cn(
+        'absolute top-3 right-3 flex items-center gap-1 overflow-hidden rounded-2xl',
+        isHovered && 'border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
+      )}
+    >
+      <AnimatePresence mode="popLayout" initial={false}>
+        {isHovered ? (
+          PRESET_OPTIONS.map((option) => {
+            const isActive = option.value === preset
 
-      <button
-        onClick={() => setPreset(preset === 'tablet' ? null : 'tablet')}
-        className={cn(
-          'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-3.5',
-          preset === 'tablet'
-            ? 'border-primary/30 bg-primary/10 text-primary'
-            : 'hover:bg-[#1E2533]'
+            return (
+              <motion.button
+                layout
+                key={option.label}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={spring}
+                onClick={() => setPreset(isActive ? null : option.value)}
+                className={cn(
+                  'flex size-8 items-center justify-center rounded-[0.625rem] border text-[#F4F7FC] transition-colors [&>svg]:size-4',
+                  isActive
+                    ? 'border-primary/30 bg-primary/10 text-primary'
+                    : 'border-[#2A3242] hover:bg-[#1E2533]'
+                )}
+              >
+                <option.Icon />
+              </motion.button>
+            )
+          })
+        ) : (
+          <motion.div
+            layout
+            key="collapsed"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            transition={spring}
+            className="border-primary/30 bg-primary/10 text-primary flex size-10 items-center justify-center rounded-2xl border [&>svg]:size-5"
+          >
+            {activeOption ? (
+              <activeOption.Icon />
+            ) : (
+              <HugeiconsIcon icon={ComputerPhoneSyncIcon} />
+            )}
+          </motion.div>
         )}
-      >
-        <FaTabletAlt />
-      </button>
-
-      <button
-        onClick={() => setPreset(preset === 'desktop' ? null : 'desktop')}
-        className={cn(
-          'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors [&>svg]:size-3.5',
-          preset === 'desktop'
-            ? 'border-primary/30 bg-primary/10 text-primary'
-            : 'hover:bg-[#1E2533]'
-        )}
-      >
-        <LuFullscreen className="scale-125" />
-      </button>
-    </div>
+      </AnimatePresence>
+    </motion.div>
   )
 }
