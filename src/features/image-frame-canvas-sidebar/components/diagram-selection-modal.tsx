@@ -11,7 +11,7 @@ import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
-import { Folder } from 'lucide-react'
+import { Folder, Link2, Loader2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 
@@ -29,8 +29,7 @@ export function DiagramSelectionModal({
 }: DiagramSelectionModalProps) {
   const organizationId = useCurrentOrganization()?.id
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedDiagramId, setSelectedDiagramId] = useState<string>('')
+  const [connectingId, setConnectingId] = useState<string | null>(null)
 
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
@@ -139,14 +138,14 @@ export function DiagramSelectionModal({
     resetPage()
   }
 
-  async function handleSelect() {
-    if (!selectedDiagramId) return
+  async function handleSelect(diagramId: string) {
+    if (connectingId) return
 
     try {
-      setIsLoading(true)
-      await onSelect(selectedDiagramId)
+      setConnectingId(diagramId)
+      await onSelect(diagramId)
     } finally {
-      setIsLoading(false)
+      setConnectingId(null)
     }
   }
 
@@ -154,10 +153,6 @@ export function DiagramSelectionModal({
     <BetterDialogContent
       title="Select Diagram"
       description="Select a diagram to link to this focal point"
-      onFooterSubmitClick={handleSelect}
-      footerSubmitLoading={isLoading}
-      footerSubmit="Connect Diagram"
-      footerCancel
       className="flex min-h-0 flex-col !overflow-hidden"
     >
       <div className="flex h-full flex-col gap-4">
@@ -243,28 +238,34 @@ export function DiagramSelectionModal({
               {diagrams.map((diagram) => (
                 <div
                   key={diagram.id}
-                  className={`bg-card relative cursor-pointer rounded-lg border-2 p-3 transition-all ${
-                    selectedDiagramId === diagram.id
-                      ? 'border-primary bg-primary/10'
-                      : 'border-stock hover:border-primary/50'
-                  }`}
-                  onClick={() => setSelectedDiagramId(diagram.id ?? '')}
+                  className="group bg-card border-stock hover:border-primary/50 relative rounded-lg border-2 p-3 transition-all"
                 >
-                  <img
-                    alt={diagram.name ?? 'Blank Diagram'}
-                    src={diagram.previewImageUrl ?? '/placeholder.svg'}
-                    className="aspect-square w-full rounded-md object-cover object-top"
-                  />
+                  <div className="relative overflow-hidden rounded-md">
+                    <img
+                      alt={diagram.name ?? 'Blank Diagram'}
+                      src={diagram.previewImageUrl ?? '/placeholder.svg'}
+                      className="aspect-square w-full object-cover object-top"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button
+                        preset="primary"
+                        disabled={connectingId !== null}
+                        onClick={() => handleSelect(diagram.id ?? '')}
+                      >
+                        {connectingId === diagram.id ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <Link2 className="size-4" />
+                        )}
+                        Link Diagram
+                      </Button>
+                    </div>
+                  </div>
                   <div className="mt-2">
                     <h4 className="text-foreground line-clamp-1 text-sm font-medium">
                       {diagram.name ?? 'Blank Diagram'}
                     </h4>
                   </div>
-                  {selectedDiagramId === diagram.id && (
-                    <div className="bg-primary absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full">
-                      <div className="h-2 w-2 rounded-full bg-white"></div>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
