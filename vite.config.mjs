@@ -12,8 +12,12 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
 
-    esbuild: {
-      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    build: {
+      minify: mode === 'production' ? 'terser' : 'esbuild',
+      terserOptions:
+        mode === 'production'
+          ? { compress: { drop_console: true, drop_debugger: true } }
+          : undefined,
     },
 
     resolve: {
@@ -24,9 +28,6 @@ export default defineConfig(({ mode }) => {
 
     optimizeDeps: {
       include: ['@apollo/client', 'graphql'],
-      esbuildOptions: {
-        drop: mode === 'production' ? ['console', 'debugger'] : [],
-      },
     },
 
     server: {
