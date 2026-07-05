@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
 
     optimizeDeps: {
       include: ['@apollo/client', 'graphql'],
+      esbuildOptions: {
+        drop: mode === 'production' ? ['console', 'debugger'] : [],
+      },
     },
 
     server: {
