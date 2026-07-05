@@ -56,8 +56,8 @@ export function FocalPointPresetToolbar({
       onHoverEnd={() => setIsHovered(false)}
       onHoverStart={() => setIsHovered(true)}
       className={cn(
-        'absolute top-3 right-3 flex items-center gap-1 overflow-hidden rounded-2xl',
-        isHovered && 'border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
+        'absolute top-3 right-3 flex items-center gap-1 overflow-hidden rounded-2xl border border-[#2A3242] bg-[#141925] p-1 shadow-sm',
+        !isHovered && 'p-0'
       )}
     >
       <AnimatePresence mode="popLayout" initial={false}>
@@ -75,10 +75,8 @@ export function FocalPointPresetToolbar({
                 transition={spring}
                 onClick={() => setPreset(isActive ? null : option.value)}
                 className={cn(
-                  'flex size-8 items-center justify-center rounded-[0.625rem] border text-[#F4F7FC] transition-colors [&>svg]:size-4',
-                  isActive
-                    ? 'border-primary/30 bg-primary/10 text-primary'
-                    : 'border-[#2A3242] hover:bg-[#1E2533]'
+                  'flex size-8 items-center justify-center rounded-[0.625rem] border border-[#2A3242] text-[#F4F7FC] transition-colors hover:bg-[#1E2533] [&>svg]:size-4',
+                  isActive && 'border-primary/30 bg-primary/10 text-primary'
                 )}
               >
                 <option.Icon />
@@ -93,7 +91,7 @@ export function FocalPointPresetToolbar({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.6 }}
             transition={spring}
-            className="border-primary/30 bg-primary/10 text-primary flex size-10 items-center justify-center rounded-2xl border [&>svg]:size-5"
+            className="flex size-10 items-center justify-center [&>svg]:size-5"
           >
             {activeOption ? (
               <activeOption.Icon />
