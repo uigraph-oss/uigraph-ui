@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable react/no-unknown-property */
 
+import { CustomStyle } from '@/components/custom-style'
 import '../global.css'
 
 import { DashboardFrame } from '@/features/dashboard-projects/api'
@@ -39,11 +39,11 @@ export function ImageFrameCanvas({
 
   return (
     <div ref={canvasRef} className="canvas-container relative isolate w-full">
-      <style jsx>{`
+      <CustomStyle jsx>{`
         .canvas-container {
           --frame-image-canvas-width: ${canvasWidth}px;
         }
-      `}</style>
+      `}</CustomStyle>
 
       <img
         src={frame.screenshotImageUrl ?? undefined}

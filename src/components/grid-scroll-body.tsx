@@ -1,9 +1,9 @@
 'use client'
 
-/* eslint-disable react/no-unknown-property */
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
+import { CustomStyle } from './custom-style'
 
 export function GridScrollBody({
   children,
@@ -16,7 +16,7 @@ export function GridScrollBody({
     <ScrollArea className={cn('!relative !isolate', className)}>
       {children}
 
-      <style jsx global>
+      <CustomStyle jsx global>
         {`
           [data-radix-scroll-area-viewport],
           [data-radix-scroll-area-viewport] > div {
@@ -32,7 +32,7 @@ export function GridScrollBody({
             display: contents !important;
           }
         `}
-      </style>
+      </CustomStyle>
     </ScrollArea>
   )
 }
