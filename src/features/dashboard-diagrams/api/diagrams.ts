@@ -26,6 +26,7 @@ export const DIAGRAMS = graphql(`
     $orgId: ID!
     $folderId: ID
     $teamId: ID
+    $serviceId: ID
     $search: String
     $sortBy: String
     $sortDir: String
@@ -36,6 +37,7 @@ export const DIAGRAMS = graphql(`
       orgId: $orgId
       folderId: $folderId
       teamId: $teamId
+      serviceId: $serviceId
       search: $search
       sortBy: $sortBy
       sortDir: $sortDir
