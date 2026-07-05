@@ -52,9 +52,9 @@ export function FocalPointPresetToolbar({
   return (
     <motion.div
       layout
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
       transition={spring}
+      onHoverEnd={() => setIsHovered(false)}
+      onHoverStart={() => setIsHovered(true)}
       className={cn(
         'absolute top-3 right-3 flex items-center gap-1 overflow-hidden rounded-2xl',
         isHovered && 'border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
