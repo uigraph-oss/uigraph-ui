@@ -22,6 +22,7 @@ export type ApiEndpoint = {
   apiGroupId: Scalars['ID']['output'];
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   description: Scalars['String']['output'];
   exampleRequests: Scalars['String']['output'];
   exampleResponses: Scalars['String']['output'];
@@ -39,11 +40,13 @@ export type ApiEndpoint = {
   tags: Array<Scalars['String']['output']>;
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type ApiGroup = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -54,6 +57,7 @@ export type ApiGroup = {
   specKey?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
   version: Scalars['String']['output'];
 };
 
@@ -62,6 +66,7 @@ export type ApiGroupVersion = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
   createdByActor?: Maybe<Actor>;
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   isAutoVersion: Scalars['Boolean']['output'];
   label?: Maybe<Scalars['String']['output']>;
@@ -733,6 +738,7 @@ export type FlowDiagramComponents = {
 export type FocalPoint = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   frameId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
@@ -742,6 +748,7 @@ export type FocalPoint = {
   orgId: Scalars['ID']['output'];
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
   visibility: Scalars['String']['output'];
 };
 
@@ -754,12 +761,14 @@ export type FocalPointMeta = {
   componentModalFields: Array<ComponentModalField>;
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   focalPointId: Scalars['ID']['output'];
   frameId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   orgId: Scalars['ID']['output'];
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type Folder = {
@@ -779,6 +788,7 @@ export type Frame = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
   createdByActor?: Maybe<Actor>;
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   description: Scalars['String']['output'];
   focalPointCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
@@ -796,6 +806,7 @@ export type Frame = {
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
   updatedByActor?: Maybe<Actor>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type FrameGroup = {
@@ -2557,6 +2568,7 @@ export type Service = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
   createdByActor?: Maybe<Actor>;
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   description: Scalars['String']['output'];
   folderId?: Maybe<Scalars['ID']['output']>;
   gitRepoUrl?: Maybe<Scalars['String']['output']>;
@@ -2575,6 +2587,7 @@ export type Service = {
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
   updatedByActor?: Maybe<Actor>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type ServiceAccount = {
@@ -2604,6 +2617,7 @@ export type ServiceDb = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
   createdByActor?: Maybe<Actor>;
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   dbDiagramId?: Maybe<Scalars['String']['output']>;
   dbName: Scalars['String']['output'];
   dbType: Scalars['String']['output'];
@@ -2620,12 +2634,14 @@ export type ServiceDb = {
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
   updatedByActor?: Maybe<Actor>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type ServiceDbVersion = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
   createdByActor?: Maybe<Actor>;
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   dbDiagramId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   isAutoVersion: Scalars['Boolean']['output'];
@@ -2644,23 +2660,27 @@ export type ServiceDbVersion = {
 export type ServiceDiagram = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   diagram?: Maybe<Diagram>;
   diagramId: Scalars['ID']['output'];
   orgId: Scalars['ID']['output'];
   serviceId: Scalars['ID']['output'];
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type ServiceDoc = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   doc?: Maybe<Doc>;
   docId: Scalars['ID']['output'];
   orgId: Scalars['ID']['output'];
   serviceId: Scalars['ID']['output'];
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type ServicePage = {
@@ -2743,6 +2763,7 @@ export type TestCase = {
   baselineRunResultId?: Maybe<Scalars['ID']['output']>;
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   database?: Maybe<DatabaseTestCase>;
   deletedAt?: Maybe<Scalars['Time']['output']>;
   deletedBy?: Maybe<Scalars['ID']['output']>;
@@ -2769,6 +2790,7 @@ export type TestCase = {
   type: Scalars['String']['output'];
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
   version: Scalars['Int']['output'];
 };
 
@@ -2787,6 +2809,7 @@ export type TestCaseStepInput = {
 export type TestPack = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   deletedAt?: Maybe<Scalars['Time']['output']>;
   deletedBy?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
@@ -2796,6 +2819,7 @@ export type TestPack = {
   type: Scalars['String']['output'];
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type TestRun = {
@@ -2860,6 +2884,7 @@ export type ToolSavings = {
 export type UiMap = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
+  createdByCommitHash?: Maybe<Scalars['String']['output']>;
   description: Scalars['String']['output'];
   folderId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
@@ -2870,6 +2895,7 @@ export type UiMap = {
   teamId?: Maybe<Scalars['ID']['output']>;
   updatedAt: Scalars['Time']['output'];
   updatedBy?: Maybe<Scalars['ID']['output']>;
+  updatedByCommitHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type UiMapPage = {
