@@ -8,9 +8,13 @@ const __dirname = new URL('.', import.meta.url).pathname.replace(
   '$1'
 )
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
+
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
 
     resolve: {
       alias: {
