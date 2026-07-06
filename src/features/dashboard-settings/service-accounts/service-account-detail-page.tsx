@@ -232,7 +232,7 @@ export function ServiceAccountDetailPage() {
 
   return (
     <>
-      <div className="space-y-6 p-6">
+      <div className="p-4">
         <Button
           preset="outline"
           onClick={() => navigate('/settings/service-accounts')}
@@ -241,7 +241,7 @@ export function ServiceAccountDetailPage() {
           Back to Service Accounts
         </Button>
 
-        <div className="bg-card rounded-[12px] border border-[#2A3242] p-6">
+        <div className="bg-card mt-4 mb-4 rounded-[12px] border border-[#2A3242] p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-4">
               <Avatar className="size-16 shrink-0 rounded-2xl bg-[#1E2533]">
