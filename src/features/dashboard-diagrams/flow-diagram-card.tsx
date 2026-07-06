@@ -133,6 +133,11 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
 
             <ActorAvatar
               actor={diagram.updatedByActor ?? diagram.createdByActor}
+              commitHash={
+                diagram.updatedByActor
+                  ? diagram.updatedByCommitHash
+                  : diagram.createdByCommitHash
+              }
               className="shrink-0"
             />
           </div>

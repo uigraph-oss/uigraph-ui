@@ -141,6 +141,11 @@ function PageCard({ page }: { page: DashboardFrame }) {
 
             <ActorAvatar
               actor={page.updatedByActor ?? page.createdByActor}
+              commitHash={
+                page.updatedByActor
+                  ? page.updatedByCommitHash
+                  : page.createdByCommitHash
+              }
               className="shrink-0"
             />
           </div>

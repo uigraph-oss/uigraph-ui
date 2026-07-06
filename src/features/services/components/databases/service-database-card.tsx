@@ -34,7 +34,7 @@ type ServiceDatabaseCardProps = {
 }
 
 export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
-  const { serviceId } = useServiceContext()
+  const { serviceId, service } = useServiceContext()
   const orgId = useCurrentOrganization().id
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -145,6 +145,12 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
 
             <ActorAvatar
               actor={db.updatedByActor ?? db.createdByActor}
+              commitHash={
+                db.updatedByActor
+                  ? db.updatedByCommitHash
+                  : db.createdByCommitHash
+              }
+              repoUrl={service?.gitRepoUrl}
               className="shrink-0"
             />
           </div>

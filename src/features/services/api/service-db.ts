@@ -10,6 +10,8 @@ export type ServiceDbActor = {
   id?: string | null
   name?: string | null
   avatarUrl?: string | null
+  type?: string | null
+  email?: string | null
 }
 
 export type DbColumn = GT.DbColumn
@@ -46,6 +48,8 @@ export type LegacyServiceDb = ServiceDbSchema & {
   dbName: string
   dbType: string
   dialect: string
+  createdByCommitHash?: string | null
+  updatedByCommitHash?: string | null
   createdByActor?: ServiceDbActor | null
   updatedByActor?: ServiceDbActor | null
 }
@@ -85,17 +89,23 @@ export const SERVICE_DBS = graphql(`
       sourceTs
       createdBy
       updatedBy
+      createdByCommitHash
+      updatedByCommitHash
       createdAt
       updatedAt
       createdByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
       updatedByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
     }
   }
@@ -136,17 +146,23 @@ export const SERVICE_DB = graphql(`
       sourceTs
       createdBy
       updatedBy
+      createdByCommitHash
+      updatedByCommitHash
       createdAt
       updatedAt
       createdByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
       updatedByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
     }
   }
@@ -202,6 +218,8 @@ export function serviceDBToLegacy(db: {
   pgDumpFileId?: string | null
   createdAt: string
   updatedAt: string
+  createdByCommitHash?: string | null
+  updatedByCommitHash?: string | null
   createdByActor?: ServiceDbActor | null
   updatedByActor?: ServiceDbActor | null
 }): LegacyServiceDb {
@@ -217,6 +235,8 @@ export function serviceDBToLegacy(db: {
     pgDumpFileId: db.pgDumpFileId,
     createdAt: db.createdAt,
     updatedAt: db.updatedAt,
+    createdByCommitHash: db.createdByCommitHash,
+    updatedByCommitHash: db.updatedByCommitHash,
     createdByActor: db.createdByActor,
     updatedByActor: db.updatedByActor,
   }
