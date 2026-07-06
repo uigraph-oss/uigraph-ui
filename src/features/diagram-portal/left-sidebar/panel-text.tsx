@@ -64,7 +64,7 @@ export function SidebarText() {
                   componentFields: [
                     {
                       componentFieldId: 'text',
-                      type: ComponentInputType.TextInput,
+                      type: ComponentInputType.TextBox,
                       label: 'Text',
                       isReadonly: true,
                     },

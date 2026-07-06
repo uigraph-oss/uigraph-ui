@@ -45,7 +45,7 @@ export const STANDARD_TOOLS: StandardTool[] = [
       componentFields: [
         {
           componentFieldId: 'text',
-          type: ComponentInputType.TextInput,
+          type: ComponentInputType.TextBox,
           label: 'Text',
           isReadonly: true,
         },
