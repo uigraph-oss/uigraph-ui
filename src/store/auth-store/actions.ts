@@ -16,6 +16,7 @@ const GET_ME_AND_ORG = graphql(`
       name
       role
       logoUrl
+      onboardingDone
     }
   }
 `)

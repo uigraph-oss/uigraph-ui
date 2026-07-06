@@ -110,6 +110,7 @@ type Documents = {
     "\n  mutation CreateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $input: CreateFocalPointMetaInput!\n  ) {\n    createFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.CreateFocalPointMetaDocument,
     "\n  mutation UpdateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n    $input: UpdateFocalPointMetaInput!\n  ) {\n    updateFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.UpdateFocalPointMetaDocument,
     "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n": typeof types.DeleteFocalPointMetaDocument,
+    "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": typeof types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareServerOrgLogoUploadDocument,
@@ -195,7 +196,7 @@ type Documents = {
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": typeof types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": typeof types.AssetUrlsDocument,
-    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
+    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
 };
 const documents: Documents = {
     "\n  query Comments($orgId: ID!, $resourceId: ID!) {\n    comments(orgId: $orgId, resourceId: $resourceId) {\n      id\n      resourceId\n      parentCommentId\n      text\n      createdBy\n      createdAt\n      createdByActor {\n        id\n        name\n        avatarUrl\n      }\n    }\n  }\n": types.CommentsDocument,
@@ -294,6 +295,7 @@ const documents: Documents = {
     "\n  mutation CreateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $input: CreateFocalPointMetaInput!\n  ) {\n    createFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.CreateFocalPointMetaDocument,
     "\n  mutation UpdateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n    $input: UpdateFocalPointMetaInput!\n  ) {\n    updateFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.UpdateFocalPointMetaDocument,
     "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n": types.DeleteFocalPointMetaDocument,
+    "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareServerOrgLogoUploadDocument,
@@ -379,7 +381,7 @@ const documents: Documents = {
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": types.AssetUrlsDocument,
-    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n    }\n  }\n": types.MeAndOrgBootstrapDocument,
+    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n": types.MeAndOrgBootstrapDocument,
 };
 
 /**
@@ -783,6 +785,10 @@ export function graphql(source: "\n  mutation DeleteFocalPointMeta(\n    $orgId:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"): (typeof documents)["\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n"): (typeof documents)["\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -1123,7 +1129,7 @@ export function graphql(source: "\n  query AssetUrls($orgId: ID!, $assetIds: [ID
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n    }\n  }\n"): (typeof documents)["\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n    }\n  }\n"];
+export function graphql(source: "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n"): (typeof documents)["\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
