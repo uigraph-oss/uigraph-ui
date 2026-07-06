@@ -42,6 +42,7 @@ export function ActorAvatar({
 
   const avatar = (
     <Avatar
+      onClick={showHoverCard ? (e) => e.stopPropagation() : undefined}
       title={
         title === false || showHoverCard ? undefined : (actor.name ?? undefined)
       }
