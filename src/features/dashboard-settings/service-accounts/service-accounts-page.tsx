@@ -1,11 +1,15 @@
 'use client'
 
-import { BetterDialogProvider } from '@/components/better-dialog'
+import {
+  BetterDialogContent,
+  BetterDialogProvider,
+} from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
-import { Plus } from 'lucide-react'
+import { KeyRound, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
 import {
@@ -22,7 +26,9 @@ import { ServiceAccountTable } from './service-account-table'
 
 export function ServiceAccountsPage() {
   const organizationId = useCurrentOrganization()?.id as string
+  const navigate = useNavigate()
   const [createOpen, setCreateOpen] = useState(false)
+  const [createdAccountId, setCreatedAccountId] = useState<string | null>(null)
 
   const accountsQuery = useQuery(SERVICE_ACCOUNTS, {
     variables: { orgId: organizationId },
@@ -48,11 +54,12 @@ export function ServiceAccountsPage() {
 
   async function handleCreate(values: ServiceAccountFormValues) {
     try {
-      await createServiceAccount({
+      const { data } = await createServiceAccount({
         variables: { orgId: organizationId, input: values },
       })
       setCreateOpen(false)
       toast.success('Service account created')
+      setCreatedAccountId(data!.createServiceAccount.id)
     } catch (error) {
       toast.error((error as Error).message)
     }
@@ -97,6 +104,36 @@ export function ServiceAccountsPage() {
             onSubmit={handleCreate}
           />
         )}
+      </BetterDialogProvider>
+
+      <BetterDialogProvider
+        open={createdAccountId !== null}
+        onOpenChange={(open) => !open && setCreatedAccountId(null)}
+        className="sm:max-w-[26rem]"
+      >
+        <BetterDialogContent
+          footerCancel="Later"
+          footerSubmit="Generate a key now"
+          footerSubmitIcon={<KeyRound className="h-4 w-4" />}
+          onFooterSubmitClick={() => {
+            const id = createdAccountId
+            setCreatedAccountId(null)
+            void navigate(`/settings/service-accounts/${id}`)
+          }}
+        >
+          <div className="space-y-2 text-center">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-blue-500/10 text-blue-500">
+              <KeyRound className="size-5" />
+            </div>
+            <h3 className="text-base font-semibold text-[#F4F7FC]">
+              Service account created
+            </h3>
+            <p className="text-paragraph text-sm">
+              Generate an API key to start using it. You can also do this later
+              from the account&apos;s page.
+            </p>
+          </div>
+        </BetterDialogContent>
       </BetterDialogProvider>
     </>
   )
