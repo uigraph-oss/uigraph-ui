@@ -61,6 +61,7 @@ export function DashboardServiceDocs() {
         >
           <ConfigureServiceDocModal
             mode="create"
+            orgId={orgId!}
             onSubmit={async (formData) => {
               try {
                 await createServiceDoc({
@@ -71,7 +72,7 @@ export function DashboardServiceDocs() {
                       fileName: formData.fileName ?? '',
                       fileType: formData.fileType ?? '',
                       description: formData.description ?? '',
-                      contentBase64: formData.contentBase64 ?? '',
+                      fileAssetId: formData.fileId ?? '',
                     },
                   },
                 })

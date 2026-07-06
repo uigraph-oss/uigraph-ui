@@ -4,12 +4,7 @@ import { z } from 'zod'
 import { ServiceDbSchema } from '../../api/service-db'
 
 export type SchemaViewKind =
-  | 'sql'
-  | 'dynamodb'
-  | 'mongodb'
-  | 'json-collections'
-  | 'json-tables'
-  | 'empty'
+  'sql' | 'dynamodb' | 'mongodb' | 'json-collections' | 'json-tables' | 'empty'
 
 type JsonNoSQLSchema = {
   json?: {

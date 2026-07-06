@@ -1,5 +1,6 @@
 import { graphql, type GT } from '@/api'
-import { clientAxios } from '@/api/axios'
+import { apolloClientGQL } from '@/api/client'
+import { putToPresigned } from '@/features/uploads/api/uploads'
 
 export type ServiceAccount = GT.ServiceAccountsQuery['serviceAccounts'][number]
 export type ServiceAccountToken =
@@ -91,15 +92,39 @@ export const REVOKE_TOKEN = graphql(`
   }
 `)
 
+export const PREPARE_SA_AVATAR_UPLOAD = graphql(`
+  mutation PrepareServiceAccountAvatarUpload($orgId: ID!, $saId: ID!) {
+    prepareServiceAccountAvatarUpload(orgId: $orgId, saId: $saId) {
+      assetId
+      uploadUrl
+    }
+  }
+`)
+
+export const SET_SERVICE_ACCOUNT_AVATAR = graphql(`
+  mutation SetServiceAccountAvatar($orgId: ID!, $saId: ID!) {
+    setServiceAccountAvatar(orgId: $orgId, saId: $saId)
+  }
+`)
+
 export async function setServiceAccountAvatar(
   orgId: string,
   saId: string,
   file: File
 ) {
-  const form = new FormData()
-  form.append('file', file)
-  await clientAxios.put(
-    `/v1/orgs/${orgId}/service-accounts/${saId}/avatar`,
-    form
-  )
+  await putToPresigned(async () => {
+    const { data } = await apolloClientGQL.mutate({
+      mutation: PREPARE_SA_AVATAR_UPLOAD,
+      variables: { orgId, saId },
+    })
+    return {
+      assetId: data?.prepareServiceAccountAvatarUpload?.assetId,
+      uploadUrl: data?.prepareServiceAccountAvatarUpload?.uploadUrl,
+    }
+  }, file)
+
+  await apolloClientGQL.mutate({
+    mutation: SET_SERVICE_ACCOUNT_AVATAR,
+    variables: { orgId, saId },
+  })
 }

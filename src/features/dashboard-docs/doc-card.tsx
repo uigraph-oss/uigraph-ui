@@ -433,6 +433,7 @@ export function DocCard({ doc }: { doc: DashboardDoc }) {
       >
         <ConfigureServiceDocModal
           mode="update"
+          orgId={orgId!}
           defaultValues={{
             fileId: doc.fileAssetId ?? undefined,
             fileName: doc.fileName ?? undefined,
@@ -449,8 +450,8 @@ export function DocCard({ doc }: { doc: DashboardDoc }) {
                     fileName: formData.fileName,
                     fileType: formData.fileType,
                     description: formData.description,
-                    ...(formData.contentBase64
-                      ? { contentBase64: formData.contentBase64 }
+                    ...(formData.fileId && formData.fileId !== doc.fileAssetId
+                      ? { fileAssetId: formData.fileId }
                       : {}),
                   },
                 },

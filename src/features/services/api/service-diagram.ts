@@ -17,17 +17,23 @@ export const SERVICE_DIAGRAMS = graphql(`
         previewAssetId
         previewImageUrl
         previewContentHash
+        createdByCommitHash
+        updatedByCommitHash
         createdAt
         updatedAt
         createdByActor {
           id
           name
           avatarUrl
+          type
+          email
         }
         updatedByActor {
           id
           name
           avatarUrl
+          type
+          email
         }
       }
     }
@@ -71,17 +77,23 @@ export function serviceDiagramToLegacyWithMeta(item: {
     previewAssetId?: string | null
     previewImageUrl?: string | null
     previewContentHash?: string | null
+    createdByCommitHash?: string | null
+    updatedByCommitHash?: string | null
     createdAt?: string | null
     updatedAt?: string | null
     createdByActor?: {
       id?: string | null
       name?: string | null
       avatarUrl?: string | null
+      type?: string | null
+      email?: string | null
     } | null
     updatedByActor?: {
       id?: string | null
       name?: string | null
       avatarUrl?: string | null
+      type?: string | null
+      email?: string | null
     } | null
   } | null
 }) {
@@ -104,6 +116,8 @@ export function serviceDiagramToLegacyWithMeta(item: {
           previewImageFileId: d.previewAssetId,
           previewImageUrl: d.previewImageUrl,
           previewContentHash: d.previewContentHash,
+          createdByCommitHash: d.createdByCommitHash,
+          updatedByCommitHash: d.updatedByCommitHash,
           createdAt: d.createdAt,
           updatedAt: d.updatedAt,
           createdByActor: d.createdByActor,

@@ -330,6 +330,7 @@ export function FocalPointMetaSection({
       <BetterDialogProvider
         open={isLinkModalOpen && isFlowDiagram}
         onOpenChange={setIsLinkModalOpen}
+        className="[--width:52rem] sm:!h-[90vh]"
       >
         <DiagramSelectionModal
           onSelect={async (formData) => {

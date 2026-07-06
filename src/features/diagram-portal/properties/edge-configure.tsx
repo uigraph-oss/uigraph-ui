@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select'
 import { useEffectState } from '@/hooks/use-effect-state'
 import { ConnectionLineType, Edge } from '@xyflow/react'
+import { RiArrowGoBackLine } from 'react-icons/ri'
 import { SliderInput } from '../components'
 import { CustomSwitch } from '../components/ui'
 import { EDGE_TYPES_LIST } from '../edges'
@@ -112,19 +113,23 @@ export function EdgeConfigure() {
           />
         </div>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => {
-            updateEdge({
-              ...edge,
-              source: edge?.target,
-              target: edge?.source,
-            })
-          }}
-        >
-          Reverse
-        </Button>
+        {localAnimated && (
+          <Button
+            preset="outline"
+            className="w-full"
+            onClick={() => {
+              updateEdge({
+                data: {
+                  ...edge?.data,
+                  reverseAnimation: !edge?.data?.reverseAnimation,
+                },
+              })
+            }}
+          >
+            <RiArrowGoBackLine className="size-4" />
+            Reverse Animation
+          </Button>
+        )}
       </div>
 
       <EdgeStrokeConfig edge={edge} updateEdge={updateEdge} />

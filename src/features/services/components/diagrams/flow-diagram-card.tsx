@@ -33,7 +33,7 @@ export function FlowDiagramCard({
   diagram: NonNullable<ServiceDiagramWithMeta['diagram']>
   serviceDiagram: ServiceDiagramWithMeta['serviceDiagram']
 }) {
-  const { serviceId } = useServiceContext()
+  const { serviceId, service } = useServiceContext()
   const orgId = useCurrentOrganization().id
 
   const listVars = { orgId: orgId!, serviceId }
@@ -65,19 +65,33 @@ export function FlowDiagramCard({
     ? new Date(serviceDiagram.updatedAt)
     : null
 
-  const actor =
-    ('updatedByActor' in diagram
+  const updatedByActor =
+    'updatedByActor' in diagram
       ? (diagram.updatedByActor as
-          | { name?: string | null; avatarUrl?: string | null }
+          | {
+              name?: string | null
+              avatarUrl?: string | null
+              type?: string | null
+            }
           | null
           | undefined)
-      : undefined) ??
-    ('createdByActor' in diagram
+      : undefined
+  const createdByActor =
+    'createdByActor' in diagram
       ? (diagram.createdByActor as
-          | { name?: string | null; avatarUrl?: string | null }
+          | {
+              name?: string | null
+              avatarUrl?: string | null
+              type?: string | null
+            }
           | null
           | undefined)
-      : undefined)
+      : undefined
+
+  const actor = updatedByActor ?? createdByActor
+  const commitHash = updatedByActor
+    ? diagram.updatedByCommitHash
+    : diagram.createdByCommitHash
 
   return (
     <div className="group relative">
@@ -150,7 +164,12 @@ export function FlowDiagramCard({
               <span />
             )}
 
-            <ActorAvatar actor={actor} className="shrink-0" />
+            <ActorAvatar
+              actor={actor}
+              commitHash={commitHash}
+              repoUrl={service?.gitRepoUrl}
+              className="shrink-0"
+            />
           </div>
         </div>
       </Link>

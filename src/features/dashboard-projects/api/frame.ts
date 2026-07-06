@@ -4,6 +4,8 @@ export type DashboardActor = {
   id?: string | null
   name?: string | null
   avatarUrl?: string | null
+  type?: string | null
+  email?: string | null
 }
 
 export type DashboardFrame = {
@@ -23,6 +25,8 @@ export type DashboardFrame = {
   focalPointCount?: number | null
   createdBy?: string | null
   updatedBy?: string | null
+  createdByCommitHash?: string | null
+  updatedByCommitHash?: string | null
   createdAt?: string | null
   updatedAt?: string | null
   createdByActor?: DashboardActor | null
@@ -66,17 +70,23 @@ export const FRAMES = graphql(`
         focalPointCount
         createdBy
         updatedBy
+        createdByCommitHash
+        updatedByCommitHash
         createdAt
         updatedAt
         createdByActor {
           id
           name
           avatarUrl
+          type
+          email
         }
         updatedByActor {
           id
           name
           avatarUrl
+          type
+          email
         }
       }
     }
@@ -102,17 +112,23 @@ export const FRAME = graphql(`
       focalPointCount
       createdBy
       updatedBy
+      createdByCommitHash
+      updatedByCommitHash
       createdAt
       updatedAt
       createdByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
       updatedByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
     }
   }
@@ -137,17 +153,23 @@ export const FRAME_BY_ID = graphql(`
       focalPointCount
       createdBy
       updatedBy
+      createdByCommitHash
+      updatedByCommitHash
       createdAt
       updatedAt
       createdByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
       updatedByActor {
         id
         name
         avatarUrl
+        type
+        email
       }
     }
   }

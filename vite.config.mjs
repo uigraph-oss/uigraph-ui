@@ -8,9 +8,17 @@ const __dirname = new URL('.', import.meta.url).pathname.replace(
   '$1'
 )
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
+
+    build: {
+      minify: mode === 'production' ? 'terser' : 'esbuild',
+      terserOptions:
+        mode === 'production'
+          ? { compress: { drop_console: true, drop_debugger: true } }
+          : undefined,
+    },
 
     resolve: {
       alias: {

@@ -219,6 +219,11 @@ const ServiceAccountsPage = lazy(() =>
     (mod) => ({ default: mod.ServiceAccountsPage })
   )
 )
+const ServiceAccountDetailPage = lazy(() =>
+  import('@/features/dashboard-settings/service-accounts/service-account-detail-page').then(
+    (mod) => ({ default: mod.ServiceAccountDetailPage })
+  )
+)
 const DiagramPortalPage = lazy(() =>
   import('@/features/diagram-portal/diagram-portal-page').then((mod) => ({
     default: mod.DiagramPortalPage,
@@ -370,6 +375,10 @@ export function AppRoutes() {
             <Route path="teams" element={<TeamManagementPage />} />
             <Route path="users" element={<UsersManagementPage />} />
             <Route path="service-accounts" element={<ServiceAccountsPage />} />
+            <Route
+              path="service-accounts/:id"
+              element={<ServiceAccountDetailPage />}
+            />
             <Route path="security" element={<SecuritySettings />} />
           </Route>
         </Route>

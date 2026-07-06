@@ -12,12 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ACTOR } from '../../api/actor'
 
 export type DisplayRunStatus =
-  | 'running'
-  | 'passed'
-  | 'failed'
-  | 'issues'
-  | 'aborted'
-  | 'none'
+  'running' | 'passed' | 'failed' | 'issues' | 'aborted' | 'none'
 
 export type StatusFilter = 'all' | 'passed' | 'failed' | 'blocked' | 'skipped'
 

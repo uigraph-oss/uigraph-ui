@@ -2,6 +2,7 @@
 
 import { GridScrollBody } from '@/components/grid-scroll-body'
 import { DASHBOARD_SETTINGS_NAV_LINKS } from '@/constants'
+import { OrgOnboardingDialog } from '@/features/org-onboarding/org-onboarding-dialog'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { PropsWithChildren, ReactNode, useMemo } from 'react'
@@ -14,6 +15,7 @@ export function DashboardLayout({ children }: PropsWithChildren) {
     <main className="bg-shading-gray grid h-screen grid-cols-[5.25rem_1fr] gap-2">
       <DashboardSidebar />
       {children}
+      <OrgOnboardingDialog />
     </main>
   )
 }

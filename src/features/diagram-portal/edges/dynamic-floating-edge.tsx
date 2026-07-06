@@ -17,6 +17,8 @@ export function DynamicFloatingEdge({
 
   const labelFontSize = (data?.labelFontSize as number | undefined) ?? 12
 
+  const reverseAnimation = Boolean(data?.reverseAnimation)
+
   const textRef = useRef<SVGTextElement>(null)
   const [bbox, setBbox] = useState({ width: 0, height: 0 })
 
@@ -65,7 +67,9 @@ export function DynamicFloatingEdge({
         d={edgePath}
         markerEnd={markerEnd}
         markerStart={markerStart}
-        style={style}
+        style={
+          reverseAnimation ? { ...style, animationDirection: 'reverse' } : style
+        }
       />
       {label && (
         <>

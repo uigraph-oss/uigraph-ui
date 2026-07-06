@@ -1,7 +1,7 @@
 import { SimpleModalContent, SimpleModalFooter } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
-import { fileToDataUrl } from '@/helpers/file-to-data-url'
+import { uploadFile } from '@/features/uploads/api/uploads'
 import { convertImageUrlToServerBuffer } from '@/helpers/image-url-to-buffer'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useState } from 'react'
@@ -37,7 +37,7 @@ export function FigmaImportedView({
         type: fileData.type,
       })
 
-      const screenshot = await fileToDataUrl(file)
+      const screenshotAssetId = await uploadFile(organizationId!, file)
 
       await createFrame({
         variables: {
@@ -47,7 +47,7 @@ export function FigmaImportedView({
             templateType: 'default',
             name: importedInfo.name,
             description: `Imported from Figma: ${importedInfo.name}`,
-            screenshot,
+            screenshotAssetId,
           },
         },
       })

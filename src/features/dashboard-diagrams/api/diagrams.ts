@@ -4,6 +4,8 @@ export type DashboardActor = {
   id?: string | null
   name?: string | null
   avatarUrl?: string | null
+  type?: string | null
+  email?: string | null
 }
 
 export type DashboardDiagram = {
@@ -17,6 +19,8 @@ export type DashboardDiagram = {
   previewStatus?: string | null
   createdAt?: string | null
   updatedAt?: string | null
+  createdByCommitHash?: string | null
+  updatedByCommitHash?: string | null
   createdByActor?: DashboardActor | null
   updatedByActor?: DashboardActor | null
 }
@@ -26,6 +30,7 @@ export const DIAGRAMS = graphql(`
     $orgId: ID!
     $folderId: ID
     $teamId: ID
+    $serviceId: ID
     $search: String
     $sortBy: String
     $sortDir: String
@@ -36,6 +41,7 @@ export const DIAGRAMS = graphql(`
       orgId: $orgId
       folderId: $folderId
       teamId: $teamId
+      serviceId: $serviceId
       search: $search
       sortBy: $sortBy
       sortDir: $sortDir
@@ -55,6 +61,8 @@ export const DIAGRAMS = graphql(`
         previewStatus
         createdBy
         updatedBy
+        createdByCommitHash
+        updatedByCommitHash
         createdAt
         updatedAt
         createdByActor {

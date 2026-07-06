@@ -62,12 +62,18 @@ export function createLabeledEdge(pathType: PathType) {
 
     const labelFontSize = (data?.labelFontSize as number | undefined) ?? 12
 
+    const reverseAnimation = Boolean(data?.reverseAnimation)
+
     return (
       <>
         <BaseEdge
           id={id}
           path={edgePath}
-          style={style}
+          style={
+            reverseAnimation
+              ? { ...style, animationDirection: 'reverse' }
+              : style
+          }
           markerEnd={markerEnd}
           markerStart={markerStart}
         />

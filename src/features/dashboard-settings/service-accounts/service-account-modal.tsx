@@ -74,7 +74,7 @@ export function ServiceAccountModal({
   return (
     <BetterDialogContent
       title={account ? 'Edit Service Account' : 'Create Service Account'}
-      description="Service accounts authenticate automated clients (CI/CD, scripts) using scoped API tokens."
+      description="For CI/CD and scripts, using scoped API tokens."
       footerSubmit={account ? 'Save Changes' : 'Create Service Account'}
       footerSubmitLoading={submitting}
       onFooterSubmitClick={handleSubmit}
@@ -105,12 +105,11 @@ export function ServiceAccountModal({
             />
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              preset="outline"
               disabled={uploadingAvatar}
               onClick={() => fileInputRef.current?.click()}
             >
-              <Upload className="h-4 w-4" />
+              <Upload className="size-4" />
               {uploadingAvatar ? 'Uploading...' : 'Upload Avatar'}
             </Button>
           </div>

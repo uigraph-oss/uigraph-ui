@@ -2,6 +2,7 @@
 
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { useServiceContext } from '@/features/services/contexts/service-context'
+import { normalizeRepoUrl } from '@/lib/git'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -52,20 +53,6 @@ function getMonogram(name: string) {
   return w.length >= 2
     ? `${w[0][0]}${w[1][0]}`.toUpperCase()
     : name.substring(0, 2).toUpperCase()
-}
-
-function normalizeRepoUrl(url?: string | null): string | undefined {
-  if (!url) return undefined
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    if (url.startsWith('https://gitlab.com:'))
-      return url.replace('https://gitlab.com:', 'https://gitlab.com/')
-    return url
-  }
-  if (url.startsWith('git@github.com:'))
-    return `https://github.com/${url.replace('git@github.com:', '').replace(/\.git$/, '')}`
-  if (url.startsWith('git@gitlab.com:'))
-    return `https://gitlab.com/${url.replace('git@gitlab.com:', '').replace(/\.git$/, '')}`
-  return url
 }
 
 export function ServiceOverview() {

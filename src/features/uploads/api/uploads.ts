@@ -43,19 +43,45 @@ export function useAssetUrls(
   return map
 }
 
-export async function uploadFile(orgId: string, file: File): Promise<string> {
-  const { data } = await apolloClientGQL.mutate({
-    mutation: CREATE_ASSET_UPLOAD,
-    variables: { orgId },
-  })
-
-  const assetId = data?.createAssetUpload?.assetId
-  const uploadUrl = data?.createAssetUpload?.uploadUrl
+export async function putToPresigned(
+  prepare: () => Promise<{ assetId?: string; uploadUrl?: string }>,
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<string> {
+  const { assetId, uploadUrl } = await prepare()
   if (!assetId || !uploadUrl) throw new Error('Failed to get upload URL')
 
   await axios.put(uploadUrl, file, {
     headers: { 'Content-Type': file.type },
+    onUploadProgress: onProgress
+      ? (event) => {
+          if (event.total) {
+            onProgress(Math.round((event.loaded / event.total) * 100))
+          }
+        }
+      : undefined,
   })
 
   return assetId
+}
+
+export async function uploadFile(
+  orgId: string,
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<string> {
+  return putToPresigned(
+    async () => {
+      const { data } = await apolloClientGQL.mutate({
+        mutation: CREATE_ASSET_UPLOAD,
+        variables: { orgId },
+      })
+      return {
+        assetId: data?.createAssetUpload?.assetId,
+        uploadUrl: data?.createAssetUpload?.uploadUrl,
+      }
+    },
+    file,
+    onProgress
+  )
 }

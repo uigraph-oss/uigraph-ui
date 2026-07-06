@@ -56,6 +56,7 @@ function DashboardDocsPageContent() {
       >
         <ConfigureServiceDocModal
           mode="create"
+          orgId={organizationId!}
           onSubmit={async (formData) => {
             try {
               await createDoc({
@@ -65,7 +66,7 @@ function DashboardDocsPageContent() {
                     fileName: formData.fileName ?? '',
                     fileType: formData.fileType ?? '',
                     description: formData.description ?? '',
-                    contentBase64: formData.contentBase64 ?? '',
+                    fileAssetId: formData.fileId ?? '',
                     ...(selectedFolderId ? { folderId: selectedFolderId } : {}),
                     ...(selectedTeamId ? { teamId: selectedTeamId } : {}),
                   },

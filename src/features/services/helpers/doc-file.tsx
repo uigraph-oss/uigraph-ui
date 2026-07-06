@@ -66,14 +66,7 @@ export const DOCUMENT_FILE_TYPES: DocumentFileType[] = [
 ]
 
 export type DocRenderKind =
-  | 'pdf'
-  | 'image'
-  | 'audio'
-  | 'video'
-  | 'html'
-  | 'markdown'
-  | 'code'
-  | 'text'
+  'pdf' | 'image' | 'audio' | 'video' | 'html' | 'markdown' | 'code' | 'text'
 
 const IMAGE_EXTENSION_REGEX = /\.(jpg|jpeg|png|gif|svg|webp|bmp|ico)$/i
 const AUDIO_EXTENSION_REGEX = /\.(mp3|wav|ogg|m4a|aac|flac|wma)$/i
