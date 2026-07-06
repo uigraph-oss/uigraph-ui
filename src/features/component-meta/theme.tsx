@@ -34,10 +34,10 @@ export function useComponentMetaClasses() {
         : 'border-stock h-[3.5rem] rounded-[1rem] border bg-white px-4'
     ),
     textarea: cn(
-      'text-foreground w-full resize-none text-sm leading-normal',
+      'text-foreground field-sizing-fixed w-full min-w-0 p-4 resize-none text-sm leading-normal break-words',
       isModal
-        ? 'min-h-[6.75rem] rounded-[16px] border border-[#2A3242] bg-transparent p-6 focus:outline-none'
-        : 'border-stock h-[6.75rem] rounded-[1rem] border bg-white p-4 break-all'
+        ? 'min-h-[6.75rem] rounded-[16px] border border-[#2A3242] bg-transparent focus:outline-none'
+        : 'border-stock h-[6.75rem] rounded-[1rem] border bg-white'
     ),
     select: cn(
       'text-foreground w-full text-sm [&[data-placeholder]]:text-muted-foreground',
