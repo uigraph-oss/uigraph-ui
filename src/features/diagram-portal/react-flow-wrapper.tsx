@@ -22,7 +22,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import * as React from 'react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { DrawingOverlay } from './drawing-overlay'
@@ -32,6 +32,7 @@ import { createEdgeMarker } from './edges/helpers'
 import { findEditorAction } from './helpers/editor-actions'
 import { handleOnGroupDrag, handleOnNodeDrag } from './helpers/on-node-drag'
 import { createGroupNode } from './helpers/xy-flow'
+import { useDiagramHistory } from './hooks/use-diagram-history'
 import { CUSTOM_NODE_TYPES, DatabaseTableSQLNodeData } from './nodes'
 import { componentDropDataTransfer } from './nodes/helpers/drag-data-transfer'
 import { getControlKey } from './utils/get-control-key'
@@ -419,55 +420,20 @@ export function ReactFlowWrapper({
     }
   }, [nodes, setNodes])
 
-  // Undo/Redo keyboard shortcuts - using a custom history stack
-  const historyRef = useRef<Array<{ nodes: Node[]; edges: Edge[] }>>([])
-  const historyIndexRef = useRef(-1)
-  const isUndoingRef = useRef(false)
+  const isNodeWritable =
+    !drawingMode && !forceReadOnly && tempDiagramState === null
 
-  // Save state to history when nodes or edges change (but not during undo/redo)
-  useEffect(() => {
-    if (isUndoingRef.current) {
-      isUndoingRef.current = false
-      return
-    }
+  const { undo, redo } = useDiagramHistory({
+    nodes,
+    edges,
+    setNodes,
+    setEdges,
+    enabled: isNodeWritable,
+  })
 
-    const currentState = { nodes: [...nodes], edges: [...edges] }
-    const history = historyRef.current
-    const index = historyIndexRef.current
-
-    // Remove any future history if we're not at the end
-    if (index < history.length - 1) {
-      history.splice(index + 1)
-    }
-
-    // Add new state to history
-    history.push(currentState)
-    historyIndexRef.current = history.length - 1
-
-    // Limit history size to prevent memory issues
-    if (history.length > 50) {
-      history.shift()
-      historyIndexRef.current = history.length - 1
-    }
-  }, [nodes, edges])
-
-  useEffect(() => {
-    if (
-      historyRef.current.length === 0 &&
-      (nodes.length > 0 || edges.length > 0)
-    ) {
-      historyRef.current = [{ nodes: [...nodes], edges: [...edges] }]
-      historyIndexRef.current = 0
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Undo/Redo keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const target = event.target as HTMLElement
-      // Don't trigger undo/redo when typing in input fields
       if (
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
@@ -476,37 +442,19 @@ export function ReactFlowWrapper({
         return
       }
 
-      const isMac = getControlKey() === 'Meta'
-      const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey
+      const isCtrlOrCmd = event.ctrlKey || event.metaKey
 
       if (isCtrlOrCmd && !event.shiftKey && event.key === 'z') {
         event.preventDefault()
-        const history = historyRef.current
-        const index = historyIndexRef.current
-
-        if (index > 0) {
-          isUndoingRef.current = true
-          historyIndexRef.current = index - 1
-          const previousState = history[index - 1]
-          setNodes(previousState.nodes)
-          setEdges(previousState.edges)
-        }
+        event.stopPropagation()
+        undo()
       } else if (
         isCtrlOrCmd &&
-        ((isMac && event.shiftKey && event.key === 'z') ||
-          (!isMac && event.key === 'y'))
+        (event.key === 'y' || (event.shiftKey && event.key === 'z'))
       ) {
         event.preventDefault()
-        const history = historyRef.current
-        const index = historyIndexRef.current
-
-        if (index < history.length - 1) {
-          isUndoingRef.current = true
-          historyIndexRef.current = index + 1
-          const nextState = history[index + 1]
-          setNodes(nextState.nodes)
-          setEdges(nextState.edges)
-        }
+        event.stopPropagation()
+        redo()
       } else {
         const action = findEditorAction(event)
         const rf = ref.current.reactFlowInstance
@@ -521,16 +469,11 @@ export function ReactFlowWrapper({
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown, { capture: true })
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keydown', handleKeyDown, { capture: true })
     }
-  }, [ref, setNodes, setEdges])
-
-  const isNodeWritable =
-    !drawingMode && !forceReadOnly && tempDiagramState === null
-
-  console.log(nodes)
+  }, [ref, undo, redo])
 
   return (
     <>
