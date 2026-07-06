@@ -1,6 +1,6 @@
 import { GT } from '@/api'
-import { apolloClientGQL } from '@/api/client'
 import { CirclePlusIcon } from '@/assets/svgs'
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { DIAGRAM } from '@/features/diagram-portal/api/diagram'
 import { useComponentField } from '@/features/diagram-portal/hooks/use-component-field'
@@ -13,13 +13,12 @@ import { useMemo, useState } from 'react'
 import { HiOutlineTrash } from 'react-icons/hi2'
 import { LuImage, LuLink } from 'react-icons/lu'
 import { toast } from 'sonner'
-import {
-  API_ENDPOINT_BY_ID,
-  SERVICE_DOC_BY_ID,
-  TEST_PACK_BY_ID,
-} from '../api/component-link-nav'
+import { ApiContractDetailsModal } from './api-contract-details-modal'
+import { DiagramDetailsModal } from './diagram-details-modal'
 import { FocalPointName } from './focal-point-name'
 import { FocalPointMetaModal } from './meta-modal'
+import { ServiceDocDetailsModal } from './service-doc-details-modal'
+import { TestSuiteDetailsModal } from './test-suite-details-modal'
 
 type MetaCardProps = {
   index: number
@@ -147,6 +146,7 @@ function MetaMiniCardShell({
 export function DiagramLinkMetaMiniCard(props: MetaCardProps) {
   const organizationId = useCurrentOrganization()?.id
   const diagramId = props.pointMeta.componentLinkDiagramId!
+  const [isOpen, setIsOpen] = useState(false)
 
   const { data } = useQuery(DIAGRAM, {
     variables: { orgId: organizationId!, id: diagramId },
@@ -155,86 +155,79 @@ export function DiagramLinkMetaMiniCard(props: MetaCardProps) {
   })
 
   return (
-    <MetaMiniCardShell
-      {...props}
-      hasLink
-      showPreview
-      previewImageUrl={data?.diagram?.previewImageUrl}
-      nameOverride={data?.diagram?.name}
-      onClick={() => window.open(`/diagram/${diagramId}`)}
-    />
+    <>
+      <MetaMiniCardShell
+        {...props}
+        hasLink
+        showPreview
+        previewImageUrl={data?.diagram?.previewImageUrl}
+        nameOverride={data?.diagram?.name}
+        onClick={() => setIsOpen(true)}
+      />
+
+      <BetterDialogProvider open={isOpen} onOpenChange={setIsOpen}>
+        <DiagramDetailsModal orgId={organizationId!} diagramId={diagramId} />
+      </BetterDialogProvider>
+    </>
   )
 }
 
 export function ApiContractLinkMetaMiniCard(props: MetaCardProps) {
   const organizationId = useCurrentOrganization()?.id
+  const [isOpen, setIsOpen] = useState(false)
 
-  async function open() {
-    try {
-      const { data } = await apolloClientGQL.query({
-        query: API_ENDPOINT_BY_ID,
-        variables: {
-          orgId: organizationId!,
-          id: props.pointMeta.componentLinkApiEndpointId!,
-        },
-      })
-      const endpoint = data?.apiEndpointById
-      if (!endpoint) return toast.error('API endpoint not found.')
-      window.open(
-        `/services/${endpoint.serviceId}/apis/${endpoint.apiGroupId}?endpoint=${endpoint.id}`
-      )
-    } catch {
-      toast.error('Failed to open API contract. Please try again.')
-    }
-  }
+  return (
+    <>
+      <MetaMiniCardShell {...props} hasLink onClick={() => setIsOpen(true)} />
 
-  return <MetaMiniCardShell {...props} hasLink onClick={() => void open()} />
+      <BetterDialogProvider open={isOpen} onOpenChange={setIsOpen}>
+        <ApiContractDetailsModal
+          orgId={organizationId!}
+          endpointId={props.pointMeta.componentLinkApiEndpointId!}
+        />
+      </BetterDialogProvider>
+    </>
+  )
 }
 
 export function TestSuiteLinkMetaMiniCard(props: MetaCardProps) {
   const organizationId = useCurrentOrganization()?.id
+  const [isOpen, setIsOpen] = useState(false)
 
-  async function open() {
-    try {
-      const { data } = await apolloClientGQL.query({
-        query: TEST_PACK_BY_ID,
-        variables: {
-          orgId: organizationId!,
-          id: props.pointMeta.componentLinkTestPackId!,
-        },
-      })
-      const pack = data?.testPackById
-      if (!pack) return toast.error('Test suite not found.')
-      window.open(`/services/${pack.serviceId}/tests?packId=${pack.testPackId}`)
-    } catch {
-      toast.error('Failed to open test suite. Please try again.')
-    }
-  }
+  return (
+    <>
+      <MetaMiniCardShell {...props} hasLink onClick={() => setIsOpen(true)} />
 
-  return <MetaMiniCardShell {...props} hasLink onClick={() => void open()} />
+      <BetterDialogProvider open={isOpen} onOpenChange={setIsOpen}>
+        <TestSuiteDetailsModal
+          orgId={organizationId!}
+          testPackId={props.pointMeta.componentLinkTestPackId!}
+        />
+      </BetterDialogProvider>
+    </>
+  )
 }
 
 export function ServiceDocLinkMetaMiniCard(props: MetaCardProps) {
   const organizationId = useCurrentOrganization()?.id
+  const [isOpen, setIsOpen] = useState(false)
 
-  async function open() {
-    try {
-      const { data } = await apolloClientGQL.query({
-        query: SERVICE_DOC_BY_ID,
-        variables: {
-          orgId: organizationId!,
-          id: props.pointMeta.componentLinkServiceDocId!,
-        },
-      })
-      const doc = data?.serviceDocById
-      if (!doc) return toast.error('Document not found.')
-      window.open(`/services/${doc.serviceId}/docs?open=${doc.docId}`)
-    } catch {
-      toast.error('Failed to open document. Please try again.')
-    }
-  }
+  return (
+    <>
+      <MetaMiniCardShell {...props} hasLink onClick={() => setIsOpen(true)} />
 
-  return <MetaMiniCardShell {...props} hasLink onClick={() => void open()} />
+      <BetterDialogProvider
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="min-h-[95vh] [--width:min(95vw,100rem)]"
+      >
+        <ServiceDocDetailsModal
+          orgId={organizationId!}
+          serviceDocId={props.pointMeta.componentLinkServiceDocId!}
+        />
+      </BetterDialogProvider>
+    </>
+  )
 }
 
 export function FocalPointMetaMiniCard({
