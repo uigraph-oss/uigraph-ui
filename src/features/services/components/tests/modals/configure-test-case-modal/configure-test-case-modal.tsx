@@ -57,7 +57,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#141925] px-4 pt-1 pb-4"
           >
             <FormManualSection form={form} />
           </motion.div>
@@ -71,7 +71,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#141925] px-4 pt-1 pb-4"
           >
             <FormApiSection form={form} />
           </motion.div>
@@ -85,7 +85,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#141925] px-4 pt-1 pb-4"
           >
             <FormGraphqlSection form={form} />
           </motion.div>
@@ -99,7 +99,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#141925] px-4 pt-1 pb-4"
           >
             <FormDatabaseSection form={form} />
           </motion.div>
@@ -113,7 +113,7 @@ export function ConfigureTestCaseModal({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#1E2533] px-4 pt-1 pb-4"
+            className="mb-4 rounded-[12px] border-[1.5px] border-[#2A3242] bg-[#141925] px-4 pt-1 pb-4"
           >
             <FormGrpcSection form={form} />
           </motion.div>

@@ -353,7 +353,7 @@ export function FormBasicSection({ form }: { form: FormType }) {
                   className={cn(
                     'border-stock h-11 rounded-[12px] border bg-[#141925] px-1 py-2.5 text-center outline-2 -outline-offset-2 outline-transparent outline-solid hover:bg-[#141925]',
                     field.value === item.id &&
-                      'bg-shading-gray outline-primary hover:bg-shading-gray'
+                      'outline-primary bg-[#141925] hover:bg-[#141925]'
                   )}
                 >
                   <div className="mb-[3px] text-[18px]">{item.icon}</div>
