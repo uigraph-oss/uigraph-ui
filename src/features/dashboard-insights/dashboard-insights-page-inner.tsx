@@ -1,6 +1,7 @@
 'use client'
 
 import { SectionLoader } from '@/components/section-loader'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
@@ -8,6 +9,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useState } from 'react'
 import {
+  COST_SAVINGS_BY_CLIENT,
   COST_SAVINGS_BY_MODEL,
   COST_SAVINGS_BY_TOOL,
   COST_SAVINGS_BY_USER,
@@ -25,7 +27,7 @@ import { SavingsFilters } from './components/savings-filters'
 import { SavingsHeroCards } from './components/savings-hero-cards'
 import { SavingsTrendChart } from './components/savings-trend-chart'
 
-type BreakdownDimension = 'tool' | 'model' | 'user'
+type BreakdownDimension = 'tool' | 'client' | 'model' | 'user'
 
 export function DashboardInsightsPageInner() {
   const orgId = useCurrentOrganization().id
@@ -44,6 +46,9 @@ export function DashboardInsightsPageInner() {
   const byTool = useQuery(COST_SAVINGS_BY_TOOL, {
     variables: { orgId, period, modelId },
   })
+  const byClient = useQuery(COST_SAVINGS_BY_CLIENT, {
+    variables: { orgId, period, modelId },
+  })
   const byModel = useQuery(COST_SAVINGS_BY_MODEL, {
     variables: { orgId, period },
   })
@@ -55,12 +60,14 @@ export function DashboardInsightsPageInner() {
     summary.loading ||
     timeseries.loading ||
     byTool.loading ||
+    byClient.loading ||
     byModel.loading ||
     byUser.loading
   const error =
     summary.error ||
     timeseries.error ||
     byTool.error ||
+    byClient.error ||
     byModel.error ||
     byUser.error
 
@@ -78,21 +85,29 @@ export function DashboardInsightsPageInner() {
           tokensSaved: r.tokensSaved,
           costSavedUsd: r.costSavedUsd,
         }))
-      : dimension === 'model'
-        ? (byModel.data?.costSavingsByModel ?? []).map((r) => ({
-            key: r.modelId,
-            label: r.displayName,
+      : dimension === 'client'
+        ? (byClient.data?.costSavingsByClient ?? []).map((r) => ({
+            key: r.clientName,
+            label: r.clientName,
             totalCalls: r.totalCalls,
             tokensSaved: r.tokensSaved,
             costSavedUsd: r.costSavedUsd,
           }))
-        : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
-            key: r.userId ?? r.serviceAccountId ?? r.displayName,
-            label: r.displayName,
-            totalCalls: r.totalCalls,
-            tokensSaved: r.tokensSaved,
-            costSavedUsd: r.costSavedUsd,
-          }))
+        : dimension === 'model'
+          ? (byModel.data?.costSavingsByModel ?? []).map((r) => ({
+              key: r.modelId,
+              label: r.displayName,
+              totalCalls: r.totalCalls,
+              tokensSaved: r.tokensSaved,
+              costSavedUsd: r.costSavedUsd,
+            }))
+          : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
+              key: r.userId ?? r.serviceAccountId ?? r.displayName,
+              label: r.displayName,
+              totalCalls: r.totalCalls,
+              tokensSaved: r.tokensSaved,
+              costSavedUsd: r.costSavedUsd,
+            }))
 
   const isEmpty =
     !loading &&
@@ -163,6 +178,12 @@ export function DashboardInsightsPageInner() {
                   By Tool
                 </ToggleGroupItem>
                 <ToggleGroupItem
+                  value="client"
+                  className="hover:bg-muted hover:text-foreground px-5"
+                >
+                  By Coding Tool
+                </ToggleGroupItem>
+                <ToggleGroupItem
                   value="model"
                   className="hover:bg-muted hover:text-foreground px-5"
                 >
@@ -187,6 +208,17 @@ export function DashboardInsightsPageInner() {
                 ]}
               />
             </div>
+            {dimension === 'model' ? (
+              <div className="px-6 pt-4">
+                <Alert>
+                  <AlertDescription>
+                    This isn&apos;t actual uigraph MCP usage — it&apos;s an
+                    estimate of what these tokens would have cost on each model
+                    if it had been used.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            ) : null}
             <SavingsBreakdownTable rows={breakdownRows} />
           </div>
         </div>
