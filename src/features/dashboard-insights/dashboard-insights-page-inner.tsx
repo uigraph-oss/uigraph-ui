@@ -1,7 +1,6 @@
 'use client'
 
 import { SectionLoader } from '@/components/section-loader'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
@@ -26,6 +25,7 @@ import { SavingsExportButton } from './components/savings-export-button'
 import { SavingsFilters } from './components/savings-filters'
 import { SavingsHeroCards } from './components/savings-hero-cards'
 import { SavingsTrendChart } from './components/savings-trend-chart'
+import { agentDisplay } from './lib/agent-display'
 
 type BreakdownDimension = 'tool' | 'client' | 'model' | 'user'
 
@@ -89,7 +89,8 @@ export function DashboardInsightsPageInner() {
       : dimension === 'client'
         ? (byClient.data?.costSavingsByClient ?? []).map((r) => ({
             key: r.clientName,
-            label: r.clientName,
+            label: agentDisplay(r.clientName).label,
+            iconUrl: agentDisplay(r.clientName).iconUrl,
             totalCalls: r.totalCalls,
             tokensSaved: r.tokensSaved,
             estimatedCostUsd: 0,
@@ -165,8 +166,11 @@ export function DashboardInsightsPageInner() {
             }))}
           />
 
-          <div className="border-stock rounded-[12px] border">
-            <div className="border-stock flex items-center justify-between border-b px-6 py-4">
+          <div className="border-stock bg-shading/40 rounded-[12px] border">
+            <div className="border-stock flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4">
+              <p className="text-paragraph mr-2 text-sm font-medium">
+                Breakdown
+              </p>
               <ToggleGroup
                 type="single"
                 value={dimension}
@@ -212,21 +216,17 @@ export function DashboardInsightsPageInner() {
                 ]}
               />
             </div>
-            {dimension === 'model' ? (
-              <div className="px-6 pt-4">
-                <Alert>
-                  <AlertDescription>
-                    This isn&apos;t actual uigraph MCP usage — it&apos;s an
-                    estimate of what these tokens would have cost on each model
-                    if it had been used.
-                  </AlertDescription>
-                </Alert>
-              </div>
-            ) : null}
             <SavingsBreakdownTable
               rows={breakdownRows}
               variant={dimension === 'model' ? 'model' : 'default'}
             />
+            {dimension === 'model' ? (
+              <p className="text-paragraph border-stock border-t px-6 py-4 text-center text-xs">
+                This isn&apos;t actual uigraph MCP usage — it&apos;s an estimate
+                of what these tokens would have cost on each model if it had
+                been used.
+              </p>
+            ) : null}
           </div>
         </div>
       )}
