@@ -13,6 +13,9 @@ export const COST_SAVINGS_SUMMARY = graphql(`
       costRawUsd
       costSavedUsd
       uniqueUsersCount
+      totalDurationMs
+      estAgentTimeMs
+      timeSavedMs
     }
   }
 `)
@@ -27,6 +30,9 @@ export const COST_SAVINGS_TIMESERIES = graphql(`
       costServedUsd
       costRawUsd
       costSavedUsd
+      totalDurationMs
+      estAgentTimeMs
+      timeSavedMs
     }
   }
 `)
@@ -38,6 +44,7 @@ export const COST_SAVINGS_BY_TOOL = graphql(`
       totalCalls
       tokensSaved
       costSavedUsd
+      totalDurationMs
     }
   }
 `)
@@ -49,6 +56,7 @@ export const COST_SAVINGS_BY_CLIENT = graphql(`
       totalCalls
       tokensSaved
       costSavedUsd
+      totalDurationMs
     }
   }
 `)
@@ -76,6 +84,7 @@ export const COST_SAVINGS_BY_USER = graphql(`
       totalCalls
       tokensSaved
       costSavedUsd
+      totalDurationMs
     }
   }
 `)

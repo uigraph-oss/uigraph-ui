@@ -85,6 +85,7 @@ export function DashboardInsightsPageInner() {
           tokensSaved: r.tokensSaved,
           estimatedCostUsd: 0,
           costSavedUsd: r.costSavedUsd,
+          totalDurationMs: r.totalDurationMs,
         }))
       : dimension === 'client'
         ? (byClient.data?.costSavingsByClient ?? []).map((r) => ({
@@ -95,6 +96,7 @@ export function DashboardInsightsPageInner() {
             tokensSaved: r.tokensSaved,
             estimatedCostUsd: 0,
             costSavedUsd: r.costSavedUsd,
+            totalDurationMs: r.totalDurationMs,
           }))
         : dimension === 'model'
           ? (byModel.data?.costSavingsByModel ?? []).map((r) => ({
@@ -112,6 +114,7 @@ export function DashboardInsightsPageInner() {
               tokensSaved: r.tokensSaved,
               estimatedCostUsd: 0,
               costSavedUsd: r.costSavedUsd,
+              totalDurationMs: r.totalDurationMs,
             }))
 
   const isEmpty =
@@ -152,7 +155,15 @@ export function DashboardInsightsPageInner() {
             totalTokensSaved={summary.data!.costSavingsSummary.totalTokensSaved}
             costSavedUsd={summary.data!.costSavingsSummary.costSavedUsd}
             uniqueUsersCount={summary.data!.costSavingsSummary.uniqueUsersCount}
+            timeSavedMs={summary.data!.costSavingsSummary.timeSavedMs}
+            totalDurationMs={summary.data!.costSavingsSummary.totalDurationMs}
           />
+
+          <p className="text-paragraph text-center text-xs">
+            &ldquo;Time Saved&rdquo; is an estimate of the codebase-search time
+            an agent would have spent without uigraph, compared against
+            uigraph&apos;s measured resolve time.
+          </p>
 
           <SavingsComparison
             costServedUsd={summary.data!.costSavingsSummary.costServedUsd}

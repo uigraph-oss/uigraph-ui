@@ -1,4 +1,5 @@
 import { Bot } from 'lucide-react'
+import { formatDuration } from '../lib/format-duration'
 
 export type BreakdownRow = {
   key: string
@@ -8,6 +9,7 @@ export type BreakdownRow = {
   tokensSaved: number
   estimatedCostUsd: number
   costSavedUsd: number
+  totalDurationMs?: number
 }
 
 function NameCell({ row }: { row: BreakdownRow }) {
@@ -84,6 +86,7 @@ export function SavingsBreakdownTable({
           <th className="px-6 py-3 font-medium">Name</th>
           <th className="px-6 py-3 text-right font-medium">Calls</th>
           <th className="px-6 py-3 text-right font-medium">Tokens Saved</th>
+          <th className="px-6 py-3 text-right font-medium">Resolve Time</th>
           <th className="px-6 py-3 text-right font-medium">$ Saved</th>
           <th className="px-6 py-3 font-medium">% of Total</th>
         </tr>
@@ -104,6 +107,11 @@ export function SavingsBreakdownTable({
               </td>
               <td className="text-foreground px-6 py-3 text-right tabular-nums">
                 {row.tokensSaved.toLocaleString()}
+              </td>
+              <td className="text-foreground px-6 py-3 text-right tabular-nums">
+                {row.totalDurationMs === undefined
+                  ? '—'
+                  : formatDuration(row.totalDurationMs)}
               </td>
               <td className="text-success px-6 py-3 text-right font-medium tabular-nums">
                 {usd(row.costSavedUsd)}
