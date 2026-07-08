@@ -1,22 +1,21 @@
 import {
-  Activity,
   Coins,
+  Gauge,
   PiggyBank,
+  Timer,
   TrendingUp,
-  Users,
   type LucideIcon,
 } from 'lucide-react'
-import {
-  costSavedPerUser,
-  projectedAnnualSavings,
-} from '../lib/derived-metrics'
+import { projectedAnnualSavings } from '../lib/derived-metrics'
+import { formatDuration } from '../lib/format-duration'
 
 type SavingsHeroCardsProps = {
   period: string
   totalCalls: number
   totalTokensSaved: number
   costSavedUsd: number
-  uniqueUsersCount: number
+  timeSavedMs: number
+  totalDurationMs: number
 }
 
 export function SavingsHeroCards({
@@ -24,43 +23,41 @@ export function SavingsHeroCards({
   totalCalls,
   totalTokensSaved,
   costSavedUsd,
-  uniqueUsersCount,
+  timeSavedMs,
+  totalDurationMs,
 }: SavingsHeroCardsProps) {
   const annual = projectedAnnualSavings(costSavedUsd, period)
-  const perUser = costSavedPerUser(costSavedUsd, uniqueUsersCount)
+  const avgResolveMs = totalCalls > 0 ? totalDurationMs / totalCalls : 0
 
   function usd(value: number) {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
   }
 
+  const cards = [
+    { icon: PiggyBank, label: 'Total Savings', value: usd(costSavedUsd) },
+    {
+      icon: Timer,
+      label: 'Time Saved (est.)',
+      value: formatDuration(timeSavedMs),
+    },
+    {
+      icon: Coins,
+      label: 'Tokens Saved',
+      value: totalTokensSaved.toLocaleString(),
+    },
+    {
+      icon: Gauge,
+      label: 'Avg Resolve Time',
+      value: formatDuration(avgResolveMs),
+    },
+    { icon: TrendingUp, label: 'Est. Annual Savings', value: usd(annual) },
+  ]
+
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-      <StatCard
-        icon={PiggyBank}
-        label="Cost Saved"
-        value={usd(costSavedUsd)}
-        highlight
-      />
-      <StatCard
-        icon={TrendingUp}
-        label="Projected Annual Savings"
-        value={usd(annual)}
-      />
-      <StatCard
-        icon={Coins}
-        label="Tokens Saved"
-        value={totalTokensSaved.toLocaleString()}
-      />
-      <StatCard
-        icon={Activity}
-        label="Total Calls"
-        value={totalCalls.toLocaleString()}
-      />
-      <StatCard
-        icon={Users}
-        label="Cost Saved / Active User"
-        value={perUser === null ? '—' : usd(perUser)}
-      />
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+      {cards.map((c) => (
+        <StatCard key={c.label} icon={c.icon} label={c.label} value={c.value} />
+      ))}
     </div>
   )
 }
@@ -69,43 +66,21 @@ function StatCard({
   icon,
   label,
   value,
-  highlight,
 }: {
   icon: LucideIcon
   label: string
   value: string
-  highlight?: boolean
 }) {
   const Icon = icon
   return (
-    <div
-      className={
-        highlight
-          ? 'border-primary/40 from-primary/10 relative overflow-hidden rounded-[12px] border bg-gradient-to-br to-transparent px-5 py-5'
-          : 'border-stock bg-shading/40 hover:border-stock/80 relative overflow-hidden rounded-[12px] border px-5 py-5 transition-colors'
-      }
-    >
-      <div className="flex items-center justify-between">
-        <p className="text-paragraph text-xs font-medium tracking-wide uppercase">
+    <div className="border-stock bg-shading/40 hover:border-stock/80 rounded-xl border p-5 transition-colors">
+      <div className="text-paragraph flex items-center gap-2">
+        <Icon className="size-4" />
+        <span className="text-xs font-medium tracking-wide uppercase">
           {label}
-        </p>
-        <span
-          className={
-            highlight
-              ? 'bg-primary/15 text-primary flex size-8 items-center justify-center rounded-lg'
-              : 'bg-muted/40 text-paragraph flex size-8 items-center justify-center rounded-lg'
-          }
-        >
-          <Icon className="size-4" />
         </span>
       </div>
-      <p
-        className={
-          highlight
-            ? 'text-primary mt-4 text-3xl font-semibold tracking-tight'
-            : 'text-foreground mt-4 text-3xl font-semibold tracking-tight'
-        }
-      >
+      <p className="text-foreground mt-3 text-2xl font-semibold tracking-tight">
         {value}
       </p>
     </div>

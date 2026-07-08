@@ -85,6 +85,7 @@ export function DashboardInsightsPageInner() {
           tokensSaved: r.tokensSaved,
           estimatedCostUsd: 0,
           costSavedUsd: r.costSavedUsd,
+          totalDurationMs: r.totalDurationMs,
         }))
       : dimension === 'client'
         ? (byClient.data?.costSavingsByClient ?? []).map((r) => ({
@@ -95,6 +96,7 @@ export function DashboardInsightsPageInner() {
             tokensSaved: r.tokensSaved,
             estimatedCostUsd: 0,
             costSavedUsd: r.costSavedUsd,
+            totalDurationMs: r.totalDurationMs,
           }))
         : dimension === 'model'
           ? (byModel.data?.costSavingsByModel ?? []).map((r) => ({
@@ -112,6 +114,7 @@ export function DashboardInsightsPageInner() {
               tokensSaved: r.tokensSaved,
               estimatedCostUsd: 0,
               costSavedUsd: r.costSavedUsd,
+              totalDurationMs: r.totalDurationMs,
             }))
 
   const isEmpty =
@@ -151,7 +154,8 @@ export function DashboardInsightsPageInner() {
             totalCalls={summary.data!.costSavingsSummary.totalCalls}
             totalTokensSaved={summary.data!.costSavingsSummary.totalTokensSaved}
             costSavedUsd={summary.data!.costSavingsSummary.costSavedUsd}
-            uniqueUsersCount={summary.data!.costSavingsSummary.uniqueUsersCount}
+            timeSavedMs={summary.data!.costSavingsSummary.timeSavedMs}
+            totalDurationMs={summary.data!.costSavingsSummary.totalDurationMs}
           />
 
           <SavingsComparison
