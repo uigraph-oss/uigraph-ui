@@ -159,12 +159,6 @@ export function DashboardInsightsPageInner() {
             totalDurationMs={summary.data!.costSavingsSummary.totalDurationMs}
           />
 
-          <p className="text-paragraph text-center text-xs">
-            &ldquo;Time Saved&rdquo; is an estimate of the codebase-search time
-            an agent would have spent without uigraph, compared against
-            uigraph&apos;s measured resolve time.
-          </p>
-
           <SavingsComparison
             costServedUsd={summary.data!.costSavingsSummary.costServedUsd}
             costRawUsd={summary.data!.costSavingsSummary.costRawUsd}

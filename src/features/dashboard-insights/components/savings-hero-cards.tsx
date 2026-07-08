@@ -1,10 +1,4 @@
-import {
-  Activity,
-  Coins,
-  PiggyBank,
-  Timer,
-  type LucideIcon,
-} from 'lucide-react'
+import { Coins, PiggyBank, Timer, type LucideIcon } from 'lucide-react'
 import {
   costSavedPerUser,
   projectedAnnualSavings,
@@ -44,9 +38,14 @@ export function SavingsHeroCards({
       : `${usd(annual)} / yr · ${usd(perUser)} / user`
   const timeSub =
     totalCalls > 0 ? `${formatDuration(avgResolveMs)} avg resolve` : undefined
+  const avgTokensPerCall = totalCalls > 0 ? totalTokensSaved / totalCalls : 0
+  const tokensSub =
+    totalCalls > 0
+      ? `~${Math.round(avgTokensPerCall).toLocaleString()} / call across ${totalCalls.toLocaleString()} calls`
+      : undefined
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-3">
       <StatCard
         icon={PiggyBank}
         label="Cost Saved"
@@ -65,11 +64,7 @@ export function SavingsHeroCards({
         icon={Coins}
         label="Tokens Saved"
         value={totalTokensSaved.toLocaleString()}
-      />
-      <StatCard
-        icon={Activity}
-        label="Total Calls"
-        value={totalCalls.toLocaleString()}
+        sub={tokensSub}
       />
     </div>
   )
@@ -93,8 +88,8 @@ function StatCard({
     <div
       className={
         highlight
-          ? 'border-primary/40 from-primary/10 relative overflow-hidden rounded-[12px] border bg-gradient-to-br to-transparent px-5 py-5'
-          : 'border-stock bg-shading/40 hover:border-stock/80 relative overflow-hidden rounded-[12px] border px-5 py-5 transition-colors'
+          ? 'border-primary/40 from-primary/10 relative overflow-hidden rounded-[12px] border bg-gradient-to-br to-transparent px-5 py-4'
+          : 'border-stock bg-shading/40 hover:border-stock/80 relative overflow-hidden rounded-[12px] border px-5 py-4 transition-colors'
       }
     >
       <div className="flex items-center justify-between">
@@ -114,13 +109,13 @@ function StatCard({
       <p
         className={
           highlight
-            ? 'text-primary mt-4 text-3xl font-semibold tracking-tight'
-            : 'text-foreground mt-4 text-3xl font-semibold tracking-tight'
+            ? 'text-primary mt-3 text-2xl font-semibold tracking-tight'
+            : 'text-foreground mt-3 text-2xl font-semibold tracking-tight'
         }
       >
         {value}
       </p>
-      {sub ? <p className="text-paragraph mt-1.5 text-xs">{sub}</p> : null}
+      {sub ? <p className="text-paragraph mt-1 text-xs">{sub}</p> : null}
     </div>
   )
 }
