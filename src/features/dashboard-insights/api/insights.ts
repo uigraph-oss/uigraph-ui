@@ -61,6 +61,7 @@ export const COST_SAVINGS_BY_MODEL = graphql(`
       provider
       totalCalls
       tokensSaved
+      costRawUsd
       costSavedUsd
     }
   }

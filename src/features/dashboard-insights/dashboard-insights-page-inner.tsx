@@ -83,6 +83,7 @@ export function DashboardInsightsPageInner() {
           label: r.toolName,
           totalCalls: r.totalCalls,
           tokensSaved: r.tokensSaved,
+          estimatedCostUsd: 0,
           costSavedUsd: r.costSavedUsd,
         }))
       : dimension === 'client'
@@ -91,6 +92,7 @@ export function DashboardInsightsPageInner() {
             label: r.clientName,
             totalCalls: r.totalCalls,
             tokensSaved: r.tokensSaved,
+            estimatedCostUsd: 0,
             costSavedUsd: r.costSavedUsd,
           }))
         : dimension === 'model'
@@ -99,6 +101,7 @@ export function DashboardInsightsPageInner() {
               label: r.displayName,
               totalCalls: r.totalCalls,
               tokensSaved: r.tokensSaved,
+              estimatedCostUsd: r.costRawUsd,
               costSavedUsd: r.costSavedUsd,
             }))
           : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
@@ -106,6 +109,7 @@ export function DashboardInsightsPageInner() {
               label: r.displayName,
               totalCalls: r.totalCalls,
               tokensSaved: r.tokensSaved,
+              estimatedCostUsd: 0,
               costSavedUsd: r.costSavedUsd,
             }))
 
@@ -181,7 +185,7 @@ export function DashboardInsightsPageInner() {
                   value="client"
                   className="hover:bg-muted hover:text-foreground px-5"
                 >
-                  By Coding Tool
+                  By Agent
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="model"
@@ -219,7 +223,10 @@ export function DashboardInsightsPageInner() {
                 </Alert>
               </div>
             ) : null}
-            <SavingsBreakdownTable rows={breakdownRows} />
+            <SavingsBreakdownTable
+              rows={breakdownRows}
+              variant={dimension === 'model' ? 'model' : 'default'}
+            />
           </div>
         </div>
       )}
