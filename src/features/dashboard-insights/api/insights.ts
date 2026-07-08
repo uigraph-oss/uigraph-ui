@@ -42,6 +42,17 @@ export const COST_SAVINGS_BY_TOOL = graphql(`
   }
 `)
 
+export const COST_SAVINGS_BY_CLIENT = graphql(`
+  query CostSavingsByClient($orgId: ID!, $period: String, $modelId: String) {
+    costSavingsByClient(orgId: $orgId, period: $period, modelId: $modelId) {
+      clientName
+      totalCalls
+      tokensSaved
+      costSavedUsd
+    }
+  }
+`)
+
 export const COST_SAVINGS_BY_MODEL = graphql(`
   query CostSavingsByModel($orgId: ID!, $period: String) {
     costSavingsByModel(orgId: $orgId, period: $period) {
@@ -50,6 +61,7 @@ export const COST_SAVINGS_BY_MODEL = graphql(`
       provider
       totalCalls
       tokensSaved
+      costRawUsd
       costSavedUsd
     }
   }

@@ -8,6 +8,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useState } from 'react'
 import {
+  COST_SAVINGS_BY_CLIENT,
   COST_SAVINGS_BY_MODEL,
   COST_SAVINGS_BY_TOOL,
   COST_SAVINGS_BY_USER,
@@ -24,8 +25,9 @@ import { SavingsExportButton } from './components/savings-export-button'
 import { SavingsFilters } from './components/savings-filters'
 import { SavingsHeroCards } from './components/savings-hero-cards'
 import { SavingsTrendChart } from './components/savings-trend-chart'
+import { agentDisplay } from './lib/agent-display'
 
-type BreakdownDimension = 'tool' | 'model' | 'user'
+type BreakdownDimension = 'tool' | 'client' | 'model' | 'user'
 
 export function DashboardInsightsPageInner() {
   const orgId = useCurrentOrganization().id
@@ -44,6 +46,9 @@ export function DashboardInsightsPageInner() {
   const byTool = useQuery(COST_SAVINGS_BY_TOOL, {
     variables: { orgId, period, modelId },
   })
+  const byClient = useQuery(COST_SAVINGS_BY_CLIENT, {
+    variables: { orgId, period, modelId },
+  })
   const byModel = useQuery(COST_SAVINGS_BY_MODEL, {
     variables: { orgId, period },
   })
@@ -55,12 +60,14 @@ export function DashboardInsightsPageInner() {
     summary.loading ||
     timeseries.loading ||
     byTool.loading ||
+    byClient.loading ||
     byModel.loading ||
     byUser.loading
   const error =
     summary.error ||
     timeseries.error ||
     byTool.error ||
+    byClient.error ||
     byModel.error ||
     byUser.error
 
@@ -76,23 +83,36 @@ export function DashboardInsightsPageInner() {
           label: r.toolName,
           totalCalls: r.totalCalls,
           tokensSaved: r.tokensSaved,
+          estimatedCostUsd: 0,
           costSavedUsd: r.costSavedUsd,
         }))
-      : dimension === 'model'
-        ? (byModel.data?.costSavingsByModel ?? []).map((r) => ({
-            key: r.modelId,
-            label: r.displayName,
+      : dimension === 'client'
+        ? (byClient.data?.costSavingsByClient ?? []).map((r) => ({
+            key: r.clientName,
+            label: agentDisplay(r.clientName).label,
+            iconUrl: agentDisplay(r.clientName).iconUrl,
             totalCalls: r.totalCalls,
             tokensSaved: r.tokensSaved,
+            estimatedCostUsd: 0,
             costSavedUsd: r.costSavedUsd,
           }))
-        : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
-            key: r.userId ?? r.serviceAccountId ?? r.displayName,
-            label: r.displayName,
-            totalCalls: r.totalCalls,
-            tokensSaved: r.tokensSaved,
-            costSavedUsd: r.costSavedUsd,
-          }))
+        : dimension === 'model'
+          ? (byModel.data?.costSavingsByModel ?? []).map((r) => ({
+              key: r.modelId,
+              label: r.displayName,
+              totalCalls: r.totalCalls,
+              tokensSaved: r.tokensSaved,
+              estimatedCostUsd: r.costRawUsd,
+              costSavedUsd: r.costSavedUsd,
+            }))
+          : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
+              key: r.userId ?? r.serviceAccountId ?? r.displayName,
+              label: r.displayName,
+              totalCalls: r.totalCalls,
+              tokensSaved: r.tokensSaved,
+              estimatedCostUsd: 0,
+              costSavedUsd: r.costSavedUsd,
+            }))
 
   const isEmpty =
     !loading &&
@@ -146,8 +166,11 @@ export function DashboardInsightsPageInner() {
             }))}
           />
 
-          <div className="border-stock rounded-[12px] border">
-            <div className="border-stock flex items-center justify-between border-b px-6 py-4">
+          <div className="border-stock bg-shading/40 rounded-[12px] border">
+            <div className="border-stock flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4">
+              <p className="text-paragraph mr-2 text-sm font-medium">
+                Breakdown
+              </p>
               <ToggleGroup
                 type="single"
                 value={dimension}
@@ -161,6 +184,12 @@ export function DashboardInsightsPageInner() {
                   className="hover:bg-muted hover:text-foreground px-5"
                 >
                   By Tool
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="client"
+                  className="hover:bg-muted hover:text-foreground px-5"
+                >
+                  By Agent
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="model"
@@ -187,7 +216,17 @@ export function DashboardInsightsPageInner() {
                 ]}
               />
             </div>
-            <SavingsBreakdownTable rows={breakdownRows} />
+            <SavingsBreakdownTable
+              rows={breakdownRows}
+              variant={dimension === 'model' ? 'model' : 'default'}
+            />
+            {dimension === 'model' ? (
+              <p className="text-paragraph border-stock border-t px-6 py-4 text-center text-xs">
+                This isn&apos;t actual uigraph MCP usage — it&apos;s an estimate
+                of what these tokens would have cost on each model if it had
+                been used.
+              </p>
+            ) : null}
           </div>
         </div>
       )}
