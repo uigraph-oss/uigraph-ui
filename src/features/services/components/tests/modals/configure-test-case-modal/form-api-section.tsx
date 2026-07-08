@@ -16,6 +16,7 @@ import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
 import { Controller } from 'react-hook-form'
+import { LuX } from 'react-icons/lu'
 import {
   deriveRestEndpointOptions,
   parseApiSpecValue,
@@ -464,9 +465,9 @@ export function FormApiSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto rounded-[6px] border border-red-500/30 bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
+              className="flex size-[55px] shrink-0 items-center justify-center rounded-[16px] border-0 bg-red-500/10 p-0 text-red-400/85 transition-all hover:bg-red-500/20 hover:text-red-300"
             >
-              ×
+              <LuX className="size-[28px]" strokeWidth={1.5} />
             </Button>
             <div className="col-span-full">
               <FieldMessage />
@@ -541,9 +542,9 @@ export function FormApiSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto rounded-[6px] border border-red-500/30 bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
+              className="flex size-[55px] shrink-0 items-center justify-center rounded-[16px] border-0 bg-red-500/10 p-0 text-red-400/85 transition-all hover:bg-red-500/20 hover:text-red-300"
             >
-              ×
+              <LuX className="size-[28px]" strokeWidth={1.5} />
             </Button>
             <div className="col-span-full">
               <FieldMessage />
@@ -743,9 +744,9 @@ export function FormApiSection({ form }: { form: FormType }) {
                   { shouldDirty: true, shouldValidate: true }
                 )
               }}
-              className="h-auto rounded-[6px] border border-red-500/30 bg-transparent px-[10px] py-[6px] text-[13px] text-[#ef4444] hover:bg-transparent"
+              className="flex size-[55px] shrink-0 items-center justify-center rounded-[16px] border-0 bg-red-500/10 p-0 text-red-400/85 transition-all hover:bg-red-500/20 hover:text-red-300"
             >
-              ×
+              <LuX className="size-[28px]" strokeWidth={1.5} />
             </Button>
             <div className="col-span-full">
               <FieldMessage />
