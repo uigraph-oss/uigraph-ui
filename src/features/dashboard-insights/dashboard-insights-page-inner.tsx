@@ -154,7 +154,6 @@ export function DashboardInsightsPageInner() {
             totalCalls={summary.data!.costSavingsSummary.totalCalls}
             totalTokensSaved={summary.data!.costSavingsSummary.totalTokensSaved}
             costSavedUsd={summary.data!.costSavingsSummary.costSavedUsd}
-            uniqueUsersCount={summary.data!.costSavingsSummary.uniqueUsersCount}
             timeSavedMs={summary.data!.costSavingsSummary.timeSavedMs}
             totalDurationMs={summary.data!.costSavingsSummary.totalDurationMs}
           />
