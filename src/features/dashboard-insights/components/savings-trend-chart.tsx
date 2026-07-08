@@ -15,6 +15,17 @@ const chartConfig: ChartConfig = {
   costSavedUsd: { label: 'Cost Saved (USD)', color: 'var(--primary)' },
 }
 
+const axisFormat = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+})
+
+const tooltipFormat = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+})
+
 export function SavingsTrendChart({ data }: { data: TrendPoint[] }) {
   return (
     <ChartContainer config={chartConfig} className="h-[280px] w-full">
@@ -22,11 +33,19 @@ export function SavingsTrendChart({ data }: { data: TrendPoint[] }) {
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
-          tickFormatter={(value: string) => value.slice(5)}
+          tickFormatter={(value: string) => axisFormat.format(new Date(value))}
           tickLine={false}
           axisLine={false}
         />
-        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(value) =>
+                tooltipFormat.format(new Date(value as string))
+              }
+            />
+          }
+        />
         <Area
           dataKey="costSavedUsd"
           type="monotone"
