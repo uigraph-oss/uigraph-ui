@@ -470,7 +470,14 @@ export function TestRunExecutionPage() {
           orgId: orgId!,
           serviceId,
           id: existingResult.testRunResultId,
-          input,
+          input: {
+            status,
+            blockedReason: data.blockedReason,
+            notes: data.notes,
+            responseStatus: data.responseStatus,
+            responseBody: data.responseBody,
+            screenshotUrls: [...existingAssetIds, ...newAssetIds],
+          },
         },
       })
     } else {
