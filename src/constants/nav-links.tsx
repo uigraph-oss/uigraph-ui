@@ -1,5 +1,4 @@
 import { SettingsIcon, UserIcon, UserListIcon } from '@/assets/svgs'
-import { env } from '@/env'
 import { generateNavItems } from '@/utils/nav-items'
 import { RoboticIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -66,9 +65,6 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     label: 'Insights',
     icon: <GoGraph />,
     nested: true,
-    hidden: !(
-      env.VITE_FEATURE_ENABLE_INSIGHTS || env.VITE_DEPLOY_ENV === 'local'
-    ),
   },
   {
     id: '/settings',
