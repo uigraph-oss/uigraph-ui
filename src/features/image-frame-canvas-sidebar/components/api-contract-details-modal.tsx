@@ -183,7 +183,7 @@ function ApiContractDetailsModalContent({
       footerAlign="between"
       onFooterSubmitClick={() =>
         window.open(
-          `/services/${endpoint.serviceId}/apis/${endpoint.apiGroupId}`
+          `/services/${endpoint.serviceId}/apis/${endpoint.apiGroupId}?endpointId=${endpoint.id}`
         )
       }
     >
