@@ -61,8 +61,8 @@ function OrgOnboardingWizard() {
   const [step, setStep] = useState<Step>('welcome')
 
   return (
-    <div className="flex max-h-[85vh] flex-col overflow-y-auto p-8">
-      <div className="mb-6 flex flex-col items-center gap-4">
+    <div className="flex max-h-[85vh] flex-col p-8">
+      <div className="mb-6 flex shrink-0 flex-col items-center gap-4">
         <UiGraphLogo className="h-11 w-11" />
         <StepDots step={step} />
       </div>
@@ -135,15 +135,15 @@ function TeamsStep() {
   }
 
   return (
-    <div>
-      <div className="mb-6 text-center">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="mb-6 shrink-0 text-center">
         <DialogTitle className="text-2xl font-semibold">Add Teams</DialogTitle>
         <DialogDescription className="text-paragraph mx-auto mt-2 max-w-sm text-sm leading-relaxed">
           Create at least one team to organize your organization.
         </DialogDescription>
       </div>
 
-      <div className="space-y-2">
+      <div className="shrink-0 space-y-2">
         <Label htmlFor="onboarding-team-name">Team name</Label>
         <div className="flex items-stretch gap-2">
           <Input
@@ -172,13 +172,13 @@ function TeamsStep() {
       </div>
 
       {teams.length > 0 && (
-        <ul className="mt-5 space-y-2">
+        <ul className="mt-5 -mr-8 min-h-0 flex-1 space-y-2 overflow-y-auto [mask-image:linear-gradient(to_bottom,transparent,black_0.75rem,black_calc(100%-0.75rem),transparent)] py-2 pr-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/15 [&::-webkit-scrollbar-track]:bg-transparent">
           {teams.map((team) => (
             <li
               key={team.teamId}
               className="border-stock flex items-center gap-3 rounded-xl border p-3 text-sm"
             >
-              <span className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <span className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
                 <Check className="size-4" />
               </span>
               {team.teamName}
@@ -189,7 +189,7 @@ function TeamsStep() {
 
       <Button
         preset="primary"
-        className="mt-8 w-full"
+        className="mt-6 w-full shrink-0"
         disabled={teams.length === 0 || isFinishing}
         onClick={handleFinish}
       >
