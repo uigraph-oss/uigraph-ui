@@ -1,5 +1,14 @@
 import { graphql } from '@/api'
 
+export type ServiceStats = {
+  serviceId: string
+  endpointCount: number
+  diagramCount: number
+  dbTableCount: number
+  docCount: number
+  testCaseCount: number
+}
+
 export type DashboardService = {
   id: string
   orgId: string
@@ -19,6 +28,7 @@ export type DashboardService = {
   metadata?: string | null
   createdBy: string
   updatedBy?: string | null
+  stats?: ServiceStats | null
   createdAt: string
   updatedAt: string
 }
@@ -64,6 +74,14 @@ export const SERVICES = graphql(`
         metadata
         createdBy
         updatedBy
+        stats {
+          serviceId
+          endpointCount
+          diagramCount
+          dbTableCount
+          docCount
+          testCaseCount
+        }
         createdAt
         updatedAt
       }
@@ -92,6 +110,14 @@ export const SERVICE = graphql(`
       metadata
       createdBy
       updatedBy
+      stats {
+        serviceId
+        endpointCount
+        diagramCount
+        dbTableCount
+        docCount
+        testCaseCount
+      }
       createdAt
       updatedAt
     }
