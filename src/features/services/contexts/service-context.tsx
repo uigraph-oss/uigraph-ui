@@ -11,7 +11,7 @@ export const [ServiceContextProvider, useServiceContext] = createContext(
     const organization = useCurrentOrganization()
     const orgId = organization.id
     const { createService, updateService, deleteService } =
-      useDashboardServicesList(serviceId)
+      useDashboardServicesList()
 
     const { data, loading } = useQuery(SERVICE, {
       variables: { orgId: orgId!, id: serviceId },

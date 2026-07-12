@@ -14,8 +14,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import type { ServiceStatsRow } from '@/features/services/api/service-stats'
-import type { DashboardService } from '@/features/services/api/services'
+import type {
+  DashboardService,
+  ServiceStats,
+} from '@/features/services/api/services'
 import { cn } from '@/lib/utils'
 import { objectOmitNull } from 'daily-code'
 import { format } from 'date-fns'
@@ -27,7 +29,7 @@ import { ConfigureServiceModal } from './configure-service-modal'
 interface ServiceCardProps {
   service: DashboardService
   index?: number
-  stats?: ServiceStatsRow
+  stats?: ServiceStats
   statsLoading?: boolean
   deleteService: () => Promise<unknown>
   updateService: (data: {

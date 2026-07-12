@@ -1,13 +1,10 @@
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { MEMBERS } from '@/features/dashboard-settings/api/members'
 import {
-  SERVICE_STATS,
-  type ServiceStatsRow,
-} from '@/features/services/api/service-stats'
-import {
   CREATE_SERVICE,
   DELETE_SERVICE,
   SERVICES,
+  type ServiceStats,
   UPDATE_SERVICE,
 } from '@/features/services/api/services'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
@@ -17,7 +14,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo, useState } from 'react'
 
-export function useDashboardServicesList(serviceId?: string) {
+export function useDashboardServicesList() {
   const organization = useCurrentOrganization()
   const orgId = organization.id
 
@@ -44,22 +41,15 @@ export function useDashboardServicesList(serviceId?: string) {
     skip: !orgId,
   })
 
-  const { data: statsData, loading: statsLoading } = useQuery(SERVICE_STATS, {
-    variables: { orgId: orgId!, serviceId },
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId,
-    errorPolicy: 'ignore',
-  })
-
   const statsByServiceId = useMemo(() => {
-    const m = new Map<string, ServiceStatsRow>()
-    for (const row of arrayNonNullable(statsData?.serviceStats)) {
-      if (row?.serviceId) {
-        m.set(row.serviceId, row)
+    const m = new Map<string, ServiceStats>()
+    for (const item of arrayNonNullable(data?.services.items)) {
+      if (item?.stats?.serviceId) {
+        m.set(item.stats.serviceId, item.stats)
       }
     }
     return m
-  }, [statsData?.serviceStats])
+  }, [data?.services.items])
 
   const teamsData = useQuery(TEAMS, {
     fetchPolicy: 'cache-first',
@@ -106,7 +96,7 @@ export function useDashboardServicesList(serviceId?: string) {
   return {
     orgId,
     isServicesLoading: loading && !data?.services,
-    isStatsLoading: statsLoading && !statsData?.serviceStats,
+    isStatsLoading: loading && !data?.services,
     services,
     totalCount: data?.services.totalCount ?? 0,
     statsByServiceId,
