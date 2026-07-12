@@ -148,7 +148,7 @@ export function DashboardInsightsPageInner() {
       ) : isEmpty ? (
         <SavingsEmptyState />
       ) : (
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 pb-6">
           <SavingsHeroCards
             period={period}
             totalCalls={summary.data!.costSavingsSummary.totalCalls}
