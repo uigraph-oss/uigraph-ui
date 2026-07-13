@@ -75,6 +75,8 @@ export function DashboardInsightsPageInner() {
     value: m.modelId,
     label: m.displayName,
   }))
+  const modelLabel =
+    modelOptions.find((m) => m.value === modelId)?.label ?? modelId
 
   const breakdownRows: BreakdownRow[] =
     dimension === 'tool'
@@ -163,6 +165,7 @@ export function DashboardInsightsPageInner() {
           <SavingsComparison
             costServedUsd={summary.data!.costSavingsSummary.costServedUsd}
             costRawUsd={summary.data!.costSavingsSummary.costRawUsd}
+            modelLabel={modelLabel}
           />
 
           <SavingsTrendChart

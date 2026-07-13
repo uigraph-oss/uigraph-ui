@@ -49,7 +49,7 @@ export function SavingsHeroCards({
       icon: Timer,
       label: 'Time Saved (est.)',
       value: formatDuration(timeSavedMs),
-      hint: 'Estimated agent time (raw tokens ÷ ~75 tokens/sec) minus the actual MCP resolve time.',
+      hint: 'Estimated agent time (raw tokens ÷ ~75 tps) minus the actual MCP resolve time.',
     },
     {
       icon: Coins,
