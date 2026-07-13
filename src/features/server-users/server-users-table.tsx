@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import {
   Tooltip,
@@ -76,6 +76,12 @@ function buildColumns(
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
+            {row.original.avatarUrl && (
+              <AvatarImage
+                src={row.original.avatarUrl}
+                alt={row.original.name || row.original.email}
+              />
+            )}
             <AvatarFallback className="bg-blue-500/20 text-xs font-medium text-blue-300">
               {getInitials(row.original.name || row.original.email)}
             </AvatarFallback>

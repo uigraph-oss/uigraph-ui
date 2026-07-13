@@ -112,6 +112,10 @@ export function DashboardInsightsPageInner() {
           : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
               key: r.userId ?? r.serviceAccountId ?? r.displayName,
               label: r.displayName,
+              iconUrl: r.avatarUrl ?? undefined,
+              accountType: r.serviceAccountId
+                ? ('service' as const)
+                : ('user' as const),
               totalCalls: r.totalCalls,
               tokensSaved: r.tokensSaved,
               estimatedCostUsd: 0,

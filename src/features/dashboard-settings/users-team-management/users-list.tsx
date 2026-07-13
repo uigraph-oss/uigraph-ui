@@ -54,6 +54,7 @@ export function UsersList({ teamId }: { teamId?: string }) {
       userId: m.userId,
       email: m.email,
       name: m.name,
+      avatarUrl: m.avatarUrl,
       role: m.role,
       status: 'Active',
       teamId: m.teamId,

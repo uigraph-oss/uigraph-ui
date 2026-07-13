@@ -4,6 +4,7 @@ export type OrgMemberRow = {
   userId: string
   email: string
   name: string
+  avatarUrl?: string | null
   role: string
   status: string
   teamId?: string | null
@@ -16,6 +17,7 @@ export const MEMBERS = graphql(`
       userId
       email
       name
+      avatarUrl
       role
       teamId
     }
