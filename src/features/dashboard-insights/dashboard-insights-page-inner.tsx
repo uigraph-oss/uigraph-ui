@@ -34,7 +34,7 @@ export function DashboardInsightsPageInner() {
   const [{ period: periodParam, model: modelParam }, setSearchParams] =
     useSearchParamsState('period', 'model')
   const period = periodParam ?? '7d'
-  const modelId = modelParam && modelParam !== 'all' ? modelParam : undefined
+  const modelId = modelParam ?? 'claude-opus-4-8'
   const [dimension, setDimension] = useState<BreakdownDimension>('tool')
 
   const summary = useQuery(COST_SAVINGS_SUMMARY, {
@@ -131,9 +131,11 @@ export function DashboardInsightsPageInner() {
         <SavingsFilters
           period={period}
           onPeriodChange={(value) => setSearchParams({ period: value })}
-          modelId={modelParam ?? 'all'}
+          modelId={modelId}
           onModelChange={(value) =>
-            setSearchParams({ model: value === 'all' ? null : value })
+            setSearchParams({
+              model: value === 'claude-opus-4-8' ? null : value,
+            })
           }
           modelOptions={modelOptions}
         />

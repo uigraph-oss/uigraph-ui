@@ -56,7 +56,6 @@ export function SavingsFilters({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Models</SelectItem>
           {modelOptions.map((m) => (
             <SelectItem key={m.value} value={m.value}>
               {m.label}
