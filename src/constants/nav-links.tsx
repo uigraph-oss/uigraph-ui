@@ -48,6 +48,12 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     nested: true,
   },
   {
+    id: '/dashboard/insights',
+    label: 'Insights',
+    icon: <GoGraph />,
+    nested: true,
+  },
+  {
     id: '/dashboard/catalog',
     label: 'Catalog',
     icon: <GoProjectTemplate />,
@@ -59,12 +65,6 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     icon: <HugeiconsIcon icon={RoboticIcon} size={30} strokeWidth={1} />,
     nested: true,
     hidden: true,
-  },
-  {
-    id: '/dashboard/insights',
-    label: 'Insights',
-    icon: <GoGraph />,
-    nested: true,
   },
   {
     id: '/settings',
