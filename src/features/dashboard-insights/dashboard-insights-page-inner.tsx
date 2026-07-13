@@ -130,7 +130,7 @@ export function DashboardInsightsPageInner() {
 
   return (
     <DashboardPageSectionLayout
-      title="Insights"
+      title="Savings Overview"
       description="Cost and token savings from using Claude/Cursor with the uigraph MCP server."
       crumbs={[{ to: '/dashboard/insights', label: 'Insights' }]}
       headerContent={
