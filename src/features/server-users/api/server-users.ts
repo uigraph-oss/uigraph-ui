@@ -7,6 +7,7 @@ export type ServerUser = {
   login: string
   disabled: boolean
   role: string
+  avatarUrl?: string | null
   lastSeenAt?: string | null
   createdAt: string
   updatedAt: string
@@ -23,6 +24,7 @@ export const SERVER_USERS = graphql(`
       login
       disabled
       role
+      avatarUrl
       lastSeenAt
       createdAt
       updatedAt

@@ -34,7 +34,7 @@ export function DashboardInsightsPageInner() {
   const [{ period: periodParam, model: modelParam }, setSearchParams] =
     useSearchParamsState('period', 'model')
   const period = periodParam ?? '7d'
-  const modelId = modelParam && modelParam !== 'all' ? modelParam : undefined
+  const modelId = modelParam ?? 'claude-opus-4-8'
   const [dimension, setDimension] = useState<BreakdownDimension>('tool')
 
   const summary = useQuery(COST_SAVINGS_SUMMARY, {
@@ -75,6 +75,8 @@ export function DashboardInsightsPageInner() {
     value: m.modelId,
     label: m.displayName,
   }))
+  const modelLabel =
+    modelOptions.find((m) => m.value === modelId)?.label ?? modelId
 
   const breakdownRows: BreakdownRow[] =
     dimension === 'tool'
@@ -110,6 +112,10 @@ export function DashboardInsightsPageInner() {
           : (byUser.data?.costSavingsByUser ?? []).map((r) => ({
               key: r.userId ?? r.serviceAccountId ?? r.displayName,
               label: r.displayName,
+              iconUrl: r.avatarUrl ?? undefined,
+              accountType: r.serviceAccountId
+                ? ('service' as const)
+                : ('user' as const),
               totalCalls: r.totalCalls,
               tokensSaved: r.tokensSaved,
               estimatedCostUsd: 0,
@@ -124,16 +130,18 @@ export function DashboardInsightsPageInner() {
 
   return (
     <DashboardPageSectionLayout
-      title="Insights"
+      title="Savings Overview"
       description="Cost and token savings from using Claude/Cursor with the uigraph MCP server."
       crumbs={[{ to: '/dashboard/insights', label: 'Insights' }]}
       headerContent={
         <SavingsFilters
           period={period}
           onPeriodChange={(value) => setSearchParams({ period: value })}
-          modelId={modelParam ?? 'all'}
+          modelId={modelId}
           onModelChange={(value) =>
-            setSearchParams({ model: value === 'all' ? null : value })
+            setSearchParams({
+              model: value === 'claude-opus-4-8' ? null : value,
+            })
           }
           modelOptions={modelOptions}
         />
@@ -161,6 +169,7 @@ export function DashboardInsightsPageInner() {
           <SavingsComparison
             costServedUsd={summary.data!.costSavingsSummary.costServedUsd}
             costRawUsd={summary.data!.costSavingsSummary.costRawUsd}
+            modelLabel={modelLabel}
           />
 
           <SavingsTrendChart

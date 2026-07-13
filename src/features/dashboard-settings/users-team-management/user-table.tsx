@@ -2,7 +2,7 @@
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import {
   Tooltip,
@@ -117,10 +117,11 @@ const userColumns = [
   columnHelper.accessor('email', {
     header: 'User',
     cell: ({ row }) => {
-      const { name, email } = row.original
+      const { name, email, avatarUrl } = row.original
       return (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
+            {avatarUrl && <AvatarImage src={avatarUrl} alt={name || email} />}
             <AvatarFallback className="bg-blue-500/20 text-xs font-medium text-blue-300">
               {getInitials(name || email)}
             </AvatarFallback>

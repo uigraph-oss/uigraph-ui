@@ -1,10 +1,11 @@
-import { Bot } from 'lucide-react'
+import { Bot, User } from 'lucide-react'
 import { formatDuration } from '../lib/format-duration'
 
 export type BreakdownRow = {
   key: string
   label: string
   iconUrl?: string
+  accountType?: 'service' | 'user'
   totalCalls: number
   tokensSaved: number
   estimatedCostUsd: number
@@ -13,16 +14,34 @@ export type BreakdownRow = {
 }
 
 function NameCell({ row }: { row: BreakdownRow }) {
+  const isAccount = row.accountType !== undefined
   return (
     <span className="flex items-center gap-2.5">
-      <span className="bg-muted/40 text-paragraph flex size-6 items-center justify-center overflow-hidden rounded-md">
-        {row.iconUrl ? (
-          <img src={row.iconUrl} alt="" className="size-3.5" />
-        ) : (
-          <Bot className="size-3.5" />
-        )}
-      </span>
+      {isAccount ? (
+        <span className="bg-muted/40 text-paragraph flex size-6 items-center justify-center overflow-hidden rounded-full">
+          {row.iconUrl ? (
+            <img src={row.iconUrl} alt="" className="size-full object-cover" />
+          ) : row.accountType === 'service' ? (
+            <Bot className="size-3.5" />
+          ) : (
+            <User className="size-3.5" />
+          )}
+        </span>
+      ) : (
+        <span className="bg-muted/40 text-paragraph flex size-6 items-center justify-center overflow-hidden rounded-md">
+          {row.iconUrl ? (
+            <img src={row.iconUrl} alt="" className="size-3.5" />
+          ) : (
+            <Bot className="size-3.5" />
+          )}
+        </span>
+      )}
       {row.label}
+      {row.accountType === 'service' ? (
+        <span className="bg-muted/40 text-paragraph rounded-full px-2 py-0.5 text-xs font-medium">
+          Service
+        </span>
+      ) : null}
     </span>
   )
 }

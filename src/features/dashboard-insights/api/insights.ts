@@ -81,6 +81,7 @@ export const COST_SAVINGS_BY_USER = graphql(`
       userId
       serviceAccountId
       displayName
+      avatarUrl
       totalCalls
       tokensSaved
       costSavedUsd

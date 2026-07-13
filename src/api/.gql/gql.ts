@@ -41,7 +41,7 @@ type Documents = {
     "\n  query CostSavingsByTool($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByTool(orgId: $orgId, period: $period, modelId: $modelId) {\n      toolName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": typeof types.CostSavingsByToolDocument,
     "\n  query CostSavingsByClient($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByClient(orgId: $orgId, period: $period, modelId: $modelId) {\n      clientName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": typeof types.CostSavingsByClientDocument,
     "\n  query CostSavingsByModel($orgId: ID!, $period: String) {\n    costSavingsByModel(orgId: $orgId, period: $period) {\n      modelId\n      displayName\n      provider\n      totalCalls\n      tokensSaved\n      costRawUsd\n      costSavedUsd\n    }\n  }\n": typeof types.CostSavingsByModelDocument,
-    "\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": typeof types.CostSavingsByUserDocument,
+    "\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      avatarUrl\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": typeof types.CostSavingsByUserDocument,
     "\n  query Canvas($orgId: ID!, $mapId: ID!) {\n    canvas(orgId: $orgId, mapId: $mapId) {\n      mapId\n      orgId\n      zoom\n      navigationX\n      navigationY\n      framePositions\n      updatedAt\n    }\n  }\n": typeof types.CanvasDocument,
     "\n  mutation UpsertCanvas($orgId: ID!, $mapId: ID!, $input: UpsertCanvasInput!) {\n    upsertCanvas(orgId: $orgId, mapId: $mapId, input: $input) {\n      mapId\n      orgId\n      zoom\n      navigationX\n      navigationY\n      framePositions\n      updatedAt\n    }\n  }\n": typeof types.UpsertCanvasDocument,
     "\n  query FocalPoints($orgId: ID!, $mapId: ID!, $frameId: ID!) {\n    focalPoints(orgId: $orgId, mapId: $mapId, frameId: $frameId) {\n      id\n      frameId\n      orgId\n      name\n      locationX\n      locationY\n      visibility\n      isActive\n      createdBy\n      updatedBy\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.FocalPointsDocument,
@@ -68,7 +68,7 @@ type Documents = {
     "\n  mutation UpdateMap($orgId: ID!, $id: ID!, $input: UpdateMapInput!) {\n    updateMap(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMapDocument,
     "\n  mutation DeleteMap($orgId: ID!, $id: ID!) {\n    deleteMap(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteMapDocument,
     "\n  query Me {\n    me {\n      userId\n      name\n      avatarUrl\n    }\n  }\n": typeof types.MeDocument,
-    "\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      role\n      teamId\n    }\n  }\n": typeof types.MembersDocument,
+    "\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      avatarUrl\n      role\n      teamId\n    }\n  }\n": typeof types.MembersDocument,
     "\n  mutation AddMember($orgId: ID!, $input: AddMemberInput!) {\n    addMember(orgId: $orgId, input: $input) {\n      userId\n    }\n  }\n": typeof types.AddMemberDocument,
     "\n  mutation UpdateMember($orgId: ID!, $userId: ID!, $input: UpdateMemberInput!) {\n    updateMember(orgId: $orgId, userId: $userId, input: $input) {\n      userId\n    }\n  }\n": typeof types.UpdateMemberDocument,
     "\n  mutation RemoveMember($orgId: ID!, $userId: ID!) {\n    removeMember(orgId: $orgId, userId: $userId)\n  }\n": typeof types.RemoveMemberDocument,
@@ -132,7 +132,7 @@ type Documents = {
     "\n  mutation UpsertLdap($input: UpsertLDAPInput!) {\n    upsertLDAP(input: $input)\n  }\n": typeof types.UpsertLdapDocument,
     "\n  mutation DeleteLdap {\n    deleteLDAP\n  }\n": typeof types.DeleteLdapDocument,
     "\n  mutation UpsertSaml($input: UpsertSAMLInput!) {\n    upsertSAML(input: $input)\n  }\n": typeof types.UpsertSamlDocument,
-    "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerUsersDocument,
+    "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      avatarUrl\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerUsersDocument,
     "\n  mutation CreateServerUser($input: CreateUserInput!) {\n    createUser(input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateServerUserDocument,
     "\n  mutation UpdateServerUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateServerUserDocument,
     "\n  mutation DisableServerUser($id: ID!) {\n    disableUser(id: $id)\n  }\n": typeof types.DisableServerUserDocument,
@@ -226,7 +226,7 @@ const documents: Documents = {
     "\n  query CostSavingsByTool($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByTool(orgId: $orgId, period: $period, modelId: $modelId) {\n      toolName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": types.CostSavingsByToolDocument,
     "\n  query CostSavingsByClient($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByClient(orgId: $orgId, period: $period, modelId: $modelId) {\n      clientName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": types.CostSavingsByClientDocument,
     "\n  query CostSavingsByModel($orgId: ID!, $period: String) {\n    costSavingsByModel(orgId: $orgId, period: $period) {\n      modelId\n      displayName\n      provider\n      totalCalls\n      tokensSaved\n      costRawUsd\n      costSavedUsd\n    }\n  }\n": types.CostSavingsByModelDocument,
-    "\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": types.CostSavingsByUserDocument,
+    "\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      avatarUrl\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n": types.CostSavingsByUserDocument,
     "\n  query Canvas($orgId: ID!, $mapId: ID!) {\n    canvas(orgId: $orgId, mapId: $mapId) {\n      mapId\n      orgId\n      zoom\n      navigationX\n      navigationY\n      framePositions\n      updatedAt\n    }\n  }\n": types.CanvasDocument,
     "\n  mutation UpsertCanvas($orgId: ID!, $mapId: ID!, $input: UpsertCanvasInput!) {\n    upsertCanvas(orgId: $orgId, mapId: $mapId, input: $input) {\n      mapId\n      orgId\n      zoom\n      navigationX\n      navigationY\n      framePositions\n      updatedAt\n    }\n  }\n": types.UpsertCanvasDocument,
     "\n  query FocalPoints($orgId: ID!, $mapId: ID!, $frameId: ID!) {\n    focalPoints(orgId: $orgId, mapId: $mapId, frameId: $frameId) {\n      id\n      frameId\n      orgId\n      name\n      locationX\n      locationY\n      visibility\n      isActive\n      createdBy\n      updatedBy\n      createdAt\n      updatedAt\n    }\n  }\n": types.FocalPointsDocument,
@@ -253,7 +253,7 @@ const documents: Documents = {
     "\n  mutation UpdateMap($orgId: ID!, $id: ID!, $input: UpdateMapInput!) {\n    updateMap(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMapDocument,
     "\n  mutation DeleteMap($orgId: ID!, $id: ID!) {\n    deleteMap(orgId: $orgId, id: $id)\n  }\n": types.DeleteMapDocument,
     "\n  query Me {\n    me {\n      userId\n      name\n      avatarUrl\n    }\n  }\n": types.MeDocument,
-    "\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      role\n      teamId\n    }\n  }\n": types.MembersDocument,
+    "\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      avatarUrl\n      role\n      teamId\n    }\n  }\n": types.MembersDocument,
     "\n  mutation AddMember($orgId: ID!, $input: AddMemberInput!) {\n    addMember(orgId: $orgId, input: $input) {\n      userId\n    }\n  }\n": types.AddMemberDocument,
     "\n  mutation UpdateMember($orgId: ID!, $userId: ID!, $input: UpdateMemberInput!) {\n    updateMember(orgId: $orgId, userId: $userId, input: $input) {\n      userId\n    }\n  }\n": types.UpdateMemberDocument,
     "\n  mutation RemoveMember($orgId: ID!, $userId: ID!) {\n    removeMember(orgId: $orgId, userId: $userId)\n  }\n": types.RemoveMemberDocument,
@@ -317,7 +317,7 @@ const documents: Documents = {
     "\n  mutation UpsertLdap($input: UpsertLDAPInput!) {\n    upsertLDAP(input: $input)\n  }\n": types.UpsertLdapDocument,
     "\n  mutation DeleteLdap {\n    deleteLDAP\n  }\n": types.DeleteLdapDocument,
     "\n  mutation UpsertSaml($input: UpsertSAMLInput!) {\n    upsertSAML(input: $input)\n  }\n": types.UpsertSamlDocument,
-    "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerUsersDocument,
+    "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      avatarUrl\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerUsersDocument,
     "\n  mutation CreateServerUser($input: CreateUserInput!) {\n    createUser(input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateServerUserDocument,
     "\n  mutation UpdateServerUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateServerUserDocument,
     "\n  mutation DisableServerUser($id: ID!) {\n    disableUser(id: $id)\n  }\n": types.DisableServerUserDocument,
@@ -509,7 +509,7 @@ export function graphql(source: "\n  query CostSavingsByModel($orgId: ID!, $peri
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n"): (typeof documents)["\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n"];
+export function graphql(source: "\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      avatarUrl\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n"): (typeof documents)["\n  query CostSavingsByUser($orgId: ID!, $period: String, $modelId: String) {\n    costSavingsByUser(orgId: $orgId, period: $period, modelId: $modelId) {\n      userId\n      serviceAccountId\n      displayName\n      avatarUrl\n      totalCalls\n      tokensSaved\n      costSavedUsd\n      totalDurationMs\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -617,7 +617,7 @@ export function graphql(source: "\n  query Me {\n    me {\n      userId\n      n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      role\n      teamId\n    }\n  }\n"): (typeof documents)["\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      role\n      teamId\n    }\n  }\n"];
+export function graphql(source: "\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      avatarUrl\n      role\n      teamId\n    }\n  }\n"): (typeof documents)["\n  query Members($orgId: ID!) {\n    members(orgId: $orgId) {\n      userId\n      email\n      name\n      avatarUrl\n      role\n      teamId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -873,7 +873,7 @@ export function graphql(source: "\n  mutation UpsertSaml($input: UpsertSAMLInput
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n"];
+export function graphql(source: "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      avatarUrl\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      avatarUrl\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
