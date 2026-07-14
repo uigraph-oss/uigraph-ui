@@ -25,30 +25,41 @@ function getNodeBounds(node: Node) {
 }
 
 export function handleOnNodeDrag(
-  event: MouseEvent,
+  _event: MouseEvent,
   inputNode: Node,
   rf: ReactFlowInstance
 ) {
   const nodes = rf.getNodes()
-  const position = rf.screenToFlowPosition({
-    x: event.clientX,
-    y: event.clientY,
-  })
 
   const prevGroup = nodes.find(
     (n) => n.type === 'group' && n.id === inputNode.parentId
   )
 
+  const absolutePosition = prevGroup
+    ? {
+        x: inputNode.position.x + prevGroup.position.x,
+        y: inputNode.position.y + prevGroup.position.y,
+      }
+    : { x: inputNode.position.x, y: inputNode.position.y }
+
+  const nodeWidth = inputNode.measured?.width ?? inputNode.width ?? 0
+  const nodeHeight = inputNode.measured?.height ?? inputNode.height ?? 0
+  const nodeCenter = {
+    x: absolutePosition.x + nodeWidth / 2,
+    y: absolutePosition.y + nodeHeight / 2,
+  }
+
   const groupArea = nodes.find((n) => {
     if (n.type !== 'group') return false
+    if (n.id === inputNode.id) return false
 
     const groupBounds = getNodeBounds(n)
 
     return (
-      position.x >= groupBounds.left &&
-      position.x <= groupBounds.right &&
-      position.y >= groupBounds.top &&
-      position.y <= groupBounds.bottom
+      nodeCenter.x >= groupBounds.left &&
+      nodeCenter.x <= groupBounds.right &&
+      nodeCenter.y >= groupBounds.top &&
+      nodeCenter.y <= groupBounds.bottom
     )
   })
 
