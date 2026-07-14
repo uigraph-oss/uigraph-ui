@@ -13,7 +13,7 @@ const textPresets = [
     icon: <LiaHeadingSolid />,
     fontSize: 24,
     fontWeight: 700,
-    color: '#1f2937',
+    color: '#f4f7fc',
   },
   {
     name: 'Subheading',
@@ -22,7 +22,7 @@ const textPresets = [
     icon: <LiaHeadingSolid />,
     fontSize: 20,
     fontWeight: 600,
-    color: '#374151',
+    color: '#d2d9e6',
   },
   {
     name: 'Body',
@@ -31,7 +31,7 @@ const textPresets = [
     icon: <RxText />,
     fontSize: 14,
     fontWeight: 400,
-    color: '#4b5563',
+    color: '#d2d9e6',
   },
   {
     name: 'Caption',
@@ -40,7 +40,7 @@ const textPresets = [
     icon: <RxText />,
     fontSize: 12,
     fontWeight: 400,
-    color: '#6b7280',
+    color: '#828da3',
   },
 ]
 
