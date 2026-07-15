@@ -143,6 +143,7 @@ export const [ChatSessionProvider, useChatSession] = createContext(
           sessionId,
           role: m.role as 'user' | 'assistant',
           content: messageText(m),
+          parts: m.parts,
           createdAt,
           status: messageStatus,
         }
