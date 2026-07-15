@@ -37,8 +37,7 @@ function paramSummary(input: unknown): string {
 
 export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
   const [isOpen, setIsOpen] = useState(false)
-  const label =
-    parts.length === 1 ? '1 tool call' : `${parts.length} tool calls`
+  const label = parts.map(toolName).join(', ')
   const isRunning = parts.some(
     (part) => part.state !== 'output-available' && part.state !== 'output-error'
   )
@@ -48,10 +47,13 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className="text-foreground/70 hover:text-foreground flex items-center gap-1 text-xs transition-colors"
+        className="text-foreground/70 hover:text-foreground flex items-start gap-1 text-left text-xs transition-colors"
       >
         <FiChevronRight
-          className={cn('size-3 transition-transform', isOpen && 'rotate-90')}
+          className={cn(
+            'mt-0.5 size-3 shrink-0 transition-transform',
+            isOpen && 'rotate-90'
+          )}
         />
         {isRunning ? (
           <TextShimmer as="span" duration={1.2} className="text-xs">

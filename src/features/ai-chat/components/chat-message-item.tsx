@@ -105,16 +105,30 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
                 )
               }
               if (isToolPart(part)) {
-                const prev = message.parts![index - 1]
-                if (prev && isToolPart(prev)) {
+                let p = index - 1
+                while (p >= 0) {
+                  const prev = message.parts![p]
+                  if (isToolPart(prev)) {
+                    break
+                  }
+                  if (prev.type === 'text' && prev.text.trim().length > 0) {
+                    break
+                  }
+                  p--
+                }
+                if (p >= 0 && isToolPart(message.parts![p])) {
                   return null
                 }
                 const group = []
                 for (let i = index; i < message.parts!.length; i++) {
-                  if (!isToolPart(message.parts![i])) {
+                  const cur = message.parts![i]
+                  if (isToolPart(cur)) {
+                    group.push(cur)
+                    continue
+                  }
+                  if (cur.type === 'text' && cur.text.trim().length > 0) {
                     break
                   }
-                  group.push(message.parts![i])
                 }
                 return <ToolCallGroup key={index} parts={group} />
               }
