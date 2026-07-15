@@ -1,3 +1,4 @@
+import { TextShimmer } from '@/components/ui/text-shimmer'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { FiChevronRight } from 'react-icons/fi'
@@ -38,18 +39,27 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
   const [isOpen, setIsOpen] = useState(false)
   const label =
     parts.length === 1 ? '1 tool call' : `${parts.length} tool calls`
+  const isRunning = parts.some(
+    (part) => part.state !== 'output-available' && part.state !== 'output-error'
+  )
 
   return (
     <div className="my-1">
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className="text-foreground/70 hover:text-foreground flex items-center gap-1 font-mono text-xs transition-colors"
+        className="text-foreground/70 hover:text-foreground flex items-center gap-1 text-xs transition-colors"
       >
         <FiChevronRight
           className={cn('size-3 transition-transform', isOpen && 'rotate-90')}
         />
-        {label}
+        {isRunning ? (
+          <TextShimmer as="span" duration={1.2} className="text-xs">
+            {label}
+          </TextShimmer>
+        ) : (
+          label
+        )}
       </button>
 
       {isOpen && (
