@@ -42,6 +42,25 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
     (part) => part.state !== 'output-available' && part.state !== 'output-error'
   )
 
+  if (parts.length === 1) {
+    const name = toolName(parts[0])
+    const summary = paramSummary(parts[0].input)
+    const single = summary ? `${name} · ${summary}` : name
+    return (
+      <div className="my-1">
+        {isRunning ? (
+          <TextShimmer as="span" duration={1.2} className="font-mono text-xs">
+            {single}
+          </TextShimmer>
+        ) : (
+          <span className="text-foreground/60 block font-mono text-xs">
+            {single}
+          </span>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="my-1">
       <button
