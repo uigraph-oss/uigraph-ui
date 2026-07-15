@@ -74,7 +74,7 @@ export function ChatSidebar({
 
   return (
     <aside className="border-stock bg-shading flex h-full min-h-0 flex-col border-r">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between pt-3 pr-3 pb-2 pl-4">
         <h2 className="text-lg font-semibold text-[#F4F7FC]">Chats</h2>
 
         <Button
@@ -95,7 +95,7 @@ export function ChatSidebar({
         <SectionLoader label="Loading sessions" className="h-full" />
       ) : (
         <ScrollArea className="min-h-0 flex-1">
-          <div className="space-y-0.5 p-2">
+          <div className="space-y-0.5 px-1 pt-1 pb-2">
             {resolvedSessions.map((item) => {
               const isActive = activeSessionId === item.sessionId
               const isMutating = mutatingSessionId === item.sessionId
