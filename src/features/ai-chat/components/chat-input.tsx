@@ -10,6 +10,7 @@ export function ChatInput() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    if (!canSend) return
     await sendMessage()
   }
 
@@ -37,8 +38,7 @@ export function ChatInput() {
           }}
           placeholder="Ask about your architecture..."
           rows={1}
-          disabled={isSending}
-          className="placeholder:text-paragraph max-h-32 min-h-[3.75rem] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="placeholder:text-paragraph max-h-32 min-h-[3.75rem] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed outline-none"
           style={{ fieldSizing: 'content' } as React.CSSProperties}
         />
 
