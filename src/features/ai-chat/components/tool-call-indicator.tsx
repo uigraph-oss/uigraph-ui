@@ -49,13 +49,11 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
     return (
       <div className="my-1">
         {isRunning ? (
-          <TextShimmer as="span" duration={1.2} className="font-mono text-xs">
+          <TextShimmer as="span" duration={1.2} className="text-xs">
             {single}
           </TextShimmer>
         ) : (
-          <span className="text-foreground/60 block font-mono text-xs">
-            {single}
-          </span>
+          <span className="text-foreground/60 block text-xs">{single}</span>
         )}
       </div>
     )
@@ -89,10 +87,7 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
             const name = toolName(part)
             const summary = paramSummary(part.input)
             return (
-              <span
-                key={i}
-                className="text-foreground/60 block font-mono text-xs"
-              >
+              <span key={i} className="text-foreground/60 block text-xs">
                 {summary ? `${name} · ${summary}` : name}
               </span>
             )
