@@ -17,6 +17,7 @@ import { DisplayChatMessage } from '../helpers/chat-types'
 import { resolveSources } from '../helpers/parse-source'
 import { MARKDOWN_COMPONENTS } from './components'
 import { SpinnerText } from './spinner-text'
+import { isToolPart, ToolCallGroup } from './tool-call-indicator'
 
 export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
   const { retryFailedMessage, isSending } = useChatSession()
@@ -74,7 +75,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
   }
 
   return (
-    <div className="group flex items-start gap-3">
+    <div className="group flex min-w-0 items-start gap-3">
       <div className="mt-0.5 flex size-7 shrink-0 overflow-hidden rounded-lg">
         <img
           src="/icons/icon-blue-256.png"
@@ -87,7 +88,53 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
 
       <div className="min-w-0 flex-1">
         <div className="text-foreground text-[15px] leading-[1.75]">
-          {message.content.trim().length > 0 ? (
+          {message.parts && message.parts.length > 0 ? (
+            message.parts.map((part, index) => {
+              if (part.type === 'text') {
+                if (part.text.trim().length === 0) {
+                  return null
+                }
+                return (
+                  <ReactMarkdown
+                    key={index}
+                    remarkPlugins={[remarkGfm]}
+                    components={MARKDOWN_COMPONENTS}
+                  >
+                    {part.text}
+                  </ReactMarkdown>
+                )
+              }
+              if (isToolPart(part)) {
+                let p = index - 1
+                while (p >= 0) {
+                  const prev = message.parts![p]
+                  if (isToolPart(prev)) {
+                    break
+                  }
+                  if (prev.type === 'text' && prev.text.trim().length > 0) {
+                    break
+                  }
+                  p--
+                }
+                if (p >= 0 && isToolPart(message.parts![p])) {
+                  return null
+                }
+                const group = []
+                for (let i = index; i < message.parts!.length; i++) {
+                  const cur = message.parts![i]
+                  if (isToolPart(cur)) {
+                    group.push(cur)
+                    continue
+                  }
+                  if (cur.type === 'text' && cur.text.trim().length > 0) {
+                    break
+                  }
+                }
+                return <ToolCallGroup key={index} parts={group} />
+              }
+              return null
+            })
+          ) : message.content.trim().length > 0 ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={MARKDOWN_COMPONENTS}

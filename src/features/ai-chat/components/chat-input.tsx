@@ -10,6 +10,7 @@ export function ChatInput() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    if (!canSend) return
     await sendMessage()
   }
 
@@ -37,8 +38,7 @@ export function ChatInput() {
           }}
           placeholder="Ask about your architecture..."
           rows={1}
-          disabled={isSending}
-          className="placeholder:text-paragraph max-h-32 min-h-[3.75rem] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="placeholder:text-paragraph max-h-32 min-h-[3.75rem] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed outline-none"
           style={{ fieldSizing: 'content' } as React.CSSProperties}
         />
 
@@ -47,9 +47,14 @@ export function ChatInput() {
           disabled={!canSend}
           className={cn(
             'flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors',
-            canSend
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-              : 'bg-stock/60 text-paragraph cursor-not-allowed'
+            isSending &&
+              'bg-primary/60 text-primary-foreground cursor-not-allowed',
+            !isSending &&
+              canSend &&
+              'bg-primary text-primary-foreground hover:bg-primary/90',
+            !isSending &&
+              !canSend &&
+              'bg-stock/60 text-paragraph cursor-not-allowed'
           )}
         >
           {isSending ? (

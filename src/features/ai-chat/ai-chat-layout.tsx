@@ -109,6 +109,16 @@ export function AiChatLayout({ children }: PropsWithChildren) {
     void fetchSessions(false)
   }, [fetchSessions, pathname])
 
+  useEffect(() => {
+    function handleRefresh() {
+      void fetchSessions(false)
+    }
+    window.addEventListener('ai-chat-sessions-refresh', handleRefresh)
+    return () => {
+      window.removeEventListener('ai-chat-sessions-refresh', handleRefresh)
+    }
+  }, [fetchSessions])
+
   return (
     <DashboardPageLayout crumbs={[{ to: '/dashboard/ai', label: 'Assist' }]}>
       <div className="grid h-full grid-cols-[250px_1fr] overflow-hidden">

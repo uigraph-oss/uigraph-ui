@@ -1,3 +1,5 @@
+import type { UIMessage } from 'ai'
+
 export type SourceRef = {
   artifactType: string
   artifactId: string
@@ -21,6 +23,7 @@ export type ChatMessage = {
   sessionId: string
   role: 'user' | 'assistant'
   content: string
+  parts?: UIMessage['parts']
   createdAt: string
   sources?: SourceRef[]
 }
@@ -32,6 +35,7 @@ export type DisplayChatMessage = {
   sessionId: string
   role: 'user' | 'assistant'
   content: string
+  parts?: UIMessage['parts']
   createdAt: string
   status: ChatMessageStatus
   isLocal?: boolean

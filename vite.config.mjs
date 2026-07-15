@@ -37,6 +37,11 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': { target: process.env.API_URL, changeOrigin: true },
         '/graphql': { target: process.env.GRAPHQL_URL, changeOrigin: true },
+        '/gateway': {
+          target: process.env.GATEWAY_URL,
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/gateway/, ''),
+        },
       },
     },
 

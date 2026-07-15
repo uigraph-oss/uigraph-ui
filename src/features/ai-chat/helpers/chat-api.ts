@@ -1,247 +1,154 @@
+import { apolloClientGQL } from '@/api/client'
+import { useAuthStore } from '@/store/auth-store'
+import {
+  CHAT_SESSION,
+  CHAT_SESSIONS,
+  CREATE_CHAT_MESSAGE,
+  CREATE_CHAT_SESSION,
+  DELETE_CHAT_SESSION,
+  UPDATE_CHAT_SESSION,
+} from '../api/chat'
 import type { ChatSidebarSession } from '../components/chat-sidebar'
 import type { ChatMessage, ChatSession } from './chat-types'
 
-type StoreEntry = {
-  session: ChatSession
-  messages: ChatMessage[]
-}
-
-const demoStore = new Map<string, StoreEntry>()
-let seeded = false
-
-function isoNow() {
-  return new Date().toISOString()
-}
-
-function isoMinutesAgo(minutes: number) {
-  return new Date(Date.now() - minutes * 60_000).toISOString()
-}
-
-function randomId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
-
-function makeMessage(
-  sessionId: string,
-  role: 'user' | 'assistant',
-  content: string,
+type ApiSession = {
+  id: string
+  orgId: string
+  ownerUserId: string
+  title: string
+  isPinned: boolean
+  messageCount: number
   createdAt: string
-): ChatMessage {
+  updatedAt: string
+}
+
+type ApiMessage = {
+  id: string
+  chatSessionId: string
+  role: string
+  content: string
+  parts?: unknown
+  createdAt: string
+}
+
+export function resolveOrgId(orgId?: string): string {
+  if (orgId) {
+    return orgId
+  }
+  const state = useAuthStore.getState()
+  const current = state.organizations.find(
+    (o) => o.id === state.currentOrganizationId
+  )
+  const resolved = current?.id ?? state.organizations[0]?.id
+  if (!resolved) {
+    throw new Error('No active organization')
+  }
+  return resolved
+}
+
+function toSession(s: ApiSession): ChatSession {
   return {
-    messageId: randomId('msg'),
-    sessionId,
-    role,
-    content,
-    createdAt,
+    sessionId: s.id,
+    orgId: s.orgId,
+    userId: s.ownerUserId,
+    title: s.title,
+    isPinned: s.isPinned,
+    messageCount: s.messageCount,
+    createdAt: s.createdAt,
+    updatedAt: s.updatedAt,
   }
 }
 
-function seedDemo(orgId: string) {
-  if (seeded) return
-  seeded = true
-
-  const welcomeId = randomId('session')
-  const welcomeCreated = isoMinutesAgo(120)
-  const welcomeMessages: ChatMessage[] = [
-    makeMessage(
-      welcomeId,
-      'user',
-      'What can this AI assistant help me with?',
-      isoMinutesAgo(119)
-    ),
-    makeMessage(
-      welcomeId,
-      'assistant',
-      'I can help you explore your UI maps, services, APIs, and diagrams. Ask me about a component, an endpoint, or how parts of your system connect.',
-      isoMinutesAgo(119)
-    ),
-  ]
-  demoStore.set(welcomeId, {
-    session: {
-      sessionId: welcomeId,
-      orgId,
-      userId: 'demo-user',
-      title: 'Getting started',
-      isPinned: true,
-      messageCount: welcomeMessages.length,
-      createdAt: welcomeCreated,
-      updatedAt: isoMinutesAgo(118),
-    },
-    messages: welcomeMessages,
-  })
-
-  const exploreId = randomId('session')
-  const exploreCreated = isoMinutesAgo(45)
-  const exploreMessages: ChatMessage[] = [
-    makeMessage(
-      exploreId,
-      'user',
-      'Summarize the checkout service.',
-      isoMinutesAgo(44)
-    ),
-    makeMessage(
-      exploreId,
-      'assistant',
-      'The checkout service exposes a few REST endpoints for carts and orders and connects to the payments service. This is demo data — connect the AI backend to see real answers.',
-      isoMinutesAgo(44)
-    ),
-  ]
-  demoStore.set(exploreId, {
-    session: {
-      sessionId: exploreId,
-      orgId,
-      userId: 'demo-user',
-      title: 'Explore checkout service',
-      isPinned: false,
-      messageCount: exploreMessages.length,
-      createdAt: exploreCreated,
-      updatedAt: isoMinutesAgo(43),
-    },
-    messages: exploreMessages,
-  })
-}
-
-function demoReplyFor(content: string) {
-  return `Thanks for your message — you asked: "${content.trim()}". This is a demo response while the AI backend is being connected. Once it is live, I will answer using your organization's maps, services, and diagrams.`
+function toMessage(m: ApiMessage): ChatMessage {
+  return {
+    messageId: m.id,
+    sessionId: m.chatSessionId,
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    content: m.content,
+    parts: m.parts as ChatMessage['parts'],
+    createdAt: m.createdAt,
+  }
 }
 
 export async function fetchChatSession(
   sessionId: string
 ): Promise<{ session: ChatSession; messages: ChatMessage[] }> {
-  const entry = demoStore.get(sessionId)
-  if (!entry) {
-    throw new Error('Session not found')
-  }
+  const orgId = resolveOrgId()
+  const { data } = await apolloClientGQL.query({
+    query: CHAT_SESSION,
+    variables: { orgId, id: sessionId },
+    fetchPolicy: 'network-only',
+  })
   return {
-    session: { ...entry.session },
-    messages: entry.messages.map((m) => ({ ...m })),
+    session: toSession(data.chatSession.session),
+    messages: data.chatSession.messages.map(toMessage),
   }
 }
 
 export async function listChatSessions(
   orgId: string
 ): Promise<ChatSidebarSession[]> {
-  seedDemo(orgId)
-  return Array.from(demoStore.values())
-    .filter((entry) => entry.session.orgId === orgId)
-    .map((entry) => ({
-      sessionId: entry.session.sessionId,
-      title: entry.session.title,
-      isPinned: entry.session.isPinned,
-      createdAt: entry.session.createdAt,
-      updatedAt: entry.session.updatedAt,
-      messageCount: entry.session.messageCount,
-    }))
+  const { data } = await apolloClientGQL.query({
+    query: CHAT_SESSIONS,
+    variables: { orgId: resolveOrgId(orgId) },
+    fetchPolicy: 'network-only',
+  })
+  return data.chatSessions.map((s) => ({
+    sessionId: s.id,
+    title: s.title,
+    isPinned: s.isPinned,
+    createdAt: s.createdAt,
+    updatedAt: s.updatedAt,
+    messageCount: s.messageCount,
+  }))
 }
 
 export async function createChatSession(orgId: string): Promise<ChatSession> {
-  seedDemo(orgId)
-  const sessionId = randomId('session')
-  const now = isoNow()
-  const session: ChatSession = {
-    sessionId,
-    orgId,
-    userId: 'demo-user',
-    title: 'New chat',
-    isPinned: false,
-    messageCount: 0,
-    createdAt: now,
-    updatedAt: now,
+  const { data } = await apolloClientGQL.mutate({
+    mutation: CREATE_CHAT_SESSION,
+    variables: { orgId: resolveOrgId(orgId), input: {} },
+  })
+  if (!data?.createChatSession) {
+    throw new Error('Failed to create session')
   }
-  demoStore.set(sessionId, { session, messages: [] })
-  return { ...session }
+  return toSession(data.createChatSession)
 }
 
 export async function deleteChatSession(sessionId: string): Promise<void> {
-  demoStore.delete(sessionId)
+  await apolloClientGQL.mutate({
+    mutation: DELETE_CHAT_SESSION,
+    variables: { orgId: resolveOrgId(), id: sessionId },
+  })
 }
 
 export async function updateChatSession(
   sessionId: string,
   input: { title?: string; isPinned?: boolean }
 ): Promise<ChatSession> {
-  const entry = demoStore.get(sessionId)
-  if (!entry) {
-    throw new Error('Session not found')
+  const { data } = await apolloClientGQL.mutate({
+    mutation: UPDATE_CHAT_SESSION,
+    variables: { orgId: resolveOrgId(), id: sessionId, input },
+  })
+  if (!data?.updateChatSession) {
+    throw new Error('Failed to update session')
   }
-  if (input.title !== undefined) {
-    entry.session.title = input.title
-  }
-  if (input.isPinned !== undefined) {
-    entry.session.isPinned = input.isPinned
-  }
-  entry.session.updatedAt = isoNow()
-  return { ...entry.session }
+  return toSession(data.updateChatSession)
 }
 
-class DemoWebSocket extends EventTarget {
-  send(data: string) {
-    let parsed: { sessionId?: string; content?: string }
-    try {
-      parsed = JSON.parse(data) as { sessionId?: string; content?: string }
-    } catch {
-      return
-    }
-
-    const { sessionId, content } = parsed
-    if (!sessionId || !content) return
-
-    void this.respond(sessionId, content)
-  }
-
-  close() {
-    this.dispatchEvent(new Event('close'))
-  }
-
-  private async respond(sessionId: string, content: string) {
-    const entry = demoStore.get(sessionId)
-    if (!entry) {
-      this.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ type: 'error', message: 'Session not found' }),
-        })
-      )
-      return
-    }
-
-    entry.messages.push(makeMessage(sessionId, 'user', content, isoNow()))
-
-    const reply = demoReplyFor(content)
-    const chunks = reply.match(/\S+\s*/g) ?? [reply]
-    for (const chunk of chunks) {
-      await new Promise<void>((resolve) => setTimeout(resolve, 35))
-      this.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ type: 'delta', text: chunk }),
-        })
-      )
-    }
-
-    const assistantMessage = makeMessage(
+export async function createUserMessage(
+  sessionId: string,
+  content: string
+): Promise<ChatMessage> {
+  const { data } = await apolloClientGQL.mutate({
+    mutation: CREATE_CHAT_MESSAGE,
+    variables: {
+      orgId: resolveOrgId(),
       sessionId,
-      'assistant',
-      reply,
-      isoNow()
-    )
-    entry.messages.push(assistantMessage)
-    entry.session.messageCount = entry.messages.length
-    entry.session.updatedAt = assistantMessage.createdAt
-
-    this.dispatchEvent(
-      new MessageEvent('message', {
-        data: JSON.stringify({
-          type: 'done',
-          messageId: assistantMessage.messageId,
-          sessionId,
-        }),
-      })
-    )
+      input: { role: 'user', content },
+    },
+  })
+  if (!data?.createChatMessage) {
+    throw new Error('Failed to persist message')
   }
-}
-
-export async function buildAiWebSocket(_orgId: string): Promise<WebSocket> {
-  const ws = new DemoWebSocket()
-  await new Promise<void>((resolve) => setTimeout(resolve, 10))
-  ws.dispatchEvent(new Event('open'))
-  return ws as unknown as WebSocket
+  return toMessage(data.createChatMessage)
 }
