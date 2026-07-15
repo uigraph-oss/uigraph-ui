@@ -28,7 +28,10 @@ function toUiMessage(m: ChatMessage): UIMessage {
   return {
     id: m.messageId,
     role: m.role,
-    parts: [{ type: 'text', text: m.content }],
+    parts:
+      m.parts && m.parts.length > 0
+        ? m.parts
+        : [{ type: 'text', text: m.content }],
     metadata: { createdAt: m.createdAt },
   }
 }
@@ -71,8 +74,6 @@ export const [ChatSessionProvider, useChatSession] = createContext(
         transport,
         experimental_throttle: 50,
       })
-
-    console.log('DEBUG raw messages', messages)
 
     useEffect(() => {
       setDraft('')

@@ -27,6 +27,7 @@ type ApiMessage = {
   chatSessionId: string
   role: string
   content: string
+  parts?: unknown
   createdAt: string
 }
 
@@ -64,6 +65,7 @@ function toMessage(m: ApiMessage): ChatMessage {
     sessionId: m.chatSessionId,
     role: m.role === 'assistant' ? 'assistant' : 'user',
     content: m.content,
+    parts: m.parts as ChatMessage['parts'],
     createdAt: m.createdAt,
   }
 }

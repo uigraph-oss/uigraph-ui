@@ -33,6 +33,7 @@ export const CHAT_SESSION = graphql(`
         chatSessionId
         role
         content
+        parts
         createdAt
       }
     }

@@ -23,6 +23,7 @@ export type ChatMessage = {
   sessionId: string
   role: 'user' | 'assistant'
   content: string
+  parts?: UIMessage['parts']
   createdAt: string
   sources?: SourceRef[]
 }
