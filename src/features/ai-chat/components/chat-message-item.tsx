@@ -17,7 +17,7 @@ import { DisplayChatMessage } from '../helpers/chat-types'
 import { resolveSources } from '../helpers/parse-source'
 import { MARKDOWN_COMPONENTS } from './components'
 import { SpinnerText } from './spinner-text'
-import { ToolCallIndicator } from './tool-call-indicator'
+import { isToolPart, ToolCallGroup } from './tool-call-indicator'
 
 export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
   const { retryFailedMessage, isSending } = useChatSession()
@@ -104,11 +104,19 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
                   </ReactMarkdown>
                 )
               }
-              if (
-                part.type === 'dynamic-tool' ||
-                part.type.startsWith('tool-')
-              ) {
-                return <ToolCallIndicator key={index} part={part} />
+              if (isToolPart(part)) {
+                const prev = message.parts![index - 1]
+                if (prev && isToolPart(prev)) {
+                  return null
+                }
+                const group = []
+                for (let i = index; i < message.parts!.length; i++) {
+                  if (!isToolPart(message.parts![i])) {
+                    break
+                  }
+                  group.push(message.parts![i])
+                }
+                return <ToolCallGroup key={index} parts={group} />
               }
               return null
             })

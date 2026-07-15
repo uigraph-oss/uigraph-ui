@@ -1,10 +1,16 @@
-import { TextShimmer } from '@/components/ui/text-shimmer'
+import { cn } from '@/lib/utils'
+import { useState } from 'react'
+import { FiChevronRight } from 'react-icons/fi'
 
 type ToolPart = {
   type: string
   toolName?: string
   state?: string
   input?: unknown
+}
+
+export function isToolPart(part: { type: string }): boolean {
+  return part.type === 'dynamic-tool' || part.type.startsWith('tool-')
 }
 
 function toolName(part: ToolPart): string {
@@ -28,28 +34,40 @@ function paramSummary(input: unknown): string {
   return keys.join(', ')
 }
 
-export function ToolCallIndicator({ part }: { part: ToolPart }) {
-  const name = toolName(part)
-  const summary = paramSummary(part.input)
-  const label = summary ? `${name} · ${summary}` : name
-  const isRunning =
-    part.state !== 'output-available' && part.state !== 'output-error'
-
-  if (isRunning) {
-    return (
-      <TextShimmer
-        as="span"
-        duration={1.2}
-        className="my-0.5 block max-w-full truncate font-mono text-xs"
-      >
-        {label}
-      </TextShimmer>
-    )
-  }
+export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const label =
+    parts.length === 1 ? '1 tool call' : `${parts.length} tool calls`
 
   return (
-    <span className="text-foreground/70 my-0.5 block max-w-full truncate font-mono text-xs">
-      {label}
-    </span>
+    <div className="my-1">
+      <button
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        className="text-foreground/70 hover:text-foreground flex items-center gap-1 font-mono text-xs transition-colors"
+      >
+        <FiChevronRight
+          className={cn('size-3 transition-transform', isOpen && 'rotate-90')}
+        />
+        {label}
+      </button>
+
+      {isOpen && (
+        <div className="mt-1 flex flex-col gap-0.5 pl-4">
+          {parts.map((part, i) => {
+            const name = toolName(part)
+            const summary = paramSummary(part.input)
+            return (
+              <span
+                key={i}
+                className="text-foreground/60 block font-mono text-xs"
+              >
+                {summary ? `${name} · ${summary}` : name}
+              </span>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }

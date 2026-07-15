@@ -72,6 +72,8 @@ export const [ChatSessionProvider, useChatSession] = createContext(
         experimental_throttle: 50,
       })
 
+    console.log('DEBUG raw messages', messages)
+
     useEffect(() => {
       setDraft('')
       autoSentSessionIdRef.current = ''
