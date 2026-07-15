@@ -52,6 +52,7 @@ export const [ChatSessionProvider, useChatSession] = createContext(
 
     const autoSentSessionIdRef = useRef('')
     const createdAtCacheRef = useRef<Map<string, string>>(new Map())
+    const titleSyncedRef = useRef('')
 
     const transport = useMemo(
       () =>
@@ -73,11 +74,27 @@ export const [ChatSessionProvider, useChatSession] = createContext(
         id: sessionId,
         transport,
         experimental_throttle: 50,
+        onFinish: () => {
+          if (titleSyncedRef.current === sessionId) {
+            return
+          }
+          titleSyncedRef.current = sessionId
+          void (async () => {
+            try {
+              const { session } = await fetchChatSession(sessionId)
+              setChatSession(session)
+              window.dispatchEvent(new Event('ai-chat-sessions-refresh'))
+            } catch {
+              titleSyncedRef.current = ''
+            }
+          })()
+        },
       })
 
     useEffect(() => {
       setDraft('')
       autoSentSessionIdRef.current = ''
+      titleSyncedRef.current = ''
       createdAtCacheRef.current.clear()
     }, [sessionId])
 

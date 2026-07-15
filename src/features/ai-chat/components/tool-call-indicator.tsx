@@ -71,7 +71,7 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className="text-foreground/70 hover:text-foreground flex items-start gap-1 text-left text-xs transition-colors"
+        className="text-foreground/70 hover:text-foreground flex w-full flex-wrap items-start gap-1 text-left text-xs transition-colors"
       >
         <FiChevronRight
           className={cn(
