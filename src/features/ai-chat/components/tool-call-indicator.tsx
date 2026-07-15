@@ -2,6 +2,7 @@ import { TextShimmer } from '@/components/ui/text-shimmer'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { FiChevronRight } from 'react-icons/fi'
+import { GoDotFill } from 'react-icons/go'
 
 type ToolPart = {
   type: string
@@ -37,7 +38,13 @@ function paramSummary(input: unknown): string {
 
 export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
   const [isOpen, setIsOpen] = useState(false)
-  const label = parts.map(toolName).join(', ')
+  const labelText = parts.map(toolName).join(' · ')
+  const label = parts.map(toolName).map((name, i) => (
+    <span key={i} className="inline-flex items-center gap-1">
+      {i > 0 && <GoDotFill className="size-1.5 shrink-0 opacity-50" />}
+      {name}
+    </span>
+  ))
   const isRunning = parts.some(
     (part) => part.state !== 'output-available' && part.state !== 'output-error'
   )
@@ -74,7 +81,7 @@ export function ToolCallGroup({ parts }: { parts: ToolPart[] }) {
         />
         {isRunning ? (
           <TextShimmer as="span" duration={1.2} className="text-xs">
-            {label}
+            {labelText}
           </TextShimmer>
         ) : (
           label
