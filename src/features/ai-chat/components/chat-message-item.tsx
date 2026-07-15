@@ -75,7 +75,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
   }
 
   return (
-    <div className="group flex items-start gap-3">
+    <div className="group flex min-w-0 items-start gap-3">
       <div className="mt-0.5 flex size-7 shrink-0 overflow-hidden rounded-lg">
         <img
           src="/icons/icon-blue-256.png"

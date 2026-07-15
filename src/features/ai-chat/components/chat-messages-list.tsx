@@ -144,7 +144,7 @@ export function ChatMessagesList() {
           className="h-full"
         />
       ) : (
-        <div className="mx-auto grid max-w-[52rem] gap-5 p-4">
+        <div className="mx-auto grid max-w-[52rem] grid-cols-[minmax(0,1fr)] gap-5 p-4">
           {displayMessages.map((message) => (
             <ChatMessageItem key={message.messageId} message={message} />
           ))}

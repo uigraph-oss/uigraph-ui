@@ -16,7 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { useMemo, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-import { FiEdit2, FiMoreVertical, FiSearch, FiTrash2 } from 'react-icons/fi'
+import { FiEdit2, FiMoreVertical, FiTrash2 } from 'react-icons/fi'
 import { LuPlus } from 'react-icons/lu'
 import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
 import { toast } from 'sonner'
@@ -56,7 +56,6 @@ export function ChatSidebar({
   onPatchSession,
   onDeleteSession,
 }: ChatSidebarProps) {
-  const [searchValue, setSearchValue] = useState('')
   const [renamingSession, setRenamingSession] =
     useState<ChatSidebarSession | null>(null)
   const [renamingValue, setRenamingValue] = useState('')
@@ -64,54 +63,31 @@ export function ChatSidebar({
     useState<ChatSidebarSession | null>(null)
 
   const resolvedSessions = useMemo(() => {
-    const query = searchValue.trim().toLowerCase()
-    const filteredSessions = query
-      ? sessions.filter((item) => item.title.toLowerCase().includes(query))
-      : sessions
-
-    return filteredSessions.toSorted((a, b) =>
+    return sessions.toSorted((a, b) =>
       a.isPinned
         ? -1
         : b.isPinned
           ? 1
           : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
-  }, [searchValue, sessions])
+  }, [sessions])
 
   return (
     <aside className="border-stock bg-shading flex h-full min-h-0 flex-col border-r">
-      <div className="p-4 pb-2">
-        <h2 className="text-lg font-semibold text-[#F4F7FC]">AI Assist</h2>
-        <p className="text-paragraph mt-0.5 text-sm">
-          Ask about your architecture
-        </p>
-      </div>
+      <div className="flex items-center justify-between p-4">
+        <h2 className="text-lg font-semibold text-[#F4F7FC]">Chats</h2>
 
-      <div className="px-4 py-2">
-        <div className="relative">
-          <FiSearch className="text-paragraph pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-          <Input
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            placeholder="Search conversations..."
-            className="h-10 bg-transparent pr-3 pl-9 text-sm"
-          />
-        </div>
-      </div>
-
-      <div className="px-4 py-2">
         <Button
           type="button"
           onClick={onCreateSession}
           disabled={isCreatingSession}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 h-10 w-full gap-2 rounded-lg text-sm font-medium"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 size-8! shrink-0 rounded-lg p-0!"
         >
           {isCreatingSession ? (
             <AiOutlineLoading3Quarters className="size-4 animate-spin" />
           ) : (
             <LuPlus className="size-4" />
           )}
-          New chat
         </Button>
       </div>
 
@@ -210,12 +186,6 @@ export function ChatSidebar({
             {sessions.length === 0 && (
               <div className="text-paragraph p-3 text-xs">
                 No sessions yet. Start a new chat.
-              </div>
-            )}
-
-            {sessions.length > 0 && resolvedSessions.length === 0 && (
-              <div className="text-paragraph p-3 text-xs">
-                No conversations match your search.
               </div>
             )}
           </div>
