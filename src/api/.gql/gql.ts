@@ -14,6 +14,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  query ChatSessions($orgId: ID!) {\n    chatSessions(orgId: $orgId) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ChatSessionsDocument,
+    "\n  query ChatSession($orgId: ID!, $id: ID!) {\n    chatSession(orgId: $orgId, id: $id) {\n      session {\n        id\n        orgId\n        ownerUserId\n        title\n        isPinned\n        messageCount\n        createdAt\n        updatedAt\n      }\n      messages {\n        id\n        chatSessionId\n        role\n        content\n        createdAt\n      }\n    }\n  }\n": typeof types.ChatSessionDocument,
+    "\n  mutation CreateChatSession($orgId: ID!, $input: CreateChatSessionInput!) {\n    createChatSession(orgId: $orgId, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateChatSessionDocument,
+    "\n  mutation UpdateChatSession(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateChatSessionInput!\n  ) {\n    updateChatSession(orgId: $orgId, id: $id, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateChatSessionDocument,
+    "\n  mutation DeleteChatSession($orgId: ID!, $id: ID!) {\n    deleteChatSession(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteChatSessionDocument,
+    "\n  mutation CreateChatMessage(\n    $orgId: ID!\n    $sessionId: ID!\n    $input: CreateChatMessageInput!\n  ) {\n    createChatMessage(orgId: $orgId, sessionId: $sessionId, input: $input) {\n      id\n      chatSessionId\n      role\n      content\n      createdAt\n    }\n  }\n": typeof types.CreateChatMessageDocument,
     "\n  query Comments($orgId: ID!, $resourceId: ID!) {\n    comments(orgId: $orgId, resourceId: $resourceId) {\n      id\n      resourceId\n      parentCommentId\n      text\n      createdBy\n      createdAt\n      createdByActor {\n        id\n        name\n        avatarUrl\n      }\n    }\n  }\n": typeof types.CommentsDocument,
     "\n  mutation CreateComment($orgId: ID!, $input: CreateCommentInput!) {\n    createComment(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateCommentDocument,
     "\n  mutation UpdateComment($orgId: ID!, $id: ID!, $input: UpdateCommentInput!) {\n    updateComment(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateCommentDocument,
@@ -199,6 +205,12 @@ type Documents = {
     "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
 };
 const documents: Documents = {
+    "\n  query ChatSessions($orgId: ID!) {\n    chatSessions(orgId: $orgId) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": types.ChatSessionsDocument,
+    "\n  query ChatSession($orgId: ID!, $id: ID!) {\n    chatSession(orgId: $orgId, id: $id) {\n      session {\n        id\n        orgId\n        ownerUserId\n        title\n        isPinned\n        messageCount\n        createdAt\n        updatedAt\n      }\n      messages {\n        id\n        chatSessionId\n        role\n        content\n        createdAt\n      }\n    }\n  }\n": types.ChatSessionDocument,
+    "\n  mutation CreateChatSession($orgId: ID!, $input: CreateChatSessionInput!) {\n    createChatSession(orgId: $orgId, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateChatSessionDocument,
+    "\n  mutation UpdateChatSession(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateChatSessionInput!\n  ) {\n    updateChatSession(orgId: $orgId, id: $id, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateChatSessionDocument,
+    "\n  mutation DeleteChatSession($orgId: ID!, $id: ID!) {\n    deleteChatSession(orgId: $orgId, id: $id)\n  }\n": types.DeleteChatSessionDocument,
+    "\n  mutation CreateChatMessage(\n    $orgId: ID!\n    $sessionId: ID!\n    $input: CreateChatMessageInput!\n  ) {\n    createChatMessage(orgId: $orgId, sessionId: $sessionId, input: $input) {\n      id\n      chatSessionId\n      role\n      content\n      createdAt\n    }\n  }\n": types.CreateChatMessageDocument,
     "\n  query Comments($orgId: ID!, $resourceId: ID!) {\n    comments(orgId: $orgId, resourceId: $resourceId) {\n      id\n      resourceId\n      parentCommentId\n      text\n      createdBy\n      createdAt\n      createdByActor {\n        id\n        name\n        avatarUrl\n      }\n    }\n  }\n": types.CommentsDocument,
     "\n  mutation CreateComment($orgId: ID!, $input: CreateCommentInput!) {\n    createComment(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": types.CreateCommentDocument,
     "\n  mutation UpdateComment($orgId: ID!, $id: ID!, $input: UpdateCommentInput!) {\n    updateComment(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateCommentDocument,
@@ -398,6 +410,30 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ChatSessions($orgId: ID!) {\n    chatSessions(orgId: $orgId) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ChatSessions($orgId: ID!) {\n    chatSessions(orgId: $orgId) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ChatSession($orgId: ID!, $id: ID!) {\n    chatSession(orgId: $orgId, id: $id) {\n      session {\n        id\n        orgId\n        ownerUserId\n        title\n        isPinned\n        messageCount\n        createdAt\n        updatedAt\n      }\n      messages {\n        id\n        chatSessionId\n        role\n        content\n        createdAt\n      }\n    }\n  }\n"): (typeof documents)["\n  query ChatSession($orgId: ID!, $id: ID!) {\n    chatSession(orgId: $orgId, id: $id) {\n      session {\n        id\n        orgId\n        ownerUserId\n        title\n        isPinned\n        messageCount\n        createdAt\n        updatedAt\n      }\n      messages {\n        id\n        chatSessionId\n        role\n        content\n        createdAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateChatSession($orgId: ID!, $input: CreateChatSessionInput!) {\n    createChatSession(orgId: $orgId, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateChatSession($orgId: ID!, $input: CreateChatSessionInput!) {\n    createChatSession(orgId: $orgId, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateChatSession(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateChatSessionInput!\n  ) {\n    updateChatSession(orgId: $orgId, id: $id, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateChatSession(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateChatSessionInput!\n  ) {\n    updateChatSession(orgId: $orgId, id: $id, input: $input) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteChatSession($orgId: ID!, $id: ID!) {\n    deleteChatSession(orgId: $orgId, id: $id)\n  }\n"): (typeof documents)["\n  mutation DeleteChatSession($orgId: ID!, $id: ID!) {\n    deleteChatSession(orgId: $orgId, id: $id)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateChatMessage(\n    $orgId: ID!\n    $sessionId: ID!\n    $input: CreateChatMessageInput!\n  ) {\n    createChatMessage(orgId: $orgId, sessionId: $sessionId, input: $input) {\n      id\n      chatSessionId\n      role\n      content\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateChatMessage(\n    $orgId: ID!\n    $sessionId: ID!\n    $input: CreateChatMessageInput!\n  ) {\n    createChatMessage(orgId: $orgId, sessionId: $sessionId, input: $input) {\n      id\n      chatSessionId\n      role\n      content\n      createdAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

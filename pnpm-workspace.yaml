@@ -8,3 +8,8 @@ allowBuilds:
   vue-demi: true
 minimumReleaseAgeExclude:
   - '@uigraph/sdk'
+  - '@ai-sdk/gateway@4.0.20'
+  - '@ai-sdk/mcp@2.0.13'
+  - '@ai-sdk/provider-utils@5.0.10'
+  - '@ai-sdk/react@4.0.30'
+  - ai@7.0.28
