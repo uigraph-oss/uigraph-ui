@@ -55,10 +55,12 @@ export const [ChatSessionProvider, useChatSession] = createContext(
         new DefaultChatTransport<UIMessage>({
           api: '/gateway/v1/ai/chat',
           credentials: 'include',
-          headers: async () => ({
-            Authorization: `Bearer ${await mintSessionToken()}`,
+          prepareSendMessagesRequest: async () => ({
+            headers: {
+              Authorization: `Bearer ${await mintSessionToken()}`,
+            },
+            body: { orgId: resolveOrgId(), sessionId },
           }),
-          body: { orgId: resolveOrgId(), sessionId },
         }),
       [sessionId]
     )
