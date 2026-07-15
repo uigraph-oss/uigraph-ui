@@ -47,9 +47,14 @@ export function ChatInput() {
           disabled={!canSend}
           className={cn(
             'flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors',
-            canSend
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-              : 'bg-stock/60 text-paragraph cursor-not-allowed'
+            isSending &&
+              'bg-primary/60 text-primary-foreground cursor-not-allowed',
+            !isSending &&
+              canSend &&
+              'bg-primary text-primary-foreground hover:bg-primary/90',
+            !isSending &&
+              !canSend &&
+              'bg-stock/60 text-paragraph cursor-not-allowed'
           )}
         >
           {isSending ? (

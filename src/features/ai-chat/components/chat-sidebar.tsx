@@ -129,7 +129,7 @@ export function ChatSidebar({
                   key={item.sessionId}
                   className={cn(
                     'group flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 transition-colors',
-                    isActive ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                    isActive ? 'bg-white/12' : 'hover:bg-white/[0.04]'
                   )}
                 >
                   <button
@@ -140,7 +140,7 @@ export function ChatSidebar({
                     <p
                       className={cn(
                         'w-full truncate text-[13px] font-medium',
-                        isActive ? 'text-primary' : 'text-[#D2D9E6]'
+                        isActive ? 'text-[#F4F7FC]' : 'text-[#D2D9E6]'
                       )}
                     >
                       {item.isPinned ? (
