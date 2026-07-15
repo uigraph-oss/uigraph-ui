@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
-import { formatDistanceToNow } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { FiEdit2, FiMoreVertical, FiSearch, FiTrash2 } from 'react-icons/fi'
@@ -44,10 +43,6 @@ type ChatSidebarProps = {
     input: { title?: string; isPinned?: boolean }
   ) => void
   onDeleteSession: (session: ChatSidebarSession) => Promise<unknown>
-}
-
-function getTimeLabel(updatedAt: string): string {
-  return formatDistanceToNow(new Date(updatedAt), { addSuffix: true })
 }
 
 export function ChatSidebar({
@@ -133,14 +128,14 @@ export function ChatSidebar({
                 <div
                   key={item.sessionId}
                   className={cn(
-                    'group flex items-center gap-1 rounded-lg px-2 py-2 transition-colors',
-                    isActive ? 'bg-primary/8' : 'hover:bg-stock/60'
+                    'group flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 transition-colors',
+                    isActive ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
                   )}
                 >
                   <button
                     type="button"
                     onClick={() => onOpenSession(item.sessionId)}
-                    className="flex min-w-0 flex-1 flex-col items-start text-left"
+                    className="flex min-w-0 flex-1 items-center text-left"
                   >
                     <p
                       className={cn(
@@ -152,9 +147,6 @@ export function ChatSidebar({
                         <RiPushpinLine className="mr-1 inline size-3 text-amber-600" />
                       ) : null}
                       {item.title}
-                    </p>
-                    <p className="text-paragraph mt-0.5 text-[11px]">
-                      {getTimeLabel(item.updatedAt)}
                     </p>
                   </button>
 
