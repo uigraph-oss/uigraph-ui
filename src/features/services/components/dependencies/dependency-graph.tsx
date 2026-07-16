@@ -69,7 +69,7 @@ export function DependencyGraph({
 
   const layout = new dagre.graphlib.Graph()
   layout.setDefaultEdgeLabel(() => ({}))
-  layout.setGraph({ rankdir: 'LR', nodesep: 42, ranksep: 130 })
+  layout.setGraph({ rankdir: 'RL', nodesep: 42, ranksep: 130 })
 
   for (const node of nodes)
     layout.setNode(node.id, { width: nodeWidth, height: 128 })
@@ -110,8 +110,8 @@ export function DependencyGraph({
     return {
       id: node.id,
       position: { x: position.x - nodeWidth / 2, y: position.y - 64 },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
+      sourcePosition: Position.Left,
+      targetPosition: Position.Right,
       data: {
         ...node,
         label: (() => {
@@ -236,6 +236,15 @@ export function DependencyGraph({
   const flowEdges: Edge[] = edges.map((edge) => {
     const hard = edge.criticality?.toLowerCase() === 'hard'
 
+    const labelText =
+      edge.apiEndpointNames && edge.apiEndpointNames.length > 0
+        ? edge.apiEndpointNames.join(', ')
+        : edge.type
+    const label =
+      labelText && labelText.length > 24
+        ? labelText.slice(0, 23).trimEnd() + '…'
+        : labelText
+
     return {
       id: edge.id,
       source: edge.source,
@@ -244,10 +253,7 @@ export function DependencyGraph({
         type: MarkerType.ArrowClosed,
         color: hard ? '#C2703F' : '#64748B',
       },
-      label:
-        edge.apiEndpointNames && edge.apiEndpointNames.length > 0
-          ? edge.apiEndpointNames.join(', ')
-          : edge.type,
+      label,
       labelStyle: { fill: '#AAB4C5', fontSize: 10 },
       labelBgStyle: { fill: '#141925', fillOpacity: 0.92 },
       labelBgPadding: [4, 3],
