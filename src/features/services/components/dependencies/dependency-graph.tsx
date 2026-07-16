@@ -147,7 +147,7 @@ export function DependencyGraph({
           return (
             <Tooltip>
               <TooltipTrigger asChild>{content}</TooltipTrigger>
-              <TooltipContent className="max-w-[200px]">
+              <TooltipContent className="bg-destructive [&_svg]:bg-destructive [&_svg]:fill-destructive max-w-[200px] text-center text-white">
                 This service is not available or onboarded to UiGraph.
               </TooltipContent>
             </Tooltip>
