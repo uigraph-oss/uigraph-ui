@@ -5,6 +5,7 @@ import type {
 import {
   Background,
   MarkerType,
+  Position,
   ReactFlow,
   type Edge,
   type Node,
@@ -78,6 +79,8 @@ export function DependencyGraph({
     return {
       id: node.id,
       position: { x: position.x - 96, y: position.y - 32 },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
       data: {
         ...node,
         label: (
@@ -132,7 +135,7 @@ export function DependencyGraph({
   })
 
   return (
-    <div className="h-[calc(100vh-22rem)] min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722]">
+    <div className="h-[calc(100vh-22rem)] min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722] [&_.react-flow__handle]:opacity-0">
       <ReactFlow
         nodes={flowNodes}
         edges={flowEdges}
