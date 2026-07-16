@@ -206,18 +206,19 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
         const endpoint = byOperation.get(operationId)
         const row = (
           <>
-            <span className="font-mono opacity-90">{operationId}</span>
-            {endpoint?.method || endpoint?.path ? (
-              <span className="size-1 shrink-0 rounded-full bg-current opacity-40" />
-            ) : null}
             {endpoint?.method ? (
-              <span className="shrink-0 font-mono font-semibold opacity-70">
+              <span className="shrink-0 rounded bg-white/10 px-1 py-px font-mono text-[10px] font-semibold opacity-80">
                 {endpoint.method.toUpperCase()}
               </span>
             ) : null}
-            {endpoint?.path ? (
-              <span className="font-mono opacity-60">{endpoint.path}</span>
-            ) : null}
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="font-mono opacity-90">{operationId}</span>
+              {endpoint?.path ? (
+                <span className="font-mono break-words opacity-60">
+                  {endpoint.path}
+                </span>
+              ) : null}
+            </div>
           </>
         )
         if (endpoint && group?.id) {
@@ -232,7 +233,7 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
               target="_blank"
               rel="noreferrer"
               onClick={(event) => event.stopPropagation()}
-              className="flex items-center gap-1.5 rounded px-1 py-0.5 text-xs hover:bg-white/5"
+              className="flex items-center gap-2 rounded px-1.5 py-1 text-xs leading-snug hover:bg-white/10"
             >
               {row}
             </a>
@@ -241,7 +242,7 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
         return (
           <div
             key={operationId}
-            className="flex items-center gap-1.5 px-1 py-0.5 text-xs"
+            className="flex items-center gap-2 px-1.5 py-1 text-xs leading-snug"
           >
             {row}
           </div>
@@ -308,7 +309,7 @@ function DependencyEdge({
                   {data.detailText}
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="max-w-[240px]">
+              <TooltipContent className="max-w-[520px] p-1 [text-wrap:wrap]">
                 <DependencyTooltipContent data={data} />
               </TooltipContent>
             </Tooltip>
@@ -339,7 +340,7 @@ function DependencyEdge({
                   <Icon className="size-3" />
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="max-w-[240px]">
+              <TooltipContent className="max-w-[520px] p-1 [text-wrap:wrap]">
                 <DependencyTooltipContent data={data} />
               </TooltipContent>
             </Tooltip>
