@@ -1,4 +1,4 @@
-import { Switch } from '@/components/ui/switch'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Tooltip,
   TooltipContent,
@@ -203,7 +203,7 @@ export function DependencyGraph({
 
   const layout = new dagre.graphlib.Graph()
   layout.setDefaultEdgeLabel(() => ({}))
-  layout.setGraph({ rankdir: 'RL', nodesep: 42, ranksep: 130 })
+  layout.setGraph({ rankdir: 'RL', nodesep: 42, ranksep: 180 })
 
   for (const node of nodes)
     layout.setNode(node.id, { width: nodeWidth, height: 128 })
@@ -433,8 +433,11 @@ export function DependencyGraph({
       >
         <Panel position="top-left">
           <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2A3242] bg-[#141925]/95 px-3 py-2 text-[11px] font-medium text-[#AAB4C5] shadow-lg">
-            <Switch checked={showDetails} onCheckedChange={setShowDetails} />
             Dependency details
+            <Checkbox
+              checked={showDetails}
+              onCheckedChange={(checked) => setShowDetails(checked === true)}
+            />
           </label>
         </Panel>
         <Background color="#2A3242" gap={20} size={1} />
