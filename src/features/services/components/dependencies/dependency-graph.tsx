@@ -4,10 +4,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import {
+  API_ENDPOINTS,
+  API_GROUPS,
+} from '@/features/services/api/api-endpoints'
 import type {
   DependencyGraphEdge,
   DependencyGraphNode,
 } from '@/features/services/api/dependencies'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import {
   Background,
   BaseEdge,
@@ -30,6 +36,7 @@ import {
   Github,
   Globe,
   Link2,
+  Loader2,
   Radio,
   Share2,
 } from 'lucide-react'
@@ -46,8 +53,12 @@ type FlowNodeData = DependencyGraphNode & { label: ReactNode }
 
 type DependencyEdgeData = {
   detailText?: string | null
-  fullText?: string | null
   edgeType?: string | null
+  criticality?: string | null
+  apiGroupName?: string | null
+  databaseName?: string | null
+  endpoints?: string[] | null
+  providerServiceId?: string
   hard: boolean
   showDetails: boolean
 }
@@ -60,6 +71,103 @@ function typeIcon(type?: string | null) {
   if (type === 'graphql') return Share2
   if (type === 'grpc') return Radio
   return Link2
+}
+
+const typeLabels: Record<string, string> = {
+  http: 'HTTP API',
+  graphql: 'GraphQL API',
+  grpc: 'gRPC API',
+  database: 'Database',
+}
+
+function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
+  const orgId = useCurrentOrganization().id
+  const isApi =
+    data?.edgeType === 'http' ||
+    data?.edgeType === 'graphql' ||
+    data?.edgeType === 'grpc'
+  const providerServiceId = data?.providerServiceId ?? ''
+  const apiGroupName = data?.apiGroupName ?? ''
+  const endpoints = data?.endpoints ?? []
+  const canFetch =
+    isApi &&
+    Boolean(orgId) &&
+    Boolean(providerServiceId) &&
+    !providerServiceId.startsWith('ghost:') &&
+    Boolean(apiGroupName) &&
+    endpoints.length > 0
+
+  const groupsQuery = useQuery(API_GROUPS, {
+    variables: { orgId, serviceId: providerServiceId },
+    skip: !canFetch,
+  })
+  const group = groupsQuery.data?.apiGroups?.find(
+    (g) => g.name === apiGroupName || g.label === apiGroupName
+  )
+  const endpointsQuery = useQuery(API_ENDPOINTS, {
+    variables: {
+      orgId,
+      serviceId: providerServiceId,
+      apiGroupId: group?.id ?? '',
+    },
+    skip: !canFetch || !group?.id,
+  })
+
+  if (!data) return null
+
+  const typeLabel = data.edgeType
+    ? (typeLabels[data.edgeType] ?? data.edgeType)
+    : 'Untyped dependency'
+
+  if (data.edgeType === 'database') {
+    return (
+      <div className="flex items-center gap-1.5 text-[11px]">
+        <Database className="size-3 shrink-0 opacity-70" />
+        <span className="font-mono">{data.databaseName ?? typeLabel}</span>
+      </div>
+    )
+  }
+
+  if (!isApi || endpoints.length === 0) {
+    return <div className="text-[11px]">{typeLabel}</div>
+  }
+
+  const loading = groupsQuery.loading || endpointsQuery.loading
+  if (loading) {
+    return (
+      <div className="flex items-center gap-1.5 text-[11px] opacity-70">
+        <Loader2 className="size-3 animate-spin" />
+        Loading endpoints…
+      </div>
+    )
+  }
+
+  const byOperation = new Map(
+    (endpointsQuery.data?.apiEndpoints ?? []).map((e) => [e.operationId, e])
+  )
+
+  return (
+    <div className="flex flex-col gap-1 text-left">
+      {endpoints.map((operationId) => {
+        const endpoint = byOperation.get(operationId)
+        return (
+          <div
+            key={operationId}
+            className="flex items-center gap-1.5 text-[11px]"
+          >
+            {endpoint?.method ? (
+              <span className="shrink-0 font-mono font-semibold opacity-90">
+                {endpoint.method.toUpperCase()}
+              </span>
+            ) : null}
+            <span className="font-mono opacity-80">
+              {endpoint?.path ?? operationId}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 function DependencyEdge({
@@ -115,11 +223,9 @@ function DependencyEdge({
                   {data.detailText}
                 </div>
               </TooltipTrigger>
-              {data?.fullText ? (
-                <TooltipContent className="max-w-[240px] text-center">
-                  {data.fullText}
-                </TooltipContent>
-              ) : null}
+              <TooltipContent className="max-w-[240px]">
+                <DependencyTooltipContent data={data} />
+              </TooltipContent>
             </Tooltip>
           </div>
         ) : (
@@ -148,11 +254,9 @@ function DependencyEdge({
                   <Icon className="size-3" />
                 </div>
               </TooltipTrigger>
-              {data?.fullText ? (
-                <TooltipContent className="max-w-[240px] text-center">
-                  {data.fullText}
-                </TooltipContent>
-              ) : null}
+              <TooltipContent className="max-w-[240px]">
+                <DependencyTooltipContent data={data} />
+              </TooltipContent>
             </Tooltip>
           </div>
         )}
@@ -395,8 +499,12 @@ export function DependencyGraph({
       },
       data: {
         detailText,
-        fullText: labelText,
         edgeType: edge.type,
+        criticality: edge.criticality,
+        apiGroupName: edge.apiGroupName,
+        databaseName: edge.databaseName,
+        endpoints,
+        providerServiceId: edge.target,
         hard,
         showDetails,
       },
