@@ -78,7 +78,11 @@ export function DashboardServiceDependencies({
         </Button>
       </DashboardSectionHeader>
 
-      <BetterDialogProvider open={manageOpen} onOpenChange={setManageOpen}>
+      <BetterDialogProvider
+        open={manageOpen}
+        onOpenChange={setManageOpen}
+        className="sm:max-w-[min(56rem,90vw)]"
+      >
         {manageOpen && (
           <ManageDependenciesModal
             serviceId={serviceId}

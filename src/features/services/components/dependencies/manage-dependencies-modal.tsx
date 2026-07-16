@@ -277,7 +277,6 @@ export function ManageDependenciesModal({
 
   return (
     <BetterDialogContent
-      className="sm:max-w-[min(56rem,90%)]"
       title="Manage Dependencies"
       description="Add, edit, or remove this service's upstream and downstream dependencies."
       footerSubmit="Save"
