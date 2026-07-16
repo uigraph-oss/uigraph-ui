@@ -200,7 +200,7 @@ export function DependencyGraph({
   })
 
   return (
-    <div className="dependency-graph-canvas h-[calc(100vh-22rem)] min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722]">
+    <div className="dependency-graph-canvas h-full min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722]">
       <style>{`
         .dependency-graph-canvas .react-flow__handle { opacity: 0; }
       `}</style>

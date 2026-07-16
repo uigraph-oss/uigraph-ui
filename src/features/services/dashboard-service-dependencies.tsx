@@ -65,11 +65,11 @@ export function DashboardServiceDependencies({
         title="Dependencies"
         description="Upstream and downstream service relationships, declared in .uigraph.yaml and validated against synced specs."
       />
-      <DashboardSectionContent className="gap-4">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <div className="flex flex-wrap gap-3">
+      <DashboardSectionContent className="gap-4 px-3 pt-3.5 pb-4">
+        <div className="relative min-h-0 flex-1">
+          <div className="absolute top-4 right-4 z-10 flex flex-wrap gap-3">
             <Select value={direction} onValueChange={setDirection}>
-              <SelectTrigger className="w-40 border-[#2A3242] bg-[#1E2533]">
+              <SelectTrigger className="w-40 border-[#2A3242] bg-[#1E2533]/90 backdrop-blur">
                 <SelectValue placeholder="Direction" />
               </SelectTrigger>
               <SelectContent>
@@ -79,7 +79,7 @@ export function DashboardServiceDependencies({
               </SelectContent>
             </Select>
             <Select value={criticality} onValueChange={setCriticality}>
-              <SelectTrigger className="w-40 border-[#2A3242] bg-[#1E2533]">
+              <SelectTrigger className="w-40 border-[#2A3242] bg-[#1E2533]/90 backdrop-blur">
                 <SelectValue placeholder="Criticality" />
               </SelectTrigger>
               <SelectContent>
@@ -89,23 +89,23 @@ export function DashboardServiceDependencies({
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        {graph.loading ? (
-          <SectionLoader label="Loading dependency graph..." />
-        ) : graphData ? (
-          <DependencyGraph
-            key={`${direction}-${criticality}`}
-            nodes={graphData.nodes}
-            edges={graphData.edges}
-            focusId={serviceId}
-            onNodeClick={(node) => {
-              if (node.service?.id && node.service.id !== serviceId) {
-                void navigate(Paths.services.dependencies(node.service.id))
-              }
-            }}
-          />
-        ) : null}
+          {graph.loading ? (
+            <SectionLoader label="Loading dependency graph..." />
+          ) : graphData ? (
+            <DependencyGraph
+              key={`${direction}-${criticality}`}
+              nodes={graphData.nodes}
+              edges={graphData.edges}
+              focusId={serviceId}
+              onNodeClick={(node) => {
+                if (node.service?.id && node.service.id !== serviceId) {
+                  void navigate(Paths.services.dependencies(node.service.id))
+                }
+              }}
+            />
+          ) : null}
+        </div>
       </DashboardSectionContent>
     </div>
   )
