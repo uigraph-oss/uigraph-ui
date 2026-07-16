@@ -33,6 +33,7 @@ import {
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
 import {
+  CircleAlert,
   Clock,
   Database,
   Github,
@@ -161,8 +162,13 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
             <Loader2 className="size-3 animate-spin" />
             Loading database…
           </div>
-        ) : (
+        ) : db ? (
           dbMeta
+        ) : (
+          <div className="flex items-center gap-1.5 text-[11px] opacity-55">
+            <CircleAlert className="size-3 shrink-0 text-amber-400" />
+            Database not found
+          </div>
         )}
       </>
     )
@@ -204,16 +210,32 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
     <div className="flex flex-col gap-1 text-left">
       {endpoints.map((operationId) => {
         const endpoint = byOperation.get(operationId)
+        if (!endpoint) {
+          return (
+            <div
+              key={operationId}
+              className="flex items-center gap-1.5 px-1.5 py-1 text-xs leading-snug"
+            >
+              <CircleAlert className="size-3.5 shrink-0 text-amber-400/90" />
+              <span className="font-mono opacity-90">{operationId}</span>
+              <span className="opacity-50">
+                {apiGroupName
+                  ? `· not found in ${apiGroupName}`
+                  : '· not found'}
+              </span>
+            </div>
+          )
+        }
         const row = (
           <>
-            {endpoint?.method ? (
+            {endpoint.method ? (
               <span className="shrink-0 rounded bg-white/10 px-1 py-px font-mono text-[10px] font-semibold opacity-80">
                 {endpoint.method.toUpperCase()}
               </span>
             ) : null}
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="font-mono opacity-90">{operationId}</span>
-              {endpoint?.path ? (
+              {endpoint.path ? (
                 <span className="font-mono break-words opacity-60">
                   {endpoint.path}
                 </span>
@@ -221,7 +243,7 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
             </div>
           </>
         )
-        if (endpoint && group?.id) {
+        if (group?.id) {
           return (
             <a
               key={operationId}
