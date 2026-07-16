@@ -1,3 +1,8 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import type {
   DependencyGraphEdge,
   DependencyGraphNode,
@@ -12,6 +17,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
+import { Info } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type DependencyGraphProps = {
@@ -34,10 +40,7 @@ export function DependencyGraph({
     { type?: string | null; criticality?: string | null }
   >()
   for (const edge of edges) {
-    const ends = focusId
-      ? [edge.source === focusId ? edge.target : edge.source]
-      : [edge.target, edge.source]
-    for (const id of ends) {
+    for (const id of [edge.source, edge.target]) {
       if (!edgeMeta.has(id)) {
         edgeMeta.set(id, { type: edge.type, criticality: edge.criticality })
       }
@@ -59,22 +62,20 @@ export function DependencyGraph({
     const meta = edgeMeta.get(node.id)
     const hard = meta?.criticality?.toLowerCase() === 'hard'
 
-    let subtitle = ''
-    if (isFocus) {
-      subtitle = 'this service'
-    } else if (meta?.criticality || meta?.type) {
-      subtitle = [meta.criticality, meta.type].filter(Boolean).join(' · ')
-    } else if (!onboarded) {
-      subtitle = 'not onboarded'
-    }
+    const subtitle =
+      meta?.criticality || meta?.type
+        ? [meta.criticality, meta.type].filter(Boolean).join(' · ')
+        : ''
 
     const border = isFocus
       ? '1px solid #3B82F6'
       : !onboarded
-        ? '1px dashed #586378'
+        ? '1px dashed #8A4B4B'
         : hard
           ? '1px solid #F97316'
           : '1px solid #3B4658'
+
+    const clickable = !isFocus && Boolean(node.service?.id)
 
     return {
       id: node.id,
@@ -85,7 +86,21 @@ export function DependencyGraph({
         ...node,
         label: (
           <div className="flex flex-col gap-0.5 text-left leading-tight">
-            <span className="font-semibold">{node.name}</span>
+            <span className="flex items-center gap-1.5 font-semibold">
+              {node.name}
+              {!onboarded ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex">
+                      <Info className="size-3.5 opacity-70" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    This service is not available or onboarded to UiGraph.
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+            </span>
             {subtitle ? (
               <span className="text-[11px] font-normal opacity-70">
                 {subtitle}
@@ -96,13 +111,18 @@ export function DependencyGraph({
       },
       draggable: false,
       style: {
-        background: isFocus ? '#16324B' : onboarded ? '#1E2533' : '#141925',
+        background: onboarded ? '#1E2533' : '#1C1416',
         border,
         borderRadius: 10,
-        boxShadow: onboarded ? '0 4px 12px rgba(0, 0, 0, 0.22)' : 'none',
-        color: isFocus ? '#F4F7FC' : onboarded ? '#F4F7FC' : '#828DA3',
+        boxShadow: isFocus
+          ? '0 0 0 4px rgba(59, 130, 246, 0.18), 0 0 22px 4px rgba(59, 130, 246, 0.45)'
+          : onboarded
+            ? '0 4px 12px rgba(0, 0, 0, 0.22)'
+            : 'none',
+        color: onboarded ? '#F4F7FC' : '#C79A9A',
+        cursor: clickable ? 'pointer' : 'default',
         fontSize: 13,
-        opacity: onboarded || isFocus ? 1 : 0.72,
+        opacity: onboarded ? 1 : 0.72,
         padding: '12px 14px',
         width: 192,
       },
@@ -135,7 +155,10 @@ export function DependencyGraph({
   })
 
   return (
-    <div className="h-[calc(100vh-22rem)] min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722] [&_.react-flow__handle]:opacity-0">
+    <div className="dependency-graph-canvas h-[calc(100vh-22rem)] min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722]">
+      <style>{`
+        .dependency-graph-canvas .react-flow__handle { opacity: 0; }
+      `}</style>
       <ReactFlow
         nodes={flowNodes}
         edges={flowEdges}
