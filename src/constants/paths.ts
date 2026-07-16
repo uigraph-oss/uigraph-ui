@@ -22,6 +22,8 @@ export const Paths = {
     data: (serviceId: string) => `/services/${serviceId}/data`,
     operations: (serviceId: string) => `/services/${serviceId}/operations`,
     people: (serviceId: string) => `/services/${serviceId}/people`,
+    dependencies: (serviceId: string) => `/services/${serviceId}/dependencies`,
+    graph: '/services/graph',
   },
   localDashboard: {
     root: 'http://localhost:3001/dashboard',

@@ -660,6 +660,63 @@ export type DbTable = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type Dependency = {
+  apiEndpointNames?: Maybe<Array<Scalars['String']['output']>>;
+  apiGroupName?: Maybe<Scalars['String']['output']>;
+  consumerService: DependencyService;
+  criticality?: Maybe<Scalars['String']['output']>;
+  databaseName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  direction?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  providerName?: Maybe<Scalars['String']['output']>;
+  providerService?: Maybe<DependencyService>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+export type DependencyGraph = {
+  edges: Array<DependencyGraphEdge>;
+  nodes: Array<DependencyGraphNode>;
+};
+
+export type DependencyGraphEdge = {
+  apiEndpointNames?: Maybe<Array<Scalars['String']['output']>>;
+  apiGroupName?: Maybe<Scalars['String']['output']>;
+  criticality?: Maybe<Scalars['String']['output']>;
+  databaseName?: Maybe<Scalars['String']['output']>;
+  dependencyId?: Maybe<Scalars['ID']['output']>;
+  depth?: Maybe<Scalars['Int']['output']>;
+  direction?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  source: Scalars['ID']['output'];
+  target: Scalars['ID']['output'];
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+export type DependencyGraphNode = {
+  depth?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  name: Scalars['String']['output'];
+  service?: Maybe<DependencyService>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+export type DependencyService = {
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  gitRepoUrl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  language?: Maybe<Scalars['String']['output']>;
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  name: Scalars['String']['output'];
+  status?: Maybe<Scalars['String']['output']>;
+  tier?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type Diagram = {
   contentHash: Scalars['String']['output'];
   contentKey: Scalars['String']['output'];
@@ -1145,6 +1202,7 @@ export type Mutation = {
   updateService: Service;
   updateServiceAccount: ServiceAccount;
   updateServiceDB: ServiceDb;
+  updateServiceDependencies: DependencyGraph;
   updateTeam: Team;
   updateTestCase: TestCase;
   updateTestPack: TestPack;
@@ -1893,6 +1951,13 @@ export type MutationUpdateServiceDbArgs = {
 };
 
 
+export type MutationUpdateServiceDependenciesArgs = {
+  input: UpdateServiceDependenciesInput;
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateTeamArgs = {
   input: UpdateTeamInput;
   orgId: Scalars['ID']['input'];
@@ -2025,6 +2090,8 @@ export type Query = {
   costSavingsByUser: Array<UserSavings>;
   costSavingsSummary: SavingsSummary;
   costSavingsTimeseries: Array<DailySavings>;
+  dependencies: Array<Dependency>;
+  dependencyGraph: DependencyGraph;
   diagram: Diagram;
   diagramContent: DiagramContent;
   diagramImages: Array<DiagramImage>;
@@ -2069,9 +2136,11 @@ export type Query = {
   serviceDB: ServiceDb;
   serviceDBVersions: Array<ServiceDbVersion>;
   serviceDBs: Array<ServiceDb>;
+  serviceDependencyGraph: DependencyGraph;
   serviceDiagrams: Array<ServiceDiagram>;
   serviceDocById: ServiceDoc;
   serviceDocs: Array<ServiceDoc>;
+  serviceImpact: DependencyGraph;
   services: ServicePage;
   team: Team;
   teamMembers: Array<TeamMember>;
@@ -2234,6 +2303,19 @@ export type QueryCostSavingsTimeseriesArgs = {
   modelId?: InputMaybe<Scalars['String']['input']>;
   orgId: Scalars['ID']['input'];
   period?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryDependenciesArgs = {
+  criticality?: InputMaybe<Scalars['String']['input']>;
+  direction?: InputMaybe<Scalars['String']['input']>;
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type QueryDependencyGraphArgs = {
+  orgId: Scalars['ID']['input'];
 };
 
 
@@ -2468,6 +2550,12 @@ export type QueryServiceDBsArgs = {
 };
 
 
+export type QueryServiceDependencyGraphArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type QueryServiceDiagramsArgs = {
   orgId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
@@ -2481,6 +2569,14 @@ export type QueryServiceDocByIdArgs = {
 
 
 export type QueryServiceDocsArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type QueryServiceImpactArgs = {
+  direction?: InputMaybe<Scalars['String']['input']>;
+  maxDepth?: InputMaybe<Scalars['Int']['input']>;
   orgId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
 };
@@ -2772,6 +2868,17 @@ export type ServiceDbVersion = {
   sourceTs?: Maybe<Scalars['Time']['output']>;
   tables: Array<DbTable>;
   versionNumber: Scalars['Int']['output'];
+};
+
+export type ServiceDependencyInput = {
+  apiEndpointNames?: InputMaybe<Array<Scalars['String']['input']>>;
+  apiGroupName?: InputMaybe<Scalars['String']['input']>;
+  criticality: Scalars['String']['input'];
+  databaseName?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  service: Scalars['String']['input'];
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ServiceDiagram = {
@@ -3177,6 +3284,11 @@ export type UpdateServiceDbInput = {
   schemaJson?: InputMaybe<Scalars['String']['input']>;
   source?: InputMaybe<Scalars['String']['input']>;
   sourceTs?: InputMaybe<Scalars['Time']['input']>;
+};
+
+export type UpdateServiceDependenciesInput = {
+  commitHash?: InputMaybe<Scalars['String']['input']>;
+  dependencies: Array<ServiceDependencyInput>;
 };
 
 export type UpdateServiceInput = {
@@ -4532,6 +4644,40 @@ export type ApiGroupSpecQueryVariables = Exact<{
 
 export type ApiGroupSpecQuery = { apiGroupSpec: { apiGroupId: string, fileName: string, content: string } };
 
+export type ServiceDependenciesQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  direction?: InputMaybe<Scalars['String']['input']>;
+  criticality?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ServiceDependenciesQuery = { dependencies: Array<{ id: string, name: string, type?: string | null, criticality?: string | null, description?: string | null, apiGroupName?: string | null, apiEndpointNames?: Array<string> | null, databaseName?: string | null, direction?: string | null, providerName?: string | null, consumerService: { id: string, name: string }, providerService?: { id: string, name: string } | null }> };
+
+export type ServiceDependencyGraphQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+}>;
+
+
+export type ServiceDependencyGraphQuery = { serviceDependencyGraph: { nodes: Array<{ id: string, name: string, service?: { id: string, description?: string | null, gitRepoUrl?: string | null, updatedAt?: string | null } | null }>, edges: Array<{ id: string, source: string, target: string, type?: string | null, criticality?: string | null, apiGroupName?: string | null, apiEndpointNames?: Array<string> | null, databaseName?: string | null }> } };
+
+export type UpdateServiceDependenciesMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  input: UpdateServiceDependenciesInput;
+}>;
+
+
+export type UpdateServiceDependenciesMutation = { updateServiceDependencies: { nodes: Array<{ id: string, name: string, service?: { id: string, description?: string | null, gitRepoUrl?: string | null, updatedAt?: string | null } | null }>, edges: Array<{ id: string, source: string, target: string, type?: string | null, criticality?: string | null, apiGroupName?: string | null, apiEndpointNames?: Array<string> | null, databaseName?: string | null }> } };
+
+export type OrganizationDependencyGraphQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type OrganizationDependencyGraphQuery = { dependencyGraph: { nodes: Array<{ id: string, name: string, service?: { id: string, description?: string | null, gitRepoUrl?: string | null, updatedAt?: string | null } | null }>, edges: Array<{ id: string, source: string, target: string, type?: string | null, criticality?: string | null, apiGroupName?: string | null, apiEndpointNames?: Array<string> | null, databaseName?: string | null }> } };
+
 export type SavedQueriesQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
@@ -5095,6 +5241,10 @@ export const DeleteApiEndpointDocument = {"kind":"Document","definitions":[{"kin
 export const ApiGroupAndVersionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"APIGroupAndVersions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"apiGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"protocol"}},{"kind":"Field","name":{"kind":"Name","value":"specKey"}},{"kind":"Field","name":{"kind":"Name","value":"specHash"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupVersions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"apiGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"apiGroupId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"specKey"}},{"kind":"Field","name":{"kind":"Name","value":"specHash"}},{"kind":"Field","name":{"kind":"Name","value":"isAutoVersion"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<ApiGroupAndVersionsQuery, ApiGroupAndVersionsQueryVariables>;
 export const ApiGroupVersionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"APIGroupVersions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"apiGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiGroupVersions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"apiGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"apiGroupId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"specKey"}},{"kind":"Field","name":{"kind":"Name","value":"specHash"}},{"kind":"Field","name":{"kind":"Name","value":"isAutoVersion"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<ApiGroupVersionsQuery, ApiGroupVersionsQueryVariables>;
 export const ApiGroupSpecDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ApiGroupSpec"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"apiGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiGroupSpec"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"apiGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"apiGroupId"}}},{"kind":"Argument","name":{"kind":"Name","value":"versionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"content"}}]}}]}}]} as unknown as DocumentNode<ApiGroupSpecQuery, ApiGroupSpecQueryVariables>;
+export const ServiceDependenciesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceDependencies"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"direction"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"criticality"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dependencies"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"direction"},"value":{"kind":"Variable","name":{"kind":"Name","value":"direction"}}},{"kind":"Argument","name":{"kind":"Name","value":"criticality"},"value":{"kind":"Variable","name":{"kind":"Name","value":"criticality"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"criticality"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupName"}},{"kind":"Field","name":{"kind":"Name","value":"apiEndpointNames"}},{"kind":"Field","name":{"kind":"Name","value":"databaseName"}},{"kind":"Field","name":{"kind":"Name","value":"direction"}},{"kind":"Field","name":{"kind":"Name","value":"providerName"}},{"kind":"Field","name":{"kind":"Name","value":"consumerService"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"providerService"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<ServiceDependenciesQuery, ServiceDependenciesQueryVariables>;
+export const ServiceDependencyGraphDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceDependencyGraph"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceDependencyGraph"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"gitRepoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"target"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"criticality"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupName"}},{"kind":"Field","name":{"kind":"Name","value":"apiEndpointNames"}},{"kind":"Field","name":{"kind":"Name","value":"databaseName"}}]}}]}}]}}]} as unknown as DocumentNode<ServiceDependencyGraphQuery, ServiceDependencyGraphQueryVariables>;
+export const UpdateServiceDependenciesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateServiceDependencies"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateServiceDependenciesInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServiceDependencies"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"gitRepoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"target"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"criticality"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupName"}},{"kind":"Field","name":{"kind":"Name","value":"apiEndpointNames"}},{"kind":"Field","name":{"kind":"Name","value":"databaseName"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateServiceDependenciesMutation, UpdateServiceDependenciesMutationVariables>;
+export const OrganizationDependencyGraphDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"OrganizationDependencyGraph"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dependencyGraph"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"gitRepoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"target"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"criticality"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupName"}},{"kind":"Field","name":{"kind":"Name","value":"apiEndpointNames"}},{"kind":"Field","name":{"kind":"Name","value":"databaseName"}}]}}]}}]}}]} as unknown as DocumentNode<OrganizationDependencyGraphQuery, OrganizationDependencyGraphQueryVariables>;
 export const SavedQueriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SavedQueries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceDbId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"scope"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SavedQueryScope"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"savedQueries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceDbId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceDbId"}}},{"kind":"Argument","name":{"kind":"Name","value":"scope"},"value":{"kind":"Variable","name":{"kind":"Name","value":"scope"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"folderId"}},{"kind":"Field","name":{"kind":"Name","value":"scope"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"queryText"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByActor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}}]}}]} as unknown as DocumentNode<SavedQueriesQuery, SavedQueriesQueryVariables>;
 export const SavedQueryFoldersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SavedQueryFolders"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceDbId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"scope"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SavedQueryScope"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"savedQueryFolders"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceDbId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceDbId"}}},{"kind":"Argument","name":{"kind":"Name","value":"scope"},"value":{"kind":"Variable","name":{"kind":"Name","value":"scope"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<SavedQueryFoldersQuery, SavedQueryFoldersQueryVariables>;
 export const CreateSavedQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSavedQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceDbId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateSavedQueryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSavedQuery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceDbId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceDbId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateSavedQueryMutation, CreateSavedQueryMutationVariables>;

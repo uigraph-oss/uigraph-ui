@@ -5,6 +5,7 @@ const allServiceTabs = [
   { id: 'apis', label: 'API & Behavior' },
   { id: 'architecture', label: 'Architecture' },
   { id: 'data', label: 'Data' },
+  { id: 'dependencies', label: 'Dependencies' },
   { id: 'docs', label: 'Docs' },
   { id: 'tests', label: 'Tests' },
   { id: 'operations', label: 'Operations' },
