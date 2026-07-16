@@ -1,4 +1,6 @@
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -15,11 +17,14 @@ import {
   SERVICE_DEPENDENCY_GRAPH,
   type ServiceDependencyGraphData,
 } from '@/features/services/api/dependencies'
+import { useServiceContext } from '@/features/services/contexts/service-context'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
+import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DependencyGraph } from './components/dependencies/dependency-graph'
+import { ManageDependenciesModal } from './components/dependencies/manage-dependencies-modal'
 
 export function DashboardServiceDependencies({
   serviceId,
@@ -27,9 +32,11 @@ export function DashboardServiceDependencies({
   serviceId: string
 }) {
   const orgId = useCurrentOrganization().id
+  const { service } = useServiceContext()
   const navigate = useNavigate()
   const [direction, setDirection] = useState('all')
   const [criticality, setCriticality] = useState('all')
+  const [manageOpen, setManageOpen] = useState(false)
   const graph = useQuery<ServiceDependencyGraphData>(SERVICE_DEPENDENCY_GRAPH, {
     variables: { orgId, serviceId },
     skip: !orgId,
@@ -64,7 +71,22 @@ export function DashboardServiceDependencies({
       <DashboardSectionHeader
         title="Dependencies"
         description="Upstream and downstream service relationships, declared in .uigraph.yaml and validated against synced specs."
-      />
+      >
+        <Button preset="outline" onClick={() => setManageOpen(true)}>
+          <Settings2 className="size-4" />
+          Manage Dependencies
+        </Button>
+      </DashboardSectionHeader>
+
+      <BetterDialogProvider open={manageOpen} onOpenChange={setManageOpen}>
+        {manageOpen && (
+          <ManageDependenciesModal
+            serviceId={serviceId}
+            serviceName={service?.name}
+            onClose={() => setManageOpen(false)}
+          />
+        )}
+      </BetterDialogProvider>
       <DashboardSectionContent className="gap-4 px-3 pt-3.5 pb-4">
         <div className="relative min-h-0 flex-1">
           <div className="absolute top-4 right-4 z-10 flex flex-wrap gap-3">

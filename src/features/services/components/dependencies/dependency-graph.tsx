@@ -65,11 +65,6 @@ export function DependencyGraph({
     const meta = edgeMeta.get(node.id)
     const hard = meta?.criticality?.toLowerCase() === 'hard'
 
-    const subtitle =
-      meta?.criticality || meta?.type
-        ? [meta.criticality, meta.type].filter(Boolean).join(' · ')
-        : ''
-
     const border = isFocus
       ? '1px solid #3B82F6'
       : !onboarded
@@ -105,10 +100,33 @@ export function DependencyGraph({
           const content = (
             <div className="flex flex-col text-left leading-snug">
               <span className="block font-semibold">{node.name}</span>
-              {subtitle ? (
-                <span className="mt-0.5 text-[11px] font-normal opacity-70">
-                  {subtitle}
-                </span>
+              {meta?.criticality || meta?.type ? (
+                <div className="mt-[3px] ml-[-1px] flex flex-wrap items-center gap-1">
+                  {meta?.criticality ? (
+                    <span
+                      className="rounded px-1.5 py-[1px] text-[9px] leading-[15px] font-medium capitalize"
+                      style={{
+                        background: hard
+                          ? 'rgba(194, 112, 63, 0.16)'
+                          : 'rgba(96, 116, 148, 0.22)',
+                        color: hard ? '#E0A97F' : '#A6B6CC',
+                      }}
+                    >
+                      {meta.criticality}
+                    </span>
+                  ) : null}
+                  {meta?.type ? (
+                    <span
+                      className="rounded px-1.5 py-[1px] text-[9px] leading-[15px] font-medium"
+                      style={{
+                        background: 'rgba(59, 130, 246, 0.14)',
+                        color: '#8AB0EA',
+                      }}
+                    >
+                      {meta.type}
+                    </span>
+                  ) : null}
+                </div>
               ) : null}
               {service?.description ? (
                 <span className="mt-1.5 line-clamp-2 text-[11px] font-normal opacity-60">

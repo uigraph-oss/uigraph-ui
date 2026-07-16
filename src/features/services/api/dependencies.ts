@@ -114,6 +114,36 @@ export const SERVICE_DEPENDENCY_GRAPH = gql(`
   }
 `)
 
+export const UPDATE_SERVICE_DEPENDENCIES = gql(`
+  mutation UpdateServiceDependencies(
+    $orgId: ID!
+    $serviceId: ID!
+    $input: UpdateServiceDependenciesInput!
+  ) {
+    updateServiceDependencies(orgId: $orgId, serviceId: $serviceId, input: $input) {
+      nodes {
+        id
+        name
+        onboardingStatus
+        service {
+          id
+          description
+          gitRepoUrl
+          updatedAt
+        }
+      }
+      edges {
+        id
+        source
+        target
+        type
+        criticality
+        operations
+      }
+    }
+  }
+`)
+
 export const ORGANIZATION_DEPENDENCY_GRAPH = gql(`
   query OrganizationDependencyGraph($orgId: ID!) {
     dependencyGraph(orgId: $orgId) {
