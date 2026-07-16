@@ -110,8 +110,8 @@ export function DependencyGraph({
     return {
       id: node.id,
       position: { x: position.x - nodeWidth / 2, y: position.y - 64 },
-      sourcePosition: Position.Left,
-      targetPosition: Position.Right,
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
       data: {
         ...node,
         label: (() => {
@@ -247,8 +247,8 @@ export function DependencyGraph({
 
     return {
       id: edge.id,
-      source: edge.source,
-      target: edge.target,
+      source: edge.target,
+      target: edge.source,
       markerEnd: {
         type: MarkerType.ArrowClosed,
         color: hard ? '#C2703F' : '#64748B',
