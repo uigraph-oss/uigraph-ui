@@ -4,6 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { Paths } from '@/constants'
 import {
   API_ENDPOINTS,
   API_GROUPS,
@@ -12,6 +13,7 @@ import type {
   DependencyGraphEdge,
   DependencyGraphNode,
 } from '@/features/services/api/dependencies'
+import { SERVICE_DBS } from '@/features/services/api/service-db'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import {
@@ -113,6 +115,19 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
     skip: !canFetch || !group?.id,
   })
 
+  const databaseName = data?.databaseName ?? ''
+  const canFetchDb =
+    data?.edgeType === 'database' &&
+    Boolean(orgId) &&
+    Boolean(providerServiceId) &&
+    !providerServiceId.startsWith('ghost:') &&
+    Boolean(databaseName)
+  const dbsQuery = useQuery(SERVICE_DBS, {
+    variables: { orgId, serviceId: providerServiceId },
+    skip: !canFetchDb,
+  })
+  const db = dbsQuery.data?.serviceDBs?.find((d) => d.dbName === databaseName)
+
   if (!data) return null
 
   const typeLabel = data.edgeType
@@ -120,22 +135,61 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
     : 'Untyped dependency'
 
   if (data.edgeType === 'database') {
-    return (
-      <div className="flex items-center gap-1.5 text-[11px]">
-        <Database className="size-3 shrink-0 opacity-70" />
-        <span className="font-mono">{data.databaseName ?? typeLabel}</span>
+    const dbMeta = db ? (
+      <div className="text-[11px] opacity-60">
+        {[
+          db.dbType,
+          db.dialect && db.dialect.toLowerCase() !== db.dbType?.toLowerCase()
+            ? db.dialect
+            : null,
+          db.tables && db.tables.length > 0
+            ? `${db.tables.length} table${db.tables.length === 1 ? '' : 's'}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')}
       </div>
+    ) : null
+    const dbBody = (
+      <>
+        <div className="flex items-center gap-1.5 text-xs">
+          <Database className="size-3 shrink-0 opacity-70" />
+          <span className="font-mono">{databaseName || typeLabel}</span>
+        </div>
+        {dbsQuery.loading ? (
+          <div className="flex items-center gap-1.5 text-[11px] opacity-70">
+            <Loader2 className="size-3 animate-spin" />
+            Loading database…
+          </div>
+        ) : (
+          dbMeta
+        )}
+      </>
     )
+    if (db?.id) {
+      return (
+        <a
+          href={Paths.services.database(providerServiceId, db.id)}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(event) => event.stopPropagation()}
+          className="flex flex-col gap-1 rounded px-1 py-0.5 text-left hover:bg-white/5"
+        >
+          {dbBody}
+        </a>
+      )
+    }
+    return <div className="flex flex-col gap-1 text-left">{dbBody}</div>
   }
 
   if (!isApi || endpoints.length === 0) {
-    return <div className="text-[11px]">{typeLabel}</div>
+    return <div className="text-xs">{typeLabel}</div>
   }
 
   const loading = groupsQuery.loading || endpointsQuery.loading
   if (loading) {
     return (
-      <div className="flex items-center gap-1.5 text-[11px] opacity-70">
+      <div className="flex items-center gap-1.5 text-xs opacity-70">
         <Loader2 className="size-3 animate-spin" />
         Loading endpoints…
       </div>
@@ -150,19 +204,46 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
     <div className="flex flex-col gap-1 text-left">
       {endpoints.map((operationId) => {
         const endpoint = byOperation.get(operationId)
-        return (
-          <div
-            key={operationId}
-            className="flex items-center gap-1.5 text-[11px]"
-          >
+        const row = (
+          <>
+            <span className="font-mono opacity-90">{operationId}</span>
+            {endpoint?.method || endpoint?.path ? (
+              <span className="size-1 shrink-0 rounded-full bg-current opacity-40" />
+            ) : null}
             {endpoint?.method ? (
-              <span className="shrink-0 font-mono font-semibold opacity-90">
+              <span className="shrink-0 font-mono font-semibold opacity-70">
                 {endpoint.method.toUpperCase()}
               </span>
             ) : null}
-            <span className="font-mono opacity-80">
-              {endpoint?.path ?? operationId}
-            </span>
+            {endpoint?.path ? (
+              <span className="font-mono opacity-60">{endpoint.path}</span>
+            ) : null}
+          </>
+        )
+        if (endpoint && group?.id) {
+          return (
+            <a
+              key={operationId}
+              href={Paths.services.apiEndpoint(
+                providerServiceId,
+                group.id,
+                endpoint.id
+              )}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(event) => event.stopPropagation()}
+              className="flex items-center gap-1.5 rounded px-1 py-0.5 text-xs hover:bg-white/5"
+            >
+              {row}
+            </a>
+          )
+        }
+        return (
+          <div
+            key={operationId}
+            className="flex items-center gap-1.5 px-1 py-0.5 text-xs"
+          >
+            {row}
           </div>
         )
       })}
@@ -210,16 +291,20 @@ function DependencyEdge({
               <TooltipTrigger asChild>
                 <div
                   style={{
+                    alignItems: 'center',
                     background: '#1A2130',
                     border: '1px solid #2B3444',
                     borderRadius: 4,
                     color: '#AAB4C5',
+                    display: 'flex',
                     fontSize: 10,
+                    gap: 4,
                     lineHeight: 1.2,
-                    padding: '2px 5px',
+                    padding: '2px 6px',
                     whiteSpace: 'nowrap',
                   }}
                 >
+                  <Icon className="size-3 shrink-0 opacity-70" />
                   {data.detailText}
                 </div>
               </TooltipTrigger>
