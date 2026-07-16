@@ -289,7 +289,7 @@ export function ManageDependenciesModal({
         <div className="mb-4 space-y-1.5">
           <Label className="text-xs font-normal text-[#828DA3]">Service</Label>
           <Select value={serviceId} onValueChange={setSelectedServiceId}>
-            <SelectTrigger className="border-[#2A3242] bg-transparent">
+            <SelectTrigger className="h-10 w-full border-[#2A3242] bg-transparent">
               <SelectValue placeholder="Select a service" />
             </SelectTrigger>
             <SelectContent>
@@ -352,7 +352,7 @@ export function ManageDependenciesModal({
                           value={field.value}
                           onValueChange={field.onChange}
                         >
-                          <SelectTrigger className="border-[#2A3242] bg-transparent">
+                          <SelectTrigger className="h-10 w-full border-[#2A3242] bg-transparent">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -384,14 +384,14 @@ export function ManageDependenciesModal({
                             onChange={field.onChange}
                             options={serviceOptions}
                             placeholder="Select a service"
-                            className="!h-10 rounded-[10px]"
+                            className="!h-10 w-full rounded-md border-[#2A3242] !bg-transparent px-3"
                           />
                         ) : (
                           <Input
                             placeholder="Provider name"
                             autoComplete="off"
                             className={cn(
-                              'border-[#2A3242] bg-transparent',
+                              'h-10 border-[#2A3242] bg-transparent',
                               errors?.otherService && 'border-red-500'
                             )}
                             {...field}
@@ -405,86 +405,86 @@ export function ManageDependenciesModal({
                       </p>
                     )}
                   </div>
+                </div>
 
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-normal text-[#828DA3]">
+                    Name
+                  </Label>
+                  <Controller
+                    name={`rows.${index}.name`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g. getOrder"
+                        autoComplete="off"
+                        className={cn(
+                          'h-10 border-[#2A3242] bg-transparent',
+                          errors?.name && 'border-red-500'
+                        )}
+                        {...field}
+                      />
+                    )}
+                  />
+                  {errors?.name && (
+                    <p className="text-xs text-red-500">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-normal text-[#828DA3]">
-                      Name
+                      Type
                     </Label>
                     <Controller
-                      name={`rows.${index}.name`}
+                      name={`rows.${index}.type`}
                       control={form.control}
                       render={({ field }) => (
-                        <Input
-                          placeholder="e.g. getOrder"
-                          autoComplete="off"
-                          className={cn(
-                            'border-[#2A3242] bg-transparent',
-                            errors?.name && 'border-red-500'
-                          )}
-                          {...field}
-                        />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="h-10 w-full border-[#2A3242] bg-transparent">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DEPENDENCY_TYPES.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       )}
                     />
-                    {errors?.name && (
-                      <p className="text-xs text-red-500">
-                        {errors.name.message}
-                      </p>
-                    )}
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-normal text-[#828DA3]">
-                        Type
-                      </Label>
-                      <Controller
-                        name={`rows.${index}.type`}
-                        control={form.control}
-                        render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger className="border-[#2A3242] bg-transparent">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {DEPENDENCY_TYPES.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-normal text-[#828DA3]">
-                        Criticality
-                      </Label>
-                      <Controller
-                        name={`rows.${index}.criticality`}
-                        control={form.control}
-                        render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger className="border-[#2A3242] bg-transparent">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {CRITICALITIES.map((c) => (
-                                <SelectItem key={c} value={c}>
-                                  {c}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-normal text-[#828DA3]">
+                      Criticality
+                    </Label>
+                    <Controller
+                      name={`rows.${index}.criticality`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="h-10 w-full border-[#2A3242] bg-transparent">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {CRITICALITIES.map((c) => (
+                              <SelectItem key={c} value={c}>
+                                {c}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                   </div>
                 </div>
 
@@ -499,7 +499,7 @@ export function ManageDependenciesModal({
                       <Input
                         placeholder="Optional description"
                         autoComplete="off"
-                        className="border-[#2A3242] bg-transparent"
+                        className="h-10 border-[#2A3242] bg-transparent"
                         {...field}
                       />
                     )}
@@ -519,7 +519,7 @@ export function ManageDependenciesModal({
                           <Input
                             placeholder="Provider API name"
                             autoComplete="off"
-                            className="border-[#2A3242] bg-transparent"
+                            className="h-10 border-[#2A3242] bg-transparent"
                             {...field}
                           />
                         )}
