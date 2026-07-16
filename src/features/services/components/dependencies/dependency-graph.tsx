@@ -275,6 +275,7 @@ function DependencyEdge({
   const hard = data?.hard ?? false
   const showDetails = data?.showDetails ?? true
   const Icon = typeIcon(data?.edgeType)
+  const hasTooltip = Boolean(data?.edgeType)
 
   return (
     <>
@@ -288,8 +289,8 @@ function DependencyEdge({
               pointerEvents: 'all',
             }}
           >
-            <Tooltip>
-              <TooltipTrigger asChild>
+            {(() => {
+              const labelNode = (
                 <div
                   style={{
                     alignItems: 'center',
@@ -308,11 +309,17 @@ function DependencyEdge({
                   <Icon className="size-3 shrink-0 opacity-70" />
                   {data.detailText}
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[520px] p-1 [text-wrap:wrap]">
-                <DependencyTooltipContent data={data} />
-              </TooltipContent>
-            </Tooltip>
+              )
+              if (!hasTooltip) return labelNode
+              return (
+                <Tooltip>
+                  <TooltipTrigger asChild>{labelNode}</TooltipTrigger>
+                  <TooltipContent className="max-w-[520px] p-1 [text-wrap:wrap]">
+                    <DependencyTooltipContent data={data} />
+                  </TooltipContent>
+                </Tooltip>
+              )
+            })()}
           </div>
         ) : (
           <div
@@ -322,8 +329,8 @@ function DependencyEdge({
               pointerEvents: 'all',
             }}
           >
-            <Tooltip>
-              <TooltipTrigger asChild>
+            {(() => {
+              const iconNode = (
                 <div
                   style={{
                     alignItems: 'center',
@@ -339,11 +346,17 @@ function DependencyEdge({
                 >
                   <Icon className="size-3" />
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[520px] p-1 [text-wrap:wrap]">
-                <DependencyTooltipContent data={data} />
-              </TooltipContent>
-            </Tooltip>
+              )
+              if (!hasTooltip) return iconNode
+              return (
+                <Tooltip>
+                  <TooltipTrigger asChild>{iconNode}</TooltipTrigger>
+                  <TooltipContent className="max-w-[520px] p-1 [text-wrap:wrap]">
+                    <DependencyTooltipContent data={data} />
+                  </TooltipContent>
+                </Tooltip>
+              )
+            })()}
           </div>
         )}
       </EdgeLabelRenderer>
