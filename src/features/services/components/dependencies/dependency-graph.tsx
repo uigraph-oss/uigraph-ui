@@ -102,7 +102,7 @@ export function DependencyGraph({
       data: {
         ...node,
         label: (
-          <div className="flex flex-col gap-1 text-left leading-tight">
+          <div className="flex flex-col text-left leading-snug">
             <span className="flex items-center gap-1.5 font-semibold">
               {node.name}
               {!onboarded ? (
@@ -119,32 +119,36 @@ export function DependencyGraph({
               ) : null}
             </span>
             {subtitle ? (
-              <span className="text-[11px] font-normal opacity-70">
+              <span className="mt-0.5 text-[11px] font-normal opacity-70">
                 {subtitle}
               </span>
             ) : null}
             {service?.description ? (
-              <span className="line-clamp-2 text-[11px] font-normal opacity-60">
+              <span className="mt-1.5 line-clamp-2 text-[11px] font-normal opacity-60">
                 {service.description}
               </span>
             ) : null}
-            {service?.gitRepoUrl ? (
-              <a
-                href={service.gitRepoUrl}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(event) => event.stopPropagation()}
-                className="flex items-center gap-1 text-[10px] font-normal text-[#7FA8E0] hover:underline"
-              >
-                <Github className="size-3 shrink-0" />
-                <span className="truncate">{repoLabel}</span>
-              </a>
-            ) : null}
-            {updatedLabel ? (
-              <span className="flex items-center gap-1 text-[10px] font-normal opacity-50">
-                <Clock className="size-3 shrink-0" />
-                Updated {updatedLabel}
-              </span>
+            {service?.gitRepoUrl || updatedLabel ? (
+              <div className="mt-2 flex flex-col gap-1">
+                {service?.gitRepoUrl ? (
+                  <a
+                    href={service.gitRepoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(event) => event.stopPropagation()}
+                    className="flex items-center gap-1.5 text-[10px] font-normal text-[#7FA8E0] hover:underline"
+                  >
+                    <Github className="size-3 shrink-0" />
+                    <span className="truncate">{repoLabel}</span>
+                  </a>
+                ) : null}
+                {updatedLabel ? (
+                  <span className="flex items-center gap-1.5 text-[10px] font-normal opacity-50">
+                    <Clock className="size-3 shrink-0" />
+                    Updated {updatedLabel}
+                  </span>
+                ) : null}
+              </div>
             ) : null}
           </div>
         ),
@@ -163,7 +167,7 @@ export function DependencyGraph({
         cursor: clickable ? 'pointer' : 'default',
         fontSize: 13,
         opacity: onboarded ? 1 : 0.72,
-        padding: '12px 14px',
+        padding: '11px 13px',
         width: nodeWidth,
       },
     }
