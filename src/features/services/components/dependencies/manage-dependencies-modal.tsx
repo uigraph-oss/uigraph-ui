@@ -146,10 +146,10 @@ function DependencyEditor({
   return (
     <AccordionItem
       value={fieldId}
-      className="rounded-[16px] border border-[#2A3242] bg-[#171D2A]"
+      className="rounded-[16px] border border-[#2A3242] bg-[#171D2A] last:border-b"
     >
       <div className="relative">
-        <AccordionTrigger className="group min-w-0 items-center justify-start gap-3 px-5 py-4 pr-32 hover:no-underline [&>svg]:hidden">
+        <AccordionTrigger className="group min-w-0 items-center justify-start gap-3 px-5 py-4 pr-64 hover:no-underline [&>svg]:hidden">
           <span className="shrink-0">
             <ChevronDown className="size-4 text-[#828DA3] transition-transform duration-200 group-data-[state=open]:rotate-180" />
           </span>
@@ -172,7 +172,7 @@ function DependencyEditor({
           </div>
         </AccordionTrigger>
 
-        <div className="absolute top-1/2 right-11 z-10 flex -translate-y-1/2 items-center gap-1">
+        <div className="absolute top-1/2 right-5 z-10 flex -translate-y-1/2 items-center gap-2">
           <button
             type="button"
             onClick={() =>
@@ -181,25 +181,23 @@ function DependencyEditor({
                 direction === 'upstream' ? 'downstream' : 'upstream'
               )
             }
-            className="flex size-8 items-center justify-center rounded-[8px] text-[#828DA3] transition-all hover:bg-[#1E2533] hover:text-[#F4F7FC]"
-            aria-label={`Move to ${
-              direction === 'upstream' ? 'downstream' : 'upstream'
-            }`}
+            className="flex h-9 items-center gap-2 rounded-[8px] px-3.5 text-sm text-[#828DA3] transition-all hover:bg-[#1E2533] hover:text-[#F4F7FC]"
           >
-            <ArrowRightLeft className="size-4" />
+            <ArrowRightLeft className="size-[18px]" />
+            Move to {direction === 'upstream' ? 'downstream' : 'upstream'}
           </button>
           <button
             type="button"
             onClick={() => remove(index)}
-            className="flex size-8 items-center justify-center rounded-[8px] text-[#828DA3] transition-all hover:bg-red-500/15 hover:text-red-400"
+            className="flex size-9 items-center justify-center rounded-[8px] text-[#828DA3] transition-all hover:bg-red-500/15 hover:text-red-400"
             aria-label="Remove dependency"
           >
-            <Trash2 className="size-4" />
+            <Trash2 className="size-[18px]" />
           </button>
         </div>
       </div>
 
-      <AccordionContent className="border-t border-[#2A3242] px-5 pt-5">
+      <AccordionContent className="border-t border-[#2A3242] p-4 pt-3">
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
@@ -211,27 +209,15 @@ function DependencyEditor({
               <Controller
                 name={`rows.${index}.otherService`}
                 control={form.control}
-                render={({ field }) =>
-                  direction === 'downstream' ? (
-                    <SelectSearch
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={serviceOptions}
-                      placeholder="Select a service"
-                      className="!h-[56px] w-full rounded-[16px] border-[#2A3242] !bg-transparent px-6"
-                    />
-                  ) : (
-                    <Input
-                      placeholder="Provider name"
-                      autoComplete="off"
-                      className={cn(
-                        'h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none',
-                        errors?.otherService && 'border-red-500'
-                      )}
-                      {...field}
-                    />
-                  )
-                }
+                render={({ field }) => (
+                  <SelectSearch
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={serviceOptions}
+                    placeholder="Select a service"
+                    className="!h-[56px] w-full rounded-[16px] border-[#2A3242] !bg-transparent px-6"
+                  />
+                )}
               />
               {errors?.otherService && (
                 <p className="text-xs text-red-500">
