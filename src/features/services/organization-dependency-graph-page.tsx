@@ -38,7 +38,7 @@ export function OrganizationDependencyGraphPage() {
           nodes={graph.nodes}
           edges={graph.edges}
           onNodeClick={(node) => {
-            if (node.service?.id && node.onboardingStatus === 'onboarded') {
+            if (node.service?.id) {
               void navigate(Paths.services.dependencies(node.service.id))
             }
           }}

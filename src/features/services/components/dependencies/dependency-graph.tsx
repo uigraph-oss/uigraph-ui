@@ -79,7 +79,7 @@ export function DependencyGraph({
   const flowNodes: Node<FlowNodeData>[] = nodes.map((node) => {
     const position = layout.node(node.id)
     const isFocus = node.id === focusId
-    const onboarded = node.onboardingStatus === 'onboarded'
+    const onboarded = Boolean(node.service?.id)
     const meta = edgeMeta.get(node.id)
     const hard = meta?.criticality?.toLowerCase() === 'hard'
 
@@ -244,9 +244,10 @@ export function DependencyGraph({
         type: MarkerType.ArrowClosed,
         color: hard ? '#C2703F' : '#64748B',
       },
-      label: Array.isArray(edge.operations)
-        ? edge.operations.join(', ')
-        : edge.type,
+      label:
+        edge.apiEndpointNames && edge.apiEndpointNames.length > 0
+          ? edge.apiEndpointNames.join(', ')
+          : edge.type,
       labelStyle: { fill: '#AAB4C5', fontSize: 10 },
       labelBgStyle: { fill: '#141925', fillOpacity: 0.92 },
       labelBgPadding: [4, 3],

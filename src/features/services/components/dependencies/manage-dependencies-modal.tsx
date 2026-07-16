@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -17,8 +18,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { SelectSearch } from '@/components/ui/select-search'
-import { TagInput } from '@/features/component-meta'
-import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
+import {
+  API_ENDPOINTS,
+  API_GROUPS,
+} from '@/features/services/api/api-endpoints'
 import {
   SERVICE_DEPENDENCIES,
   SERVICE_DEPENDENCY_GRAPH,
@@ -26,6 +29,7 @@ import {
   type ServiceDependenciesData,
   type ServiceDependency,
 } from '@/features/services/api/dependencies'
+import { SERVICE_DBS } from '@/features/services/api/service-db'
 import { SERVICES } from '@/features/services/api/services'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -42,7 +46,22 @@ import {
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-const DEPENDENCY_TYPES = ['http', 'grpc', 'event', 'queue', 'database']
+const NO_TYPE = 'none'
+
+const DEPENDENCY_TYPE_OPTIONS = [
+  { value: NO_TYPE, label: 'No type' },
+  { value: 'http', label: 'HTTP API' },
+  { value: 'graphql', label: 'GraphQL API' },
+  { value: 'grpc', label: 'gRPC API' },
+  { value: 'database', label: 'Database' },
+]
+
+const PROTOCOL_BY_TYPE: Record<string, string> = {
+  http: 'rest',
+  graphql: 'graphql',
+  grpc: 'grpc',
+}
+
 const CRITICALITIES = ['hard', 'soft']
 
 const rowSchema = z.object({
@@ -50,11 +69,12 @@ const rowSchema = z.object({
   direction: z.enum(['upstream', 'downstream']),
   otherService: z.string().min(1, 'Service is required'),
   name: z.string().min(1, 'Name is required'),
-  type: z.enum(['http', 'grpc', 'event', 'queue', 'database']),
+  type: z.enum(['', 'http', 'graphql', 'grpc', 'database']),
   criticality: z.enum(['hard', 'soft']),
   description: z.string(),
-  api: z.string(),
-  operations: z.array(z.string()),
+  apiGroupName: z.string(),
+  apiEndpointNames: z.array(z.string()),
+  databaseName: z.string(),
 })
 
 const formSchema = z
@@ -77,51 +97,247 @@ const formSchema = z
 
 type FormValues = z.infer<typeof formSchema>
 type DependencyRow = z.infer<typeof rowSchema>
+type DependencyType = DependencyRow['type']
 type DependencyInput = {
   name: string
   service: string
   type: string
   criticality: string
   description: string
-  api: string | null
-  operations: string[]
+  apiGroupName?: string
+  apiEndpointNames?: string[]
+  databaseName?: string
+}
+
+function isApiType(type: string): boolean {
+  return type === 'http' || type === 'graphql' || type === 'grpc'
+}
+
+function isDbType(type: string): boolean {
+  return type === 'database'
 }
 
 function providerNameOf(dep: ServiceDependency): string {
   return dep.providerName ?? dep.providerService?.name ?? ''
 }
 
-function operationsOf(dep: ServiceDependency): string[] {
-  return Array.isArray(dep.operations) ? (dep.operations as string[]) : []
+function endpointNamesOf(dep: ServiceDependency): string[] {
+  return Array.isArray(dep.apiEndpointNames) ? dep.apiEndpointNames : []
 }
 
-function isApiType(type: string): boolean {
-  return type === 'http' || type === 'grpc'
+function buildInput(
+  base: Omit<
+    DependencyInput,
+    'apiGroupName' | 'apiEndpointNames' | 'databaseName'
+  >,
+  type: string,
+  apiGroupName: string,
+  apiEndpointNames: string[],
+  databaseName: string
+): DependencyInput {
+  if (isApiType(type)) {
+    return { ...base, apiGroupName, apiEndpointNames }
+  }
+  if (isDbType(type)) {
+    return { ...base, databaseName }
+  }
+  return base
 }
 
 function depToInput(dep: ServiceDependency): DependencyInput {
-  const type = dep.type ?? 'http'
-  return {
+  const type = dep.type ?? ''
+  const base = {
     name: dep.name,
     service: providerNameOf(dep),
     type,
     criticality: dep.criticality ?? 'soft',
     description: dep.description ?? '',
-    api: isApiType(type) && typeof dep.api === 'string' ? dep.api : null,
-    operations: isApiType(type) ? operationsOf(dep) : [],
   }
+  return buildInput(
+    base,
+    type,
+    dep.apiGroupName ?? '',
+    endpointNamesOf(dep),
+    dep.databaseName ?? ''
+  )
 }
 
 function rowToInput(row: DependencyRow, providerName: string): DependencyInput {
-  return {
+  const base = {
     name: row.name,
     service: providerName,
     type: row.type,
     criticality: row.criticality,
     description: row.description,
-    api: isApiType(row.type) && row.api ? row.api : null,
-    operations: isApiType(row.type) ? row.operations : [],
   }
+  return buildInput(
+    base,
+    row.type,
+    row.apiGroupName,
+    row.apiEndpointNames,
+    row.databaseName
+  )
+}
+
+function DependencyTypeFields({
+  index,
+  form,
+  orgId,
+  providerServiceId,
+  type,
+}: {
+  index: number
+  form: UseFormReturn<FormValues>
+  orgId: string
+  providerServiceId: string | undefined
+  type: DependencyType
+}) {
+  const apiGroupName = form.watch(`rows.${index}.apiGroupName`)
+
+  const apiGroupsRes = useQuery(API_GROUPS, {
+    variables: { orgId, serviceId: providerServiceId! },
+    skip: !orgId || !providerServiceId || !isApiType(type),
+  })
+  const apiGroups = (apiGroupsRes.data?.apiGroups ?? []).filter(
+    (group) => (group.protocol ?? '').toLowerCase() === PROTOCOL_BY_TYPE[type]
+  )
+  const selectedGroup = apiGroups.find((group) => group.name === apiGroupName)
+
+  const endpointsRes = useQuery(API_ENDPOINTS, {
+    variables: {
+      orgId,
+      serviceId: providerServiceId!,
+      apiGroupId: selectedGroup?.id ?? '',
+    },
+    skip: !orgId || !providerServiceId || !selectedGroup,
+  })
+  const endpoints = endpointsRes.data?.apiEndpoints ?? []
+
+  const dbsRes = useQuery(SERVICE_DBS, {
+    variables: { orgId, serviceId: providerServiceId! },
+    skip: !orgId || !providerServiceId || !isDbType(type),
+  })
+  const dbs = dbsRes.data?.serviceDBs ?? []
+
+  if (!providerServiceId) {
+    return (
+      <p className="text-xs text-[#828DA3]">
+        Select an onboarded provider service to choose its APIs or databases.
+      </p>
+    )
+  }
+
+  if (isApiType(type)) {
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label className="text-sm font-normal text-[#828DA3]">
+            API group
+          </Label>
+          <Controller
+            name={`rows.${index}.apiGroupName`}
+            control={form.control}
+            render={({ field }) => (
+              <SelectSearch
+                value={field.value}
+                onChange={(value) => {
+                  field.onChange(value)
+                  form.setValue(`rows.${index}.apiEndpointNames`, [])
+                }}
+                options={apiGroups.map((group) => ({
+                  label: group.name,
+                  value: group.name,
+                }))}
+                placeholder="Select an API group"
+                className="!h-[56px] w-full rounded-[16px] border-[#2A3242] !bg-transparent px-6"
+              />
+            )}
+          />
+        </div>
+
+        {selectedGroup && (
+          <div className="space-y-2">
+            <Label className="text-sm font-normal text-[#828DA3]">
+              API endpoints
+            </Label>
+            <Controller
+              name={`rows.${index}.apiEndpointNames`}
+              control={form.control}
+              render={({ field }) => (
+                <div className="max-h-[240px] space-y-1 overflow-y-auto rounded-[16px] border border-[#2A3242] p-3">
+                  {endpoints.length === 0 ? (
+                    <p className="text-xs text-[#828DA3]">
+                      No endpoints in this API group.
+                    </p>
+                  ) : (
+                    endpoints.map((endpoint) => {
+                      const checked = field.value.includes(endpoint.operationId)
+                      return (
+                        <label
+                          key={endpoint.id}
+                          className="flex cursor-pointer items-center gap-3 rounded-[8px] px-2 py-2 hover:bg-[#1E2533]"
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(next) => {
+                              if (next) {
+                                field.onChange([
+                                  ...field.value,
+                                  endpoint.operationId,
+                                ])
+                              } else {
+                                field.onChange(
+                                  field.value.filter(
+                                    (name) => name !== endpoint.operationId
+                                  )
+                                )
+                              }
+                            }}
+                          />
+                          <span className="text-sm text-[#F4F7FC]">
+                            {endpoint.operationId}
+                          </span>
+                          <span className="ml-auto text-xs text-[#828DA3]">
+                            {endpoint.method}
+                          </span>
+                        </label>
+                      )
+                    })
+                  )}
+                </div>
+              )}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  if (isDbType(type)) {
+    return (
+      <div className="space-y-2">
+        <Label className="text-sm font-normal text-[#828DA3]">Database</Label>
+        <Controller
+          name={`rows.${index}.databaseName`}
+          control={form.control}
+          render={({ field }) => (
+            <SelectSearch
+              value={field.value}
+              onChange={field.onChange}
+              options={dbs.map((db) => ({
+                label: db.dbName,
+                value: db.dbName,
+              }))}
+              placeholder="Select a database"
+              className="!h-[56px] w-full rounded-[16px] border-[#2A3242] !bg-transparent px-6"
+            />
+          )}
+        />
+      </div>
+    )
+  }
+
+  return null
 }
 
 function DependencyEditor({
@@ -131,6 +347,9 @@ function DependencyEditor({
   form,
   remove,
   serviceOptions,
+  orgId,
+  serviceId,
+  services,
 }: {
   fieldId: string
   index: number
@@ -138,10 +357,18 @@ function DependencyEditor({
   form: UseFormReturn<FormValues>
   remove: (index: number) => void
   serviceOptions: { label: string; value: string }[]
+  orgId: string
+  serviceId: string
+  services: { id: string; name: string }[]
 }) {
   const row = form.watch(`rows.${index}`)
   const errors = form.formState.errors.rows?.[index]
-  const showApiFields = isApiType(row?.type)
+  const type = (row?.type ?? '') as DependencyType
+
+  const providerServiceId =
+    direction === 'upstream'
+      ? services.find((s) => s.name === row?.otherService)?.id
+      : serviceId
 
   return (
     <AccordionItem
@@ -163,7 +390,9 @@ function DependencyEditor({
                   (direction === 'upstream' ? 'New provider' : 'New consumer')}
               </span>
               <span className="rounded bg-[#1E2533] px-2 py-0.5 text-[#D2D9E6]">
-                {row?.type || 'http'}
+                {DEPENDENCY_TYPE_OPTIONS.find(
+                  (option) => option.value === (row?.type || NO_TYPE)
+                )?.label ?? 'No type'}
               </span>
               <span className="rounded bg-[#1E2533] px-2 py-0.5 text-[#D2D9E6]">
                 {row?.criticality || 'soft'}
@@ -258,14 +487,22 @@ function DependencyEditor({
                 name={`rows.${index}.type`}
                 control={form.control}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value || NO_TYPE}
+                    onValueChange={(value) => {
+                      field.onChange(value === NO_TYPE ? '' : value)
+                      form.setValue(`rows.${index}.apiGroupName`, '')
+                      form.setValue(`rows.${index}.apiEndpointNames`, [])
+                      form.setValue(`rows.${index}.databaseName`, '')
+                    }}
+                  >
                     <SelectTrigger className="h-[56px]! w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {DEPENDENCY_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
+                      {DEPENDENCY_TYPE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -316,44 +553,14 @@ function DependencyEditor({
             />
           </div>
 
-          {showApiFields && (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-sm font-normal text-[#828DA3]">
-                  API
-                </Label>
-                <Controller
-                  name={`rows.${index}.api`}
-                  control={form.control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="Provider API name"
-                      autoComplete="off"
-                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                      {...field}
-                    />
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-normal text-[#828DA3]">
-                  Operations
-                </Label>
-                <Controller
-                  name={`rows.${index}.operations`}
-                  control={form.control}
-                  render={({ field }) => (
-                    <ComponentMetaThemeProvider theme="modal">
-                      <TagInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Add operation and press Enter"
-                      />
-                    </ComponentMetaThemeProvider>
-                  )}
-                />
-              </div>
-            </div>
+          {type && (
+            <DependencyTypeFields
+              index={index}
+              form={form}
+              orgId={orgId}
+              providerServiceId={providerServiceId}
+              type={type}
+            />
           )}
         </div>
       </AccordionContent>
@@ -403,7 +610,7 @@ export function ManageDependenciesModal({
       return []
     }
     return dependencies.map((dep) => {
-      const type = (dep.type ?? 'http') as DependencyRow['type']
+      const type = (dep.type ?? '') as DependencyType
       const direction = (
         dep.direction === 'downstream' ? 'downstream' : 'upstream'
       ) as DependencyRow['direction']
@@ -420,8 +627,9 @@ export function ManageDependenciesModal({
         criticality: (dep.criticality ??
           'soft') as DependencyRow['criticality'],
         description: dep.description ?? '',
-        api: typeof dep.api === 'string' ? dep.api : '',
-        operations: operationsOf(dep),
+        apiGroupName: dep.apiGroupName ?? '',
+        apiEndpointNames: endpointNamesOf(dep),
+        databaseName: dep.databaseName ?? '',
       }
     })
   }, [dependencies])
@@ -584,11 +792,12 @@ export function ManageDependenciesModal({
                       direction: 'upstream',
                       otherService: '',
                       name: '',
-                      type: 'http',
+                      type: '',
                       criticality: 'soft',
                       description: '',
-                      api: '',
-                      operations: [],
+                      apiGroupName: '',
+                      apiEndpointNames: [],
+                      databaseName: '',
                     })
                   }
                 >
@@ -607,6 +816,9 @@ export function ManageDependenciesModal({
                     form={form}
                     remove={remove}
                     serviceOptions={serviceOptions}
+                    orgId={orgId!}
+                    serviceId={serviceId}
+                    services={services}
                   />
                 ) : null
               )}
@@ -640,11 +852,12 @@ export function ManageDependenciesModal({
                       direction: 'downstream',
                       otherService: '',
                       name: '',
-                      type: 'http',
+                      type: '',
                       criticality: 'soft',
                       description: '',
-                      api: '',
-                      operations: [],
+                      apiGroupName: '',
+                      apiEndpointNames: [],
+                      databaseName: '',
                     })
                   }
                 >
@@ -663,6 +876,9 @@ export function ManageDependenciesModal({
                     form={form}
                     remove={remove}
                     serviceOptions={serviceOptions}
+                    orgId={orgId!}
+                    serviceId={serviceId}
+                    services={services}
                   />
                 ) : null
               )}

@@ -6,11 +6,11 @@ export type ServiceDependency = {
   type?: string | null
   criticality?: string | null
   description?: string | null
-  api?: unknown
-  operations?: unknown
+  apiGroupName?: string | null
+  apiEndpointNames?: string[] | null
+  databaseName?: string | null
   direction: string
   providerName?: string | null
-  onboardingStatus?: string | null
   consumerService?: { id: string; name: string } | null
   providerService?: { id: string; name: string } | null
 }
@@ -18,7 +18,6 @@ export type ServiceDependency = {
 export type DependencyGraphNode = {
   id: string
   name: string
-  onboardingStatus?: string | null
   service?: {
     id: string
     description?: string | null
@@ -33,7 +32,9 @@ export type DependencyGraphEdge = {
   target: string
   type?: string | null
   criticality?: string | null
-  operations?: unknown
+  apiGroupName?: string | null
+  apiEndpointNames?: string[] | null
+  databaseName?: string | null
 }
 
 export type DependencyGraph = {
@@ -71,11 +72,11 @@ export const SERVICE_DEPENDENCIES = gql(`
       type
       criticality
       description
-      api
-      operations
+      apiGroupName
+      apiEndpointNames
+      databaseName
       direction
       providerName
-      onboardingStatus
       consumerService {
         id
         name
@@ -94,7 +95,6 @@ export const SERVICE_DEPENDENCY_GRAPH = gql(`
       nodes {
         id
         name
-        onboardingStatus
         service {
           id
           description
@@ -108,7 +108,9 @@ export const SERVICE_DEPENDENCY_GRAPH = gql(`
         target
         type
         criticality
-        operations
+        apiGroupName
+        apiEndpointNames
+        databaseName
       }
     }
   }
@@ -124,7 +126,6 @@ export const UPDATE_SERVICE_DEPENDENCIES = gql(`
       nodes {
         id
         name
-        onboardingStatus
         service {
           id
           description
@@ -138,7 +139,9 @@ export const UPDATE_SERVICE_DEPENDENCIES = gql(`
         target
         type
         criticality
-        operations
+        apiGroupName
+        apiEndpointNames
+        databaseName
       }
     }
   }
@@ -150,7 +153,6 @@ export const ORGANIZATION_DEPENDENCY_GRAPH = gql(`
       nodes {
         id
         name
-        onboardingStatus
         service {
           id
           description
@@ -164,7 +166,9 @@ export const ORGANIZATION_DEPENDENCY_GRAPH = gql(`
         target
         type
         criticality
-        operations
+        apiGroupName
+        apiEndpointNames
+        databaseName
       }
     }
   }
