@@ -17,7 +17,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
-import { Clock, Github, Info } from 'lucide-react'
+import { Clock, Github } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type DependencyGraphProps = {
@@ -101,57 +101,58 @@ export function DependencyGraph({
       targetPosition: Position.Left,
       data: {
         ...node,
-        label: (
-          <div className="flex flex-col text-left leading-snug">
-            <span className="flex items-center gap-1.5 font-semibold">
-              {node.name}
-              {!onboarded ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex">
-                      <Info className="size-3.5 opacity-70" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    This service is not available or onboarded to UiGraph.
-                  </TooltipContent>
-                </Tooltip>
+        label: (() => {
+          const content = (
+            <div className="flex flex-col text-left leading-snug">
+              <span className="block font-semibold">{node.name}</span>
+              {subtitle ? (
+                <span className="mt-0.5 text-[11px] font-normal opacity-70">
+                  {subtitle}
+                </span>
               ) : null}
-            </span>
-            {subtitle ? (
-              <span className="mt-0.5 text-[11px] font-normal opacity-70">
-                {subtitle}
-              </span>
-            ) : null}
-            {service?.description ? (
-              <span className="mt-1.5 line-clamp-2 text-[11px] font-normal opacity-60">
-                {service.description}
-              </span>
-            ) : null}
-            {service?.gitRepoUrl || updatedLabel ? (
-              <div className="mt-2 flex flex-col gap-1">
-                {service?.gitRepoUrl ? (
-                  <a
-                    href={service.gitRepoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(event) => event.stopPropagation()}
-                    className="flex items-center gap-1.5 text-[10px] font-normal text-[#7FA8E0] hover:underline"
-                  >
-                    <Github className="size-3 shrink-0" />
-                    <span className="truncate">{repoLabel}</span>
-                  </a>
-                ) : null}
-                {updatedLabel ? (
-                  <span className="flex items-center gap-1.5 text-[10px] font-normal opacity-50">
-                    <Clock className="size-3 shrink-0" />
-                    Updated {updatedLabel}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-        ),
+              {service?.description ? (
+                <span className="mt-1.5 line-clamp-2 text-[11px] font-normal opacity-60">
+                  {service.description}
+                </span>
+              ) : null}
+              {service?.gitRepoUrl || updatedLabel ? (
+                <div className="mt-2 flex flex-col gap-1">
+                  {service?.gitRepoUrl ? (
+                    <a
+                      href={service.gitRepoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(event) => event.stopPropagation()}
+                      className="flex items-center gap-1.5 text-[10px] font-normal text-[#7FA8E0] hover:underline"
+                    >
+                      <Github className="size-3 shrink-0" />
+                      <span className="truncate">{repoLabel}</span>
+                    </a>
+                  ) : null}
+                  {updatedLabel ? (
+                    <span className="flex items-center gap-1.5 text-[10px] font-normal opacity-50">
+                      <Clock className="size-3 shrink-0" />
+                      Updated {updatedLabel}
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          )
+
+          if (onboarded) {
+            return content
+          }
+
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>{content}</TooltipTrigger>
+              <TooltipContent className="max-w-[200px]">
+                This service is not available or onboarded to UiGraph.
+              </TooltipContent>
+            </Tooltip>
+          )
+        })(),
       },
       draggable: false,
       style: {
