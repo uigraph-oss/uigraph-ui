@@ -79,6 +79,18 @@ const ServicePeopleRoute = lazy(() =>
     default: mod.ServicePeopleRoute,
   }))
 )
+const ServiceDependenciesRoute = lazy(() =>
+  import('@/routes/service-pages').then((mod) => ({
+    default: mod.ServiceDependenciesRoute,
+  }))
+)
+const OrganizationDependencyGraphPage = lazy(() =>
+  import('@/features/services/organization-dependency-graph-page').then(
+    (mod) => ({
+      default: mod.OrganizationDependencyGraphPage,
+    })
+  )
+)
 const ServerOverviewPage = lazy(() =>
   import('@/features/server-dashboard/server-overview-page').then((mod) => ({
     default: mod.ServerOverviewPage,
@@ -334,6 +346,10 @@ export function AppRoutes() {
           />
 
           <Route path="/services" element={<DashboardServices />} />
+          <Route
+            path="/services/graph"
+            element={<OrganizationDependencyGraphPage />}
+          />
           <Route path="/services/:serviceId" element={<ServiceLayout />}>
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<ServiceOverviewRoute />} />
@@ -345,6 +361,7 @@ export function AppRoutes() {
             <Route path="architecture" element={<DashboardServiceDiagrams />} />
             <Route path="data" element={<ServiceDatabaseListPage />} />
             <Route path="data/:dbId" element={<ServiceDatabasePage />} />
+            <Route path="dependencies" element={<ServiceDependenciesRoute />} />
             <Route path="docs" element={<DashboardServiceDocs />} />
             <Route path="operations" element={<ServiceOperationsRoute />} />
             <Route path="people" element={<ServicePeopleRoute />} />

@@ -1,6 +1,11 @@
 'use client'
 
+import { Paths } from '@/constants'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import {
+  SERVICE_DEPENDENCIES,
+  type ServiceDependenciesData,
+} from '@/features/services/api/dependencies'
 import { useServiceContext } from '@/features/services/contexts/service-context'
 import { normalizeRepoUrl } from '@/lib/git'
 import { cn } from '@/lib/utils'
@@ -10,6 +15,7 @@ import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
 import { useMemo } from 'react'
 import { FaGithub, FaJira, FaSlack } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 // Shared color logic — must match service-card.tsx
 const CATEGORY_COLORS: Record<string, string> = {
@@ -68,6 +74,19 @@ export function ServiceOverview() {
     () => arrayNonNullable(teamsRes.data?.teams ?? []),
     [teamsRes.data?.teams]
   )
+  const dependenciesRes = useQuery<ServiceDependenciesData>(
+    SERVICE_DEPENDENCIES,
+    {
+      fetchPolicy: 'cache-first',
+      variables: {
+        orgId: orgId!,
+        serviceId: service?.id ?? '',
+        direction: null,
+        criticality: null,
+      },
+      skip: !orgId || !service?.id,
+    }
+  )
 
   if (!service) return null
 
@@ -81,6 +100,13 @@ export function ServiceOverview() {
 
   const labels =
     (service.labels as string[] | null | undefined)?.filter(Boolean) ?? []
+  const dependencies = dependenciesRes.data?.dependencies ?? []
+  const upstreamDependencies = dependencies.filter(
+    (dependency) => dependency.direction === 'upstream'
+  )
+  const downstreamDependencies = dependencies.filter(
+    (dependency) => dependency.direction === 'downstream'
+  )
 
   const integrations = [
     repoHref && {
@@ -191,6 +217,80 @@ export function ServiceOverview() {
               </p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6 border-t border-[#2A3242] pt-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h4 className="text-[13px] font-semibold text-[#F4F7FC]">
+                Service dependencies
+              </h4>
+              <p className="mt-0.5 text-[11px] text-[#828DA3]">
+                Declared in .uigraph.yaml, validated against synced specs
+              </p>
+            </div>
+            <Link
+              to={Paths.services.graph}
+              className="shrink-0 text-[12px] font-medium text-[#5B9DF9] hover:text-[#7DB2FB]"
+            >
+              View full graph →
+            </Link>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              {
+                heading: `↑ Upstream · depends on (${upstreamDependencies.length})`,
+                dependencies: upstreamDependencies,
+              },
+              {
+                heading: `↓ Downstream · depended on by (${downstreamDependencies.length})`,
+                dependencies: downstreamDependencies,
+              },
+            ].map((summary) => (
+              <Link
+                key={summary.heading}
+                to={Paths.services.dependencies(service.id)}
+                className="rounded-xl border border-[#2A3242] bg-[#1E2533] px-4 py-3 transition-colors hover:border-[#3B4658] hover:bg-[#252E3E]"
+              >
+                <span className="text-[12px] font-semibold text-[#D2D9E6]">
+                  {summary.heading}
+                </span>
+                {dependenciesRes.loading ? (
+                  <p className="mt-2 text-[11px] text-[#828DA3]">Loading…</p>
+                ) : summary.dependencies.length === 0 ? (
+                  <p className="mt-2 text-[11px] text-[#828DA3]">
+                    No dependencies
+                  </p>
+                ) : (
+                  summary.dependencies.map((dependency) => (
+                    <div
+                      key={dependency.id}
+                      className="mt-2 flex items-center justify-between gap-2 text-[12px]"
+                    >
+                      <span className="truncate text-[#F4F7FC]">
+                        {dependency.direction === 'upstream'
+                          ? (dependency.providerService?.name ??
+                            dependency.providerName ??
+                            dependency.name)
+                          : (dependency.consumerService?.name ??
+                            dependency.name)}
+                      </span>
+                      <span
+                        className={cn(
+                          'shrink-0 rounded-md px-2 py-0.5 text-[11px] capitalize',
+                          dependency.criticality === 'hard'
+                            ? 'bg-[#3A1D1D] text-[#F29B9B]'
+                            : 'bg-[#232B3A] text-[#9AA6BC]'
+                        )}
+                      >
+                        {dependency.criticality} · {dependency.type}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </Link>
+            ))}
+          </div>
         </div>
 
         {/* Integrations */}

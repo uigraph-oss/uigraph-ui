@@ -1,3 +1,4 @@
+import { DashboardServiceDependencies } from '@/features/services/dashboard-service-dependencies'
 import { DashboardServiceOperations } from '@/features/services/dashboard-service-operations'
 import { DashboardServiceOverview } from '@/features/services/dashboard-service-overview'
 import { DashboardServicePeople } from '@/features/services/dashboard-service-people'
@@ -17,4 +18,8 @@ export function ServiceOperationsRoute() {
 
 export function ServicePeopleRoute() {
   return <DashboardServicePeople serviceId={useServiceId()} />
+}
+
+export function ServiceDependenciesRoute() {
+  return <DashboardServiceDependencies serviceId={useServiceId()} />
 }

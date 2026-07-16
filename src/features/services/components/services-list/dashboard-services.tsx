@@ -18,14 +18,16 @@ import {
   toUpdateServiceInput,
 } from '@/features/services/api/services'
 import { cn } from '@/lib/utils'
-import { CirclePlus } from 'lucide-react'
+import { CirclePlus, Network } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useDashboardServicesList } from '../../hooks/use-dashboard-services'
 import { ConfigureServiceModal } from './configure-service-modal'
 import { ServiceCard } from './service-card'
 
 export function DashboardServices() {
+  const navigate = useNavigate()
   const [createServiceOpen, setCreateServiceOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
@@ -79,10 +81,16 @@ export function DashboardServices() {
       description="A shared view of your backend services, flows, APIs, data and dependencies"
       crumbs={[{ to: '/services', label: 'Services' }]}
       headerContent={
-        <Button preset="cta" onClick={() => setCreateServiceOpen(true)}>
-          <CirclePlus />
-          Create Service
-        </Button>
+        <div className="flex gap-2">
+          <Button preset="outline" onClick={() => navigate('/services/graph')}>
+            <Network />
+            Dependency graph
+          </Button>
+          <Button preset="cta" onClick={() => setCreateServiceOpen(true)}>
+            <CirclePlus />
+            Create Service
+          </Button>
+        </div>
       }
     >
       <div className="mb-6 flex flex-wrap items-center gap-3">
