@@ -72,7 +72,7 @@ export function DependencyGraph({
       : !onboarded
         ? '1px dashed #8A4B4B'
         : hard
-          ? '1px solid #F97316'
+          ? '1px solid #C2703F'
           : '1px solid #3B4658'
 
     const clickable = !isFocus && Boolean(node.service?.id)
@@ -138,7 +138,7 @@ export function DependencyGraph({
       target: edge.target,
       markerEnd: {
         type: MarkerType.ArrowClosed,
-        color: hard ? '#F97316' : '#64748B',
+        color: hard ? '#C2703F' : '#64748B',
       },
       label: Array.isArray(edge.operations)
         ? edge.operations.join(', ')
@@ -147,7 +147,7 @@ export function DependencyGraph({
       labelBgStyle: { fill: '#141925', fillOpacity: 0.92 },
       labelBgPadding: [4, 3],
       style: {
-        stroke: hard ? '#F97316' : '#64748B',
+        stroke: hard ? '#C2703F' : '#64748B',
         strokeWidth: hard ? 2 : 1.5,
         strokeDasharray: hard ? undefined : '5 4',
       },
