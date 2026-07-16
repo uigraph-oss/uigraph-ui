@@ -19,7 +19,12 @@ export type DependencyGraphNode = {
   id: string
   name: string
   onboardingStatus?: string | null
-  service?: { id: string } | null
+  service?: {
+    id: string
+    description?: string | null
+    gitRepoUrl?: string | null
+    updatedAt?: string | null
+  } | null
 }
 
 export type DependencyGraphEdge = {
@@ -92,6 +97,9 @@ export const SERVICE_DEPENDENCY_GRAPH = gql(`
         onboardingStatus
         service {
           id
+          description
+          gitRepoUrl
+          updatedAt
         }
       }
       edges {
@@ -115,6 +123,9 @@ export const ORGANIZATION_DEPENDENCY_GRAPH = gql(`
         onboardingStatus
         service {
           id
+          description
+          gitRepoUrl
+          updatedAt
         }
       }
       edges {

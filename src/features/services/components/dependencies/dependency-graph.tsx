@@ -17,7 +17,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
-import { Info } from 'lucide-react'
+import { Clock, Github, Info } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type DependencyGraphProps = {
@@ -47,11 +47,14 @@ export function DependencyGraph({
     }
   }
 
+  const nodeWidth = 240
+
   const layout = new dagre.graphlib.Graph()
   layout.setDefaultEdgeLabel(() => ({}))
-  layout.setGraph({ rankdir: 'LR', nodesep: 36, ranksep: 120 })
+  layout.setGraph({ rankdir: 'LR', nodesep: 42, ranksep: 130 })
 
-  for (const node of nodes) layout.setNode(node.id, { width: 192, height: 64 })
+  for (const node of nodes)
+    layout.setNode(node.id, { width: nodeWidth, height: 128 })
   for (const edge of edges) layout.setEdge(edge.source, edge.target)
   dagre.layout(layout)
 
@@ -77,15 +80,29 @@ export function DependencyGraph({
 
     const clickable = !isFocus && Boolean(node.service?.id)
 
+    const service = node.service
+    const repoLabel = service?.gitRepoUrl
+      ? service.gitRepoUrl
+          .replace(/^https?:\/\/(www\.)?github\.com\//i, '')
+          .replace(/\.git$/i, '')
+      : ''
+    const updatedLabel = service?.updatedAt
+      ? new Date(service.updatedAt).toLocaleDateString(undefined, {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
+      : ''
+
     return {
       id: node.id,
-      position: { x: position.x - 96, y: position.y - 32 },
+      position: { x: position.x - nodeWidth / 2, y: position.y - 64 },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
       data: {
         ...node,
         label: (
-          <div className="flex flex-col gap-0.5 text-left leading-tight">
+          <div className="flex flex-col gap-1 text-left leading-tight">
             <span className="flex items-center gap-1.5 font-semibold">
               {node.name}
               {!onboarded ? (
@@ -106,6 +123,29 @@ export function DependencyGraph({
                 {subtitle}
               </span>
             ) : null}
+            {service?.description ? (
+              <span className="line-clamp-2 text-[11px] font-normal opacity-60">
+                {service.description}
+              </span>
+            ) : null}
+            {service?.gitRepoUrl ? (
+              <a
+                href={service.gitRepoUrl}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
+                className="flex items-center gap-1 text-[10px] font-normal text-[#7FA8E0] hover:underline"
+              >
+                <Github className="size-3 shrink-0" />
+                <span className="truncate">{repoLabel}</span>
+              </a>
+            ) : null}
+            {updatedLabel ? (
+              <span className="flex items-center gap-1 text-[10px] font-normal opacity-50">
+                <Clock className="size-3 shrink-0" />
+                Updated {updatedLabel}
+              </span>
+            ) : null}
           </div>
         ),
       },
@@ -124,7 +164,7 @@ export function DependencyGraph({
         fontSize: 13,
         opacity: onboarded ? 1 : 0.72,
         padding: '12px 14px',
-        width: 192,
+        width: nodeWidth,
       },
     }
   })
