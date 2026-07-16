@@ -12,13 +12,14 @@ import {
   MarkerType,
   Position,
   ReactFlow,
+  type CoordinateExtent,
   type Edge,
   type Node,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
 import { Clock, Github } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 type DependencyGraphProps = {
   nodes: DependencyGraphNode[]
@@ -35,6 +36,23 @@ export function DependencyGraph({
   focusId,
   onNodeClick,
 }: DependencyGraphProps) {
+  const canvasRef = useRef<HTMLDivElement>(null)
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
+  const [zoom, setZoom] = useState(1)
+
+  useEffect(() => {
+    const element = canvasRef.current
+    if (!element) return
+    const observer = new ResizeObserver(([entry]) => {
+      setCanvasSize({
+        width: entry.contentRect.width,
+        height: entry.contentRect.height,
+      })
+    })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
+
   const edgeMeta = new Map<
     string,
     { type?: string | null; criticality?: string | null }
@@ -192,6 +210,29 @@ export function DependencyGraph({
     }
   })
 
+  const nodeHeight = 128
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  for (const node of flowNodes) {
+    minX = Math.min(minX, node.position.x)
+    minY = Math.min(minY, node.position.y)
+    maxX = Math.max(maxX, node.position.x + nodeWidth)
+    maxY = Math.max(maxY, node.position.y + nodeHeight)
+  }
+  const viewportWidth = (canvasSize.width || 400) / zoom
+  const viewportHeight = (canvasSize.height || 400) / zoom
+  const keepVisible = 120 / zoom
+  const paddingX = Math.max(viewportWidth - keepVisible, 0)
+  const paddingY = Math.max(viewportHeight - keepVisible, 0)
+  const translateExtent: CoordinateExtent | undefined = flowNodes.length
+    ? [
+        [minX - paddingX, minY - paddingY],
+        [maxX + paddingX, maxY + paddingY],
+      ]
+    : undefined
+
   const flowEdges: Edge[] = edges.map((edge) => {
     const hard = edge.criticality?.toLowerCase() === 'hard'
 
@@ -218,7 +259,10 @@ export function DependencyGraph({
   })
 
   return (
-    <div className="dependency-graph-canvas h-full min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722]">
+    <div
+      ref={canvasRef}
+      className="dependency-graph-canvas h-full min-h-[26rem] overflow-hidden rounded-xl border border-[#2A3242] bg-[#111722]"
+    >
       <style>{`
         .dependency-graph-canvas .react-flow__handle { opacity: 0; }
       `}</style>
@@ -228,9 +272,12 @@ export function DependencyGraph({
         fitView
         minZoom={0.2}
         maxZoom={1.5}
+        translateExtent={translateExtent}
         nodesConnectable={false}
         nodesDraggable={false}
         elementsSelectable={false}
+        onInit={(instance) => setZoom(instance.getViewport().zoom)}
+        onMove={(_, viewport) => setZoom(viewport.zoom)}
         onNodeClick={(_, node) => onNodeClick?.(node.data)}
       >
         <Background color="#2A3242" gap={20} size={1} />
