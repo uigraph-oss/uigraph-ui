@@ -8,6 +8,7 @@ import {
   useContext,
   useState,
   type ReactElement,
+  type ReactNode,
 } from 'react'
 import { FiCheck, FiCopy } from 'react-icons/fi'
 import { Components } from 'react-markdown'
@@ -20,7 +21,40 @@ import { MermaidContent } from './mermaid-content'
 
 const OrderedListContext = createContext(false)
 
+const HEADING_STYLES: Record<number, string> = {
+  1: 'text-[1.75em] mt-9 mb-3 first:mt-0',
+  2: 'text-[1.4em] mt-8 mb-2.5 first:mt-0',
+  3: 'text-[1.2em] mt-6 mb-2 first:mt-0',
+  4: 'text-[1.05em] mt-5 mb-1.5 first:mt-0',
+  5: 'text-[0.92em] mt-4 mb-1 first:mt-0 text-muted-foreground uppercase tracking-wide',
+  6: 'text-[0.85em] mt-4 mb-1 first:mt-0 text-muted-foreground uppercase tracking-wide',
+}
+
+function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
+  const Tag = `h${level}` as const
+
+  return function Heading({ children }: { children?: ReactNode }) {
+    return (
+      <Tag
+        className={cn(
+          'text-foreground leading-[1.3] font-semibold tracking-tight',
+          HEADING_STYLES[level]
+        )}
+      >
+        {children}
+      </Tag>
+    )
+  }
+}
+
 export const MARKDOWN_COMPONENTS: Components = {
+  h1: createHeading(1),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  h5: createHeading(5),
+  h6: createHeading(6),
+
   blockquote: ({ children }) => (
     <blockquote className="border-border bg-muted/40 text-muted-foreground my-2 border-l-2 py-1.5 pl-4">
       {children}
