@@ -20,6 +20,7 @@ import { ImageBlock } from './image-block'
 import { MermaidContent } from './mermaid-content'
 
 const OrderedListContext = createContext(false)
+const ListDepthContext = createContext(0)
 
 const HEADING_STYLES: Record<number, string> = {
   1: 'text-[1.75em] mt-9 mb-3 first:mt-0',
@@ -92,17 +93,35 @@ export const MARKDOWN_COMPONENTS: Components = {
     return <>{children}</>
   },
 
-  ol: ({ children }) => (
-    <OrderedListContext.Provider value={true}>
-      <ol className="step-list my-2.5">{children}</ol>
-    </OrderedListContext.Provider>
-  ),
+  ol: ({ children }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const depth = useContext(ListDepthContext)
 
-  ul: ({ children }) => (
-    <OrderedListContext.Provider value={false}>
-      <ul className="my-1.5 space-y-1.5">{children}</ul>
-    </OrderedListContext.Provider>
-  ),
+    return (
+      <OrderedListContext.Provider value={true}>
+        <ListDepthContext.Provider value={depth + 1}>
+          <ol className={cn('step-list my-2.5', depth > 0 && 'pl-4')}>
+            {children}
+          </ol>
+        </ListDepthContext.Provider>
+      </OrderedListContext.Provider>
+    )
+  },
+
+  ul: ({ children }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const depth = useContext(ListDepthContext)
+
+    return (
+      <OrderedListContext.Provider value={false}>
+        <ListDepthContext.Provider value={depth + 1}>
+          <ul className={cn('my-1.5 space-y-1.5', depth > 0 && 'pl-0')}>
+            {children}
+          </ul>
+        </ListDepthContext.Provider>
+      </OrderedListContext.Provider>
+    )
+  },
 
   li: ({ children }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -144,6 +163,10 @@ export const MARKDOWN_COMPONENTS: Components = {
 
   strong: ({ children }) => (
     <strong className="text-foreground font-medium">{children}</strong>
+  ),
+
+  del: ({ children }) => (
+    <del className="text-muted-foreground decoration-1">{children}</del>
   ),
 
   code: ({ className, children }) => {
