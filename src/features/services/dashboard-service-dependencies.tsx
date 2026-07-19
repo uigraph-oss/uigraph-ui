@@ -15,6 +15,7 @@ import {
 } from '@/features/dashboard'
 import {
   SERVICE_DEPENDENCY_GRAPH,
+  dependenciesToGraph,
   type ServiceDependencyGraphData,
 } from '@/features/services/api/dependencies'
 import { useServiceContext } from '@/features/services/contexts/service-context'
@@ -42,28 +43,30 @@ export function DashboardServiceDependencies({
     skip: !orgId,
   })
 
-  const rawGraph = graph.data?.serviceDependencyGraph
-  let graphData = rawGraph
-  if (rawGraph && (direction !== 'all' || criticality !== 'all')) {
-    const edges = rawGraph.edges.filter((edge) => {
-      if (direction === 'upstream' && edge.source !== serviceId) {
+  const rawDependencies = graph.data?.serviceDependencyGraph
+  let graphData = rawDependencies
+    ? dependenciesToGraph(rawDependencies)
+    : undefined
+  if (rawDependencies && (direction !== 'all' || criticality !== 'all')) {
+    const filtered = rawDependencies.filter((dependency) => {
+      if (
+        direction === 'upstream' &&
+        dependency.consumerService?.id !== serviceId
+      ) {
         return false
       }
-      if (direction === 'downstream' && edge.target !== serviceId) {
+      if (
+        direction === 'downstream' &&
+        dependency.providerService?.id !== serviceId
+      ) {
         return false
       }
-      if (criticality !== 'all' && edge.criticality !== criticality) {
+      if (criticality !== 'all' && dependency.criticality !== criticality) {
         return false
       }
       return true
     })
-    const visible = new Set<string>([serviceId])
-    for (const edge of edges) {
-      visible.add(edge.source)
-      visible.add(edge.target)
-    }
-    const nodes = rawGraph.nodes.filter((node) => visible.has(node.id))
-    graphData = { nodes, edges }
+    graphData = dependenciesToGraph(filtered)
   }
 
   return (

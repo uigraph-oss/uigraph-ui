@@ -3,6 +3,7 @@ import { Paths } from '@/constants'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
 import {
   ORGANIZATION_DEPENDENCY_GRAPH,
+  dependenciesToGraph,
   type OrganizationDependencyGraphData,
 } from '@/features/services/api/dependencies'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -21,6 +22,8 @@ export function OrganizationDependencyGraphPage() {
     }
   )
   const graph = data?.dependencyGraph
+    ? dependenciesToGraph(data.dependencyGraph)
+    : undefined
 
   return (
     <DashboardPageSectionLayout

@@ -1,5 +1,13 @@
 import { gql } from '@/api'
 
+export type DependencyServiceRef = {
+  id: string
+  name: string
+  description?: string | null
+  gitRepoUrl?: string | null
+  updatedAt?: string | null
+}
+
 export type ServiceDependency = {
   id: string
   name: string
@@ -11,8 +19,8 @@ export type ServiceDependency = {
   databaseName?: string | null
   direction: string
   providerName?: string | null
-  consumerService?: { id: string; name: string } | null
-  providerService?: { id: string; name: string } | null
+  consumerService?: DependencyServiceRef | null
+  providerService?: DependencyServiceRef | null
 }
 
 export type DependencyGraphNode = {
@@ -42,16 +50,83 @@ export type DependencyGraph = {
   edges: DependencyGraphEdge[]
 }
 
+export function dependenciesToGraph(
+  dependencies: ServiceDependency[]
+): DependencyGraph {
+  const nodes = new Map<string, DependencyGraphNode>()
+  const edges: DependencyGraphEdge[] = []
+
+  for (const dependency of dependencies) {
+    const consumer = dependency.consumerService
+    if (!consumer) {
+      continue
+    }
+    if (!nodes.has(consumer.id)) {
+      nodes.set(consumer.id, {
+        id: consumer.id,
+        name: consumer.name,
+        service: {
+          id: consumer.id,
+          description: consumer.description,
+          gitRepoUrl: consumer.gitRepoUrl,
+          updatedAt: consumer.updatedAt,
+        },
+      })
+    }
+
+    const provider = dependency.providerService
+    let providerId: string
+    if (provider) {
+      providerId = provider.id
+      if (!nodes.has(providerId)) {
+        nodes.set(providerId, {
+          id: providerId,
+          name: provider.name,
+          service: {
+            id: provider.id,
+            description: provider.description,
+            gitRepoUrl: provider.gitRepoUrl,
+            updatedAt: provider.updatedAt,
+          },
+        })
+      }
+    } else {
+      const providerName = dependency.providerName ?? dependency.name
+      providerId = `ghost:${providerName}`
+      if (!nodes.has(providerId)) {
+        nodes.set(providerId, {
+          id: providerId,
+          name: providerName,
+          service: null,
+        })
+      }
+    }
+
+    edges.push({
+      id: dependency.id,
+      source: consumer.id,
+      target: providerId,
+      type: dependency.type,
+      criticality: dependency.criticality,
+      apiGroupName: dependency.apiGroupName,
+      apiEndpointNames: dependency.apiEndpointNames,
+      databaseName: dependency.databaseName,
+    })
+  }
+
+  return { nodes: [...nodes.values()], edges }
+}
+
 export type ServiceDependenciesData = {
   dependencies: ServiceDependency[]
 }
 
 export type ServiceDependencyGraphData = {
-  serviceDependencyGraph: DependencyGraph
+  serviceDependencyGraph: ServiceDependency[]
 }
 
 export type OrganizationDependencyGraphData = {
-  dependencyGraph: DependencyGraph
+  dependencyGraph: ServiceDependency[]
 }
 
 export const SERVICE_DEPENDENCIES = gql(`
@@ -92,25 +167,28 @@ export const SERVICE_DEPENDENCIES = gql(`
 export const SERVICE_DEPENDENCY_GRAPH = gql(`
   query ServiceDependencyGraph($orgId: ID!, $serviceId: ID!) {
     serviceDependencyGraph(orgId: $orgId, serviceId: $serviceId) {
-      nodes {
+      id
+      name
+      type
+      criticality
+      apiGroupName
+      apiEndpointNames
+      databaseName
+      direction
+      providerName
+      consumerService {
         id
         name
-        service {
-          id
-          description
-          gitRepoUrl
-          updatedAt
-        }
+        description
+        gitRepoUrl
+        updatedAt
       }
-      edges {
+      providerService {
         id
-        source
-        target
-        type
-        criticality
-        apiGroupName
-        apiEndpointNames
-        databaseName
+        name
+        description
+        gitRepoUrl
+        updatedAt
       }
     }
   }
@@ -123,25 +201,17 @@ export const UPDATE_SERVICE_DEPENDENCIES = gql(`
     $input: UpdateServiceDependenciesInput!
   ) {
     updateServiceDependencies(orgId: $orgId, serviceId: $serviceId, input: $input) {
-      nodes {
+      id
+      name
+      direction
+      providerName
+      consumerService {
         id
         name
-        service {
-          id
-          description
-          gitRepoUrl
-          updatedAt
-        }
       }
-      edges {
+      providerService {
         id
-        source
-        target
-        type
-        criticality
-        apiGroupName
-        apiEndpointNames
-        databaseName
+        name
       }
     }
   }
@@ -150,25 +220,28 @@ export const UPDATE_SERVICE_DEPENDENCIES = gql(`
 export const ORGANIZATION_DEPENDENCY_GRAPH = gql(`
   query OrganizationDependencyGraph($orgId: ID!) {
     dependencyGraph(orgId: $orgId) {
-      nodes {
+      id
+      name
+      type
+      criticality
+      apiGroupName
+      apiEndpointNames
+      databaseName
+      direction
+      providerName
+      consumerService {
         id
         name
-        service {
-          id
-          description
-          gitRepoUrl
-          updatedAt
-        }
+        description
+        gitRepoUrl
+        updatedAt
       }
-      edges {
+      providerService {
         id
-        source
-        target
-        type
-        criticality
-        apiGroupName
-        apiEndpointNames
-        databaseName
+        name
+        description
+        gitRepoUrl
+        updatedAt
       }
     }
   }
