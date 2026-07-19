@@ -17,6 +17,14 @@ const AGENTS: Record<string, AgentDisplay> = {
     label: 'Cursor',
     iconUrl: 'https://svgl.app/library/cursor_dark.svg',
   },
+  'UiGraph AI Chat': {
+    label: 'UiGraph AI Chat',
+    iconUrl: '/icons/icon-blue-256.png',
+  },
+  'UiGraph Slack': {
+    label: 'UiGraph Slack',
+    iconUrl: 'https://svgl.app/library/slack.svg',
+  },
   unknown: { label: 'Unknown' },
 }
 
