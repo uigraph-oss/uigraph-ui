@@ -20,6 +20,7 @@ import {
   Background,
   BaseEdge,
   EdgeLabelRenderer,
+  Handle,
   MarkerType,
   Panel,
   Position,
@@ -29,6 +30,7 @@ import {
   type Edge,
   type EdgeProps,
   type Node,
+  type NodeProps,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
@@ -43,7 +45,13 @@ import {
   Radio,
   Share2,
 } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react'
 
 type DependencyGraphProps = {
   nodes: DependencyGraphNode[]
@@ -52,7 +60,10 @@ type DependencyGraphProps = {
   onNodeClick?: (node: DependencyGraphNode) => void
 }
 
-type FlowNodeData = DependencyGraphNode & { label: ReactNode }
+type FlowNodeData = DependencyGraphNode & {
+  label: ReactNode
+  cardStyle: CSSProperties
+}
 
 type DependencyEdgeData = {
   detailText?: string | null
@@ -386,6 +397,28 @@ function DependencyEdge({
   )
 }
 
+function ServiceNode({ data }: NodeProps<Node<FlowNodeData>>) {
+  return (
+    <>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={false}
+        style={{ opacity: 0 }}
+      />
+      <div style={data.cardStyle}>{data.label}</div>
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={false}
+        style={{ opacity: 0 }}
+      />
+    </>
+  )
+}
+
+const nodeTypes = { service_dependency: ServiceNode }
+
 const edgeTypes = { dependency: DependencyEdge }
 
 export function DependencyGraph({
@@ -468,6 +501,7 @@ export function DependencyGraph({
 
     return {
       id: node.id,
+      type: 'service_dependency',
       position: { x: position.x - nodeWidth / 2, y: position.y - 64 },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
@@ -548,24 +582,24 @@ export function DependencyGraph({
             </Tooltip>
           )
         })(),
+        cardStyle: {
+          background: onboarded ? '#1E2533' : '#1C1416',
+          border,
+          borderRadius: 10,
+          boxShadow: isFocus
+            ? '0 0 0 4px rgba(59, 130, 246, 0.18), 0 0 22px 4px rgba(59, 130, 246, 0.45)'
+            : onboarded
+              ? '0 4px 12px rgba(0, 0, 0, 0.22)'
+              : 'none',
+          color: onboarded ? '#F4F7FC' : '#C79A9A',
+          cursor: clickable ? 'pointer' : 'default',
+          fontSize: 13,
+          opacity: onboarded ? 1 : 0.72,
+          padding: '11px 13px',
+          width: nodeWidth,
+        },
       },
       draggable: false,
-      style: {
-        background: onboarded ? '#1E2533' : '#1C1416',
-        border,
-        borderRadius: 10,
-        boxShadow: isFocus
-          ? '0 0 0 4px rgba(59, 130, 246, 0.18), 0 0 22px 4px rgba(59, 130, 246, 0.45)'
-          : onboarded
-            ? '0 4px 12px rgba(0, 0, 0, 0.22)'
-            : 'none',
-        color: onboarded ? '#F4F7FC' : '#C79A9A',
-        cursor: clickable ? 'pointer' : 'default',
-        fontSize: 13,
-        opacity: onboarded ? 1 : 0.72,
-        padding: '11px 13px',
-        width: nodeWidth,
-      },
     }
   })
 
@@ -648,6 +682,7 @@ export function DependencyGraph({
       <ReactFlow
         nodes={flowNodes}
         edges={flowEdges}
+        nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
         minZoom={0.2}
