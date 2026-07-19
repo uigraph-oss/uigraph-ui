@@ -43,12 +43,48 @@ function messageText(m: UIMessage): string {
     .join('')
 }
 
+export type ChatConfigError = {
+  title: string
+  message: string
+}
+
+function parseConfigError(error: Error | undefined): ChatConfigError | null {
+  if (!error) {
+    return null
+  }
+
+  let code = ''
+  try {
+    const parsed = JSON.parse(error.message) as { code?: string }
+    code = parsed.code ?? ''
+  } catch {
+    return null
+  }
+
+  if (code === 'AI_PROVIDER_NOT_CONFIGURED') {
+    return {
+      title: 'AI provider not configured',
+      message:
+        'The AI assistant has not been set up yet. Please ask your administrator to configure the AI provider before starting a chat.',
+    }
+  }
+  if (code === 'MCP_NOT_CONFIGURED') {
+    return {
+      title: 'MCP server not configured',
+      message:
+        'The MCP server has not been set up yet. Please ask your administrator to configure it before starting a chat.',
+    }
+  }
+  return null
+}
+
 export const [ChatSessionProvider, useChatSession] = createContext(
   ({ sessionId }: ChatSessionInput) => {
     const [isSessionLoading, setIsSessionLoading] = useState(true)
     const [chatSession, setChatSession] = useState<ChatSession | null>(null)
     const [draft, setDraft] = useState('')
     const [lastSubmittedAt, setLastSubmittedAt] = useState(0)
+    const [configError, setConfigError] = useState<ChatConfigError | null>(null)
 
     const autoSentSessionIdRef = useRef('')
     const createdAtCacheRef = useRef<Map<string, string>>(new Map())
@@ -213,10 +249,17 @@ export const [ChatSessionProvider, useChatSession] = createContext(
     }
 
     useEffect(() => {
+      const parsed = parseConfigError(error)
+      if (parsed) {
+        setConfigError(parsed)
+        return
+      }
       if (error) {
         toast.error('The assistant ran into an error')
       }
     }, [error])
+
+    const dismissConfigError = useCallback(() => setConfigError(null), [])
 
     useEffect(() => {
       if (
@@ -261,6 +304,8 @@ export const [ChatSessionProvider, useChatSession] = createContext(
       messageCount,
       displayUpdatedAt,
       lastSubmittedAt,
+      configError,
+      dismissConfigError,
     }
   },
   {

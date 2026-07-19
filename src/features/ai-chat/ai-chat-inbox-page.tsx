@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'react-router-dom'
+import { ChatConfigErrorDialog } from './components/chat-config-error-dialog'
 import { ChatInboxHeader } from './components/chat-inbox-header'
 import { ChatInput } from './components/chat-input'
 import { ChatMessagesList } from './components/chat-messages-list'
@@ -17,6 +18,7 @@ export function AiChatInboxPage() {
         <ChatMessagesList />
         <ChatInput />
       </div>
+      <ChatConfigErrorDialog />
     </ChatSessionProvider>
   )
 }
