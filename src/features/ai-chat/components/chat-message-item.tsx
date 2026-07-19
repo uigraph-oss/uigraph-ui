@@ -33,7 +33,7 @@ export function ChatMessageItem({ message }: { message: DisplayChatMessage }) {
             'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
             isFailed
               ? 'border border-red-200 bg-red-50 text-red-900'
-              : 'bg-[#111110] text-white'
+              : 'bg-primary text-primary-foreground'
           )}
         >
           <p className="whitespace-pre-wrap">{message.content}</p>

@@ -2,6 +2,7 @@ import { SectionNotFound } from '@/components/section-not-found'
 import { useCallback, useEffect, useRef } from 'react'
 import { useChatSession } from '../contexts/chat-session-context'
 import { ChatMessageItem } from './chat-message-item'
+import { SpinnerText } from './spinner-text'
 
 export function ChatMessagesList() {
   const {
@@ -148,6 +149,25 @@ export function ChatMessagesList() {
           {displayMessages.map((message) => (
             <ChatMessageItem key={message.messageId} message={message} />
           ))}
+
+          {isSending &&
+            displayMessages[displayMessages.length - 1]?.role === 'user' && (
+              <div className="group flex min-w-0 items-center gap-3">
+                <div className="flex size-7 shrink-0 overflow-hidden rounded-lg">
+                  <img
+                    src="/icons/icon-blue-256.png"
+                    alt="UIGraph AI"
+                    width={28}
+                    height={28}
+                    className="size-7 object-cover"
+                  />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <SpinnerText />
+                </div>
+              </div>
+            )}
         </div>
       )}
     </div>
