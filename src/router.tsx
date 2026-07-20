@@ -33,6 +33,105 @@ const ServiceLayout = lazy(() =>
     default: mod.ServiceLayout,
   }))
 )
+const MlStudioLayout = lazy(() =>
+  import('@/routes/ml-studio-layout').then((mod) => ({
+    default: mod.MlStudioLayout,
+  }))
+)
+const MlStudioModelsPage = lazy(() =>
+  import('@/features/ml-studio/components/models/ml-studio-models-page').then(
+    (mod) => ({ default: mod.MlStudioModelsPage })
+  )
+)
+const ModelFormPage = lazy(() =>
+  import('@/features/ml-studio/components/models/model-form-page').then(
+    (mod) => ({ default: mod.ModelFormPage })
+  )
+)
+const ModelOverviewTab = lazy(() =>
+  import('@/features/ml-studio/components/models/model-overview-tab').then(
+    (mod) => ({ default: mod.ModelOverviewTab })
+  )
+)
+const ExperimentsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiments-tab').then(
+    (mod) => ({ default: mod.ExperimentsTab })
+  )
+)
+const ExperimentFormPage = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-form-page').then(
+    (mod) => ({ default: mod.ExperimentFormPage })
+  )
+)
+const ExperimentDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-detail-page').then(
+    (mod) => ({ default: mod.ExperimentDetailPage })
+  )
+)
+const RunFormPage = lazy(() =>
+  import('@/features/ml-studio/components/experiments/run-form-page').then(
+    (mod) => ({ default: mod.RunFormPage })
+  )
+)
+const RunDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/experiments/run-detail-page').then(
+    (mod) => ({ default: mod.RunDetailPage })
+  )
+)
+const RunComparisonPage = lazy(() =>
+  import('@/features/ml-studio/components/experiments/run-comparison-page').then(
+    (mod) => ({ default: mod.RunComparisonPage })
+  )
+)
+const DatasetsTab = lazy(() =>
+  import('@/features/ml-studio/components/datasets/datasets-tab').then(
+    (mod) => ({
+      default: mod.DatasetsTab,
+    })
+  )
+)
+const DatasetDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/datasets/dataset-detail-page').then(
+    (mod) => ({ default: mod.DatasetDetailPage })
+  )
+)
+const EvaluationsTab = lazy(() =>
+  import('@/features/ml-studio/components/evaluations/evaluations-tab').then(
+    (mod) => ({ default: mod.EvaluationsTab })
+  )
+)
+const EvaluationDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/evaluations/evaluation-detail-page').then(
+    (mod) => ({ default: mod.EvaluationDetailPage })
+  )
+)
+const DeploymentsTab = lazy(() =>
+  import('@/features/ml-studio/components/deployments/deployments-tab').then(
+    (mod) => ({ default: mod.DeploymentsTab })
+  )
+)
+const FindingsTab = lazy(() =>
+  import('@/features/ml-studio/components/findings/findings-tab').then(
+    (mod) => ({
+      default: mod.FindingsTab,
+    })
+  )
+)
+const FindingDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/findings/finding-detail-page').then(
+    (mod) => ({ default: mod.FindingDetailPage })
+  )
+)
+const DecisionsTab = lazy(() =>
+  import('@/features/ml-studio/components/decisions/decisions-tab').then(
+    (mod) => ({ default: mod.DecisionsTab })
+  )
+)
+const DecisionDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/decisions/decision-detail-page').then(
+    (mod) => ({ default: mod.DecisionDetailPage })
+  )
+)
 
 const SignInForm = lazy(() =>
   import('@/features/auth/sign-in-form').then((mod) => ({
@@ -373,6 +472,53 @@ export function AppRoutes() {
             <Route
               path="tests/run/:testRunId"
               element={<TestRunExecutionPage />}
+            />
+          </Route>
+
+          <Route path="/dashboard/ml-studio" element={<MlStudioModelsPage />} />
+          <Route path="/dashboard/ml-studio/new" element={<ModelFormPage />} />
+          <Route
+            path="/dashboard/ml-studio/:modelId"
+            element={<MlStudioLayout />}
+          >
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<ModelOverviewTab />} />
+            <Route path="experiments" element={<ExperimentsTab />} />
+            <Route path="experiments/new" element={<ExperimentFormPage />} />
+            <Route
+              path="experiments/:experimentId"
+              element={<ExperimentDetailPage />}
+            />
+            <Route
+              path="experiments/:experimentId/edit"
+              element={<ExperimentFormPage />}
+            />
+            <Route
+              path="experiments/:experimentId/runs/new"
+              element={<RunFormPage />}
+            />
+            <Route
+              path="experiments/:experimentId/runs/:runId"
+              element={<RunDetailPage />}
+            />
+            <Route
+              path="experiments/:experimentId/compare"
+              element={<RunComparisonPage />}
+            />
+            <Route path="datasets" element={<DatasetsTab />} />
+            <Route path="datasets/:datasetId" element={<DatasetDetailPage />} />
+            <Route path="evaluations" element={<EvaluationsTab />} />
+            <Route
+              path="evaluations/:evaluationId"
+              element={<EvaluationDetailPage />}
+            />
+            <Route path="deployments" element={<DeploymentsTab />} />
+            <Route path="findings" element={<FindingsTab />} />
+            <Route path="findings/:findingId" element={<FindingDetailPage />} />
+            <Route path="decisions" element={<DecisionsTab />} />
+            <Route
+              path="decisions/:decisionId"
+              element={<DecisionDetailPage />}
             />
           </Route>
 
