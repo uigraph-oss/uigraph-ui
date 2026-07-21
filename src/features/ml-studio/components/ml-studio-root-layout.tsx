@@ -40,14 +40,15 @@ export function MlStudioRootLayout() {
           <h1 className="text-xl font-semibold text-[#F4F7FC]">ML Studio</h1>
         </div>
 
-        <div className="border-stock flex items-center overflow-x-auto border-b-2">
+        <div className="border-stock flex items-center overflow-x-auto border-b">
           {rootTabs.map((tab) => (
             <Button
               key={tab.id}
               variant="ghost"
               className={cn(
-                'mb-[-2px] h-11 rounded-none border-b-2 border-transparent bg-transparent px-8 hover:bg-transparent',
-                activeTab === tab.id && 'border-primary'
+                'h-11 rounded-none bg-transparent px-8 text-[#828DA3] hover:bg-transparent',
+                activeTab === tab.id &&
+                  'text-[#F4F7FC] shadow-[inset_0_-2px_0_0_var(--color-primary)]'
               )}
               onClick={() =>
                 navigate(`/dashboard/ml-studio/${tab.id}`, { replace: true })

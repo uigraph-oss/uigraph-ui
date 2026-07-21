@@ -38,7 +38,7 @@ export function FindingsTab() {
       </div>
 
       <div className="border-stock bg-card overflow-hidden rounded-xl border">
-        <Table>
+        <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>

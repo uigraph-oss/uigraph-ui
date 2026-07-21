@@ -1,7 +1,9 @@
 'use client'
 
-import { SimpleModal } from '@/components/simple-modal'
-import { Button } from '@/components/ui/button'
+import {
+  BetterDialogContent,
+  BetterDialogProvider,
+} from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -21,84 +23,80 @@ export function VersionModal({
   onOpenChange: (open: boolean) => void
 }) {
   return (
-    <SimpleModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Create version"
-      description="Promote a run into a new named version of this model."
-      footer={
-        <div className="flex justify-end gap-2">
-          <Button preset="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button preset="primary" onClick={() => onOpenChange(false)}>
-            Create version
-          </Button>
+    <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
+      <BetterDialogContent
+        title="Create version"
+        description="Promote a run into a new named version of this model."
+        footerCancel
+        footerSubmit="Create version"
+        onFooterSubmitClick={() => onOpenChange(false)}
+      >
+        <div className="flex flex-col gap-5">
+          <FormGrid>
+            <FormField label="Version">
+              <Input placeholder="v4.0.0" />
+            </FormField>
+            <FormField label="Display name">
+              <Input placeholder="Video Recs v3" />
+            </FormField>
+          </FormGrid>
+
+          <FormField label="Description">
+            <Textarea placeholder="What changed in this version?" rows={3} />
+          </FormField>
+
+          <FormGrid>
+            <FormField label="Status">
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="released">Released</SelectItem>
+                  <SelectItem value="deprecated">Deprecated</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormField>
+            <FormField label="Stage">
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="candidate">Candidate</SelectItem>
+                  <SelectItem value="staging">Staging</SelectItem>
+                  <SelectItem value="production">Production</SelectItem>
+                  <SelectItem value="retired">Retired</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormField>
+          </FormGrid>
+
+          <FormField label="Linked run">
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a run to promote" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="r-vr-v2-b">
+                  r-vr-v2-b · watch-history-context
+                </SelectItem>
+                <SelectItem value="r-vr-v2-a">
+                  r-vr-v2-a · feed-baseline
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+
+          <FormField label="Release notes">
+            <Textarea
+              placeholder="Highlights, metrics, and caveats."
+              rows={4}
+            />
+          </FormField>
         </div>
-      }
-    >
-      <div className="flex flex-col gap-5 p-6">
-        <FormGrid>
-          <FormField label="Version">
-            <Input placeholder="v4.0.0" />
-          </FormField>
-          <FormField label="Display name">
-            <Input placeholder="Video Recs v3" />
-          </FormField>
-        </FormGrid>
-
-        <FormField label="Description">
-          <Textarea placeholder="What changed in this version?" rows={3} />
-        </FormField>
-
-        <FormGrid>
-          <FormField label="Status">
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="released">Released</SelectItem>
-                <SelectItem value="deprecated">Deprecated</SelectItem>
-              </SelectContent>
-            </Select>
-          </FormField>
-          <FormField label="Stage">
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select stage" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="candidate">Candidate</SelectItem>
-                <SelectItem value="staging">Staging</SelectItem>
-                <SelectItem value="production">Production</SelectItem>
-                <SelectItem value="retired">Retired</SelectItem>
-              </SelectContent>
-            </Select>
-          </FormField>
-        </FormGrid>
-
-        <FormField label="Linked run">
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a run to promote" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="r-vr-v2-b">
-                r-vr-v2-b · watch-history-context
-              </SelectItem>
-              <SelectItem value="r-vr-v2-a">
-                r-vr-v2-a · feed-baseline
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </FormField>
-
-        <FormField label="Release notes">
-          <Textarea placeholder="Highlights, metrics, and caveats." rows={4} />
-        </FormField>
-      </div>
-    </SimpleModal>
+      </BetterDialogContent>
+    </BetterDialogProvider>
   )
 }
