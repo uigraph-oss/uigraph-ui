@@ -10,25 +10,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { formatDistanceToNow } from 'date-fns'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
 import { InfoRow, Panel } from '../panel'
 
-const tabs = [
-  { id: 'model-card', label: 'Model card' },
-  { id: 'metrics', label: 'Metrics' },
-  { id: 'artifacts', label: 'Artifacts' },
-  { id: 'parameters', label: 'Parameters' },
-] as const
-
-type TabId = (typeof tabs)[number]['id']
+function formatMetric(value: number) {
+  if (Number.isInteger(value)) return String(value)
+  return Number(value.toPrecision(4)).toString()
+}
 
 export function ModelOverviewTab() {
   const { model, selectedVersion } = useModelContext()
   const { runs, artifacts: allArtifacts } = useMlStudioData()
-  const [activeTab, setActiveTab] = useState<TabId>('model-card')
+  const navigate = useNavigate()
 
   const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
   const metrics = Object.entries(latestRun?.metrics ?? {})
@@ -38,139 +34,141 @@ export function ModelOverviewTab() {
     : []
 
   return (
-    <div className="flex flex-col">
-      <div className="border-stock flex items-center border-b">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.id}
-            variant="ghost"
-            className={cn(
-              'h-11 rounded-none bg-transparent px-8 text-[#828DA3] hover:bg-transparent',
-              activeTab === tab.id &&
-                'text-[#F4F7FC] shadow-[inset_0_-2px_0_0_var(--color-primary)]'
-            )}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+      <Panel title="Model card" className="md:col-span-2">
+        <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+          <InfoRow label="Problem type">
+            <span className="capitalize">{model.problemType}</span>
+          </InfoRow>
+          <InfoRow label="Domain">{model.domain || '—'}</InfoRow>
+        </div>
+        <InfoRow label="Description">
+          <span className="leading-relaxed text-[#828DA3]">
+            {model.description || 'No description.'}
+          </span>
+        </InfoRow>
+        {model.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {model.tags.map((tag) => (
+              <Badge
+                key={tag}
+                className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </Panel>
 
-      <div className="p-6">
-        {activeTab === 'model-card' && (
-          <Panel>
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-              <InfoRow label="Problem type">
-                <span className="capitalize">{model.problemType}</span>
-              </InfoRow>
-              <InfoRow label="Domain">{model.domain || '—'}</InfoRow>
-            </div>
-            <InfoRow label="Description">
-              <span className="leading-relaxed text-[#828DA3]">
-                {model.description || 'No description.'}
-              </span>
-            </InfoRow>
-            {model.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {model.tags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
+      <Panel title="Metrics">
+        {metrics.length > 0 ? (
+          <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+            {metrics.map(([key, value]) => (
+              <div key={key}>
+                <div className="text-2xl font-bold text-[#F4F7FC]">
+                  {formatMetric(value)}
+                </div>
+                <div className="mt-1 text-sm text-[#828DA3]">
+                  {key.replace(/_/g, ' ')}
+                </div>
               </div>
-            )}
-          </Panel>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-[#586378]">
+            No metrics recorded for this version.
+          </p>
         )}
+      </Panel>
 
-        {activeTab === 'metrics' && (
-          <Panel>
-            {metrics.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                {metrics.map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="border-stock rounded-lg border bg-[#1E2533] p-4"
-                  >
-                    <div className="text-2xl font-bold text-[#F4F7FC]">
-                      {value}
-                    </div>
-                    <div className="mt-1 text-sm text-[#828DA3]">
-                      {key.replace(/_/g, ' ')}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-[#586378]">
-                No metrics recorded for this version.
-              </p>
-            )}
-          </Panel>
+      <Panel title="Parameters">
+        {parameters.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Parameter</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {parameters.map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell className="text-[#828DA3]">{key}</TableCell>
+                  <TableCell className="font-mono text-[#F4F7FC]">
+                    {String(value)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="text-sm text-[#586378]">No parameters recorded.</p>
         )}
+      </Panel>
 
-        {activeTab === 'artifacts' && (
-          <Panel>
-            {artifacts.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Format</TableHead>
-                    <TableHead>Size</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {artifacts.map((a) => (
-                    <TableRow key={a.id}>
-                      <TableCell className="font-medium text-[#F4F7FC]">
-                        {a.name}
-                      </TableCell>
-                      <TableCell className="text-[#828DA3]">{a.type}</TableCell>
-                      <TableCell className="text-[#828DA3]">
-                        {a.format}
-                      </TableCell>
-                      <TableCell className="text-[#828DA3]">{a.size}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <p className="text-sm text-[#586378]">No artifacts attached.</p>
-            )}
-          </Panel>
+      <Panel
+        title="Artifacts"
+        description={
+          latestRun && (
+            <>
+              Created by{' '}
+              <Link
+                to={`/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`}
+                className="hover:text-primary text-[#F4F7FC]"
+              >
+                {latestRun.name}
+              </Link>{' '}
+              ·{' '}
+              {formatDistanceToNow(new Date(latestRun.startedAt), {
+                addSuffix: true,
+              })}
+            </>
+          )
+        }
+        className="md:col-span-2"
+        action={
+          latestRun && (
+            <Button
+              preset="outline"
+              onClick={() =>
+                navigate(
+                  `/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
+                )
+              }
+            >
+              Go To {latestRun.name}
+            </Button>
+          )
+        }
+      >
+        {artifacts.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Format</TableHead>
+                <TableHead>Size</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {artifacts.map((a) => (
+                <TableRow key={a.id}>
+                  <TableCell className="font-medium text-[#F4F7FC]">
+                    {a.name}
+                  </TableCell>
+                  <TableCell className="text-[#828DA3]">{a.type}</TableCell>
+                  <TableCell className="text-[#828DA3]">{a.format}</TableCell>
+                  <TableCell className="text-[#828DA3]">{a.size}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="text-sm text-[#586378]">No artifacts attached.</p>
         )}
-
-        {activeTab === 'parameters' && (
-          <Panel>
-            {parameters.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Parameter</TableHead>
-                    <TableHead>Value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {parameters.map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell className="text-[#828DA3]">{key}</TableCell>
-                      <TableCell className="font-mono text-[#F4F7FC]">
-                        {String(value)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <p className="text-sm text-[#586378]">No parameters recorded.</p>
-            )}
-          </Panel>
-        )}
-      </div>
+      </Panel>
     </div>
   )
 }
