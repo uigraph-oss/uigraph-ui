@@ -180,34 +180,12 @@ export type Deployment = {
   rolledBackAt?: string
 }
 
-export type FindingSeverity = 'info' | 'low' | 'medium' | 'high' | 'critical'
-export type FindingStatus = 'draft' | 'published' | 'superseded'
-
 export type Finding = {
   id: string
   modelId: string
-  versionId: string
+  versionId?: string
   title: string
   summary: string
   description: string
-  severity: FindingSeverity
-  status: FindingStatus
-  source: string
-  author: string
-  createdAt: string
   runIds: string[]
-  linkedVersionId?: string
-  pinned: boolean
-}
-
-export type Decision = {
-  id: string
-  modelId: string
-  versionId: string
-  title: string
-  decision: string
-  reason: string
-  impact: string
-  decisionMaker: string
-  decidedAt: string
 }

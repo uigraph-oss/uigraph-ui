@@ -14,7 +14,6 @@ const rootTabs = [
   { id: 'datasets', label: 'Datasets' },
   { id: 'deployments', label: 'Deployments' },
   { id: 'findings', label: 'Findings' },
-  { id: 'decisions', label: 'Decisions' },
 ] as const
 
 const tabURLPattern = new URLPatternPolyfill({

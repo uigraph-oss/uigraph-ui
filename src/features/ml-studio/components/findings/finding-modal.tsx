@@ -5,15 +5,8 @@ import {
   BetterDialogProvider,
 } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { FormField, FormGrid } from '../form-field'
+import { FormField } from '../form-field'
 import { ModelVersionSelect } from '../model-version-select'
 
 export function FindingModal({
@@ -27,73 +20,38 @@ export function FindingModal({
     <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
       <BetterDialogContent
         title="New finding"
-        description="Capture an insight or observation about this version."
+        description="Capture what was learned from an experiment."
         footerCancel
         footerSubmit="Create finding"
         onFooterSubmitClick={() => onOpenChange(false)}
       >
         <div className="flex flex-col gap-5">
-          <ModelVersionSelect />
-
-          <FormField label="Title">
-            <Input placeholder="Session context lifts watch time" />
+          <FormField label="Title" hint="A short summary of the insight.">
+            <Input placeholder="Two-tower architecture improves cold-start recommendations" />
           </FormField>
 
-          <FormField label="Summary" hint="One-line takeaway.">
+          <FormField label="Body" hint="The explanation of the insight.">
             <Textarea
-              placeholder="Average watch time up 12% for new viewers."
-              rows={2}
+              placeholder="What did we discover, why did it happen, and why does it matter?"
+              rows={5}
             />
           </FormField>
 
-          <FormField label="Description">
-            <Textarea
-              placeholder="Evidence, context, and recommendation."
-              rows={4}
-            />
-          </FormField>
-
-          <FormGrid>
-            <FormField label="Severity">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select severity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="info">Info</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="critical">Critical</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-            <FormField label="Status">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
-                  <SelectItem value="superseded">Superseded</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-          </FormGrid>
-
-          <FormGrid>
-            <FormField label="Source">
-              <Input placeholder="Experiment analysis" />
-            </FormField>
-            <FormField label="Author">
-              <Input placeholder="Maya Patel" />
-            </FormField>
-          </FormGrid>
-
-          <FormField label="Linked runs" hint="Comma separated run IDs.">
+          <FormField label="Evidence" hint="Comma separated run IDs.">
             <Input placeholder="r-vr-v2-a, r-vr-v2-b" />
           </FormField>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-medium text-[#F4F7FC]">
+                Supports → Model Version
+              </span>
+              <span className="text-xs text-[#828DA3]">
+                The model version this finding justifies (optional).
+              </span>
+            </div>
+            <ModelVersionSelect />
+          </div>
         </div>
       </BetterDialogContent>
     </BetterDialogProvider>

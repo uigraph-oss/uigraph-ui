@@ -112,17 +112,6 @@ const FindingDetailPage = lazy(() =>
     (mod) => ({ default: mod.FindingDetailPage })
   )
 )
-const DecisionsTab = lazy(() =>
-  import('@/features/ml-studio/components/decisions/decisions-tab').then(
-    (mod) => ({ default: mod.DecisionsTab })
-  )
-)
-const DecisionDetailPage = lazy(() =>
-  import('@/features/ml-studio/components/decisions/decision-detail-page').then(
-    (mod) => ({ default: mod.DecisionDetailPage })
-  )
-)
-
 const SignInForm = lazy(() =>
   import('@/features/auth/sign-in-form').then((mod) => ({
     default: mod.SignInForm,
@@ -495,11 +484,6 @@ export function AppRoutes() {
             <Route path="deployments" element={<DeploymentsTab />} />
             <Route path="findings" element={<FindingsTab />} />
             <Route path="findings/:findingId" element={<FindingDetailPage />} />
-            <Route path="decisions" element={<DecisionsTab />} />
-            <Route
-              path="decisions/:decisionId"
-              element={<DecisionDetailPage />}
-            />
           </Route>
 
           <Route

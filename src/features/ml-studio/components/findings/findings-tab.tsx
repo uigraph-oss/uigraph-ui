@@ -9,12 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { PinIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockFindings } from '../../constants/mock-data'
 import { ModelVersionLink } from '../model-version-link'
-import { StatusBadge } from '../status-badge'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
@@ -27,7 +26,7 @@ export function FindingsTab() {
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-[#F4F7FC]">Findings</h2>
           <p className="text-sm text-[#828DA3]">
-            Insights and observations across all models.
+            What was learned from experiments across all models.
           </p>
         </div>
         <Button
@@ -45,12 +44,8 @@ export function FindingsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Linked to</TableHead>
-              <TableHead>Severity</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Source</TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>Evidence</TableHead>
+              <TableHead>Supports</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -63,36 +58,19 @@ export function FindingsTab() {
                 }
               >
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    {f.pinned && (
-                      <PinIcon className="size-3.5 text-[#3B6BFF]" />
-                    )}
-                    <div>
-                      <div className="font-medium text-[#F4F7FC]">
-                        {f.title}
-                      </div>
-                      <div className="line-clamp-1 text-sm text-[#828DA3]">
-                        {f.summary}
-                      </div>
-                    </div>
+                  <div className="font-medium text-[#F4F7FC]">{f.title}</div>
+                  <div className="line-clamp-1 text-sm text-[#828DA3]">
+                    {f.summary}
                   </div>
+                </TableCell>
+                <TableCell className="text-[#828DA3]">
+                  {f.runIds.length} {f.runIds.length === 1 ? 'run' : 'runs'}
                 </TableCell>
                 <TableCell>
                   <ModelVersionLink
                     modelId={f.modelId}
                     versionId={f.versionId}
                   />
-                </TableCell>
-                <TableCell>
-                  <StatusBadge value={f.severity} />
-                </TableCell>
-                <TableCell>
-                  <StatusBadge value={f.status} />
-                </TableCell>
-                <TableCell className="text-[#828DA3]">{f.source}</TableCell>
-                <TableCell className="text-[#828DA3]">{f.author}</TableCell>
-                <TableCell className="text-[#828DA3]">
-                  {new Date(f.createdAt).toLocaleDateString()}
                 </TableCell>
               </TableRow>
             ))}
