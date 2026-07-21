@@ -11,11 +11,24 @@ export const [ModelContextProvider, useModelContext] = createContext(
     const model = models.find((m) => m.id === modelId)
 
     const versions = useMemo(
-      () => allVersions.filter((v) => v.modelId === modelId),
+      () =>
+        allVersions
+          .filter((v) => v.modelId === modelId)
+          .sort((a, b) => Number(b.version) - Number(a.version)),
       [allVersions, modelId]
     )
 
-    const defaultVersionId = model?.productionVersionId || versions[0]?.id || ''
+    const latestVersion = useMemo(
+      () =>
+        versions.reduce<(typeof versions)[number] | undefined>(
+          (latest, v) =>
+            !latest || Number(v.version) > Number(latest.version) ? v : latest,
+          undefined
+        ),
+      [versions]
+    )
+
+    const defaultVersionId = latestVersion?.id || ''
 
     const [versionParam, setVersionId] = useQueryState('v', parseAsString)
     const selectedVersionId =
@@ -29,6 +42,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
       model: model!,
       modelId,
       versions,
+      latestVersionId: latestVersion?.id,
       selectedVersionId,
       selectedVersion,
       setVersionId,
