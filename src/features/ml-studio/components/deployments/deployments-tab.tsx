@@ -11,12 +11,13 @@ import {
 } from '@/components/ui/table'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-import { mockDeployments } from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { ModelVersionLink } from '../model-version-link'
 import { StatusBadge } from '../status-badge'
 import { DeploymentModal } from './deployment-modal'
 
 export function DeploymentsTab() {
+  const { deployments } = useMlStudioData()
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -52,7 +53,7 @@ export function DeploymentsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockDeployments.map((d) => (
+            {deployments.map((d) => (
               <TableRow key={d.id}>
                 <TableCell className="font-medium text-[#F4F7FC]">
                   {d.name}

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
 import { useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { MlStudioDataProvider } from '../contexts/ml-studio-data-context'
 
 const rootTabs = [
   { id: 'models', label: 'Models' },
@@ -55,7 +56,9 @@ export function MlStudioRootLayout() {
         </div>
 
         <GridScrollBody>
-          <Outlet />
+          <MlStudioDataProvider>
+            <Outlet />
+          </MlStudioDataProvider>
         </GridScrollBody>
       </div>
     </div>

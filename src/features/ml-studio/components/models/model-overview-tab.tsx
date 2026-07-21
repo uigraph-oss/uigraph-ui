@@ -2,6 +2,14 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -13,47 +21,113 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-import {
-  mockArtifacts,
-  mockExperiments,
-  mockRuns,
-} from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
+import type { ProblemType } from '../../types'
 import { InfoRow, Panel } from '../panel'
-import { StatusBadge } from '../status-badge'
 import { VersionTimeline } from '../version-timeline'
 import { VersionModal } from './version-modal'
+
+const PROBLEM_TYPES: ProblemType[] = [
+  'classification',
+  'regression',
+  'ranking',
+  'generation',
+  'embedding',
+  'other',
+]
 
 export function ModelOverviewTab() {
   const { model, versions, selectedVersionId, selectedVersion, setVersionId } =
     useModelContext()
+  const {
+    orgId,
+    runs,
+    artifacts: allArtifacts,
+    updateModel,
+  } = useMlStudioData()
   const [versionModalOpen, setVersionModalOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [domain, setDomain] = useState(model.domain)
+  const [problemType, setProblemType] = useState<ProblemType>(model.problemType)
 
-  const versionExperiments = mockExperiments.filter(
-    (e) => e.versionId === selectedVersionId
-  )
-  const versionRuns = mockRuns.filter((r) =>
-    versionExperiments.some((e) => e.id === r.experimentId)
-  )
-  const latestRun = versionRuns[versionRuns.length - 1]
+  const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
   const metrics = Object.entries(latestRun?.metrics ?? {})
   const parameters = Object.entries(latestRun?.parameters ?? {})
   const artifacts = latestRun
-    ? mockArtifacts.filter((a) => latestRun.artifactIds.includes(a.id))
+    ? allArtifacts.filter((a) => latestRun.artifactIds.includes(a.id))
     : []
+
+  function startEdit() {
+    setDomain(model.domain)
+    setProblemType(model.problemType)
+    setEditing(true)
+  }
+
+  async function saveEdit() {
+    await updateModel({
+      variables: { orgId: orgId!, id: model.id, domain, problemType },
+    })
+    setEditing(false)
+  }
 
   return (
     <div className="grid grid-cols-1 gap-5 p-6 lg:grid-cols-3">
       <div className="flex flex-col gap-5 lg:col-span-2">
-        <Panel title="Model card">
+        <Panel
+          title="Model card"
+          action={
+            editing ? (
+              <div className="flex gap-2">
+                <Button
+                  preset="outline"
+                  className="h-9 px-3"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancel
+                </Button>
+                <Button className="h-9 px-3" onClick={() => void saveEdit()}>
+                  Save
+                </Button>
+              </div>
+            ) : (
+              <Button preset="outline" className="h-9 px-3" onClick={startEdit}>
+                Edit
+              </Button>
+            )
+          }
+        >
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
             <InfoRow label="Problem type">
-              <span className="capitalize">{model.problemType}</span>
+              {editing ? (
+                <Select
+                  value={problemType}
+                  onValueChange={(v) => setProblemType(v as ProblemType)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROBLEM_TYPES.map((t) => (
+                      <SelectItem key={t} value={t} className="capitalize">
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <span className="capitalize">{model.problemType}</span>
+              )}
             </InfoRow>
-            <InfoRow label="Domain">{model.domain}</InfoRow>
-            <InfoRow label="Owner">{model.owner}</InfoRow>
-            <InfoRow label="Status">
-              <StatusBadge value={model.status} />
+            <InfoRow label="Domain">
+              {editing ? (
+                <Input
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                />
+              ) : (
+                model.domain
+              )}
             </InfoRow>
           </div>
           <p className="text-sm leading-relaxed text-[#828DA3]">
@@ -73,11 +147,7 @@ export function ModelOverviewTab() {
 
         <Panel
           title="Version"
-          description={
-            selectedVersion
-              ? `${selectedVersion.displayName} · ${selectedVersion.version}`
-              : undefined
-          }
+          description={selectedVersion ? selectedVersion.version : undefined}
         >
           <Tabs defaultValue="metrics">
             <TabsList className="border-stock bg-[#1E2533]">

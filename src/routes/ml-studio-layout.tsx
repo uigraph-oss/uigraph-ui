@@ -1,12 +1,33 @@
 import { MlStudioModelLayout } from '@/features/ml-studio/components/models/ml-studio-model-layout'
-import { mockModels } from '@/features/ml-studio/constants/mock-data'
+import {
+  MlStudioDataProvider,
+  useMlStudioData,
+} from '@/features/ml-studio/contexts/ml-studio-data-context'
 import { ModelContextProvider } from '@/features/ml-studio/contexts/model-context'
 import { Navigate, Outlet, useParams } from 'react-router-dom'
 
 export function MlStudioLayout() {
   const { modelId } = useParams<{ modelId: string }>()
 
-  if (!modelId || !mockModels.some((m) => m.id === modelId)) {
+  if (!modelId) {
+    return <Navigate to="/dashboard/ml-studio/models" replace />
+  }
+
+  return (
+    <MlStudioDataProvider>
+      <ModelRoute modelId={modelId} />
+    </MlStudioDataProvider>
+  )
+}
+
+function ModelRoute({ modelId }: { modelId: string }) {
+  const { models, isLoading } = useMlStudioData()
+
+  if (isLoading) {
+    return <div className="p-6 text-[#828DA3]">Loading…</div>
+  }
+
+  if (!models.some((m) => m.id === modelId)) {
     return <Navigate to="/dashboard/ml-studio/models" replace />
   }
 

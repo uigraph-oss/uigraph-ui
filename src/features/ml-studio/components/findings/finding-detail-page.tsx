@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Link, useParams } from 'react-router-dom'
-import { mockFindings, mockRuns } from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { ModelVersionLink } from '../model-version-link'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
@@ -17,13 +17,14 @@ import { StatusBadge } from '../status-badge'
 export function FindingDetailPage() {
   const { findingId } = useParams<{ findingId: string }>()
 
-  const finding = mockFindings.find((f) => f.id === findingId)
+  const { findings, runs: allRuns } = useMlStudioData()
+  const finding = findings.find((f) => f.id === findingId)
 
   if (!finding) {
     return <div className="p-6 text-[#828DA3]">Finding not found.</div>
   }
 
-  const runs = mockRuns.filter((r) => finding.runIds.includes(r.id))
+  const runs = allRuns.filter((r) => finding.runIds.includes(r.id))
 
   return (
     <div className="flex flex-col gap-5 p-6">

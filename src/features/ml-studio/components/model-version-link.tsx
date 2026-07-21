@@ -1,7 +1,7 @@
 'use client'
 
 import { Link } from 'react-router-dom'
-import { mockModels, mockVersions } from '../constants/mock-data'
+import { useMlStudioData } from '../contexts/ml-studio-data-context'
 
 export function ModelVersionLink({
   modelId,
@@ -10,9 +10,10 @@ export function ModelVersionLink({
   modelId: string
   versionId?: string
 }) {
-  const model = mockModels.find((m) => m.id === modelId)
+  const { models, versions } = useMlStudioData()
+  const model = models.find((m) => m.id === modelId)
   const version = versionId
-    ? mockVersions.find((v) => v.id === versionId)
+    ? versions.find((v) => v.id === versionId)
     : undefined
 
   if (!model) {

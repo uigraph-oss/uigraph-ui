@@ -1,6 +1,5 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -9,30 +8,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Link, useParams } from 'react-router-dom'
-import { mockDatasets } from '../../constants/mock-data'
+import { useParams } from 'react-router-dom'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { InfoRow, Panel } from '../panel'
 
 export function DatasetDetailPage() {
   const { datasetId } = useParams<{ datasetId: string }>()
 
-  const dataset = mockDatasets.find((d) => d.id === datasetId)
+  const { datasets } = useMlStudioData()
+  const dataset = datasets.find((d) => d.id === datasetId)
 
   if (!dataset) {
     return <div className="p-6 text-[#828DA3]">Dataset not found.</div>
   }
 
-  const parent = dataset.parentId
-    ? mockDatasets.find((d) => d.id === dataset.parentId)
-    : undefined
-
   return (
     <div className="flex flex-col gap-5 p-6">
       <div>
-        <h2 className="text-xl font-semibold text-[#F4F7FC]">
-          {dataset.name} {dataset.version}
-        </h2>
-        <p className="mt-1 text-sm text-[#828DA3]">{dataset.description}</p>
+        <h2 className="text-xl font-semibold text-[#F4F7FC]">{dataset.name}</h2>
       </div>
 
       <Panel>
@@ -41,68 +34,11 @@ export function DatasetDetailPage() {
             <span className="capitalize">{dataset.type}</span>
           </InfoRow>
           <InfoRow label="Rows">{dataset.rowCount.toLocaleString()}</InfoRow>
-          <InfoRow label="Size">{dataset.size}</InfoRow>
-          <InfoRow label="License">{dataset.license}</InfoRow>
           <InfoRow label="Source">
             <span className="font-mono text-xs text-[#586378]">
               {dataset.source}
             </span>
           </InfoRow>
-          <InfoRow label="Lineage">
-            {parent ? (
-              <Link
-                to={`/dashboard/ml-studio/datasets/${parent.id}`}
-                className="hover:text-primary"
-              >
-                {parent.name} {parent.version}
-              </Link>
-            ) : (
-              'Root dataset'
-            )}
-          </InfoRow>
-          <InfoRow label="Tags">
-            <div className="flex flex-wrap gap-1">
-              {dataset.tags.map((t) => (
-                <Badge
-                  key={t}
-                  className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                >
-                  {t}
-                </Badge>
-              ))}
-            </div>
-          </InfoRow>
-        </div>
-      </Panel>
-
-      <Panel title="Split" description="Train / validation / test partition.">
-        <div className="flex h-3 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-[#3B6BFF]"
-            style={{ width: `${dataset.split.train}%` }}
-          />
-          <div
-            className="bg-[#21AD6D]"
-            style={{ width: `${dataset.split.validation}%` }}
-          />
-          <div
-            className="bg-[#F5A623]"
-            style={{ width: `${dataset.split.test}%` }}
-          />
-        </div>
-        <div className="flex gap-5 text-sm">
-          <span className="text-[#828DA3]">
-            <span className="mr-1 inline-block size-2 rounded-full bg-[#3B6BFF]" />
-            Train {dataset.split.train}%
-          </span>
-          <span className="text-[#828DA3]">
-            <span className="mr-1 inline-block size-2 rounded-full bg-[#21AD6D]" />
-            Validation {dataset.split.validation}%
-          </span>
-          <span className="text-[#828DA3]">
-            <span className="mr-1 inline-block size-2 rounded-full bg-[#F5A623]" />
-            Test {dataset.split.test}%
-          </span>
         </div>
       </Panel>
 

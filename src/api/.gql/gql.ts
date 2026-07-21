@@ -117,6 +117,21 @@ type Documents = {
     "\n  mutation CreateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $input: CreateFocalPointMetaInput!\n  ) {\n    createFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.CreateFocalPointMetaDocument,
     "\n  mutation UpdateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n    $input: UpdateFocalPointMetaInput!\n  ) {\n    updateFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.UpdateFocalPointMetaDocument,
     "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n": typeof types.DeleteFocalPointMetaDocument,
+    "\n  query MlStudioModels($orgId: ID!) {\n    mlModels(orgId: $orgId) {\n      id\n      name\n      description\n      domain\n      problemType\n      tags\n      productionVersionId\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.MlStudioModelsDocument,
+    "\n  query MlStudioVersions($orgId: ID!) {\n    mlModelVersions(orgId: $orgId) {\n      id\n      modelId\n      version\n      description\n      status\n      stage\n      runId\n      createdAt\n    }\n  }\n": typeof types.MlStudioVersionsDocument,
+    "\n  query MlStudioExperiments($orgId: ID!) {\n    mlExperiments(orgId: $orgId) {\n      id\n      name\n      description\n      status\n      startedAt\n    }\n  }\n": typeof types.MlStudioExperimentsDocument,
+    "\n  query MlStudioRuns($orgId: ID!) {\n    mlRuns(orgId: $orgId) {\n      id\n      experimentId\n      name\n      status\n      startedAt\n      endedAt\n      duration\n      notes\n      parameters\n      metrics\n      datasetId\n      series\n    }\n  }\n": typeof types.MlStudioRunsDocument,
+    "\n  query MlStudioArtifacts($orgId: ID!) {\n    mlArtifacts(orgId: $orgId) {\n      id\n      runId\n      name\n      type\n      uri\n      size\n      format\n    }\n  }\n": typeof types.MlStudioArtifactsDocument,
+    "\n  query MlStudioDatasets($orgId: ID!) {\n    mlDatasets(orgId: $orgId) {\n      id\n      name\n      source\n      type\n      rowCount\n      schema {\n        name\n        type\n        description\n      }\n    }\n  }\n": typeof types.MlStudioDatasetsDocument,
+    "\n  query MlStudioDeployments($orgId: ID!) {\n    mlDeployments(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      name\n      environment\n      status\n      endpoint\n      region\n      deployedAt\n      rolledBackAt\n    }\n  }\n": typeof types.MlStudioDeploymentsDocument,
+    "\n  query MlStudioFindings($orgId: ID!) {\n    mlFindings(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      title\n      summary\n      description\n      runIds\n    }\n  }\n": typeof types.MlStudioFindingsDocument,
+    "\n  mutation UpdateMlModel(\n    $orgId: ID!\n    $id: ID!\n    $domain: String\n    $problemType: String\n  ) {\n    updateMlModel(\n      orgId: $orgId\n      id: $id\n      domain: $domain\n      problemType: $problemType\n    ) {\n      id\n      domain\n      problemType\n    }\n  }\n": typeof types.UpdateMlModelDocument,
+    "\n  mutation CreateMlDeployment($orgId: ID!, $input: CreateMlDeploymentInput!) {\n    createMlDeployment(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateMlDeploymentDocument,
+    "\n  mutation UpdateMlDeployment(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlDeploymentInput!\n  ) {\n    updateMlDeployment(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMlDeploymentDocument,
+    "\n  mutation DeleteMlDeployment($orgId: ID!, $id: ID!) {\n    deleteMlDeployment(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteMlDeploymentDocument,
+    "\n  mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {\n    createMlFinding(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateMlFindingDocument,
+    "\n  mutation UpdateMlFinding(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlFindingInput!\n  ) {\n    updateMlFinding(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMlFindingDocument,
+    "\n  mutation DeleteMlFinding($orgId: ID!, $id: ID!) {\n    deleteMlFinding(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteMlFindingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": typeof types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
@@ -312,6 +327,21 @@ const documents: Documents = {
     "\n  mutation CreateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $input: CreateFocalPointMetaInput!\n  ) {\n    createFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.CreateFocalPointMetaDocument,
     "\n  mutation UpdateFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n    $input: UpdateFocalPointMetaInput!\n  ) {\n    updateFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.UpdateFocalPointMetaDocument,
     "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n": types.DeleteFocalPointMetaDocument,
+    "\n  query MlStudioModels($orgId: ID!) {\n    mlModels(orgId: $orgId) {\n      id\n      name\n      description\n      domain\n      problemType\n      tags\n      productionVersionId\n      createdAt\n      updatedAt\n    }\n  }\n": types.MlStudioModelsDocument,
+    "\n  query MlStudioVersions($orgId: ID!) {\n    mlModelVersions(orgId: $orgId) {\n      id\n      modelId\n      version\n      description\n      status\n      stage\n      runId\n      createdAt\n    }\n  }\n": types.MlStudioVersionsDocument,
+    "\n  query MlStudioExperiments($orgId: ID!) {\n    mlExperiments(orgId: $orgId) {\n      id\n      name\n      description\n      status\n      startedAt\n    }\n  }\n": types.MlStudioExperimentsDocument,
+    "\n  query MlStudioRuns($orgId: ID!) {\n    mlRuns(orgId: $orgId) {\n      id\n      experimentId\n      name\n      status\n      startedAt\n      endedAt\n      duration\n      notes\n      parameters\n      metrics\n      datasetId\n      series\n    }\n  }\n": types.MlStudioRunsDocument,
+    "\n  query MlStudioArtifacts($orgId: ID!) {\n    mlArtifacts(orgId: $orgId) {\n      id\n      runId\n      name\n      type\n      uri\n      size\n      format\n    }\n  }\n": types.MlStudioArtifactsDocument,
+    "\n  query MlStudioDatasets($orgId: ID!) {\n    mlDatasets(orgId: $orgId) {\n      id\n      name\n      source\n      type\n      rowCount\n      schema {\n        name\n        type\n        description\n      }\n    }\n  }\n": types.MlStudioDatasetsDocument,
+    "\n  query MlStudioDeployments($orgId: ID!) {\n    mlDeployments(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      name\n      environment\n      status\n      endpoint\n      region\n      deployedAt\n      rolledBackAt\n    }\n  }\n": types.MlStudioDeploymentsDocument,
+    "\n  query MlStudioFindings($orgId: ID!) {\n    mlFindings(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      title\n      summary\n      description\n      runIds\n    }\n  }\n": types.MlStudioFindingsDocument,
+    "\n  mutation UpdateMlModel(\n    $orgId: ID!\n    $id: ID!\n    $domain: String\n    $problemType: String\n  ) {\n    updateMlModel(\n      orgId: $orgId\n      id: $id\n      domain: $domain\n      problemType: $problemType\n    ) {\n      id\n      domain\n      problemType\n    }\n  }\n": types.UpdateMlModelDocument,
+    "\n  mutation CreateMlDeployment($orgId: ID!, $input: CreateMlDeploymentInput!) {\n    createMlDeployment(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": types.CreateMlDeploymentDocument,
+    "\n  mutation UpdateMlDeployment(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlDeploymentInput!\n  ) {\n    updateMlDeployment(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMlDeploymentDocument,
+    "\n  mutation DeleteMlDeployment($orgId: ID!, $id: ID!) {\n    deleteMlDeployment(orgId: $orgId, id: $id)\n  }\n": types.DeleteMlDeploymentDocument,
+    "\n  mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {\n    createMlFinding(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": types.CreateMlFindingDocument,
+    "\n  mutation UpdateMlFinding(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlFindingInput!\n  ) {\n    updateMlFinding(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMlFindingDocument,
+    "\n  mutation DeleteMlFinding($orgId: ID!, $id: ID!) {\n    deleteMlFinding(orgId: $orgId, id: $id)\n  }\n": types.DeleteMlFindingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
@@ -830,6 +860,66 @@ export function graphql(source: "\n  mutation UpdateFocalPointMeta(\n    $orgId:
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n"): (typeof documents)["\n  mutation DeleteFocalPointMeta(\n    $orgId: ID!\n    $mapId: ID!\n    $frameId: ID!\n    $focalPointId: ID!\n    $id: ID!\n  ) {\n    deleteFocalPointMeta(\n      orgId: $orgId\n      mapId: $mapId\n      frameId: $frameId\n      focalPointId: $focalPointId\n      id: $id\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioModels($orgId: ID!) {\n    mlModels(orgId: $orgId) {\n      id\n      name\n      description\n      domain\n      problemType\n      tags\n      productionVersionId\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query MlStudioModels($orgId: ID!) {\n    mlModels(orgId: $orgId) {\n      id\n      name\n      description\n      domain\n      problemType\n      tags\n      productionVersionId\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioVersions($orgId: ID!) {\n    mlModelVersions(orgId: $orgId) {\n      id\n      modelId\n      version\n      description\n      status\n      stage\n      runId\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query MlStudioVersions($orgId: ID!) {\n    mlModelVersions(orgId: $orgId) {\n      id\n      modelId\n      version\n      description\n      status\n      stage\n      runId\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioExperiments($orgId: ID!) {\n    mlExperiments(orgId: $orgId) {\n      id\n      name\n      description\n      status\n      startedAt\n    }\n  }\n"): (typeof documents)["\n  query MlStudioExperiments($orgId: ID!) {\n    mlExperiments(orgId: $orgId) {\n      id\n      name\n      description\n      status\n      startedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioRuns($orgId: ID!) {\n    mlRuns(orgId: $orgId) {\n      id\n      experimentId\n      name\n      status\n      startedAt\n      endedAt\n      duration\n      notes\n      parameters\n      metrics\n      datasetId\n      series\n    }\n  }\n"): (typeof documents)["\n  query MlStudioRuns($orgId: ID!) {\n    mlRuns(orgId: $orgId) {\n      id\n      experimentId\n      name\n      status\n      startedAt\n      endedAt\n      duration\n      notes\n      parameters\n      metrics\n      datasetId\n      series\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioArtifacts($orgId: ID!) {\n    mlArtifacts(orgId: $orgId) {\n      id\n      runId\n      name\n      type\n      uri\n      size\n      format\n    }\n  }\n"): (typeof documents)["\n  query MlStudioArtifacts($orgId: ID!) {\n    mlArtifacts(orgId: $orgId) {\n      id\n      runId\n      name\n      type\n      uri\n      size\n      format\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioDatasets($orgId: ID!) {\n    mlDatasets(orgId: $orgId) {\n      id\n      name\n      source\n      type\n      rowCount\n      schema {\n        name\n        type\n        description\n      }\n    }\n  }\n"): (typeof documents)["\n  query MlStudioDatasets($orgId: ID!) {\n    mlDatasets(orgId: $orgId) {\n      id\n      name\n      source\n      type\n      rowCount\n      schema {\n        name\n        type\n        description\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioDeployments($orgId: ID!) {\n    mlDeployments(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      name\n      environment\n      status\n      endpoint\n      region\n      deployedAt\n      rolledBackAt\n    }\n  }\n"): (typeof documents)["\n  query MlStudioDeployments($orgId: ID!) {\n    mlDeployments(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      name\n      environment\n      status\n      endpoint\n      region\n      deployedAt\n      rolledBackAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MlStudioFindings($orgId: ID!) {\n    mlFindings(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      title\n      summary\n      description\n      runIds\n    }\n  }\n"): (typeof documents)["\n  query MlStudioFindings($orgId: ID!) {\n    mlFindings(orgId: $orgId) {\n      id\n      modelId\n      versionId\n      title\n      summary\n      description\n      runIds\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMlModel(\n    $orgId: ID!\n    $id: ID!\n    $domain: String\n    $problemType: String\n  ) {\n    updateMlModel(\n      orgId: $orgId\n      id: $id\n      domain: $domain\n      problemType: $problemType\n    ) {\n      id\n      domain\n      problemType\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMlModel(\n    $orgId: ID!\n    $id: ID!\n    $domain: String\n    $problemType: String\n  ) {\n    updateMlModel(\n      orgId: $orgId\n      id: $id\n      domain: $domain\n      problemType: $problemType\n    ) {\n      id\n      domain\n      problemType\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateMlDeployment($orgId: ID!, $input: CreateMlDeploymentInput!) {\n    createMlDeployment(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateMlDeployment($orgId: ID!, $input: CreateMlDeploymentInput!) {\n    createMlDeployment(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMlDeployment(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlDeploymentInput!\n  ) {\n    updateMlDeployment(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMlDeployment(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlDeploymentInput!\n  ) {\n    updateMlDeployment(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMlDeployment($orgId: ID!, $id: ID!) {\n    deleteMlDeployment(orgId: $orgId, id: $id)\n  }\n"): (typeof documents)["\n  mutation DeleteMlDeployment($orgId: ID!, $id: ID!) {\n    deleteMlDeployment(orgId: $orgId, id: $id)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {\n    createMlFinding(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {\n    createMlFinding(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMlFinding(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlFindingInput!\n  ) {\n    updateMlFinding(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMlFinding(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlFindingInput!\n  ) {\n    updateMlFinding(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMlFinding($orgId: ID!, $id: ID!) {\n    deleteMlFinding(orgId: $orgId, id: $id)\n  }\n"): (typeof documents)["\n  mutation DeleteMlFinding($orgId: ID!, $id: ID!) {\n    deleteMlFinding(orgId: $orgId, id: $id)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

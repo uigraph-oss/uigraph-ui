@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { mockModels, mockVersions } from '../../constants/mock-data'
-import { StatusBadge } from '../status-badge'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { ModelModal } from './model-modal'
 
 export function ModelsTab() {
   const navigate = useNavigate()
+  const { models, versions } = useMlStudioData()
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -32,10 +32,8 @@ export function ModelsTab() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {mockModels.map((model) => {
-          const prod = mockVersions.find(
-            (v) => v.id === model.productionVersionId
-          )
+        {models.map((model) => {
+          const prod = versions.find((v) => v.id === model.productionVersionId)
           return (
             <div
               key={model.id}
@@ -53,7 +51,6 @@ export function ModelsTab() {
                     {model.problemType} · {model.domain}
                   </div>
                 </div>
-                <StatusBadge value={model.status} />
               </div>
 
               <p className="line-clamp-2 text-sm text-[#828DA3]">
@@ -61,7 +58,7 @@ export function ModelsTab() {
               </p>
 
               <div className="border-stock flex items-center justify-between border-t pt-3 text-sm text-[#828DA3]">
-                <span>{model.owner}</span>
+                <span>Production version</span>
                 <span>
                   {prod ? (
                     <span className="text-[#F4F7FC]">{prod.version}</span>

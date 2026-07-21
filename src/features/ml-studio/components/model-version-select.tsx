@@ -7,15 +7,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
-import { mockModels, mockVersions } from '../constants/mock-data'
+import { useMlStudioData } from '../contexts/ml-studio-data-context'
 import { FormField, FormGrid } from './form-field'
 
-export function ModelVersionSelect() {
-  const [modelId, setModelId] = useState(mockModels[0]?.id ?? '')
-  const [versionId, setVersionId] = useState('')
-
-  const versions = mockVersions.filter((v) => v.modelId === modelId)
+export function ModelVersionSelect({
+  modelId,
+  versionId,
+  onModelChange,
+  onVersionChange,
+}: {
+  modelId: string
+  versionId: string
+  onModelChange: (modelId: string) => void
+  onVersionChange: (versionId: string) => void
+}) {
+  const { models, versions: allVersions } = useMlStudioData()
+  const versions = allVersions.filter((v) => v.modelId === modelId)
 
   return (
     <FormGrid>
@@ -23,15 +30,15 @@ export function ModelVersionSelect() {
         <Select
           value={modelId}
           onValueChange={(value) => {
-            setModelId(value)
-            setVersionId('')
+            onModelChange(value)
+            onVersionChange('')
           }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
           <SelectContent>
-            {mockModels.map((m) => (
+            {models.map((m) => (
               <SelectItem key={m.id} value={m.id}>
                 {m.name}
               </SelectItem>
@@ -40,14 +47,14 @@ export function ModelVersionSelect() {
         </Select>
       </FormField>
       <FormField label="Version">
-        <Select value={versionId} onValueChange={setVersionId}>
+        <Select value={versionId} onValueChange={onVersionChange}>
           <SelectTrigger>
             <SelectValue placeholder="Select version" />
           </SelectTrigger>
           <SelectContent>
             {versions.map((v) => (
               <SelectItem key={v.id} value={v.id}>
-                {v.displayName} · {v.version}
+                {v.version}
               </SelectItem>
             ))}
           </SelectContent>

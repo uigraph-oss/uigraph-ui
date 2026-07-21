@@ -9,12 +9,12 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useNavigate } from 'react-router-dom'
-import { mockExperiments, mockRuns } from '../../constants/mock-data'
-import { ModelVersionLink } from '../model-version-link'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { StatusBadge } from '../status-badge'
 
 export function ExperimentsTab() {
   const navigate = useNavigate()
+  const { experiments, runs: allRuns } = useMlStudioData()
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
@@ -30,17 +30,15 @@ export function ExperimentsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Model / Version</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Runs</TableHead>
               <TableHead>Latest result</TableHead>
-              <TableHead>Owner</TableHead>
               <TableHead>Last activity</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockExperiments.map((exp) => {
-              const runs = mockRuns.filter((r) => r.experimentId === exp.id)
+            {experiments.map((exp) => {
+              const runs = allRuns.filter((r) => r.experimentId === exp.id)
               const latestRun = runs[runs.length - 1]
               const primaryMetric = Object.keys(latestRun?.metrics ?? {})[0]
               return (
@@ -54,14 +52,8 @@ export function ExperimentsTab() {
                   <TableCell>
                     <div className="font-medium text-[#F4F7FC]">{exp.name}</div>
                     <div className="line-clamp-1 text-sm text-[#828DA3]">
-                      {exp.goal}
+                      {exp.description}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <ModelVersionLink
-                      modelId={exp.modelId}
-                      versionId={exp.versionId}
-                    />
                   </TableCell>
                   <TableCell>
                     <StatusBadge value={exp.status} />
@@ -81,11 +73,8 @@ export function ExperimentsTab() {
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="text-[#828DA3]">{exp.owner}</TableCell>
                   <TableCell className="text-sm text-[#828DA3]">
-                    {new Date(
-                      exp.endedAt || exp.startedAt
-                    ).toLocaleDateString()}
+                    {new Date(exp.startedAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               )

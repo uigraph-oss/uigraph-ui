@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table'
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { mockRuns } from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MetricLineChart } from '../metric-chart'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
@@ -19,9 +19,10 @@ export function RunComparisonPage() {
   const [searchParams] = useSearchParams()
   const runIds = (searchParams.get('runs') || '').split(',').filter(Boolean)
 
+  const { runs: allRuns } = useMlStudioData()
   const runs = useMemo(
-    () => mockRuns.filter((r) => runIds.includes(r.id)),
-    [runIds]
+    () => allRuns.filter((r) => runIds.includes(r.id)),
+    [allRuns, runIds]
   )
 
   if (runs.length < 2) {

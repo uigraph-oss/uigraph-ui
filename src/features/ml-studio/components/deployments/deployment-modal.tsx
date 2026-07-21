@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useState } from 'react'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { FormField, FormGrid } from '../form-field'
 import { ModelVersionSelect } from '../model-version-select'
 
@@ -22,6 +24,37 @@ export function DeploymentModal({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { orgId, createDeployment } = useMlStudioData()
+  const [modelId, setModelId] = useState('')
+  const [versionId, setVersionId] = useState('')
+  const [name, setName] = useState('')
+  const [environment, setEnvironment] = useState('')
+  const [status, setStatus] = useState('')
+  const [region, setRegion] = useState('')
+  const [endpoint, setEndpoint] = useState('')
+
+  async function submit() {
+    if (!orgId || !modelId || !versionId || !name) {
+      return
+    }
+    await createDeployment({
+      variables: {
+        orgId,
+        input: {
+          modelId,
+          versionId,
+          name,
+          environment,
+          status,
+          region,
+          endpoint,
+          deployedAt: new Date().toISOString(),
+        },
+      },
+    })
+    onOpenChange(false)
+  }
+
   return (
     <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
       <BetterDialogContent
@@ -29,17 +62,26 @@ export function DeploymentModal({
         description="Roll this version out to a serving environment."
         footerCancel
         footerSubmit="Create deployment"
-        onFooterSubmitClick={() => onOpenChange(false)}
+        onFooterSubmitClick={submit}
       >
         <div className="flex flex-col gap-5">
-          <ModelVersionSelect />
+          <ModelVersionSelect
+            modelId={modelId}
+            versionId={versionId}
+            onModelChange={setModelId}
+            onVersionChange={setVersionId}
+          />
 
           <FormGrid>
             <FormField label="Name">
-              <Input placeholder="rec-prod-us" />
+              <Input
+                placeholder="rec-prod-us"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </FormField>
             <FormField label="Environment">
-              <Select>
+              <Select value={environment} onValueChange={setEnvironment}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select environment" />
                 </SelectTrigger>
@@ -55,7 +97,7 @@ export function DeploymentModal({
 
           <FormGrid>
             <FormField label="Status">
-              <Select>
+              <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -68,12 +110,20 @@ export function DeploymentModal({
               </Select>
             </FormField>
             <FormField label="Region">
-              <Input placeholder="us-east-1" />
+              <Input
+                placeholder="us-east-1"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+              />
             </FormField>
           </FormGrid>
 
           <FormField label="Endpoint">
-            <Input placeholder="https://infer.internal/rec/v3" />
+            <Input
+              placeholder="https://infer.internal/rec/v3"
+              value={endpoint}
+              onChange={(e) => setEndpoint(e.target.value)}
+            />
           </FormField>
         </div>
       </BetterDialogContent>

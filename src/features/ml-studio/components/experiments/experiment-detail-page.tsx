@@ -13,10 +13,9 @@ import {
 import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { mockExperiments, mockRuns } from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MetricBarChart } from '../metric-chart'
 import { MetricSparkline } from '../metric-sparkline'
-import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
@@ -24,8 +23,9 @@ export function ExperimentDetailPage() {
   const { experimentId } = useParams<{ experimentId: string }>()
   const navigate = useNavigate()
 
-  const experiment = mockExperiments.find((e) => e.id === experimentId)
-  const runs = mockRuns.filter((r) => r.experimentId === experimentId)
+  const { experiments, runs: allRuns } = useMlStudioData()
+  const experiment = experiments.find((e) => e.id === experimentId)
+  const runs = allRuns.filter((r) => r.experimentId === experimentId)
   const [selected, setSelected] = useState<string[]>([])
 
   if (!experiment) {
@@ -61,26 +61,10 @@ export function ExperimentDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Model / Version">
-            <ModelVersionLink
-              modelId={experiment.modelId}
-              versionId={experiment.versionId}
-            />
-          </InfoRow>
-          <InfoRow label="Owner">{experiment.owner}</InfoRow>
           <InfoRow label="Started">
             {new Date(experiment.startedAt).toLocaleDateString()}
           </InfoRow>
-          <InfoRow label="Ended">
-            {experiment.endedAt
-              ? new Date(experiment.endedAt).toLocaleDateString()
-              : '—'}
-          </InfoRow>
           <InfoRow label="Runs">{runs.length}</InfoRow>
-        </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <InfoRow label="Goal">{experiment.goal}</InfoRow>
-          <InfoRow label="Hypothesis">{experiment.hypothesis}</InfoRow>
         </div>
       </Panel>
 

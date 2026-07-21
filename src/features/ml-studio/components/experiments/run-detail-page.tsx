@@ -10,21 +10,16 @@ import {
 } from '@/components/ui/table'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { Link, useParams } from 'react-router-dom'
-import {
-  mockArtifacts,
-  mockDatasets,
-  mockExperiments,
-  mockRuns,
-} from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MetricLineChart } from '../metric-chart'
-import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function RunDetailPage() {
   const { runId } = useParams<{ runId: string }>()
 
-  const run = mockRuns.find((r) => r.id === runId)
+  const { runs, artifacts: allArtifacts, datasets } = useMlStudioData()
+  const run = runs.find((r) => r.id === runId)
   const [control, activeTab] = useBetterTabs([
     { id: 'params', label: 'Parameters' },
     { id: 'metrics', label: 'Metrics' },
@@ -34,9 +29,8 @@ export function RunDetailPage() {
     return <div className="p-6 text-[#828DA3]">Run not found.</div>
   }
 
-  const artifacts = mockArtifacts.filter((a) => run.artifactIds.includes(a.id))
-  const dataset = mockDatasets.find((d) => d.id === run.datasetId)
-  const experiment = mockExperiments.find((e) => e.id === run.experimentId)
+  const artifacts = allArtifacts.filter((a) => run.artifactIds.includes(a.id))
+  const dataset = datasets.find((d) => d.id === run.datasetId)
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -52,31 +46,20 @@ export function RunDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          {experiment && (
-            <InfoRow label="Produces → Model Version">
-              <ModelVersionLink
-                modelId={experiment.modelId}
-                versionId={experiment.versionId}
-              />
-            </InfoRow>
-          )}
           <InfoRow label="Uses → Dataset">
             {dataset ? (
               <Link
                 to={`/dashboard/ml-studio/datasets/${dataset.id}`}
                 className="hover:text-primary"
               >
-                {dataset.name} {dataset.version}
+                {dataset.name}
               </Link>
             ) : (
               '—'
             )}
           </InfoRow>
           <InfoRow label="Duration">{run.duration}</InfoRow>
-          <InfoRow label="Trigger">{run.trigger}</InfoRow>
-          <InfoRow label="Environment">{run.environment}</InfoRow>
         </div>
-        <InfoRow label="Model architecture">{run.modelArch}</InfoRow>
       </Panel>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">

@@ -47,17 +47,12 @@ export function VersionTimeline({
             )}
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="font-medium text-[#F4F7FC]">
-                {v.displayName}{' '}
-                <span className="text-[#828DA3]">{v.version}</span>
-              </span>
+              <span className="font-medium text-[#F4F7FC]">{v.version}</span>
               <StatusBadge value={v.stage} />
             </div>
-            <p className="mt-1 text-sm text-[#828DA3]">{v.releaseNotes}</p>
+            <p className="mt-1 text-sm text-[#828DA3]">{v.description}</p>
             <p className="mt-1 text-xs text-[#586378]">
-              {v.releasedAt
-                ? `Released ${new Date(v.releasedAt).toLocaleDateString()}`
-                : `Created ${new Date(v.createdAt).toLocaleDateString()}`}
+              {`Created ${new Date(v.createdAt).toLocaleDateString()}`}
             </p>
           </button>
         </li>

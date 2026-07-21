@@ -414,6 +414,27 @@ export type CreateMapInput = {
   teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+export type CreateMlDeploymentInput = {
+  deployedAt?: InputMaybe<Scalars['Time']['input']>;
+  endpoint?: InputMaybe<Scalars['String']['input']>;
+  environment?: InputMaybe<Scalars['String']['input']>;
+  modelId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+  region?: InputMaybe<Scalars['String']['input']>;
+  rolledBackAt?: InputMaybe<Scalars['Time']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  versionId: Scalars['ID']['input'];
+};
+
+export type CreateMlFindingInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  modelId: Scalars['ID']['input'];
+  runIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  summary?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+  versionId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export type CreateOrgInput = {
   name: Scalars['String']['input'];
 };
@@ -1050,6 +1071,101 @@ export type Member = {
   userId: Scalars['ID']['output'];
 };
 
+export type MlArtifact = {
+  format: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  runId: Scalars['ID']['output'];
+  size: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  uri: Scalars['String']['output'];
+};
+
+export type MlDataset = {
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  rowCount: Scalars['Int']['output'];
+  schema: Array<MlSchemaField>;
+  source: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type MlDeployment = {
+  deployedAt?: Maybe<Scalars['Time']['output']>;
+  endpoint: Scalars['String']['output'];
+  environment: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  modelId: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  region: Scalars['String']['output'];
+  rolledBackAt?: Maybe<Scalars['Time']['output']>;
+  status: Scalars['String']['output'];
+  versionId: Scalars['ID']['output'];
+};
+
+export type MlExperiment = {
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  startedAt?: Maybe<Scalars['Time']['output']>;
+  status: Scalars['String']['output'];
+};
+
+export type MlFinding = {
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  modelId: Scalars['ID']['output'];
+  runIds: Array<Scalars['ID']['output']>;
+  summary: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  versionId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type MlModel = {
+  createdAt?: Maybe<Scalars['Time']['output']>;
+  description: Scalars['String']['output'];
+  domain: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  problemType: Scalars['String']['output'];
+  productionVersionId?: Maybe<Scalars['ID']['output']>;
+  tags: Array<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['Time']['output']>;
+};
+
+export type MlModelVersion = {
+  createdAt?: Maybe<Scalars['Time']['output']>;
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  modelId: Scalars['ID']['output'];
+  runId?: Maybe<Scalars['ID']['output']>;
+  stage: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  version: Scalars['String']['output'];
+};
+
+export type MlRun = {
+  datasetId?: Maybe<Scalars['ID']['output']>;
+  duration: Scalars['String']['output'];
+  endedAt?: Maybe<Scalars['Time']['output']>;
+  experimentId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  metrics: Scalars['JSON']['output'];
+  name: Scalars['String']['output'];
+  notes: Scalars['String']['output'];
+  orgId: Scalars['ID']['output'];
+  parameters: Scalars['JSON']['output'];
+  series: Scalars['JSON']['output'];
+  startedAt?: Maybe<Scalars['Time']['output']>;
+  status: Scalars['String']['output'];
+};
+
+export type MlSchemaField = {
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
 export type ModelSavings = {
   costRawUsd: Scalars['Float']['output'];
   costSavedUsd: Scalars['Float']['output'];
@@ -1083,6 +1199,8 @@ export type Mutation = {
   createFrameGroup: FrameGroup;
   createFrameLink: FrameLink;
   createMap: UiMap;
+  createMlDeployment: MlDeployment;
+  createMlFinding: MlFinding;
   createOrg: Org;
   createRoleMapping: Scalars['Boolean']['output'];
   createSavedQuery: SavedQuery;
@@ -1116,6 +1234,8 @@ export type Mutation = {
   deleteFrameLink: Scalars['Boolean']['output'];
   deleteLDAP: Scalars['Boolean']['output'];
   deleteMap: Scalars['Boolean']['output'];
+  deleteMlDeployment: Scalars['Boolean']['output'];
+  deleteMlFinding: Scalars['Boolean']['output'];
   deleteOAuthProvider: Scalars['Boolean']['output'];
   deleteOrg: Scalars['Boolean']['output'];
   deleteRoleMapping: Scalars['Boolean']['output'];
@@ -1167,6 +1287,9 @@ export type Mutation = {
   updateFrameLink: FrameLink;
   updateMap: UiMap;
   updateMember: Member;
+  updateMlDeployment: MlDeployment;
+  updateMlFinding: MlFinding;
+  updateMlModel: MlModel;
   updateOrg: Org;
   updateSavedQuery: SavedQuery;
   updateServerOrg: Org;
@@ -1332,6 +1455,18 @@ export type MutationCreateFrameLinkArgs = {
 
 export type MutationCreateMapArgs = {
   input: CreateMapInput;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateMlDeploymentArgs = {
+  input: CreateMlDeploymentInput;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateMlFindingArgs = {
+  input: CreateMlFindingInput;
   orgId: Scalars['ID']['input'];
 };
 
@@ -1546,6 +1681,18 @@ export type MutationDeleteFrameLinkArgs = {
 
 
 export type MutationDeleteMapArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMlDeploymentArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMlFindingArgs = {
   id: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
 };
@@ -1879,6 +2026,28 @@ export type MutationUpdateMemberArgs = {
 };
 
 
+export type MutationUpdateMlDeploymentArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateMlDeploymentInput;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateMlFindingArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateMlFindingInput;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateMlModelArgs = {
+  domain?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+  problemType?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationUpdateOrgArgs = {
   id: Scalars['ID']['input'];
   input: UpdateOrgInput;
@@ -2087,6 +2256,19 @@ export type Query = {
   maps: UiMapPage;
   me: Me;
   members: Array<Member>;
+  mlArtifacts: Array<MlArtifact>;
+  mlDataset: MlDataset;
+  mlDatasets: Array<MlDataset>;
+  mlDeployments: Array<MlDeployment>;
+  mlExperiment: MlExperiment;
+  mlExperiments: Array<MlExperiment>;
+  mlFindings: Array<MlFinding>;
+  mlModel: MlModel;
+  mlModelVersion: MlModelVersion;
+  mlModelVersions: Array<MlModelVersion>;
+  mlModels: Array<MlModel>;
+  mlRun: MlRun;
+  mlRuns: Array<MlRun>;
   myOrgs: Array<OrgSummary>;
   oauthProviders: Array<OAuthProvider>;
   org: Org;
@@ -2448,6 +2630,82 @@ export type QueryMapsArgs = {
 
 
 export type QueryMembersArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlArtifactsArgs = {
+  orgId: Scalars['ID']['input'];
+  runId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryMlDatasetArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlDatasetsArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlDeploymentsArgs = {
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  orgId: Scalars['ID']['input'];
+  versionId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryMlExperimentArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlExperimentsArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlFindingsArgs = {
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlModelArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlModelVersionArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlModelVersionsArgs = {
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlModelsArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlRunArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryMlRunsArgs = {
+  experimentId?: InputMaybe<Scalars['ID']['input']>;
   orgId: Scalars['ID']['input'];
 };
 
@@ -3220,6 +3478,24 @@ export type UpdateMemberInput = {
   name: Scalars['String']['input'];
   role: Scalars['String']['input'];
   teamId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateMlDeploymentInput = {
+  deployedAt?: InputMaybe<Scalars['Time']['input']>;
+  endpoint?: InputMaybe<Scalars['String']['input']>;
+  environment?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  region?: InputMaybe<Scalars['String']['input']>;
+  rolledBackAt?: InputMaybe<Scalars['Time']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMlFindingInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  runIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  summary?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  versionId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateOrgInput = {
@@ -4312,6 +4588,122 @@ export type DeleteFocalPointMetaMutationVariables = Exact<{
 
 export type DeleteFocalPointMetaMutation = { deleteFocalPointMeta: boolean };
 
+export type MlStudioModelsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioModelsQuery = { mlModels: Array<{ id: string, name: string, description: string, domain: string, problemType: string, tags: Array<string>, productionVersionId?: string | null, createdAt?: string | null, updatedAt?: string | null }> };
+
+export type MlStudioVersionsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioVersionsQuery = { mlModelVersions: Array<{ id: string, modelId: string, version: string, description: string, status: string, stage: string, runId?: string | null, createdAt?: string | null }> };
+
+export type MlStudioExperimentsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioExperimentsQuery = { mlExperiments: Array<{ id: string, name: string, description: string, status: string, startedAt?: string | null }> };
+
+export type MlStudioRunsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown }> };
+
+export type MlStudioArtifactsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioArtifactsQuery = { mlArtifacts: Array<{ id: string, runId: string, name: string, type: string, uri: string, size: string, format: string }> };
+
+export type MlStudioDatasetsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioDatasetsQuery = { mlDatasets: Array<{ id: string, name: string, source: string, type: string, rowCount: number, schema: Array<{ name: string, type: string, description: string }> }> };
+
+export type MlStudioDeploymentsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioDeploymentsQuery = { mlDeployments: Array<{ id: string, modelId: string, versionId: string, name: string, environment: string, status: string, endpoint: string, region: string, deployedAt?: string | null, rolledBackAt?: string | null }> };
+
+export type MlStudioFindingsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type MlStudioFindingsQuery = { mlFindings: Array<{ id: string, modelId: string, versionId?: string | null, title: string, summary: string, description: string, runIds: Array<string> }> };
+
+export type UpdateMlModelMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+  domain?: InputMaybe<Scalars['String']['input']>;
+  problemType?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateMlModelMutation = { updateMlModel: { id: string, domain: string, problemType: string } };
+
+export type CreateMlDeploymentMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  input: CreateMlDeploymentInput;
+}>;
+
+
+export type CreateMlDeploymentMutation = { createMlDeployment: { id: string } };
+
+export type UpdateMlDeploymentMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+  input: UpdateMlDeploymentInput;
+}>;
+
+
+export type UpdateMlDeploymentMutation = { updateMlDeployment: { id: string } };
+
+export type DeleteMlDeploymentMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteMlDeploymentMutation = { deleteMlDeployment: boolean };
+
+export type CreateMlFindingMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  input: CreateMlFindingInput;
+}>;
+
+
+export type CreateMlFindingMutation = { createMlFinding: { id: string } };
+
+export type UpdateMlFindingMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+  input: UpdateMlFindingInput;
+}>;
+
+
+export type UpdateMlFindingMutation = { updateMlFinding: { id: string } };
+
+export type DeleteMlFindingMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteMlFindingMutation = { deleteMlFinding: boolean };
+
 export type CompleteOnboardingMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
 }>;
@@ -5172,6 +5564,21 @@ export const ComponentLinkUsagesDocument = {"kind":"Document","definitions":[{"k
 export const CreateFocalPointMetaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFocalPointMeta"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mapId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"frameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"focalPointId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateFocalPointMetaInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFocalPointMeta"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"mapId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mapId"}}},{"kind":"Argument","name":{"kind":"Name","value":"frameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"frameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"focalPointId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"focalPointId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateFocalPointMetaMutation, CreateFocalPointMetaMutationVariables>;
 export const UpdateFocalPointMetaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFocalPointMeta"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mapId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"frameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"focalPointId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateFocalPointMetaInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFocalPointMeta"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"mapId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mapId"}}},{"kind":"Argument","name":{"kind":"Name","value":"frameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"frameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"focalPointId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"focalPointId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateFocalPointMetaMutation, UpdateFocalPointMetaMutationVariables>;
 export const DeleteFocalPointMetaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFocalPointMeta"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mapId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"frameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"focalPointId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFocalPointMeta"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"mapId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mapId"}}},{"kind":"Argument","name":{"kind":"Name","value":"frameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"frameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"focalPointId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"focalPointId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteFocalPointMetaMutation, DeleteFocalPointMetaMutationVariables>;
+export const MlStudioModelsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioModels"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlModels"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"problemType"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"productionVersionId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<MlStudioModelsQuery, MlStudioModelsQueryVariables>;
+export const MlStudioVersionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioVersions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlModelVersions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"modelId"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"stage"}},{"kind":"Field","name":{"kind":"Name","value":"runId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<MlStudioVersionsQuery, MlStudioVersionsQueryVariables>;
+export const MlStudioExperimentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioExperiments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlExperiments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}}]}}]}}]} as unknown as DocumentNode<MlStudioExperimentsQuery, MlStudioExperimentsQueryVariables>;
+export const MlStudioRunsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioRuns"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlRuns"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"experimentId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"endedAt"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"parameters"}},{"kind":"Field","name":{"kind":"Name","value":"metrics"}},{"kind":"Field","name":{"kind":"Name","value":"datasetId"}},{"kind":"Field","name":{"kind":"Name","value":"series"}}]}}]}}]} as unknown as DocumentNode<MlStudioRunsQuery, MlStudioRunsQueryVariables>;
+export const MlStudioArtifactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioArtifacts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlArtifacts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"runId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"uri"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"format"}}]}}]}}]} as unknown as DocumentNode<MlStudioArtifactsQuery, MlStudioArtifactsQueryVariables>;
+export const MlStudioDatasetsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioDatasets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlDatasets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"rowCount"}},{"kind":"Field","name":{"kind":"Name","value":"schema"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<MlStudioDatasetsQuery, MlStudioDatasetsQueryVariables>;
+export const MlStudioDeploymentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioDeployments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlDeployments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"modelId"}},{"kind":"Field","name":{"kind":"Name","value":"versionId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environment"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"endpoint"}},{"kind":"Field","name":{"kind":"Name","value":"region"}},{"kind":"Field","name":{"kind":"Name","value":"deployedAt"}},{"kind":"Field","name":{"kind":"Name","value":"rolledBackAt"}}]}}]}}]} as unknown as DocumentNode<MlStudioDeploymentsQuery, MlStudioDeploymentsQueryVariables>;
+export const MlStudioFindingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioFindings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlFindings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"modelId"}},{"kind":"Field","name":{"kind":"Name","value":"versionId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"runIds"}}]}}]}}]} as unknown as DocumentNode<MlStudioFindingsQuery, MlStudioFindingsQueryVariables>;
+export const UpdateMlModelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMlModel"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"domain"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"problemType"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMlModel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"domain"},"value":{"kind":"Variable","name":{"kind":"Name","value":"domain"}}},{"kind":"Argument","name":{"kind":"Name","value":"problemType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"problemType"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"problemType"}}]}}]}}]} as unknown as DocumentNode<UpdateMlModelMutation, UpdateMlModelMutationVariables>;
+export const CreateMlDeploymentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMlDeployment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMlDeploymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMlDeployment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateMlDeploymentMutation, CreateMlDeploymentMutationVariables>;
+export const UpdateMlDeploymentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMlDeployment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMlDeploymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMlDeployment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateMlDeploymentMutation, UpdateMlDeploymentMutationVariables>;
+export const DeleteMlDeploymentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMlDeployment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMlDeployment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMlDeploymentMutation, DeleteMlDeploymentMutationVariables>;
+export const CreateMlFindingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMlFinding"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMlFindingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMlFinding"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateMlFindingMutation, CreateMlFindingMutationVariables>;
+export const UpdateMlFindingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMlFinding"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMlFindingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMlFinding"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateMlFindingMutation, UpdateMlFindingMutationVariables>;
+export const DeleteMlFindingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMlFinding"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMlFinding"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMlFindingMutation, DeleteMlFindingMutationVariables>;
 export const CompleteOnboardingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CompleteOnboarding"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"completeOnboarding"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}]}]}}]} as unknown as DocumentNode<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
 export const ServerOverviewDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serverOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalUsers"}},{"kind":"Field","name":{"kind":"Name","value":"activeUsers"}},{"kind":"Field","name":{"kind":"Name","value":"totalOrgs"}}]}},{"kind":"Field","name":{"kind":"Name","value":"serverConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageBackend"}},{"kind":"Field","name":{"kind":"Name","value":"storageBucket"}},{"kind":"Field","name":{"kind":"Name","value":"storageEndpoint"}},{"kind":"Field","name":{"kind":"Name","value":"vectorBackend"}},{"kind":"Field","name":{"kind":"Name","value":"embeddingBackend"}},{"kind":"Field","name":{"kind":"Name","value":"embeddingModel"}}]}}]}}]} as unknown as DocumentNode<ServerOverviewQuery, ServerOverviewQueryVariables>;
 export const ServerOrgsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerOrgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"orgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"autoJoin"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ServerOrgsQuery, ServerOrgsQueryVariables>;

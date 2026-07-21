@@ -12,12 +12,13 @@ import {
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { mockFindings } from '../../constants/mock-data'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { ModelVersionLink } from '../model-version-link'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
   const navigate = useNavigate()
+  const { findings } = useMlStudioData()
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -49,7 +50,7 @@ export function FindingsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockFindings.map((f) => (
+            {findings.map((f) => (
               <TableRow
                 key={f.id}
                 className="cursor-pointer"

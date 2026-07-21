@@ -3,15 +3,16 @@
 import { createContext } from 'daily-code/react'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useMemo } from 'react'
-import { mockModels, mockVersions } from '../constants/mock-data'
+import { useMlStudioData } from './ml-studio-data-context'
 
 export const [ModelContextProvider, useModelContext] = createContext(
   ({ modelId }: { modelId: string }) => {
-    const model = mockModels.find((m) => m.id === modelId)
+    const { models, versions: allVersions } = useMlStudioData()
+    const model = models.find((m) => m.id === modelId)
 
     const versions = useMemo(
-      () => mockVersions.filter((v) => v.modelId === modelId),
-      [modelId]
+      () => allVersions.filter((v) => v.modelId === modelId),
+      [allVersions, modelId]
     )
 
     const defaultVersionId = model?.productionVersionId || versions[0]?.id || ''

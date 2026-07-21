@@ -54,7 +54,7 @@ export function MlStudioModelLayout({
               <SelectContent>
                 {versions.map((v) => (
                   <SelectItem key={v.id} value={v.id}>
-                    {v.displayName} · {v.version}
+                    {v.version}
                   </SelectItem>
                 ))}
               </SelectContent>
