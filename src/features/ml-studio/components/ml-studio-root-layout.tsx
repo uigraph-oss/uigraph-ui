@@ -35,11 +35,7 @@ export function MlStudioRootLayout() {
         crumbs={[{ to: '/dashboard/ml-studio', label: 'ML Studio' }]}
       />
 
-      <div className="grid grid-rows-[auto_auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
-        <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-4">
-          <h1 className="text-xl font-semibold text-[#F4F7FC]">ML Studio</h1>
-        </div>
-
+      <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
         <div className="border-stock flex items-center overflow-x-auto border-b">
           {rootTabs.map((tab) => (
             <Button
