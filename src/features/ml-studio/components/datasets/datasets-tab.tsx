@@ -1,7 +1,6 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -10,33 +9,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { PlusIcon } from 'lucide-react'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockDatasets } from '../../constants/mock-data'
-import { DatasetModal } from './dataset-modal'
 
 export function DatasetsTab() {
   const navigate = useNavigate()
-  const [modalOpen, setModalOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-[#F4F7FC]">Datasets</h2>
-          <p className="text-sm text-[#828DA3]">
-            Data sources across all models.
-          </p>
-        </div>
-        <Button
-          preset="primary"
-          className="h-10"
-          onClick={() => setModalOpen(true)}
-        >
-          <PlusIcon />
-          Register dataset
-        </Button>
+      <div className="flex flex-col gap-1">
+        <h2 className="text-lg font-semibold text-[#F4F7FC]">Datasets</h2>
+        <p className="text-sm text-[#828DA3]">
+          Data sources across all models.
+        </p>
       </div>
 
       <div className="border-stock bg-card overflow-hidden rounded-xl border">
@@ -91,8 +76,6 @@ export function DatasetsTab() {
           </TableBody>
         </Table>
       </div>
-
-      <DatasetModal open={modalOpen} onOpenChange={setModalOpen} />
     </div>
   )
 }

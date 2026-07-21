@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -10,8 +9,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
-import { PlusIcon } from 'lucide-react'
-import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   mockArtifacts,
@@ -23,7 +20,6 @@ import { MetricLineChart } from '../metric-chart'
 import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
-import { ArtifactModal } from './artifact-modal'
 
 export function RunDetailPage() {
   const { runId } = useParams<{ runId: string }>()
@@ -33,7 +29,6 @@ export function RunDetailPage() {
     { id: 'params', label: 'Parameters' },
     { id: 'metrics', label: 'Metrics' },
   ])
-  const [artifactModalOpen, setArtifactModalOpen] = useState(false)
 
   if (!run) {
     return <div className="p-6 text-[#828DA3]">Run not found.</div>
@@ -142,19 +137,7 @@ export function RunDetailPage() {
         </Panel>
       </div>
 
-      <Panel
-        title="Artifacts"
-        action={
-          <Button
-            preset="outline"
-            className="h-9 px-3"
-            onClick={() => setArtifactModalOpen(true)}
-          >
-            <PlusIcon />
-            Attach
-          </Button>
-        }
-      >
+      <Panel title="Artifacts">
         {artifacts.length > 0 ? (
           <Table>
             <TableHeader>
@@ -186,11 +169,6 @@ export function RunDetailPage() {
           <p className="text-sm text-[#586378]">No artifacts attached.</p>
         )}
       </Panel>
-
-      <ArtifactModal
-        open={artifactModalOpen}
-        onOpenChange={setArtifactModalOpen}
-      />
     </div>
   )
 }

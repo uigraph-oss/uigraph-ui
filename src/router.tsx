@@ -58,19 +58,9 @@ const ExperimentsTab = lazy(() =>
     (mod) => ({ default: mod.ExperimentsTab })
   )
 )
-const ExperimentFormPage = lazy(() =>
-  import('@/features/ml-studio/components/experiments/experiment-form-page').then(
-    (mod) => ({ default: mod.ExperimentFormPage })
-  )
-)
 const ExperimentDetailPage = lazy(() =>
   import('@/features/ml-studio/components/experiments/experiment-detail-page').then(
     (mod) => ({ default: mod.ExperimentDetailPage })
-  )
-)
-const RunFormPage = lazy(() =>
-  import('@/features/ml-studio/components/experiments/run-form-page').then(
-    (mod) => ({ default: mod.RunFormPage })
   )
 )
 const RunDetailPage = lazy(() =>
@@ -458,18 +448,9 @@ export function AppRoutes() {
             <Route index element={<Navigate to="models" replace />} />
             <Route path="models" element={<ModelsTab />} />
             <Route path="experiments" element={<ExperimentsTab />} />
-            <Route path="experiments/new" element={<ExperimentFormPage />} />
             <Route
               path="experiments/:experimentId"
               element={<ExperimentDetailPage />}
-            />
-            <Route
-              path="experiments/:experimentId/edit"
-              element={<ExperimentFormPage />}
-            />
-            <Route
-              path="experiments/:experimentId/runs/new"
-              element={<RunFormPage />}
             />
             <Route
               path="experiments/:experimentId/runs/:runId"

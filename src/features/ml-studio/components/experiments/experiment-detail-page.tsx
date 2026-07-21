@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { GitCompareIcon, PlusIcon } from 'lucide-react'
+import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { mockExperiments, mockRuns } from '../../constants/mock-data'
@@ -87,33 +87,19 @@ export function ExperimentDetailPage() {
       <Panel
         title="Runs"
         action={
-          <div className="flex gap-2">
-            <Button
-              preset="outline"
-              className="h-9 px-3"
-              disabled={selected.length < 2}
-              onClick={() =>
-                navigate(
-                  `/dashboard/ml-studio/experiments/${experiment.id}/compare?runs=${selected.join(',')}`
-                )
-              }
-            >
-              <GitCompareIcon />
-              Compare ({selected.length})
-            </Button>
-            <Button
-              preset="primary"
-              className="h-9 px-3"
-              onClick={() =>
-                navigate(
-                  `/dashboard/ml-studio/experiments/${experiment.id}/runs/new`
-                )
-              }
-            >
-              <PlusIcon />
-              Log run
-            </Button>
-          </div>
+          <Button
+            preset="outline"
+            className="h-9 px-3"
+            disabled={selected.length < 2}
+            onClick={() =>
+              navigate(
+                `/dashboard/ml-studio/experiments/${experiment.id}/compare?runs=${selected.join(',')}`
+              )
+            }
+          >
+            <GitCompareIcon />
+            Compare ({selected.length})
+          </Button>
         }
       >
         <Table>
