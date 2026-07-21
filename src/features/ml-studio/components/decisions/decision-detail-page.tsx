@@ -2,6 +2,7 @@
 
 import { useParams } from 'react-router-dom'
 import { mockDecisions } from '../../constants/mock-data'
+import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 
 export function DecisionDetailPage() {
@@ -25,6 +26,12 @@ export function DecisionDetailPage() {
       </div>
 
       <Panel>
+        <InfoRow label="Model / Version">
+          <ModelVersionLink
+            modelId={decision.modelId}
+            versionId={decision.versionId}
+          />
+        </InfoRow>
         <InfoRow label="Decision">{decision.decision}</InfoRow>
         <InfoRow label="Reason">{decision.reason}</InfoRow>
         <InfoRow label="Impact">{decision.impact}</InfoRow>

@@ -13,24 +13,18 @@ import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockDecisions } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { DecisionModal } from './decision-modal'
 
 export function DecisionsTab() {
-  const { model, selectedVersionId } = useModelContext()
   const navigate = useNavigate()
   const [modalOpen, setModalOpen] = useState(false)
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
-
-  const decisions = mockDecisions.filter(
-    (d) => d.versionId === selectedVersionId
-  )
 
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#828DA3]">
-          Decisions recorded for this version.
+          Decisions recorded across all models.
         </p>
         <Button
           preset="primary"
@@ -47,24 +41,29 @@ export function DecisionsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
+              <TableHead>Model / Version</TableHead>
               <TableHead>Decision</TableHead>
               <TableHead>Decision maker</TableHead>
               <TableHead>Decided</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {decisions.map((d) => (
+            {mockDecisions.map((d) => (
               <TableRow
                 key={d.id}
                 className="cursor-pointer"
                 onClick={() =>
-                  navigate(
-                    `/dashboard/ml-studio/${model.id}/decisions/${d.id}${versionQuery}`
-                  )
+                  navigate(`/dashboard/ml-studio/decisions/${d.id}`)
                 }
               >
                 <TableCell className="font-medium text-[#F4F7FC]">
                   {d.title}
+                </TableCell>
+                <TableCell>
+                  <ModelVersionLink
+                    modelId={d.modelId}
+                    versionId={d.versionId}
+                  />
                 </TableCell>
                 <TableCell className="line-clamp-1 text-[#828DA3]">
                   {d.decision}

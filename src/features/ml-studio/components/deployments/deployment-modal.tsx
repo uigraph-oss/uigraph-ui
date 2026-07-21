@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FormField, FormGrid } from '../form-field'
+import { ModelVersionSelect } from '../model-version-select'
 
 export function DeploymentModal({
   open,
@@ -37,6 +38,8 @@ export function DeploymentModal({
       }
     >
       <div className="flex flex-col gap-5 p-6">
+        <ModelVersionSelect />
+
         <FormGrid>
           <FormField label="Name">
             <Input placeholder="rec-prod-us" />

@@ -13,23 +13,19 @@ import { PinIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockFindings } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { StatusBadge } from '../status-badge'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
-  const { model, selectedVersionId } = useModelContext()
   const navigate = useNavigate()
   const [modalOpen, setModalOpen] = useState(false)
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
-
-  const findings = mockFindings.filter((f) => f.versionId === selectedVersionId)
 
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#828DA3]">
-          Insights and observations captured for this version.
+          Insights and observations across all models.
         </p>
         <Button
           preset="primary"
@@ -46,6 +42,7 @@ export function FindingsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
+              <TableHead>Model / Version</TableHead>
               <TableHead>Severity</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Source</TableHead>
@@ -54,14 +51,12 @@ export function FindingsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {findings.map((f) => (
+            {mockFindings.map((f) => (
               <TableRow
                 key={f.id}
                 className="cursor-pointer"
                 onClick={() =>
-                  navigate(
-                    `/dashboard/ml-studio/${model.id}/findings/${f.id}${versionQuery}`
-                  )
+                  navigate(`/dashboard/ml-studio/findings/${f.id}`)
                 }
               >
                 <TableCell>
@@ -78,6 +73,12 @@ export function FindingsTab() {
                       </div>
                     </div>
                   </div>
+                </TableCell>
+                <TableCell>
+                  <ModelVersionLink
+                    modelId={f.modelId}
+                    versionId={f.versionId}
+                  />
                 </TableCell>
                 <TableCell>
                   <StatusBadge value={f.severity} />

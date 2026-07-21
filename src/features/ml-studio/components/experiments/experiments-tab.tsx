@@ -12,32 +12,22 @@ import {
 import { PlusIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { mockExperiments, mockRuns } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { StatusBadge } from '../status-badge'
 
 export function ExperimentsTab() {
-  const { model, selectedVersionId } = useModelContext()
   const navigate = useNavigate()
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
-
-  const experiments = mockExperiments.filter(
-    (e) => e.versionId === selectedVersionId
-  )
 
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#828DA3]">
-          Research efforts scoped to the selected version.
+          Research efforts across all models.
         </p>
         <Button
           preset="primary"
           className="h-10"
-          onClick={() =>
-            navigate(
-              `/dashboard/ml-studio/${model.id}/experiments/new${versionQuery}`
-            )
-          }
+          onClick={() => navigate('/dashboard/ml-studio/experiments/new')}
         >
           <PlusIcon />
           New Experiment
@@ -49,6 +39,7 @@ export function ExperimentsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Model / Version</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Runs</TableHead>
               <TableHead>Latest result</TableHead>
@@ -57,7 +48,7 @@ export function ExperimentsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {experiments.map((exp) => {
+            {mockExperiments.map((exp) => {
               const runs = mockRuns.filter((r) => r.experimentId === exp.id)
               const latestRun = runs[runs.length - 1]
               const primaryMetric = Object.keys(latestRun?.metrics ?? {})[0]
@@ -66,9 +57,7 @@ export function ExperimentsTab() {
                   key={exp.id}
                   className="cursor-pointer"
                   onClick={() =>
-                    navigate(
-                      `/dashboard/ml-studio/${model.id}/experiments/${exp.id}${versionQuery}`
-                    )
+                    navigate(`/dashboard/ml-studio/experiments/${exp.id}`)
                   }
                 >
                   <TableCell>
@@ -76,6 +65,12 @@ export function ExperimentsTab() {
                     <div className="line-clamp-1 text-sm text-[#828DA3]">
                       {exp.goal}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <ModelVersionLink
+                      modelId={exp.modelId}
+                      versionId={exp.versionId}
+                    />
                   </TableCell>
                   <TableCell>
                     <StatusBadge value={exp.status} />

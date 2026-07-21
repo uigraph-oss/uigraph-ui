@@ -16,18 +16,17 @@ import { Link, useParams } from 'react-router-dom'
 import {
   mockArtifacts,
   mockDatasets,
+  mockExperiments,
   mockRuns,
 } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
 import { MetricLineChart } from '../metric-chart'
+import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 import { ArtifactModal } from './artifact-modal'
 
 export function RunDetailPage() {
-  const { model, selectedVersionId } = useModelContext()
   const { runId } = useParams<{ runId: string }>()
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
 
   const run = mockRuns.find((r) => r.id === runId)
   const [control, activeTab] = useBetterTabs([
@@ -42,6 +41,7 @@ export function RunDetailPage() {
 
   const artifacts = mockArtifacts.filter((a) => run.artifactIds.includes(a.id))
   const dataset = mockDatasets.find((d) => d.id === run.datasetId)
+  const experiment = mockExperiments.find((e) => e.id === run.experimentId)
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -57,13 +57,21 @@ export function RunDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+          {experiment && (
+            <InfoRow label="Model / Version">
+              <ModelVersionLink
+                modelId={experiment.modelId}
+                versionId={experiment.versionId}
+              />
+            </InfoRow>
+          )}
           <InfoRow label="Duration">{run.duration}</InfoRow>
           <InfoRow label="Trigger">{run.trigger}</InfoRow>
           <InfoRow label="Environment">{run.environment}</InfoRow>
           <InfoRow label="Dataset">
             {dataset ? (
               <Link
-                to={`/dashboard/ml-studio/${model.id}/datasets/${dataset.id}${versionQuery}`}
+                to={`/dashboard/ml-studio/datasets/${dataset.id}`}
                 className="hover:text-primary"
               >
                 {dataset.name} {dataset.version}

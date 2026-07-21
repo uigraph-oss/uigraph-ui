@@ -1,0 +1,38 @@
+'use client'
+
+import { Link } from 'react-router-dom'
+import { mockModels, mockVersions } from '../constants/mock-data'
+
+export function ModelVersionLink({
+  modelId,
+  versionId,
+}: {
+  modelId: string
+  versionId?: string
+}) {
+  const model = mockModels.find((m) => m.id === modelId)
+  const version = versionId
+    ? mockVersions.find((v) => v.id === versionId)
+    : undefined
+
+  if (!model) {
+    return <span className="text-[#586378]">—</span>
+  }
+
+  const to = versionId
+    ? `/dashboard/ml-studio/models/${modelId}?v=${versionId}`
+    : `/dashboard/ml-studio/models/${modelId}`
+
+  return (
+    <Link
+      to={to}
+      className="hover:text-primary text-[#F4F7FC]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="font-medium">{model.name}</div>
+      {version && (
+        <div className="text-xs text-[#586378]">{version.version}</div>
+      )}
+    </Link>
+  )
+}

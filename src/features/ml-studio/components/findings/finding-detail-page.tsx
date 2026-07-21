@@ -11,14 +11,12 @@ import {
 import { PinIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { mockFindings, mockRuns, mockVersions } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function FindingDetailPage() {
-  const { model, selectedVersionId } = useModelContext()
   const { findingId } = useParams<{ findingId: string }>()
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
 
   const finding = mockFindings.find((f) => f.id === findingId)
 
@@ -51,6 +49,12 @@ export function FindingDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+          <InfoRow label="Model / Version">
+            <ModelVersionLink
+              modelId={finding.modelId}
+              versionId={finding.versionId}
+            />
+          </InfoRow>
           <InfoRow label="Source">{finding.source}</InfoRow>
           <InfoRow label="Author">{finding.author}</InfoRow>
           <InfoRow label="Created">
@@ -78,7 +82,7 @@ export function FindingDetailPage() {
                 <TableRow key={r.id}>
                   <TableCell>
                     <Link
-                      to={`/dashboard/ml-studio/${model.id}/experiments/${r.experimentId}/runs/${r.id}${versionQuery}`}
+                      to={`/dashboard/ml-studio/experiments/${r.experimentId}/runs/${r.id}`}
                       className="hover:text-primary font-medium text-[#F4F7FC]"
                     >
                       {r.name}

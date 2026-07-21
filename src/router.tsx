@@ -38,9 +38,14 @@ const MlStudioLayout = lazy(() =>
     default: mod.MlStudioLayout,
   }))
 )
-const MlStudioModelsPage = lazy(() =>
+const MlStudioRootLayout = lazy(() =>
+  import('@/features/ml-studio/components/ml-studio-root-layout').then(
+    (mod) => ({ default: mod.MlStudioRootLayout })
+  )
+)
+const ModelsTab = lazy(() =>
   import('@/features/ml-studio/components/models/ml-studio-models-page').then(
-    (mod) => ({ default: mod.MlStudioModelsPage })
+    (mod) => ({ default: mod.ModelsTab })
   )
 )
 const ModelFormPage = lazy(() =>
@@ -93,16 +98,6 @@ const DatasetsTab = lazy(() =>
 const DatasetDetailPage = lazy(() =>
   import('@/features/ml-studio/components/datasets/dataset-detail-page').then(
     (mod) => ({ default: mod.DatasetDetailPage })
-  )
-)
-const EvaluationsTab = lazy(() =>
-  import('@/features/ml-studio/components/evaluations/evaluations-tab').then(
-    (mod) => ({ default: mod.EvaluationsTab })
-  )
-)
-const EvaluationDetailPage = lazy(() =>
-  import('@/features/ml-studio/components/evaluations/evaluation-detail-page').then(
-    (mod) => ({ default: mod.EvaluationDetailPage })
   )
 )
 const DeploymentsTab = lazy(() =>
@@ -475,14 +470,9 @@ export function AppRoutes() {
             />
           </Route>
 
-          <Route path="/dashboard/ml-studio" element={<MlStudioModelsPage />} />
-          <Route path="/dashboard/ml-studio/new" element={<ModelFormPage />} />
-          <Route
-            path="/dashboard/ml-studio/:modelId"
-            element={<MlStudioLayout />}
-          >
-            <Route index element={<Navigate to="overview" replace />} />
-            <Route path="overview" element={<ModelOverviewTab />} />
+          <Route path="/dashboard/ml-studio" element={<MlStudioRootLayout />}>
+            <Route index element={<Navigate to="models" replace />} />
+            <Route path="models" element={<ModelsTab />} />
             <Route path="experiments" element={<ExperimentsTab />} />
             <Route path="experiments/new" element={<ExperimentFormPage />} />
             <Route
@@ -507,11 +497,6 @@ export function AppRoutes() {
             />
             <Route path="datasets" element={<DatasetsTab />} />
             <Route path="datasets/:datasetId" element={<DatasetDetailPage />} />
-            <Route path="evaluations" element={<EvaluationsTab />} />
-            <Route
-              path="evaluations/:evaluationId"
-              element={<EvaluationDetailPage />}
-            />
             <Route path="deployments" element={<DeploymentsTab />} />
             <Route path="findings" element={<FindingsTab />} />
             <Route path="findings/:findingId" element={<FindingDetailPage />} />
@@ -520,6 +505,17 @@ export function AppRoutes() {
               path="decisions/:decisionId"
               element={<DecisionDetailPage />}
             />
+          </Route>
+
+          <Route
+            path="/dashboard/ml-studio/models/new"
+            element={<ModelFormPage />}
+          />
+          <Route
+            path="/dashboard/ml-studio/models/:modelId"
+            element={<MlStudioLayout />}
+          >
+            <Route index element={<ModelOverviewTab />} />
           </Route>
 
           <Route

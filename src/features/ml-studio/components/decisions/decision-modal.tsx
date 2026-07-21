@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FormField } from '../form-field'
+import { ModelVersionSelect } from '../model-version-select'
 
 export function DecisionModal({
   open,
@@ -31,6 +32,8 @@ export function DecisionModal({
       }
     >
       <div className="flex flex-col gap-5 p-6">
+        <ModelVersionSelect />
+
         <FormField label="Title">
           <Input placeholder="Promote Video Recs v2 to production" />
         </FormField>

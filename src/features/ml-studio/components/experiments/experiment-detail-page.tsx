@@ -14,17 +14,15 @@ import { GitCompareIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { mockExperiments, mockRuns } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
 import { MetricBarChart } from '../metric-chart'
 import { MetricSparkline } from '../metric-sparkline'
+import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function ExperimentDetailPage() {
-  const { model, selectedVersionId } = useModelContext()
   const { experimentId } = useParams<{ experimentId: string }>()
   const navigate = useNavigate()
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
 
   const experiment = mockExperiments.find((e) => e.id === experimentId)
   const runs = mockRuns.filter((r) => r.experimentId === experimentId)
@@ -63,6 +61,12 @@ export function ExperimentDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+          <InfoRow label="Model / Version">
+            <ModelVersionLink
+              modelId={experiment.modelId}
+              versionId={experiment.versionId}
+            />
+          </InfoRow>
           <InfoRow label="Owner">{experiment.owner}</InfoRow>
           <InfoRow label="Started">
             {new Date(experiment.startedAt).toLocaleDateString()}
@@ -90,7 +94,7 @@ export function ExperimentDetailPage() {
               disabled={selected.length < 2}
               onClick={() =>
                 navigate(
-                  `/dashboard/ml-studio/${model.id}/experiments/${experiment.id}/compare${versionQuery}${versionQuery ? '&' : '?'}runs=${selected.join(',')}`
+                  `/dashboard/ml-studio/experiments/${experiment.id}/compare?runs=${selected.join(',')}`
                 )
               }
             >
@@ -102,7 +106,7 @@ export function ExperimentDetailPage() {
               className="h-9 px-3"
               onClick={() =>
                 navigate(
-                  `/dashboard/ml-studio/${model.id}/experiments/${experiment.id}/runs/new${versionQuery}`
+                  `/dashboard/ml-studio/experiments/${experiment.id}/runs/new`
                 )
               }
             >
@@ -138,7 +142,7 @@ export function ExperimentDetailPage() {
                     className="hover:text-primary font-medium text-[#F4F7FC]"
                     onClick={() =>
                       navigate(
-                        `/dashboard/ml-studio/${model.id}/experiments/${experiment.id}/runs/${run.id}${versionQuery}`
+                        `/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`
                       )
                     }
                   >

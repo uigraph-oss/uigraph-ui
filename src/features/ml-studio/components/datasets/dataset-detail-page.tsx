@@ -11,13 +11,11 @@ import {
 } from '@/components/ui/table'
 import { Link, useParams } from 'react-router-dom'
 import { mockDatasets } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 
 export function DatasetDetailPage() {
-  const { model, selectedVersionId } = useModelContext()
   const { datasetId } = useParams<{ datasetId: string }>()
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
 
   const dataset = mockDatasets.find((d) => d.id === datasetId)
 
@@ -40,6 +38,12 @@ export function DatasetDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+          <InfoRow label="Model / Version">
+            <ModelVersionLink
+              modelId={dataset.modelId}
+              versionId={dataset.versionId}
+            />
+          </InfoRow>
           <InfoRow label="Type">
             <span className="capitalize">{dataset.type}</span>
           </InfoRow>
@@ -54,7 +58,7 @@ export function DatasetDetailPage() {
           <InfoRow label="Lineage">
             {parent ? (
               <Link
-                to={`/dashboard/ml-studio/${model.id}/datasets/${parent.id}${versionQuery}`}
+                to={`/dashboard/ml-studio/datasets/${parent.id}`}
                 className="hover:text-primary"
               >
                 {parent.name} {parent.version}

@@ -2,13 +2,23 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  mockArtifacts,
   mockDatasets,
-  mockEvaluations,
+  mockExperiments,
   mockFindings,
+  mockRuns,
 } from '../../constants/mock-data'
 import { useModelContext } from '../../contexts/model-context'
 import { InfoRow, Panel } from '../panel'
@@ -21,9 +31,19 @@ export function ModelOverviewTab() {
     useModelContext()
   const [versionModalOpen, setVersionModalOpen] = useState(false)
 
-  const evaluation = mockEvaluations.find(
+  const versionExperiments = mockExperiments.filter(
     (e) => e.versionId === selectedVersionId
   )
+  const versionRuns = mockRuns.filter((r) =>
+    versionExperiments.some((e) => e.id === r.experimentId)
+  )
+  const latestRun = versionRuns[versionRuns.length - 1]
+  const metrics = Object.entries(latestRun?.metrics ?? {})
+  const parameters = Object.entries(latestRun?.parameters ?? {})
+  const artifacts = latestRun
+    ? mockArtifacts.filter((a) => latestRun.artifactIds.includes(a.id))
+    : []
+
   const dataset = mockDatasets.find((d) => d.versionId === selectedVersionId)
   const finding = mockFindings.find(
     (f) => f.linkedVersionId === selectedVersionId && f.status === 'published'
@@ -59,36 +79,103 @@ export function ModelOverviewTab() {
         </Panel>
 
         <Panel
-          title="Performance summary"
+          title="Description"
           description={
             selectedVersion
               ? `${selectedVersion.displayName} · ${selectedVersion.version}`
               : undefined
           }
         >
-          {evaluation ? (
+          <p className="text-sm leading-relaxed text-[#828DA3]">
+            {selectedVersion?.releaseNotes ||
+              'No release notes for this version.'}
+          </p>
+        </Panel>
+
+        <Panel
+          title="Metrics"
+          description="Scalar metrics from the version's latest run."
+        >
+          {metrics.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {evaluation.metrics.map((m) => (
+              {metrics.map(([key, value]) => (
                 <div
-                  key={m.id}
+                  key={key}
                   className="border-stock rounded-lg border bg-[#1E2533] p-4"
                 >
                   <div className="text-2xl font-bold text-[#F4F7FC]">
-                    {m.value}
-                    {m.unit && (
-                      <span className="ml-1 text-sm text-[#828DA3]">
-                        {m.unit}
-                      </span>
-                    )}
+                    {value}
                   </div>
-                  <div className="mt-1 text-sm text-[#828DA3]">{m.name}</div>
+                  <div className="mt-1 text-sm text-[#828DA3]">
+                    {key.replace(/_/g, ' ')}
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
             <p className="text-sm text-[#586378]">
-              No evaluation recorded for this version.
+              No run metrics recorded for this version.
             </p>
+          )}
+        </Panel>
+
+        <Panel
+          title="Parameters"
+          description="Hyperparameters from the version's latest run."
+        >
+          {parameters.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Parameter</TableHead>
+                  <TableHead>Value</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {parameters.map(([key, value]) => (
+                  <TableRow key={key}>
+                    <TableCell className="text-[#828DA3]">{key}</TableCell>
+                    <TableCell className="font-mono text-[#F4F7FC]">
+                      {String(value)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-sm text-[#586378]">No parameters recorded.</p>
+          )}
+        </Panel>
+
+        <Panel
+          title="Artifacts"
+          description="Outputs produced by the version's latest run."
+        >
+          {artifacts.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Format</TableHead>
+                  <TableHead>Size</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {artifacts.map((a) => (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium text-[#F4F7FC]">
+                      {a.name}
+                    </TableCell>
+                    <TableCell className="text-[#828DA3]">{a.type}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.format}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.size}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-sm text-[#586378]">No artifacts attached.</p>
           )}
         </Panel>
 
@@ -97,7 +184,7 @@ export function ModelOverviewTab() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <Link
-                  to={`/dashboard/ml-studio/${model.id}/findings/${finding.id}?v=${selectedVersionId}`}
+                  to={`/dashboard/ml-studio/findings/${finding.id}`}
                   className="hover:text-primary font-medium text-[#F4F7FC]"
                 >
                   {finding.title}
@@ -114,7 +201,7 @@ export function ModelOverviewTab() {
             <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
               <InfoRow label="Name">
                 <Link
-                  to={`/dashboard/ml-studio/${model.id}/datasets/${dataset.id}?v=${selectedVersionId}`}
+                  to={`/dashboard/ml-studio/datasets/${dataset.id}`}
                   className="hover:text-primary"
                 >
                   {dataset.name}

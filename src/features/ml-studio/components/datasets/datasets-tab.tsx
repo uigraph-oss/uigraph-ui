@@ -14,22 +14,18 @@ import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockDatasets } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { DatasetModal } from './dataset-modal'
 
 export function DatasetsTab() {
-  const { model, selectedVersionId } = useModelContext()
   const navigate = useNavigate()
   const [modalOpen, setModalOpen] = useState(false)
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
-
-  const datasets = mockDatasets.filter((d) => d.versionId === selectedVersionId)
 
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#828DA3]">
-          Data sources referenced by this version.
+          Data sources across all models.
         </p>
         <Button
           preset="primary"
@@ -46,6 +42,7 @@ export function DatasetsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Model / Version</TableHead>
               <TableHead>Version</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Rows</TableHead>
@@ -54,14 +51,12 @@ export function DatasetsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {datasets.map((d) => (
+            {mockDatasets.map((d) => (
               <TableRow
                 key={d.id}
                 className="cursor-pointer"
                 onClick={() =>
-                  navigate(
-                    `/dashboard/ml-studio/${model.id}/datasets/${d.id}${versionQuery}`
-                  )
+                  navigate(`/dashboard/ml-studio/datasets/${d.id}`)
                 }
               >
                 <TableCell>
@@ -69,6 +64,12 @@ export function DatasetsTab() {
                   <div className="line-clamp-1 text-sm text-[#828DA3]">
                     {d.description}
                   </div>
+                </TableCell>
+                <TableCell>
+                  <ModelVersionLink
+                    modelId={d.modelId}
+                    versionId={d.versionId}
+                  />
                 </TableCell>
                 <TableCell className="text-[#828DA3]">{d.version}</TableCell>
                 <TableCell className="text-[#828DA3] capitalize">

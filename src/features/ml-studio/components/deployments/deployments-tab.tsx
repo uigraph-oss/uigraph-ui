@@ -12,23 +12,18 @@ import {
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { mockDeployments } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { ModelVersionLink } from '../model-version-link'
 import { StatusBadge } from '../status-badge'
 import { DeploymentModal } from './deployment-modal'
 
 export function DeploymentsTab() {
-  const { selectedVersionId } = useModelContext()
   const [modalOpen, setModalOpen] = useState(false)
-
-  const deployments = mockDeployments.filter(
-    (d) => d.versionId === selectedVersionId
-  )
 
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#828DA3]">
-          Serving endpoints running this version.
+          Serving endpoints across all models.
         </p>
         <Button
           preset="primary"
@@ -45,6 +40,7 @@ export function DeploymentsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Model / Version</TableHead>
               <TableHead>Environment</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Endpoint</TableHead>
@@ -53,10 +49,16 @@ export function DeploymentsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {deployments.map((d) => (
+            {mockDeployments.map((d) => (
               <TableRow key={d.id}>
                 <TableCell className="font-medium text-[#F4F7FC]">
                   {d.name}
+                </TableCell>
+                <TableCell>
+                  <ModelVersionLink
+                    modelId={d.modelId}
+                    versionId={d.versionId}
+                  />
                 </TableCell>
                 <TableCell className="text-[#828DA3]">
                   {d.environment}

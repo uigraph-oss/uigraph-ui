@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { FormField, FormGrid } from '../form-field'
+import { ModelVersionSelect } from '../model-version-select'
 
 export function DatasetModal({
   open,
@@ -38,6 +39,8 @@ export function DatasetModal({
       }
     >
       <div className="flex flex-col gap-5 p-6">
+        <ModelVersionSelect />
+
         <FormGrid>
           <FormField label="Name">
             <Input placeholder="video-watch-events" />

@@ -13,8 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { PlusIcon, XIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { mockDatasets } from '../../constants/mock-data'
-import { useModelContext } from '../../contexts/model-context'
+import { mockDatasets, mockExperiments } from '../../constants/mock-data'
 import { FormField, FormGrid } from '../form-field'
 import { Panel } from '../panel'
 
@@ -51,13 +50,14 @@ function KeyValueRows({ label, hint }: { label: string; hint: string }) {
 }
 
 export function RunFormPage() {
-  const { model, selectedVersionId } = useModelContext()
   const { experimentId } = useParams<{ experimentId: string }>()
   const navigate = useNavigate()
-  const versionQuery = selectedVersionId ? `?v=${selectedVersionId}` : ''
-  const backTo = `/dashboard/ml-studio/${model.id}/experiments/${experimentId}${versionQuery}`
+  const backTo = `/dashboard/ml-studio/experiments/${experimentId}`
 
-  const datasets = mockDatasets.filter((d) => d.versionId === selectedVersionId)
+  const experiment = mockExperiments.find((e) => e.id === experimentId)
+  const datasets = mockDatasets.filter(
+    (d) => d.versionId === experiment?.versionId
+  )
 
   return (
     <div className="flex flex-col gap-5 p-6">

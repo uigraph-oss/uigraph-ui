@@ -26,7 +26,8 @@ export function ModelFormPage() {
     <DashboardPageLayout
       crumbs={[
         { to: '/dashboard/ml-studio', label: 'ML Studio' },
-        { to: '/dashboard/ml-studio/new', label: 'New Model' },
+        { to: '/dashboard/ml-studio/models', label: 'Models' },
+        { to: '/dashboard/ml-studio/models/new', label: 'New Model' },
       ]}
     >
       <div className="flex h-full flex-col">
@@ -95,13 +96,13 @@ export function ModelFormPage() {
                 <div className="flex justify-end gap-2 pt-2">
                   <Button
                     preset="outline"
-                    onClick={() => navigate('/dashboard/ml-studio')}
+                    onClick={() => navigate('/dashboard/ml-studio/models')}
                   >
                     Cancel
                   </Button>
                   <Button
                     preset="primary"
-                    onClick={() => navigate('/dashboard/ml-studio')}
+                    onClick={() => navigate('/dashboard/ml-studio/models')}
                   >
                     Create model
                   </Button>
