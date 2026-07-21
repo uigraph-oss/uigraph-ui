@@ -44,7 +44,7 @@ export function DecisionsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Model / Version</TableHead>
+              <TableHead>Linked to</TableHead>
               <TableHead>Decision</TableHead>
               <TableHead>Decision maker</TableHead>
               <TableHead>Decided</TableHead>

@@ -58,17 +58,14 @@ export function RunDetailPage() {
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
           {experiment && (
-            <InfoRow label="Model / Version">
+            <InfoRow label="Produces → Model Version">
               <ModelVersionLink
                 modelId={experiment.modelId}
                 versionId={experiment.versionId}
               />
             </InfoRow>
           )}
-          <InfoRow label="Duration">{run.duration}</InfoRow>
-          <InfoRow label="Trigger">{run.trigger}</InfoRow>
-          <InfoRow label="Environment">{run.environment}</InfoRow>
-          <InfoRow label="Dataset">
+          <InfoRow label="Uses → Dataset">
             {dataset ? (
               <Link
                 to={`/dashboard/ml-studio/datasets/${dataset.id}`}
@@ -80,6 +77,9 @@ export function RunDetailPage() {
               '—'
             )}
           </InfoRow>
+          <InfoRow label="Duration">{run.duration}</InfoRow>
+          <InfoRow label="Trigger">{run.trigger}</InfoRow>
+          <InfoRow label="Environment">{run.environment}</InfoRow>
         </div>
         <InfoRow label="Model architecture">{run.modelArch}</InfoRow>
       </Panel>

@@ -26,7 +26,7 @@ export function DecisionDetailPage() {
       </div>
 
       <Panel>
-        <InfoRow label="Model / Version">
+        <InfoRow label="Linked to">
           <ModelVersionLink
             modelId={decision.modelId}
             versionId={decision.versionId}

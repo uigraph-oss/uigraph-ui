@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/table'
 import { Link, useParams } from 'react-router-dom'
 import { mockDatasets } from '../../constants/mock-data'
-import { ModelVersionLink } from '../model-version-link'
 import { InfoRow, Panel } from '../panel'
 
 export function DatasetDetailPage() {
@@ -38,12 +37,6 @@ export function DatasetDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Model / Version">
-            <ModelVersionLink
-              modelId={dataset.modelId}
-              versionId={dataset.versionId}
-            />
-          </InfoRow>
           <InfoRow label="Type">
             <span className="capitalize">{dataset.type}</span>
           </InfoRow>

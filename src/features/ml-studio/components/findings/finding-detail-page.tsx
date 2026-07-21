@@ -49,7 +49,7 @@ export function FindingDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Model / Version">
+          <InfoRow label="Linked to">
             <ModelVersionLink
               modelId={finding.modelId}
               versionId={finding.versionId}

@@ -43,7 +43,7 @@ export function DeploymentsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Model / Version</TableHead>
+              <TableHead>Linked to</TableHead>
               <TableHead>Environment</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Endpoint</TableHead>

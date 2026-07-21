@@ -45,7 +45,7 @@ export function FindingsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Model / Version</TableHead>
+              <TableHead>Linked to</TableHead>
               <TableHead>Severity</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Source</TableHead>
