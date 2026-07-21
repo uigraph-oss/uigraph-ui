@@ -22,11 +22,14 @@ export function FindingsTab() {
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[#828DA3]">
-          Insights and observations across all models.
-        </p>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold text-[#F4F7FC]">Findings</h2>
+          <p className="text-sm text-[#828DA3]">
+            Insights and observations across all models.
+          </p>
+        </div>
         <Button
           preset="primary"
           className="h-10"
