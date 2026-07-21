@@ -1,6 +1,6 @@
 'use client'
 
-import { SimpleModalBase } from '@/components'
+import { BasicModalBase } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -236,7 +236,7 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
         }}
       />
 
-      <SimpleModalBase
+      <BasicModalBase
         open={isDeleteOpen}
         onOpenChange={setDeleteProject}
         className={'!max-w-md'}
@@ -273,7 +273,7 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
             Delete
           </Button>
         </div>
-      </SimpleModalBase>
+      </BasicModalBase>
     </div>
   )
 }

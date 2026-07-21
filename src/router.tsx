@@ -48,11 +48,6 @@ const ModelsTab = lazy(() =>
     (mod) => ({ default: mod.ModelsTab })
   )
 )
-const ModelFormPage = lazy(() =>
-  import('@/features/ml-studio/components/models/model-form-page').then(
-    (mod) => ({ default: mod.ModelFormPage })
-  )
-)
 const ModelOverviewTab = lazy(() =>
   import('@/features/ml-studio/components/models/model-overview-tab').then(
     (mod) => ({ default: mod.ModelOverviewTab })
@@ -507,10 +502,6 @@ export function AppRoutes() {
             />
           </Route>
 
-          <Route
-            path="/dashboard/ml-studio/models/new"
-            element={<ModelFormPage />}
-          />
           <Route
             path="/dashboard/ml-studio/models/:modelId"
             element={<MlStudioLayout />}

@@ -1,5 +1,5 @@
 import { FigmaIcon } from '@/assets/svgs/brands'
-import { SimpleModalContent } from '@/components'
+import { BasicModalContent } from '@/components'
 import { UiGraphLogo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
@@ -54,7 +54,7 @@ export function FigmaOAuth() {
   }
 
   return (
-    <SimpleModalContent className="space-y-6 py-10 text-center">
+    <BasicModalContent className="space-y-6 py-10 text-center">
       <div className="space-y-6 text-center">
         <div>
           <h2 className="mb-2 text-2xl font-bold text-gray-900">
@@ -103,6 +103,6 @@ export function FigmaOAuth() {
           You&apos;ll be redirected to Figma to authorize this app
         </p>
       </div>
-    </SimpleModalContent>
+    </BasicModalContent>
   )
 }

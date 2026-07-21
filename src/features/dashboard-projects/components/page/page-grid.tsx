@@ -1,6 +1,6 @@
 'use client'
 
-import { SimpleModalBase } from '@/components'
+import { BasicModalBase } from '@/components'
 import { ActorAvatar } from '@/components/actor-avatar'
 import { SuperCircleLoader } from '@/components/loader'
 import { SectionNotFound } from '@/components/section-not-found'
@@ -207,7 +207,7 @@ function PageCard({ page }: { page: DashboardFrame }) {
         }}
       />
 
-      <SimpleModalBase
+      <BasicModalBase
         open={isDeletePage}
         onOpenChange={setDeletePage}
         className={'!max-w-md'}
@@ -244,7 +244,7 @@ function PageCard({ page }: { page: DashboardFrame }) {
             Delete
           </Button>
         </div>
-      </SimpleModalBase>
+      </BasicModalBase>
     </div>
   )
 }

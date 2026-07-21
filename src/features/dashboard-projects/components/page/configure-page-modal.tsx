@@ -1,7 +1,7 @@
 'use client'
 
+import { BasicModal } from '@/components/basic-modal'
 import { SuperCircleLoader } from '@/components/loader'
-import { SimpleModal } from '@/components/simple-modal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -104,7 +104,7 @@ export function ConfigurePageModal({
   }, [open, reset])
 
   return (
-    <SimpleModal
+    <BasicModal
       open={open}
       onOpenChange={onOpenChange}
       title={title}
@@ -359,6 +359,6 @@ export function ConfigurePageModal({
           </Button>
         </div>
       </form>
-    </SimpleModal>
+    </BasicModal>
   )
 }
