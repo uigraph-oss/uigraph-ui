@@ -25,12 +25,12 @@ export function DatasetsTab() {
       </div>
 
       <div className="border-stock bg-card overflow-hidden rounded-xl border">
-        <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
+        <Table className="table-fixed [&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Rows</TableHead>
+              <TableHead className="w-48">Name</TableHead>
+              <TableHead className="w-28">Type</TableHead>
+              <TableHead className="w-24">Rows</TableHead>
               <TableHead>Source</TableHead>
             </TableRow>
           </TableHeader>
@@ -44,7 +44,9 @@ export function DatasetsTab() {
                 }
               >
                 <TableCell>
-                  <div className="font-medium text-[#F4F7FC]">{d.name}</div>
+                  <div className="truncate font-medium text-[#F4F7FC]">
+                    {d.name}
+                  </div>
                 </TableCell>
                 <TableCell className="text-[#828DA3] capitalize">
                   {d.type}
@@ -52,7 +54,7 @@ export function DatasetsTab() {
                 <TableCell className="text-[#828DA3]">
                   {d.rowCount.toLocaleString()}
                 </TableCell>
-                <TableCell className="font-mono text-xs text-[#586378]">
+                <TableCell className="truncate font-mono text-xs text-[#586378]">
                   {d.source}
                 </TableCell>
               </TableRow>

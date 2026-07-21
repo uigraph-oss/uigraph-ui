@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table'
 import { useNavigate } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { formatMetric } from '../../format'
 import { StatusBadge } from '../status-badge'
 
 export function ExperimentsTab() {
@@ -26,14 +27,14 @@ export function ExperimentsTab() {
       </div>
 
       <div className="border-stock bg-card overflow-hidden rounded-xl border">
-        <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
+        <Table className="table-fixed [&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Runs</TableHead>
-              <TableHead>Latest result</TableHead>
-              <TableHead>Last activity</TableHead>
+              <TableHead className="w-28">Status</TableHead>
+              <TableHead className="w-20">Runs</TableHead>
+              <TableHead className="w-48">Latest result</TableHead>
+              <TableHead className="w-36">Last activity</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -50,8 +51,10 @@ export function ExperimentsTab() {
                   }
                 >
                   <TableCell>
-                    <div className="font-medium text-[#F4F7FC]">{exp.name}</div>
-                    <div className="line-clamp-1 text-sm text-[#828DA3]">
+                    <div className="truncate font-medium text-[#F4F7FC]">
+                      {exp.name}
+                    </div>
+                    <div className="truncate text-sm text-[#828DA3]">
                       {exp.description}
                     </div>
                   </TableCell>
@@ -64,8 +67,10 @@ export function ExperimentsTab() {
                   <TableCell className="text-[#F4F7FC]">
                     {primaryMetric ? (
                       <>
-                        {latestRun.metrics[primaryMetric]}
-                        <div className="text-xs text-[#586378]">
+                        <div className="truncate">
+                          {formatMetric(latestRun.metrics[primaryMetric])}
+                        </div>
+                        <div className="truncate text-xs text-[#586378]">
                           {primaryMetric.replace(/_/g, ' ')}
                         </div>
                       </>

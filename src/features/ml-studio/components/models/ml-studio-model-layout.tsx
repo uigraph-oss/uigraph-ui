@@ -45,7 +45,7 @@ export function MlStudioModelLayout({
       />
 
       <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
-        <div className="flex items-center justify-between gap-4 pt-3 pr-3 pb-0 pl-6">
+        <div className="border-stock flex items-center justify-between gap-4 border-b pt-3 pr-3 pb-3 pl-6">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold text-[#F4F7FC]">
               {model.name}

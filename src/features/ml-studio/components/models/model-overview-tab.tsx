@@ -14,12 +14,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
+import { formatMetric } from '../../format'
 import { InfoRow, Panel } from '../panel'
-
-function formatMetric(value: number) {
-  if (Number.isInteger(value)) return String(value)
-  return Number(value.toPrecision(4)).toString()
-}
 
 export function ModelOverviewTab() {
   const { model, selectedVersion } = useModelContext()
