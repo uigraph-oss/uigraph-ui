@@ -50,6 +50,19 @@ export const ML_VERSION_DEPLOYMENT_UPDATES = graphql(`
   }
 `)
 
+export const ML_STUDIO_DEPLOYMENT_UPDATES = graphql(`
+  query MlStudioDeploymentUpdates($orgId: ID!) {
+    mlVersionDeploymentUpdates(orgId: $orgId) {
+      id
+      versionId
+      fromStatus
+      toStatus
+      changedBy
+      changedAt
+    }
+  }
+`)
+
 export const ML_STUDIO_EXPERIMENTS = graphql(`
   query MlStudioExperiments($orgId: ID!) {
     mlExperiments(orgId: $orgId) {

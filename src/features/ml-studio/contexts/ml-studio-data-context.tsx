@@ -12,6 +12,7 @@ import {
   DELETE_ML_FINDING,
   ML_STUDIO_ARTIFACTS,
   ML_STUDIO_DATASETS,
+  ML_STUDIO_DEPLOYMENT_UPDATES,
   ML_STUDIO_DEPLOYMENTS,
   ML_STUDIO_EXPERIMENTS,
   ML_STUDIO_FINDINGS,
@@ -240,6 +241,7 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
   const versionRefetch = {
     refetchQueries: [
       { query: ML_STUDIO_VERSIONS, variables: { orgId: orgId! } },
+      { query: ML_STUDIO_DEPLOYMENT_UPDATES, variables: { orgId: orgId! } },
     ],
     awaitRefetchQueries: true,
   }
