@@ -12,7 +12,6 @@ import { useQuery } from '@apollo/client'
 import { ML_STUDIO_EVALUATION_DATASETS } from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
-import { Panel } from '../panel'
 
 export function ExperimentDatasetsTab() {
   const { experimentId } = useExperimentContext()
@@ -27,13 +26,17 @@ export function ExperimentDatasetsTab() {
     evaluationDatasetsQuery.data?.mlEvaluationDatasets ?? []
 
   return (
-    <div className="flex flex-col gap-5 p-6">
-      <Panel
-        title="Datasets"
-        description="Evaluation datasets registered to this experiment."
-      >
-        {evaluationDatasets.length > 0 ? (
-          <Table className="table-fixed">
+    <div className="flex flex-col gap-4 p-6">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-lg font-semibold text-[#F4F7FC]">Datasets</h2>
+        <p className="text-sm text-[#828DA3]">
+          Evaluation datasets registered to this experiment.
+        </p>
+      </div>
+
+      {evaluationDatasets.length > 0 ? (
+        <div className="border-stock bg-card overflow-hidden rounded-xl border">
+          <Table className="table-fixed [&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -63,12 +66,12 @@ export function ExperimentDatasetsTab() {
               ))}
             </TableBody>
           </Table>
-        ) : (
-          <p className="text-sm text-[#586378]">
-            No evaluation datasets for this experiment.
-          </p>
-        )}
-      </Panel>
+        </div>
+      ) : (
+        <p className="text-sm text-[#586378]">
+          No evaluation datasets for this experiment.
+        </p>
+      )}
     </div>
   )
 }

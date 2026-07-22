@@ -98,11 +98,6 @@ const RunDetailPage = lazy(() =>
     (mod) => ({ default: mod.RunDetailPage })
   )
 )
-const RunComparisonPage = lazy(() =>
-  import('@/features/ml-studio/components/experiments/run-comparison-page').then(
-    (mod) => ({ default: mod.RunComparisonPage })
-  )
-)
 const DatasetsTab = lazy(() =>
   import('@/features/ml-studio/components/datasets/datasets-tab').then(
     (mod) => ({
@@ -481,10 +476,6 @@ export function AppRoutes() {
             <Route
               path="experiments/:experimentId/runs/:runId"
               element={<RunDetailPage />}
-            />
-            <Route
-              path="experiments/:experimentId/compare"
-              element={<RunComparisonPage />}
             />
             <Route path="datasets" element={<DatasetsTab />} />
             <Route path="datasets/:datasetId" element={<DatasetDetailPage />} />

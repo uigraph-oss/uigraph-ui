@@ -14,17 +14,20 @@ import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
+import { formatMetric } from '../../format'
 import { MetricSparkline } from '../metric-sparkline'
-import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
+import { RunComparisonDialog } from './run-comparison-dialog'
 
 export function ExperimentRunsTab() {
   const { experiment, runs } = useExperimentContext()
   const navigate = useNavigate()
   const [selected, setSelected] = useState<string[]>([])
+  const [comparing, setComparing] = useState(false)
 
   const primaryMetric = Object.keys(runs[0]?.metrics ?? {})[0] ?? ''
   const primaryLabel = primaryMetric.replace(/_/g, ' ')
+  const selectedRuns = runs.filter((r) => selected.includes(r.id))
 
   function toggle(id: string) {
     setSelected((prev) =>
@@ -33,26 +36,27 @@ export function ExperimentRunsTab() {
   }
 
   return (
-    <div className="flex flex-col gap-5 p-6">
-      <Panel
-        title="Runs"
-        action={
-          <Button
-            preset="outline"
-            className="h-9 px-3"
-            disabled={selected.length < 2}
-            onClick={() =>
-              navigate(
-                `/dashboard/ml-studio/experiments/${experiment.id}/compare?runs=${selected.join(',')}`
-              )
-            }
-          >
-            <GitCompareIcon />
-            Compare ({selected.length})
-          </Button>
-        }
-      >
-        <Table>
+    <div className="flex flex-col gap-4 p-6">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold text-[#F4F7FC]">Runs</h2>
+          <p className="text-sm text-[#828DA3]">
+            Every run recorded in this experiment.
+          </p>
+        </div>
+        <Button
+          preset="outline"
+          className="h-10"
+          disabled={selected.length < 2}
+          onClick={() => setComparing(true)}
+        >
+          <GitCompareIcon />
+          Compare ({selected.length})
+        </Button>
+      </div>
+
+      <div className="border-stock bg-card overflow-hidden rounded-xl border">
+        <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
@@ -65,7 +69,15 @@ export function ExperimentRunsTab() {
           </TableHeader>
           <TableBody>
             {runs.map((run) => (
-              <TableRow key={run.id}>
+              <TableRow
+                key={run.id}
+                className="cursor-pointer"
+                onClick={() =>
+                  navigate(
+                    `/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`
+                  )
+                }
+              >
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     checked={selected.includes(run.id)}
@@ -73,24 +85,16 @@ export function ExperimentRunsTab() {
                   />
                 </TableCell>
                 <TableCell>
-                  <button
-                    type="button"
-                    className="hover:text-primary font-medium text-[#F4F7FC]"
-                    onClick={() =>
-                      navigate(
-                        `/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`
-                      )
-                    }
-                  >
-                    {run.name}
-                  </button>
+                  <div className="font-medium text-[#F4F7FC]">{run.name}</div>
                   <div className="text-xs text-[#586378]">{run.id}</div>
                 </TableCell>
                 <TableCell>
                   <StatusBadge value={run.status} />
                 </TableCell>
                 <TableCell className="text-[#F4F7FC]">
-                  {primaryMetric ? (run.metrics[primaryMetric] ?? '—') : '—'}
+                  {primaryMetric && run.metrics[primaryMetric] !== undefined
+                    ? formatMetric(run.metrics[primaryMetric])
+                    : '—'}
                 </TableCell>
                 <TableCell>
                   <MetricSparkline
@@ -105,7 +109,13 @@ export function ExperimentRunsTab() {
             ))}
           </TableBody>
         </Table>
-      </Panel>
+      </div>
+
+      <RunComparisonDialog
+        runs={selectedRuns}
+        open={comparing}
+        onOpenChange={setComparing}
+      />
     </div>
   )
 }
