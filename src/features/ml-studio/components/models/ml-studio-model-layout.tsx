@@ -76,7 +76,7 @@ export function MlStudioModelLayout({
               value={selectedVersionId}
               onValueChange={(value) => void setVersionId(value)}
             >
-              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-56 rounded-[0.80315625rem] bg-transparent px-4">
+              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-40 rounded-[0.80315625rem] bg-transparent px-4">
                 <SelectValue placeholder="Select version" />
               </SelectTrigger>
               <SelectContent>
