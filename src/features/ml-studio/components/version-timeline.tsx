@@ -48,7 +48,10 @@ export function VersionTimeline({
               <Button
                 key={t.to}
                 preset="outline"
-                className="h-auto justify-start px-3 py-1.5 text-left text-xs"
+                className={cn(
+                  'h-auto justify-start px-3 py-1.5 text-left text-xs',
+                  t.accent
+                )}
                 onClick={() =>
                   void createVersionDeploymentUpdate({
                     variables: {
@@ -59,6 +62,7 @@ export function VersionTimeline({
                   })
                 }
               >
+                <t.icon />
                 {t.label}
               </Button>
             ))}

@@ -4,6 +4,12 @@ import { GridScrollBody } from '@/components/grid-scroll-body'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -13,7 +19,7 @@ import {
 import { DashboardHeader } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
-import { ArrowLeftIcon } from 'lucide-react'
+import { ArrowLeftIcon, ChevronDownIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
@@ -79,25 +85,71 @@ export function MlStudioModelLayout({
 
           <div className="flex items-center gap-2">
             {selectedVersion &&
-              deploymentTransitions[selectedVersion.deploymentStatus].map(
-                (t) => (
-                  <Button
-                    key={t.to}
-                    preset={t.to === 'production' ? undefined : 'outline'}
-                    onClick={() =>
-                      void createVersionDeploymentUpdate({
-                        variables: {
-                          orgId: orgId!,
-                          versionId: selectedVersion.id,
-                          toStatus: t.to,
-                        },
-                      })
-                    }
-                  >
-                    {t.label}
-                  </Button>
+              (() => {
+                const transitions =
+                  deploymentTransitions[selectedVersion.deploymentStatus]
+                const primary = transitions[0]
+                const rest = transitions.slice(1)
+                return (
+                  <div className="flex items-center">
+                    <Button
+                      preset="outline"
+                      className={cn(
+                        primary.accent,
+                        rest.length > 0 && 'rounded-r-none border-r-0'
+                      )}
+                      onClick={() =>
+                        void createVersionDeploymentUpdate({
+                          variables: {
+                            orgId: orgId!,
+                            versionId: selectedVersion.id,
+                            toStatus: primary.to,
+                          },
+                        })
+                      }
+                    >
+                      <primary.icon />
+                      {primary.label}
+                    </Button>
+                    {rest.length > 0 && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            preset="outline"
+                            aria-label="More deployment actions"
+                            className={cn(
+                              primary.accent,
+                              'rounded-l-none px-3'
+                            )}
+                          >
+                            <ChevronDownIcon />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {rest.map((t) => (
+                            <DropdownMenuItem
+                              key={t.to}
+                              className={t.accentItem}
+                              onClick={() =>
+                                void createVersionDeploymentUpdate({
+                                  variables: {
+                                    orgId: orgId!,
+                                    versionId: selectedVersion.id,
+                                    toStatus: t.to,
+                                  },
+                                })
+                              }
+                            >
+                              <t.icon className={t.iconColor} />
+                              {t.label}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
                 )
-              )}
+              })()}
             <Select
               value={selectedVersionId}
               onValueChange={(value) => void setVersionId(value)}
