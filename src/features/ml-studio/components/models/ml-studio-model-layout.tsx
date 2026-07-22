@@ -25,6 +25,7 @@ const modelTabs = [
   { id: '', label: 'Overview' },
   { id: 'metrics', label: 'Metrics' },
   { id: 'artifacts', label: 'Artifacts' },
+  { id: 'timeline', label: 'Timeline' },
 ] as const
 
 const tabURLPattern = new URLPatternPolyfill({
