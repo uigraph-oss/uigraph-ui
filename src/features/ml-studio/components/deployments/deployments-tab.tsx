@@ -21,6 +21,7 @@ import { useMemo, useState } from 'react'
 import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import type { VersionStage } from '../../types'
+import { MlUser } from '../ml-user'
 import { ModelVersionLink } from '../model-version-link'
 import { StatusBadge } from '../status-badge'
 
@@ -149,7 +150,7 @@ export function DeploymentsTab() {
                     </div>
                   </TableCell>
                   <TableCell className="text-[#828DA3]">
-                    {update.changedBy}
+                    <MlUser identifier={update.changedBy} />
                   </TableCell>
                   <TableCell className="text-[#828DA3]">
                     {update.changedAt

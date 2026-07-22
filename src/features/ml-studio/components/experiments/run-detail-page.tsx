@@ -45,9 +45,7 @@ export function RunDetailPage() {
             <h2 className="text-xl font-semibold text-[#F4F7FC]">{run.name}</h2>
             <StatusBadge value={run.status} />
           </div>
-          <p className="mt-1 text-sm text-[#586378]">
-            {run.id} · {run.notes}
-          </p>
+          <p className="mt-1 text-sm text-[#586378]">{run.notes}</p>
         </div>
         <Button preset="outline" onClick={() => navigate(-1)}>
           <ArrowLeftIcon />

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric } from '../../format'
 import { MetricSparkline } from '../metric-sparkline'
@@ -84,9 +84,13 @@ export function ExperimentRunsTab() {
                     onCheckedChange={() => toggle(run.id)}
                   />
                 </TableCell>
-                <TableCell>
-                  <div className="font-medium text-[#F4F7FC]">{run.name}</div>
-                  <div className="text-xs text-[#586378]">{run.id}</div>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <Link
+                    to={`/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`}
+                    className="hover:text-primary font-medium text-[#F4F7FC]"
+                  >
+                    {run.name}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   <StatusBadge value={run.status} />

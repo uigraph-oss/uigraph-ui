@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ML_VERSION_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
@@ -32,7 +33,9 @@ export function DeploymentHistory({ versionId }: { versionId: string }) {
                 ) : null}
                 <StatusBadge value={u.toStatus} />
               </div>
-              <span className="text-sm text-[#828DA3]">by {u.changedBy}</span>
+              <span className="flex items-center gap-1.5 text-sm text-[#828DA3]">
+                by <MlUser identifier={u.changedBy} />
+              </span>
               {u.changedAt && (
                 <span
                   className="ml-auto text-xs text-[#586378]"

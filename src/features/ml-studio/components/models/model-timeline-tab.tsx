@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
+import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
@@ -189,9 +190,9 @@ function DeploymentsTimeline() {
                     )}
                   </div>
 
-                  <p className="mt-1 text-xs text-[#586378]">
-                    by {u.changedBy}
-                  </p>
+                  <div className="mt-1 flex items-center gap-1.5 text-xs text-[#586378]">
+                    by <MlUser identifier={u.changedBy} />
+                  </div>
                 </div>
               </li>
             )

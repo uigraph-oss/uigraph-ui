@@ -17,7 +17,7 @@ import { StatusBadge } from '../status-badge'
 export function FindingDetailPage() {
   const { findingId } = useParams<{ findingId: string }>()
 
-  const { findings, runs: allRuns } = useMlStudioData()
+  const { findings, runs: allRuns, experiments } = useMlStudioData()
   const finding = findings.find((f) => f.id === findingId)
 
   if (!finding) {
@@ -25,6 +25,7 @@ export function FindingDetailPage() {
   }
 
   const runs = allRuns.filter((r) => finding.runIds.includes(r.id))
+  const experimentById = new Map(experiments.map((e) => [e.id, e]))
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -61,13 +62,21 @@ export function FindingDetailPage() {
                     >
                       {r.name}
                     </Link>
-                    <div className="text-xs text-[#586378]">{r.id}</div>
                   </TableCell>
                   <TableCell>
                     <StatusBadge value={r.status} />
                   </TableCell>
-                  <TableCell className="text-[#828DA3]">
-                    {r.experimentId}
+                  <TableCell>
+                    {experimentById.get(r.experimentId) ? (
+                      <Link
+                        to={`/dashboard/ml-studio/experiments/${r.experimentId}`}
+                        className="hover:text-primary text-[#828DA3]"
+                      >
+                        {experimentById.get(r.experimentId)?.name}
+                      </Link>
+                    ) : (
+                      <span className="text-[#586378]">Unknown</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
