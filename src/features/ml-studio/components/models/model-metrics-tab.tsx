@@ -1,15 +1,8 @@
 'use client'
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
+import { formatMetric } from '../../format'
 import { MetricLineChart } from '../metric-chart'
 import { Panel } from '../panel'
 
@@ -18,9 +11,6 @@ export function ModelMetricsTab() {
   const { runs } = useMlStudioData()
 
   const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
-  const metrics = Object.entries(latestRun?.metrics ?? {})
-  const series = latestRun?.series ?? {}
-  const hasSeries = Object.values(series).some((points) => points.length > 0)
 
   if (!latestRun) {
     return (
@@ -34,50 +24,60 @@ export function ModelMetricsTab() {
     )
   }
 
+  const series = latestRun.series
+  const curves = Object.entries(series).filter(
+    ([, points]) => points.length > 1
+  )
+  const scalars = Object.entries(latestRun.metrics).filter(
+    ([key]) => (series[key]?.length ?? 0) <= 1
+  )
+
   return (
     <div className="grid grid-cols-1 gap-6 p-6">
-      <Panel
-        title="Training curves"
-        description="Metric values logged per training step."
-      >
-        {hasSeries ? (
-          <MetricLineChart series={series} className="aspect-[16/6] w-full" />
-        ) : (
-          <p className="text-sm text-[#586378]">
-            No per-step metrics were logged for this run.
-          </p>
-        )}
-      </Panel>
+      {scalars.length > 0 && (
+        <Panel
+          title="Metrics"
+          description="Final values logged for this model version."
+        >
+          <div className="grid grid-cols-2 gap-x-8 gap-y-6 md:grid-cols-4">
+            {scalars.map(([key, value]) => (
+              <div key={key}>
+                <div className="text-2xl font-bold text-[#F4F7FC]">
+                  {formatMetric(value)}
+                </div>
+                <div className="mt-1 text-xs tracking-wide text-[#586378] uppercase">
+                  {key.replace(/_/g, ' ')}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      )}
 
-      <Panel
-        title="All metrics"
-        description="Every scalar metric captured for this version."
-      >
-        {metrics.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                <TableHead>Value</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {metrics.map(([key, value]) => (
-                <TableRow key={key}>
-                  <TableCell className="text-[#828DA3]">
-                    {key.replace(/_/g, ' ')}
-                  </TableCell>
-                  <TableCell className="font-mono text-[#F4F7FC]">
-                    {value}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <p className="text-sm text-[#586378]">No metrics recorded.</p>
-        )}
-      </Panel>
+      {curves.length > 0 && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {curves.map(([key, points]) => (
+            <Panel
+              key={key}
+              title={key.replace(/_/g, ' ')}
+              description={`${points.length} steps logged`}
+            >
+              <MetricLineChart
+                series={{ [key]: points }}
+                className="aspect-[16/9] w-full"
+              />
+            </Panel>
+          ))}
+        </div>
+      )}
+
+      {scalars.length === 0 && curves.length === 0 && (
+        <Panel title="Metrics">
+          <p className="text-sm text-[#586378]">
+            No metrics recorded for this version.
+          </p>
+        </Panel>
+      )}
     </div>
   )
 }
