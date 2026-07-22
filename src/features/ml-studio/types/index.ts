@@ -13,6 +13,13 @@ export type Model = {
   domain: string
   problemType: ProblemType
   tags: string[]
+  owners: string
+  license: string
+  references: string[]
+  intendedUse: string
+  limitations: string
+  ethicalConsiderations: string
+  caveats: string
   createdAt: string
   updatedAt: string
   productionVersionId?: string

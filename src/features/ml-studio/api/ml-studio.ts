@@ -9,6 +9,13 @@ export const ML_STUDIO_MODELS = graphql(`
       domain
       problemType
       tags
+      owners
+      license
+      references
+      intendedUse
+      limitations
+      ethicalConsiderations
+      caveats
       productionVersionId
       createdAt
       updatedAt
@@ -148,16 +155,37 @@ export const UPDATE_ML_MODEL = graphql(`
     $id: ID!
     $domain: String
     $problemType: String
+    $owners: String
+    $license: String
+    $references: [String!]
+    $intendedUse: String
+    $limitations: String
+    $ethicalConsiderations: String
+    $caveats: String
   ) {
     updateMlModel(
       orgId: $orgId
       id: $id
       domain: $domain
       problemType: $problemType
+      owners: $owners
+      license: $license
+      references: $references
+      intendedUse: $intendedUse
+      limitations: $limitations
+      ethicalConsiderations: $ethicalConsiderations
+      caveats: $caveats
     ) {
       id
       domain
       problemType
+      owners
+      license
+      references
+      intendedUse
+      limitations
+      ethicalConsiderations
+      caveats
     }
   }
 `)

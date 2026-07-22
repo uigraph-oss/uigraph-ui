@@ -1,6 +1,5 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -17,9 +16,10 @@ import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
+import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
-  const { model, selectedVersion } = useModelContext()
+  const { selectedVersion } = useModelContext()
   const { runs, datasets } = useMlStudioData()
   const navigate = useNavigate()
 
@@ -30,31 +30,7 @@ export function ModelOverviewTab() {
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-      <Panel title="Model card" className="md:col-span-2">
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Problem type">
-            <span className="capitalize">{model.problemType}</span>
-          </InfoRow>
-          <InfoRow label="Domain">{model.domain || '—'}</InfoRow>
-        </div>
-        <InfoRow label="Description">
-          <span className="leading-relaxed text-[#828DA3]">
-            {model.description || 'No description.'}
-          </span>
-        </InfoRow>
-        {model.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {model.tags.map((tag) => (
-              <Badge
-                key={tag}
-                className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </Panel>
+      <ModelCard />
 
       <Panel title="Metrics">
         {metrics.length > 0 ? (
