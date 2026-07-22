@@ -68,9 +68,29 @@ const ExperimentsTab = lazy(() =>
     (mod) => ({ default: mod.ExperimentsTab })
   )
 )
-const ExperimentDetailPage = lazy(() =>
-  import('@/features/ml-studio/components/experiments/experiment-detail-page').then(
-    (mod) => ({ default: mod.ExperimentDetailPage })
+const MlStudioExperimentRouteLayout = lazy(() =>
+  import('@/routes/ml-studio-experiment-layout').then((mod) => ({
+    default: mod.MlStudioExperimentRouteLayout,
+  }))
+)
+const ExperimentOverviewTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-overview-tab').then(
+    (mod) => ({ default: mod.ExperimentOverviewTab })
+  )
+)
+const ExperimentRunsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-runs-tab').then(
+    (mod) => ({ default: mod.ExperimentRunsTab })
+  )
+)
+const ExperimentDatasetsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-datasets-tab').then(
+    (mod) => ({ default: mod.ExperimentDatasetsTab })
+  )
+)
+const ExperimentMetricsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-metrics-tab').then(
+    (mod) => ({ default: mod.ExperimentMetricsTab })
   )
 )
 const RunDetailPage = lazy(() =>
@@ -459,10 +479,6 @@ export function AppRoutes() {
             <Route path="models" element={<ModelsTab />} />
             <Route path="experiments" element={<ExperimentsTab />} />
             <Route
-              path="experiments/:experimentId"
-              element={<ExperimentDetailPage />}
-            />
-            <Route
               path="experiments/:experimentId/runs/:runId"
               element={<RunDetailPage />}
             />
@@ -484,6 +500,16 @@ export function AppRoutes() {
             <Route index element={<ModelOverviewTab />} />
             <Route path="metrics" element={<ModelMetricsTab />} />
             <Route path="artifacts" element={<ModelArtifactsTab />} />
+          </Route>
+
+          <Route
+            path="/dashboard/ml-studio/experiments/:experimentId"
+            element={<MlStudioExperimentRouteLayout />}
+          >
+            <Route index element={<ExperimentOverviewTab />} />
+            <Route path="runs" element={<ExperimentRunsTab />} />
+            <Route path="datasets" element={<ExperimentDatasetsTab />} />
+            <Route path="metrics" element={<ExperimentMetricsTab />} />
           </Route>
 
           <Route
