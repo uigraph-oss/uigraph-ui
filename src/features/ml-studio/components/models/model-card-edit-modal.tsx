@@ -5,6 +5,7 @@ import {
   BetterDialogProvider,
 } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -16,7 +17,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { useEffect, useState } from 'react'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { Model } from '../../types'
-import { FormField, FormGrid } from '../form-field'
 
 export function ModelCardEditModal({
   model,
@@ -95,11 +95,14 @@ export function ModelCardEditModal({
         footerSubmitLoading={saving}
         onFooterSubmitClick={submit}
       >
-        <div className="flex flex-col gap-4">
-          <FormGrid>
-            <FormField label="Problem type">
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-foreground text-sm font-medium">
+                Problem type
+              </Label>
               <Select value={problemType} onValueChange={setProblemType}>
-                <SelectTrigger>
+                <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,82 +114,110 @@ export function ModelCardEditModal({
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
-            </FormField>
-            <FormField label="Domain">
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground text-sm font-medium">
+                Domain
+              </Label>
               <Input
                 placeholder="Recommendations"
+                autoComplete="off"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
               />
-            </FormField>
-          </FormGrid>
+            </div>
+          </div>
 
-          <FormGrid>
-            <FormField label="Owners">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-foreground text-sm font-medium">
+                Owners
+              </Label>
               <Input
                 placeholder="Maya Patel, Ranking team"
+                autoComplete="off"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
                 value={owners}
                 onChange={(e) => setOwners(e.target.value)}
               />
-            </FormField>
-            <FormField label="License">
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground text-sm font-medium">
+                License
+              </Label>
               <Input
                 placeholder="Apache-2.0"
+                autoComplete="off"
+                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
                 value={license}
                 onChange={(e) => setLicense(e.target.value)}
               />
-            </FormField>
-          </FormGrid>
+            </div>
+          </div>
 
-          <FormField label="Intended use">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              Intended use
+            </Label>
             <Textarea
               placeholder="Who should use this model and for what?"
-              rows={2}
-              className="min-h-[3.5rem]"
+              className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
               value={intendedUse}
               onChange={(e) => setIntendedUse(e.target.value)}
             />
-          </FormField>
+          </div>
 
-          <FormField label="Limitations">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              Limitations
+            </Label>
             <Textarea
               placeholder="Where does this model fail or fall out of scope?"
-              rows={2}
-              className="min-h-[3.5rem]"
+              className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
               value={limitations}
               onChange={(e) => setLimitations(e.target.value)}
             />
-          </FormField>
+          </div>
 
-          <FormField label="Ethical considerations">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              Ethical considerations
+            </Label>
             <Textarea
               placeholder="Risks, sensitive data, fairness concerns."
-              rows={2}
-              className="min-h-[3.5rem]"
+              className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
               value={ethicalConsiderations}
               onChange={(e) => setEthicalConsiderations(e.target.value)}
             />
-          </FormField>
+          </div>
 
-          <FormField label="Caveats & recommendations">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              Caveats & recommendations
+            </Label>
             <Textarea
               placeholder="Guidance for responsible use."
-              rows={2}
-              className="min-h-[3.5rem]"
+              className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
               value={caveats}
               onChange={(e) => setCaveats(e.target.value)}
             />
-          </FormField>
+          </div>
 
-          <FormField label="References" hint="One link or citation per line">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              References
+            </Label>
+            <p className="text-sm text-[#828DA3]">
+              One link or citation per line
+            </p>
             <Textarea
               placeholder={'https://docs.internal/model\nSmith et al. 2024'}
-              rows={2}
-              className="min-h-[3.5rem]"
+              className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
               value={references}
               onChange={(e) => setReferences(e.target.value)}
             />
-          </FormField>
+          </div>
         </div>
       </BetterDialogContent>
     </BetterDialogProvider>

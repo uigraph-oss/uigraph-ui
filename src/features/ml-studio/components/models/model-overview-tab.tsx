@@ -126,11 +126,15 @@ export function ModelOverviewTab() {
                   {runDataset.name}
                 </Link>
               ) : (
-                '—'
+                <span className="text-[#586378]">—</span>
               )}
             </InfoRow>
             <InfoRow label="Notes">
-              <span className="text-[#828DA3]">{latestRun.notes || '—'}</span>
+              {latestRun.notes ? (
+                <span className="text-[#828DA3]">{latestRun.notes}</span>
+              ) : (
+                <span className="text-[#586378]">—</span>
+              )}
             </InfoRow>
           </div>
         ) : (
