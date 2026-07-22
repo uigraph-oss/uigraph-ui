@@ -1,6 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -11,7 +12,8 @@ import {
 } from '@/components/ui/table'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { format } from 'date-fns'
-import { useParams } from 'react-router-dom'
+import { ArrowLeftIcon } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MetricLineChart } from '../metric-chart'
 import { InfoRow, Panel } from '../panel'
@@ -19,6 +21,7 @@ import { StatusBadge } from '../status-badge'
 
 export function RunDetailPage() {
   const { runId } = useParams<{ runId: string }>()
+  const navigate = useNavigate()
 
   const { runs, artifacts: allArtifacts, datasets } = useMlStudioData()
   const run = runs.find((r) => r.id === runId)
@@ -38,12 +41,18 @@ export function RunDetailPage() {
     <div className="flex flex-col gap-5 p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-[#F4F7FC]">{run.name}</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-[#F4F7FC]">{run.name}</h2>
+            <StatusBadge value={run.status} />
+          </div>
           <p className="mt-1 text-sm text-[#586378]">
             {run.id} · {run.notes}
           </p>
         </div>
-        <StatusBadge value={run.status} />
+        <Button preset="outline" onClick={() => navigate(-1)}>
+          <ArrowLeftIcon />
+          Go Back
+        </Button>
       </div>
 
       <Panel>
