@@ -90,7 +90,7 @@ export type Artifact = {
   format: string
 }
 
-export type DatasetType = 'tabular' | 'text' | 'image' | 'audio' | 'multimodal'
+export type DatasetContext = 'training' | 'evaluation'
 
 export type SchemaField = {
   name: string
@@ -100,19 +100,12 @@ export type SchemaField = {
 
 export type Dataset = {
   id: string
-  name: string
-  source: string
-  type: DatasetType
-  rowCount: number
-  schema: SchemaField[]
-}
-
-export type EvaluationDataset = {
-  id: string
+  experimentId: string
   name: string
   digest: string
   source: string
   sourceType: string
+  context: DatasetContext
   rowCount: number
   schema: SchemaField[]
 }

@@ -12,7 +12,6 @@ import { MlStudioDataProvider } from '../contexts/ml-studio-data-context'
 const rootTabs = [
   { id: 'models', label: 'Models' },
   { id: 'experiments', label: 'Experiments' },
-  { id: 'datasets', label: 'Datasets' },
   { id: 'deployments', label: 'Deployments' },
   { id: 'findings', label: 'Findings' },
 ] as const

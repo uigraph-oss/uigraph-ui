@@ -119,12 +119,7 @@ export function ModelOverviewTab() {
             <InfoRow label="Duration">{latestRun.duration}</InfoRow>
             <InfoRow label="Dataset">
               {runDataset ? (
-                <Link
-                  to={`/dashboard/ml-studio/datasets/${runDataset.id}`}
-                  className="hover:text-primary"
-                >
-                  {runDataset.name}
-                </Link>
+                runDataset.name
               ) : (
                 <span className="text-[#586378]">—</span>
               )}

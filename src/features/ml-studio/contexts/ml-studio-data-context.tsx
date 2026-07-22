@@ -173,9 +173,12 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     () =>
       (datasetsQuery.data?.mlDatasets ?? []).map((d) => ({
         id: d.id,
+        experimentId: d.experimentId,
         name: d.name,
+        digest: d.digest,
         source: d.source,
-        type: d.type as Dataset['type'],
+        sourceType: d.sourceType,
+        context: d.context as Dataset['context'],
         rowCount: d.rowCount,
         schema: d.schema.map((f) => ({
           name: f.name,

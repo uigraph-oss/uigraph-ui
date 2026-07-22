@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -9,7 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
-import { Link, useParams } from 'react-router-dom'
+import { format } from 'date-fns'
+import { useParams } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MetricLineChart } from '../metric-chart'
 import { InfoRow, Panel } from '../panel'
@@ -46,17 +48,8 @@ export function RunDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Uses → Dataset">
-            {dataset ? (
-              <Link
-                to={`/dashboard/ml-studio/datasets/${dataset.id}`}
-                className="hover:text-primary"
-              >
-                {dataset.name}
-              </Link>
-            ) : (
-              '—'
-            )}
+          <InfoRow label="Started">
+            {format(new Date(run.startedAt), 'PPpp')}
           </InfoRow>
           <InfoRow label="Duration">{run.duration}</InfoRow>
         </div>
@@ -150,6 +143,66 @@ export function RunDetailPage() {
           </Table>
         ) : (
           <p className="text-sm text-[#586378]">No artifacts attached.</p>
+        )}
+      </Panel>
+
+      <Panel title="Input dataset">
+        {dataset ? (
+          <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+              <InfoRow label="Context">
+                <Badge className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3] capitalize">
+                  {dataset.context}
+                </Badge>
+              </InfoRow>
+              <InfoRow label="Name">{dataset.name}</InfoRow>
+              <InfoRow label="Source">
+                <span className="font-mono text-xs text-[#586378]">
+                  {dataset.source}
+                </span>
+              </InfoRow>
+              <InfoRow label="Source type">{dataset.sourceType}</InfoRow>
+              <InfoRow label="Rows">
+                {dataset.rowCount.toLocaleString()}
+              </InfoRow>
+              <InfoRow label="Digest">
+                <span className="font-mono text-xs text-[#586378]">
+                  {dataset.digest}
+                </span>
+              </InfoRow>
+            </div>
+
+            {dataset.schema.length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Field</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Description</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {dataset.schema.map((field) => (
+                    <TableRow key={field.name}>
+                      <TableCell className="font-mono text-[#F4F7FC]">
+                        {field.name}
+                      </TableCell>
+                      <TableCell className="font-mono text-[#828DA3]">
+                        {field.type}
+                      </TableCell>
+                      <TableCell className="text-[#828DA3]">
+                        {field.description}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-[#586378]">
+            No input dataset logged for this run.
+          </p>
         )}
       </Panel>
     </div>

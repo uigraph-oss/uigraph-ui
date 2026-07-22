@@ -84,30 +84,15 @@ export const ML_STUDIO_ARTIFACTS = graphql(`
 `)
 
 export const ML_STUDIO_DATASETS = graphql(`
-  query MlStudioDatasets($orgId: ID!) {
-    mlDatasets(orgId: $orgId) {
+  query MlStudioDatasets($orgId: ID!, $experimentId: ID) {
+    mlDatasets(orgId: $orgId, experimentId: $experimentId) {
       id
-      name
-      source
-      type
-      rowCount
-      schema {
-        name
-        type
-        description
-      }
-    }
-  }
-`)
-
-export const ML_STUDIO_EVALUATION_DATASETS = graphql(`
-  query MlStudioEvaluationDatasets($orgId: ID!, $experimentId: ID) {
-    mlEvaluationDatasets(orgId: $orgId, experimentId: $experimentId) {
-      id
+      experimentId
       name
       digest
       source
       sourceType
+      context
       rowCount
       schema {
         name
