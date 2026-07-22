@@ -10,24 +10,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatDistanceToNow } from 'date-fns'
+import { format, formatDistanceToNow } from 'date-fns'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { InfoRow, Panel } from '../panel'
+import { StatusBadge } from '../status-badge'
 
 export function ModelOverviewTab() {
   const { model, selectedVersion } = useModelContext()
-  const { runs, artifacts: allArtifacts } = useMlStudioData()
+  const { runs, datasets } = useMlStudioData()
   const navigate = useNavigate()
 
   const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
   const metrics = Object.entries(latestRun?.metrics ?? {})
   const parameters = Object.entries(latestRun?.parameters ?? {})
-  const artifacts = latestRun
-    ? allArtifacts.filter((a) => latestRun.artifactIds.includes(a.id))
-    : []
+  const runDataset = datasets.find((d) => d.id === latestRun?.datasetId)
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
@@ -104,24 +103,7 @@ export function ModelOverviewTab() {
       </Panel>
 
       <Panel
-        title="Artifacts"
-        description={
-          latestRun && (
-            <>
-              Created by{' '}
-              <Link
-                to={`/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`}
-                className="hover:text-primary text-[#F4F7FC]"
-              >
-                {latestRun.name}
-              </Link>{' '}
-              ·{' '}
-              {formatDistanceToNow(new Date(latestRun.startedAt), {
-                addSuffix: true,
-              })}
-            </>
-          )
-        }
+        title="Training run"
         className="md:col-span-2"
         action={
           latestRun && (
@@ -138,31 +120,47 @@ export function ModelOverviewTab() {
           )
         }
       >
-        {artifacts.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Format</TableHead>
-                <TableHead>Size</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {artifacts.map((a) => (
-                <TableRow key={a.id}>
-                  <TableCell className="font-medium text-[#F4F7FC]">
-                    {a.name}
-                  </TableCell>
-                  <TableCell className="text-[#828DA3]">{a.type}</TableCell>
-                  <TableCell className="text-[#828DA3]">{a.format}</TableCell>
-                  <TableCell className="text-[#828DA3]">{a.size}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        {latestRun ? (
+          <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+            <InfoRow label="Run">
+              <Link
+                to={`/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`}
+                className="hover:text-primary"
+              >
+                {latestRun.name}
+              </Link>
+            </InfoRow>
+            <InfoRow label="Status">
+              <StatusBadge value={latestRun.status} />
+            </InfoRow>
+            <InfoRow label="Created">
+              <span title={format(new Date(latestRun.startedAt), 'PPpp')}>
+                {formatDistanceToNow(new Date(latestRun.startedAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            </InfoRow>
+            <InfoRow label="Duration">{latestRun.duration}</InfoRow>
+            <InfoRow label="Dataset">
+              {runDataset ? (
+                <Link
+                  to={`/dashboard/ml-studio/datasets/${runDataset.id}`}
+                  className="hover:text-primary"
+                >
+                  {runDataset.name}
+                </Link>
+              ) : (
+                '—'
+              )}
+            </InfoRow>
+            <InfoRow label="Notes">
+              <span className="text-[#828DA3]">{latestRun.notes || '—'}</span>
+            </InfoRow>
+          </div>
         ) : (
-          <p className="text-sm text-[#586378]">No artifacts attached.</p>
+          <p className="text-sm text-[#586378]">
+            No run is associated with this version.
+          </p>
         )}
       </Panel>
     </div>
