@@ -10,9 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useQuery } from '@apollo/client'
 import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { ML_STUDIO_EVALUATION_DATASETS } from '../../api/ml-studio'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MetricBarChart } from '../metric-chart'
 import { MetricSparkline } from '../metric-sparkline'
@@ -23,10 +25,18 @@ export function ExperimentDetailPage() {
   const { experimentId } = useParams<{ experimentId: string }>()
   const navigate = useNavigate()
 
-  const { experiments, runs: allRuns } = useMlStudioData()
+  const { orgId, experiments, runs: allRuns } = useMlStudioData()
   const experiment = experiments.find((e) => e.id === experimentId)
   const runs = allRuns.filter((r) => r.experimentId === experimentId)
   const [selected, setSelected] = useState<string[]>([])
+
+  const evaluationDatasetsQuery = useQuery(ML_STUDIO_EVALUATION_DATASETS, {
+    skip: !orgId || !experimentId,
+    variables: { orgId: orgId!, experimentId },
+    fetchPolicy: 'cache-and-network',
+  })
+  const evaluationDatasets =
+    evaluationDatasetsQuery.data?.mlEvaluationDatasets ?? []
 
   if (!experiment) {
     return <div className="p-6 text-[#828DA3]">Experiment not found.</div>
@@ -139,6 +149,48 @@ export function ExperimentDetailPage() {
             ))}
           </TableBody>
         </Table>
+      </Panel>
+
+      <Panel
+        title="Datasets"
+        description="Evaluation datasets registered to this experiment."
+      >
+        {evaluationDatasets.length > 0 ? (
+          <Table className="table-fixed">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead className="w-56">Source</TableHead>
+                <TableHead className="w-32">Source type</TableHead>
+                <TableHead className="w-24">Rows</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {evaluationDatasets.map((d) => (
+                <TableRow key={d.id}>
+                  <TableCell>
+                    <div className="truncate font-medium text-[#F4F7FC]">
+                      {d.name}
+                    </div>
+                  </TableCell>
+                  <TableCell className="truncate font-mono text-xs text-[#586378]">
+                    {d.source}
+                  </TableCell>
+                  <TableCell className="truncate text-[#828DA3]">
+                    {d.sourceType}
+                  </TableCell>
+                  <TableCell className="text-[#828DA3]">
+                    {d.rowCount.toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="text-sm text-[#586378]">
+            No evaluation datasets for this experiment.
+          </p>
+        )}
       </Panel>
 
       <Panel

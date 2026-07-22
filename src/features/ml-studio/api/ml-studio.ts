@@ -93,6 +93,24 @@ export const ML_STUDIO_DATASETS = graphql(`
   }
 `)
 
+export const ML_STUDIO_EVALUATION_DATASETS = graphql(`
+  query MlStudioEvaluationDatasets($orgId: ID!, $experimentId: ID) {
+    mlEvaluationDatasets(orgId: $orgId, experimentId: $experimentId) {
+      id
+      name
+      digest
+      source
+      sourceType
+      rowCount
+      schema {
+        name
+        type
+        description
+      }
+    }
+  }
+`)
+
 export const ML_STUDIO_DEPLOYMENTS = graphql(`
   query MlStudioDeployments($orgId: ID!) {
     mlDeployments(orgId: $orgId) {

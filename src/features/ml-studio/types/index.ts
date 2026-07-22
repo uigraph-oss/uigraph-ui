@@ -100,6 +100,16 @@ export type Dataset = {
   schema: SchemaField[]
 }
 
+export type EvaluationDataset = {
+  id: string
+  name: string
+  digest: string
+  source: string
+  sourceType: string
+  rowCount: number
+  schema: SchemaField[]
+}
+
 export type DeploymentStatus =
   'live' | 'rolling-out' | 'rolled-back' | 'stopped'
 
