@@ -30,10 +30,22 @@ export const ML_STUDIO_VERSIONS = graphql(`
       modelId
       version
       description
-      status
-      stage
+      deploymentStatus
       runId
       createdAt
+    }
+  }
+`)
+
+export const ML_VERSION_DEPLOYMENT_UPDATES = graphql(`
+  query MlVersionDeploymentUpdates($orgId: ID!, $versionId: ID!) {
+    mlVersionDeploymentUpdates(orgId: $orgId, versionId: $versionId) {
+      id
+      versionId
+      fromStatus
+      toStatus
+      changedBy
+      changedAt
     }
   }
 `)
@@ -198,6 +210,27 @@ export const UPDATE_ML_DEPLOYMENT = graphql(`
 export const DELETE_ML_DEPLOYMENT = graphql(`
   mutation DeleteMlDeployment($orgId: ID!, $id: ID!) {
     deleteMlDeployment(orgId: $orgId, id: $id)
+  }
+`)
+
+export const CREATE_ML_VERSION_DEPLOYMENT_UPDATE = graphql(`
+  mutation CreateMlVersionDeploymentUpdate(
+    $orgId: ID!
+    $versionId: ID!
+    $toStatus: String!
+  ) {
+    createMlVersionDeploymentUpdate(
+      orgId: $orgId
+      versionId: $versionId
+      toStatus: $toStatus
+    ) {
+      id
+      versionId
+      fromStatus
+      toStatus
+      changedBy
+      changedAt
+    }
   }
 `)
 

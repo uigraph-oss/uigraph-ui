@@ -7,6 +7,7 @@ import { useMemo } from 'react'
 import {
   CREATE_ML_DEPLOYMENT,
   CREATE_ML_FINDING,
+  CREATE_ML_VERSION_DEPLOYMENT_UPDATE,
   DELETE_ML_DEPLOYMENT,
   DELETE_ML_FINDING,
   ML_STUDIO_ARTIFACTS,
@@ -107,8 +108,8 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
         modelId: v.modelId,
         version: v.version,
         description: v.description,
-        status: v.status as ModelVersion['status'],
-        stage: v.stage as ModelVersion['stage'],
+        deploymentStatus:
+          v.deploymentStatus as ModelVersion['deploymentStatus'],
         runId: v.runId ?? undefined,
         createdAt: v.createdAt ?? '',
       })),
@@ -236,8 +237,18 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     refetchQueries: [{ query: ML_STUDIO_MODELS, variables: { orgId: orgId! } }],
     awaitRefetchQueries: true,
   }
+  const versionRefetch = {
+    refetchQueries: [
+      { query: ML_STUDIO_VERSIONS, variables: { orgId: orgId! } },
+    ],
+    awaitRefetchQueries: true,
+  }
 
   const [updateModel] = useMutation(UPDATE_ML_MODEL, modelRefetch)
+  const [createVersionDeploymentUpdate] = useMutation(
+    CREATE_ML_VERSION_DEPLOYMENT_UPDATE,
+    versionRefetch
+  )
   const [createDeployment] = useMutation(
     CREATE_ML_DEPLOYMENT,
     deploymentRefetch
@@ -276,6 +287,7 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     findings,
     isLoading,
     updateModel,
+    createVersionDeploymentUpdate,
     createDeployment,
     updateDeployment,
     deleteDeployment,

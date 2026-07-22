@@ -26,17 +26,24 @@ export type Model = {
 }
 
 export type VersionStage = 'candidate' | 'staging' | 'production' | 'retired'
-export type VersionStatus = 'draft' | 'released' | 'deprecated'
 
 export type ModelVersion = {
   id: string
   modelId: string
   version: string
   description: string
-  status: VersionStatus
-  stage: VersionStage
+  deploymentStatus: VersionStage
   runId?: string
   createdAt: string
+}
+
+export type VersionDeploymentUpdate = {
+  id: string
+  versionId: string
+  fromStatus?: VersionStage
+  toStatus: VersionStage
+  changedBy: string
+  changedAt: string
 }
 
 export type ExperimentStatus = 'active' | 'concluded' | 'archived'

@@ -45,34 +45,6 @@ export function VersionModal({
             <Textarea placeholder="What changed in this version?" rows={3} />
           </FormField>
 
-          <FormGrid>
-            <FormField label="Status">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="released">Released</SelectItem>
-                  <SelectItem value="deprecated">Deprecated</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-            <FormField label="Stage">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select stage" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="candidate">Candidate</SelectItem>
-                  <SelectItem value="staging">Staging</SelectItem>
-                  <SelectItem value="production">Production</SelectItem>
-                  <SelectItem value="retired">Retired</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-          </FormGrid>
-
           <FormField label="Linked run">
             <Select>
               <SelectTrigger>

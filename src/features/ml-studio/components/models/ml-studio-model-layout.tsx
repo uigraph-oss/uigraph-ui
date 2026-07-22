@@ -16,7 +16,9 @@ import { URLPatternPolyfill } from '@/utils/polyfill'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
+import { deploymentTransitions } from '../../deployment-transitions'
 import { StatusBadge } from '../status-badge'
 
 const modelTabs = [
@@ -42,6 +44,7 @@ export function MlStudioModelLayout({
     selectedVersion,
     setVersionId,
   } = useModelContext()
+  const { orgId, createVersionDeploymentUpdate } = useMlStudioData()
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
@@ -68,10 +71,32 @@ export function MlStudioModelLayout({
             <h1 className="text-xl font-semibold text-[#F4F7FC]">
               {model.name}
             </h1>
-            {selectedVersion && <StatusBadge value={selectedVersion.stage} />}
+            {selectedVersion && (
+              <StatusBadge value={selectedVersion.deploymentStatus} />
+            )}
           </div>
 
           <div className="flex items-center gap-2">
+            {selectedVersion &&
+              deploymentTransitions[selectedVersion.deploymentStatus].map(
+                (t) => (
+                  <Button
+                    key={t.to}
+                    preset={t.to === 'production' ? undefined : 'outline'}
+                    onClick={() =>
+                      void createVersionDeploymentUpdate({
+                        variables: {
+                          orgId: orgId!,
+                          versionId: selectedVersion.id,
+                          toStatus: t.to,
+                        },
+                      })
+                    }
+                  >
+                    {t.label}
+                  </Button>
+                )
+              )}
             <Select
               value={selectedVersionId}
               onValueChange={(value) => void setVersionId(value)}

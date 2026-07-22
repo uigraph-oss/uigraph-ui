@@ -1,4 +1,7 @@
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useMlStudioData } from '../contexts/ml-studio-data-context'
+import { deploymentTransitions } from '../deployment-transitions'
 import type { ModelVersion } from '../types'
 import { StatusBadge } from './status-badge'
 
@@ -18,6 +21,8 @@ export function VersionTimeline({
   selectedVersionId?: string
   onSelect?: (id: string) => void
 }) {
+  const { orgId, createVersionDeploymentUpdate } = useMlStudioData()
+
   const ordered = [...versions].sort(
     (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
   )
@@ -30,12 +35,33 @@ export function VersionTimeline({
             <span
               className={cn(
                 'z-10 mt-1 size-3 rounded-full',
-                dotColor[v.stage] || 'bg-[#586378]'
+                dotColor[v.deploymentStatus] || 'bg-[#586378]'
               )}
             />
             {i < ordered.length - 1 && (
               <span className="absolute top-4 h-full w-px bg-[#2A3242]" />
             )}
+          </div>
+
+          <div className="flex w-40 shrink-0 flex-col gap-1">
+            {deploymentTransitions[v.deploymentStatus].map((t) => (
+              <Button
+                key={t.to}
+                preset="outline"
+                className="h-auto justify-start px-3 py-1.5 text-left text-xs"
+                onClick={() =>
+                  void createVersionDeploymentUpdate({
+                    variables: {
+                      orgId: orgId!,
+                      versionId: v.id,
+                      toStatus: t.to,
+                    },
+                  })
+                }
+              >
+                {t.label}
+              </Button>
+            ))}
           </div>
 
           <button
@@ -48,7 +74,7 @@ export function VersionTimeline({
           >
             <div className="flex items-center justify-between gap-2">
               <span className="font-medium text-[#F4F7FC]">{v.version}</span>
-              <StatusBadge value={v.stage} />
+              <StatusBadge value={v.deploymentStatus} />
             </div>
             <p className="mt-1 text-sm text-[#828DA3]">{v.description}</p>
             <p className="mt-1 text-xs text-[#586378]">

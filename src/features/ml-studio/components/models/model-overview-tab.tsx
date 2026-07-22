@@ -16,6 +16,7 @@ import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
+import { DeploymentHistory } from './deployment-history'
 import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
@@ -138,6 +139,8 @@ export function ModelOverviewTab() {
           </p>
         )}
       </Panel>
+
+      {selectedVersion && <DeploymentHistory versionId={selectedVersion.id} />}
     </div>
   )
 }
