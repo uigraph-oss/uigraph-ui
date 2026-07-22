@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { formatDistanceToNow } from 'date-fns'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -31,9 +32,21 @@ export function ModelsTab() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {models.map((model) => {
-          const prod = versions.find((v) => v.id === model.productionVersionId)
+          const modelVersions = versions.filter((v) => v.modelId === model.id)
+          const prod =
+            modelVersions.find((v) => v.id === model.productionVersionId) ??
+            modelVersions.find((v) => v.deploymentStatus === 'production')
+
+          const kind =
+            model.problemType.charAt(0).toUpperCase() +
+            model.problemType.slice(1) +
+            (model.domain.trim() ? ` · ${model.domain}` : '')
+
+          const activityTs = model.updatedAt || model.createdAt
+          const activityLabel = model.updatedAt ? 'Last updated' : 'Registered'
+
           return (
             <div
               key={model.id}
@@ -42,30 +55,52 @@ export function ModelsTab() {
                 navigate(`/dashboard/ml-studio/models/${model.id}`)
               }
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="truncate font-medium text-[#F4F7FC]">
-                    {model.name}
-                  </div>
-                  <div className="text-[#828DA3] capitalize">
-                    {model.problemType} · {model.domain}
-                  </div>
-                </div>
+              <div className="min-w-0">
+                <h3 className="truncate text-base font-semibold text-[#F4F7FC]">
+                  {model.name}
+                </h3>
+                <p className="mt-0.5 truncate text-sm text-[#828DA3]">{kind}</p>
               </div>
 
-              <p className="line-clamp-2 text-sm text-[#828DA3]">
-                {model.description}
-              </p>
+              {model.description.trim() && (
+                <p className="line-clamp-2 text-sm leading-relaxed text-[#828DA3]">
+                  {model.description}
+                </p>
+              )}
 
-              <div className="border-stock flex items-center justify-between border-t pt-3 text-sm text-[#828DA3]">
-                <span>Production version</span>
-                <span>
-                  {prod ? (
-                    <span className="text-[#F4F7FC]">{prod.version}</span>
-                  ) : (
-                    <span className="text-[#586378]">— no prod version</span>
-                  )}
-                </span>
+              <div className="border-stock mt-auto flex items-end justify-between gap-3 border-t pt-4">
+                <div className="min-w-0">
+                  <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
+                    Production version
+                  </div>
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <span
+                      className={`size-1.5 shrink-0 rounded-full ${
+                        prod ? 'bg-emerald-400' : 'bg-[#586378]'
+                      }`}
+                    />
+                    <span
+                      className={`truncate text-sm font-medium ${
+                        prod ? 'text-[#F4F7FC]' : 'text-[#586378]'
+                      }`}
+                    >
+                      {prod ? prod.version : 'Not deployed'}
+                    </span>
+                  </div>
+                </div>
+
+                {activityTs && (
+                  <div className="shrink-0 text-right">
+                    <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
+                      {activityLabel}
+                    </div>
+                    <div className="mt-1 text-sm text-[#828DA3]">
+                      {formatDistanceToNow(new Date(activityTs), {
+                        addSuffix: true,
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )
