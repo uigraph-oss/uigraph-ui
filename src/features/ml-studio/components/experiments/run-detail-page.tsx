@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -23,8 +22,6 @@ import {
   ML_STUDIO_RUN_ARTIFACTS,
 } from '../../api/ml-studio'
 import { artifactDownloadUrl } from '../../format'
-import { MetricPoint } from '../../types'
-import { MetricLineChart } from '../metric-chart'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
@@ -64,18 +61,12 @@ export function RunDetailPage() {
   })
   const dataset = run?.datasetId ? datasetQuery.data?.mlDataset : undefined
 
-  const [control, activeTab] = useBetterTabs([
-    { id: 'params', label: 'Parameters' },
-    { id: 'metrics', label: 'Metrics' },
-  ])
-
   if (!run) {
     return <div className="p-6 text-[#828DA3]">Run not found.</div>
   }
 
   const parameters = (run.parameters ?? {}) as Record<string, unknown>
   const metrics = (run.metrics ?? {}) as Record<string, number>
-  const series = (run.series ?? {}) as Record<string, MetricPoint[]>
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -112,57 +103,46 @@ export function RunDetailPage() {
       </Panel>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <Panel>
-          <BetterTabController control={control} />
-          <div className="mt-4">
-            {activeTab === 'params' && (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Parameter</TableHead>
-                    <TableHead>Value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Object.entries(parameters).map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell className="text-[#828DA3]">{key}</TableCell>
-                      <TableCell className="font-mono text-[#F4F7FC]">
-                        {String(value)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-            {activeTab === 'metrics' && (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Metric</TableHead>
-                    <TableHead>Value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Object.entries(metrics).map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell className="text-[#828DA3]">{key}</TableCell>
-                      <TableCell className="font-mono text-[#F4F7FC]">
-                        {value}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
+        <Panel title="Parameters">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Parameter</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(parameters).map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell className="text-[#828DA3]">{key}</TableCell>
+                  <TableCell className="font-mono text-[#F4F7FC]">
+                    {String(value)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Panel>
 
-        <Panel
-          title="Time-series metrics"
-          description="Logged per training step."
-        >
-          <MetricLineChart series={series} className="aspect-[4/3] w-full" />
+        <Panel title="Metrics">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Metric</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(metrics).map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell className="text-[#828DA3]">{key}</TableCell>
+                  <TableCell className="font-mono text-[#F4F7FC]">
+                    {value}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Panel>
       </div>
 
