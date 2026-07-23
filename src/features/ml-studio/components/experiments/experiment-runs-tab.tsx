@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -253,11 +254,13 @@ export function ExperimentRunsTab() {
         />
       </div>
 
-      <RunComparisonDialog
-        runs={selectedRuns}
+      <BetterDialogProvider
         open={comparing}
         onOpenChange={setComparing}
-      />
+        className="[--width:72rem]"
+      >
+        <RunComparisonDialog runs={selectedRuns} />
+      </BetterDialogProvider>
     </div>
   )
 }
