@@ -3,12 +3,13 @@
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
 import { useMlStudioData } from '../contexts/ml-studio-data-context'
-import { FormField, FormGrid } from './form-field'
 
 export function ModelVersionSelect({
   modelId,
@@ -21,45 +22,71 @@ export function ModelVersionSelect({
   onModelChange: (modelId: string) => void
   onVersionChange: (versionId: string) => void
 }) {
-  const { models, versions: allVersions } = useMlStudioData()
-  const versions = allVersions.filter((v) => v.modelId === modelId)
+  const { models, versions } = useMlStudioData()
+
+  const selectedValue = versionId
+    ? `ver:${versionId}`
+    : modelId
+      ? `model:${modelId}`
+      : ''
+
+  function handleChange(value: string) {
+    if (value.startsWith('ver:')) {
+      const id = value.slice(4)
+      const version = versions.find((v) => v.id === id)
+      if (version) {
+        onModelChange(version.modelId)
+        onVersionChange(version.id)
+      }
+      return
+    }
+    if (value.startsWith('model:')) {
+      onModelChange(value.slice(6))
+      onVersionChange('')
+      return
+    }
+    onModelChange('')
+    onVersionChange('')
+  }
+
+  const selectedModel = models.find((m) => m.id === modelId)
+  const selectedVersion = versions.find((v) => v.id === versionId)
+  const triggerLabel = selectedModel
+    ? selectedVersion
+      ? `${selectedModel.name} · ${selectedVersion.version}`
+      : `${selectedModel.name} · Any version`
+    : undefined
 
   return (
-    <FormGrid>
-      <FormField label="Model">
-        <Select
-          value={modelId}
-          onValueChange={(value) => {
-            onModelChange(value)
-            onVersionChange('')
-          }}
-        >
-          <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
-            <SelectValue placeholder="Select model" />
-          </SelectTrigger>
-          <SelectContent>
-            {models.map((m) => (
-              <SelectItem key={m.id} value={m.id}>
-                {m.name}
+    <Select value={selectedValue} onValueChange={handleChange}>
+      <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
+        <SelectValue placeholder="Select a model version">
+          {triggerLabel}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {models.map((model) => {
+          const modelVersions = versions.filter((v) => v.modelId === model.id)
+          return (
+            <SelectGroup key={model.id}>
+              <SelectLabel className="text-xs font-semibold text-[#828DA3]">
+                {model.name}
+              </SelectLabel>
+              <SelectItem
+                value={`model:${model.id}`}
+                className="pl-8 text-[#828DA3]"
+              >
+                Any version
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FormField>
-      <FormField label="Version">
-        <Select value={versionId} onValueChange={onVersionChange}>
-          <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
-            <SelectValue placeholder="Select version" />
-          </SelectTrigger>
-          <SelectContent>
-            {versions.map((v) => (
-              <SelectItem key={v.id} value={v.id}>
-                {v.version}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FormField>
-    </FormGrid>
+              {modelVersions.map((v) => (
+                <SelectItem key={v.id} value={`ver:${v.id}`} className="pl-8">
+                  Version {v.version}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          )
+        })}
+      </SelectContent>
+    </Select>
   )
 }

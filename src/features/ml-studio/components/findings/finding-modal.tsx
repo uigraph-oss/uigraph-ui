@@ -7,7 +7,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -154,20 +153,12 @@ export function FindingModal({
               name="modelId"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex flex-col gap-0.5">
-                    <FormLabel>Supports → Model Version</FormLabel>
-                    <FormDescription>
-                      The model version this finding justifies.
-                    </FormDescription>
-                  </div>
+                  <FormLabel>Which model version does this support?</FormLabel>
                   <FormControl>
                     <ModelVersionSelect
                       modelId={field.value}
                       versionId={watch('versionId')}
-                      onModelChange={(value) => {
-                        field.onChange(value)
-                        setValue('versionId', '')
-                      }}
+                      onModelChange={field.onChange}
                       onVersionChange={(value) => setValue('versionId', value)}
                     />
                   </FormControl>
