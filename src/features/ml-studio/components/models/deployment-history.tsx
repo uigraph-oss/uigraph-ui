@@ -1,35 +1,55 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { History } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { ML_VERSION_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
+import { useModelContext } from '../../contexts/model-context'
+import { useProject } from '../../contexts/project-context'
 import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function DeploymentHistory({ versionId }: { versionId: string }) {
   const orgId = useCurrentOrganization()?.id
+  const { projectId } = useProject()
+  const { model } = useModelContext()
+  const navigate = useNavigate()
   const { data } = useQuery(ML_VERSION_DEPLOYMENT_UPDATES, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
     variables: { orgId: orgId!, versionId },
   })
 
-  const updates = [...(data?.mlVersionDeploymentUpdates ?? [])]
-    .sort(
-      (a, b) =>
-        new Date(b.changedAt ?? 0).getTime() -
-        new Date(a.changedAt ?? 0).getTime()
-    )
-    .slice(0, 5)
+  const allUpdates = [...(data?.mlVersionDeploymentUpdates ?? [])].sort(
+    (a, b) =>
+      new Date(b.changedAt ?? 0).getTime() -
+      new Date(a.changedAt ?? 0).getTime()
+  )
+  const updates = allUpdates.slice(0, 5)
 
   return (
     <Panel
       title="Deployment history"
       icon={<History className="size-4" />}
       className="md:col-span-2"
+      action={
+        allUpdates.length > 5 && (
+          <Button
+            preset="outline"
+            onClick={() =>
+              navigate(
+                `/dashboard/ml-studio/projects/${projectId}/models/${model.id}/timeline?section=deployments`
+              )
+            }
+          >
+            View more
+          </Button>
+        )
+      }
     >
       {updates.length > 0 ? (
         <ol className="flex flex-col gap-4">

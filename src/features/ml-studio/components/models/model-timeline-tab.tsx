@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
+import { parseAsString, useQueryState } from 'nuqs'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -26,10 +27,14 @@ const dotColor: Record<string, string> = {
 }
 
 export function ModelTimelineTab() {
-  const [control, activeTab] = useBetterTabs([
-    { id: 'versions', label: 'Versions' },
-    { id: 'deployments', label: 'Deployments' },
-  ])
+  const [section] = useQueryState('section', parseAsString)
+  const [control, activeTab] = useBetterTabs(
+    [
+      { id: 'versions', label: 'Versions' },
+      { id: 'deployments', label: 'Deployments' },
+    ],
+    section === 'deployments' ? 'deployments' : 'versions'
+  )
 
   return (
     <div className="flex flex-col gap-6 p-6">
