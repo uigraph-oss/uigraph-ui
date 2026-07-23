@@ -6,8 +6,22 @@ export type ProblemType =
   | 'embedding'
   | 'other'
 
+export type ProjectType = 'model' | 'training'
+
+export type Project = {
+  id: string
+  name: string
+  type: ProjectType
+  description: string
+  sourceType: string
+  sourceUrl: string
+  team: string
+  email: string
+}
+
 export type Model = {
   id: string
+  projectId?: string
   name: string
   description: string
   domain: string
@@ -50,6 +64,7 @@ export type ExperimentStatus = 'active' | 'concluded' | 'archived'
 
 export type Experiment = {
   id: string
+  projectId?: string
   name: string
   description: string
   status: ExperimentStatus

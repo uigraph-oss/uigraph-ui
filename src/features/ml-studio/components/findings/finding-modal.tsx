@@ -45,10 +45,12 @@ export function FindingModal({
   open,
   onOpenChange,
   finding,
+  projectId,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   finding?: Finding | null
+  projectId?: string
 }) {
   const { orgId, createFinding, updateFinding } = useMlStudioData()
   const isEdit = !!finding
@@ -191,6 +193,7 @@ export function FindingModal({
                       onModelChange={field.onChange}
                       onVersionChange={(value) => setValue('versionId', value)}
                       lockedModelId={isEdit ? finding?.modelId : undefined}
+                      projectId={projectId}
                     />
                   </FormControl>
                   <FormMessage />

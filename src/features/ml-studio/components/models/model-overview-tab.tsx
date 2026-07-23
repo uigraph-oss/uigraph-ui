@@ -21,10 +21,16 @@ import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
   const { selectedVersion } = useModelContext()
-  const { runs, datasets } = useMlStudioData()
+  const { runs, experiments, datasets } = useMlStudioData()
   const navigate = useNavigate()
 
   const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
+  const runExperiment = experiments.find(
+    (e) => e.id === latestRun?.experimentId
+  )
+  const runLink = latestRun
+    ? `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
+    : ''
   const metrics = Object.entries(latestRun?.metrics ?? {})
   const parameters = Object.entries(latestRun?.parameters ?? {})
   const runDataset = datasets.find((d) => d.id === latestRun?.datasetId)
@@ -84,14 +90,7 @@ export function ModelOverviewTab() {
         className="md:col-span-2"
         action={
           latestRun && (
-            <Button
-              preset="outline"
-              onClick={() =>
-                navigate(
-                  `/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
-                )
-              }
-            >
+            <Button preset="outline" onClick={() => navigate(runLink)}>
               Go To {latestRun.name}
             </Button>
           )
@@ -100,10 +99,7 @@ export function ModelOverviewTab() {
         {latestRun ? (
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
             <InfoRow label="Run">
-              <Link
-                to={`/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`}
-                className="hover:text-primary"
-              >
+              <Link to={runLink} className="hover:text-primary">
                 {latestRun.name}
               </Link>
             </InfoRow>

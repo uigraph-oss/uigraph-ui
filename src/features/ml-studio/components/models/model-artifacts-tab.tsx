@@ -17,10 +17,16 @@ import { Panel } from '../panel'
 
 export function ModelArtifactsTab() {
   const { selectedVersion } = useModelContext()
-  const { runs, artifacts: allArtifacts } = useMlStudioData()
+  const { runs, experiments, artifacts: allArtifacts } = useMlStudioData()
   const navigate = useNavigate()
 
   const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
+  const runExperiment = experiments.find(
+    (e) => e.id === latestRun?.experimentId
+  )
+  const runLink = latestRun
+    ? `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
+    : ''
   const artifacts = latestRun
     ? allArtifacts.filter((a) => latestRun.artifactIds.includes(a.id))
     : []
@@ -33,10 +39,7 @@ export function ModelArtifactsTab() {
           latestRun && (
             <>
               Created by{' '}
-              <Link
-                to={`/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`}
-                className="hover:text-primary text-[#F4F7FC]"
-              >
+              <Link to={runLink} className="hover:text-primary text-[#F4F7FC]">
                 {latestRun.name}
               </Link>{' '}
               ·{' '}
@@ -48,14 +51,7 @@ export function ModelArtifactsTab() {
         }
         action={
           latestRun && (
-            <Button
-              preset="outline"
-              onClick={() =>
-                navigate(
-                  `/dashboard/ml-studio/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
-                )
-              }
-            >
+            <Button preset="outline" onClick={() => navigate(runLink)}>
               Go To {latestRun.name}
             </Button>
           )

@@ -38,7 +38,7 @@ export function ModelTimelineTab() {
 
 function VersionsTimeline() {
   const { versions } = useModelContext()
-  const { runs } = useMlStudioData()
+  const { runs, experiments } = useMlStudioData()
 
   const ordered = useMemo(
     () =>
@@ -54,6 +54,9 @@ function VersionsTimeline() {
         <ol className="relative flex flex-col">
           {ordered.map((v, i) => {
             const run = runs.find((r) => r.id === v.runId)
+            const runExperiment = experiments.find(
+              (e) => e.id === run?.experimentId
+            )
             return (
               <li key={v.id} className="relative flex gap-4 pb-6 last:pb-0">
                 <div className="flex flex-col items-center">
@@ -96,7 +99,7 @@ function VersionsTimeline() {
                       <>
                         From run{' '}
                         <Link
-                          to={`/dashboard/ml-studio/experiments/${run.experimentId}/runs/${run.id}`}
+                          to={`/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${run.experimentId}/runs/${run.id}`}
                           className="hover:text-primary text-[#828DA3]"
                         >
                           {run.name}

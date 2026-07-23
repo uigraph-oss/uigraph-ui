@@ -1,9 +1,25 @@
 import { graphql } from '@/api'
 
+export const ML_STUDIO_PROJECTS = graphql(`
+  query MlStudioProjects($orgId: ID!) {
+    mlProjects(orgId: $orgId) {
+      id
+      name
+      type
+      description
+      sourceType
+      sourceUrl
+      team
+      email
+    }
+  }
+`)
+
 export const ML_STUDIO_MODELS = graphql(`
   query MlStudioModels($orgId: ID!) {
     mlModels(orgId: $orgId) {
       id
+      projectId
       name
       description
       domain
@@ -67,6 +83,7 @@ export const ML_STUDIO_EXPERIMENTS = graphql(`
   query MlStudioExperiments($orgId: ID!) {
     mlExperiments(orgId: $orgId) {
       id
+      projectId
       name
       description
       status
@@ -243,6 +260,14 @@ export const CREATE_ML_VERSION_DEPLOYMENT_UPDATE = graphql(`
       toStatus
       changedBy
       changedAt
+    }
+  }
+`)
+
+export const CREATE_ML_PROJECT = graphql(`
+  mutation CreateMlProject($orgId: ID!, $input: CreateMlProjectInput!) {
+    createMlProject(orgId: $orgId, input: $input) {
+      id
     }
   }
 `)

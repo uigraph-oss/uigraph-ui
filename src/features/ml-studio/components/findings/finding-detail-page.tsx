@@ -39,6 +39,7 @@ export function FindingDetailPage() {
 
   const runCount = runs.length
   const model = models.find((m) => m.id === finding.modelId)
+  const modelBase = `/dashboard/ml-studio/projects/${model?.projectId}/models/${finding.modelId}`
   const version = finding.versionId
     ? versions.find((v) => v.id === finding.versionId)
     : undefined
@@ -55,8 +56,8 @@ export function FindingDetailPage() {
             <Link
               to={
                 finding.versionId
-                  ? `/dashboard/ml-studio/models/${finding.modelId}?v=${finding.versionId}`
-                  : `/dashboard/ml-studio/models/${finding.modelId}`
+                  ? `${modelBase}?v=${finding.versionId}`
+                  : modelBase
               }
               className="hover:text-primary font-medium text-[#F4F7FC]"
             >
@@ -100,33 +101,37 @@ export function FindingDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {runs.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell>
-                      <Link
-                        to={`/dashboard/ml-studio/experiments/${r.experimentId}/runs/${r.id}`}
-                        className="hover:text-primary font-medium text-[#F4F7FC]"
-                      >
-                        {r.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge value={r.status} />
-                    </TableCell>
-                    <TableCell>
-                      {experimentById.get(r.experimentId) ? (
+                {runs.map((r) => {
+                  const runExperiment = experimentById.get(r.experimentId)
+                  const experimentBase = `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${r.experimentId}`
+                  return (
+                    <TableRow key={r.id}>
+                      <TableCell>
                         <Link
-                          to={`/dashboard/ml-studio/experiments/${r.experimentId}`}
-                          className="hover:text-primary text-[#828DA3]"
+                          to={`${experimentBase}/runs/${r.id}`}
+                          className="hover:text-primary font-medium text-[#F4F7FC]"
                         >
-                          {experimentById.get(r.experimentId)?.name}
+                          {r.name}
                         </Link>
-                      ) : (
-                        <span className="text-[#586378]">Unknown</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge value={r.status} />
+                      </TableCell>
+                      <TableCell>
+                        {runExperiment ? (
+                          <Link
+                            to={experimentBase}
+                            className="hover:text-primary text-[#828DA3]"
+                          >
+                            {runExperiment.name}
+                          </Link>
+                        ) : (
+                          <span className="text-[#586378]">Unknown</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </div>

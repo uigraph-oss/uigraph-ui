@@ -12,6 +12,7 @@ import { useMemo } from 'react'
 import {
   CREATE_ML_DEPLOYMENT,
   CREATE_ML_FINDING,
+  CREATE_ML_PROJECT,
   CREATE_ML_VERSION_DEPLOYMENT_UPDATE,
   DELETE_ML_DEPLOYMENT,
   DELETE_ML_FINDING,
@@ -22,6 +23,7 @@ import {
   ML_STUDIO_EXPERIMENTS,
   ML_STUDIO_FINDINGS,
   ML_STUDIO_MODELS,
+  ML_STUDIO_PROJECTS,
   ML_STUDIO_RUNS,
   ML_STUDIO_VERSIONS,
   UPDATE_ML_DEPLOYMENT,
@@ -37,6 +39,7 @@ import type {
   MetricPoint,
   Model,
   ModelVersion,
+  Project,
   Run,
 } from '../types'
 
@@ -50,6 +53,11 @@ export type MlActor = {
 export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
   const orgId = useCurrentOrganization()?.id
 
+  const projectsQuery = useQuery(ML_STUDIO_PROJECTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
   const modelsQuery = useQuery(ML_STUDIO_MODELS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -131,10 +139,26 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     }
   }, [members, serviceAccountsQuery.data?.serviceAccounts])
 
+  const projects: Project[] = useMemo(
+    () =>
+      (projectsQuery.data?.mlProjects ?? []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        type: p.type as Project['type'],
+        description: p.description,
+        sourceType: p.sourceType,
+        sourceUrl: p.sourceUrl,
+        team: p.team,
+        email: p.email,
+      })),
+    [projectsQuery.data?.mlProjects]
+  )
+
   const models: Model[] = useMemo(
     () =>
       (modelsQuery.data?.mlModels ?? []).map((m) => ({
         id: m.id,
+        projectId: m.projectId ?? undefined,
         name: m.name,
         description: m.description,
         domain: m.domain,
@@ -173,6 +197,7 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     () =>
       (experimentsQuery.data?.mlExperiments ?? []).map((e) => ({
         id: e.id,
+        projectId: e.projectId ?? undefined,
         name: e.name,
         description: e.description,
         status: e.status as Experiment['status'],
@@ -286,6 +311,12 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     ],
     awaitRefetchQueries: true,
   }
+  const projectRefetch = {
+    refetchQueries: [
+      { query: ML_STUDIO_PROJECTS, variables: { orgId: orgId! } },
+    ],
+    awaitRefetchQueries: true,
+  }
   const modelRefetch = {
     refetchQueries: [{ query: ML_STUDIO_MODELS, variables: { orgId: orgId! } }],
     awaitRefetchQueries: true,
@@ -315,11 +346,13 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     DELETE_ML_DEPLOYMENT,
     deploymentRefetch
   )
+  const [createProject] = useMutation(CREATE_ML_PROJECT, projectRefetch)
   const [createFinding] = useMutation(CREATE_ML_FINDING, findingRefetch)
   const [updateFinding] = useMutation(UPDATE_ML_FINDING, findingRefetch)
   const [deleteFinding] = useMutation(DELETE_ML_FINDING, findingRefetch)
 
   const isLoading =
+    (projectsQuery.loading && !projectsQuery.data) ||
     (modelsQuery.loading && !modelsQuery.data) ||
     (versionsQuery.loading && !versionsQuery.data) ||
     (experimentsQuery.loading && !experimentsQuery.data) ||
@@ -331,6 +364,7 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
 
   return {
     orgId,
+    projects,
     models,
     versions,
     experiments,
@@ -342,6 +376,7 @@ export const [MlStudioDataProvider, useMlStudioData] = createContext(() => {
     members,
     resolveActor,
     isLoading,
+    createProject,
     updateModel,
     createVersionDeploymentUpdate,
     createDeployment,

@@ -7,8 +7,9 @@ import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
+import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { StatusBadge } from '../status-badge'
 
 const experimentTabs = [
@@ -19,7 +20,8 @@ const experimentTabs = [
 ] as const
 
 const tabURLPattern = new URLPatternPolyfill({
-  pathname: '/dashboard/ml-studio/experiments/:experimentId{/:tab}?',
+  pathname:
+    '/dashboard/ml-studio/projects/:projectId/experiments/:experimentId{/:tab}?',
 })
 
 export function MlStudioExperimentLayout({
@@ -28,8 +30,12 @@ export function MlStudioExperimentLayout({
   children: React.ReactNode
 }) {
   const { experiment } = useExperimentContext()
+  const { projects } = useMlStudioData()
+  const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+
+  const project = projects.find((p) => p.id === projectId)
 
   const activeTab = useMemo(() => {
     return tabURLPattern.exec({ pathname })?.pathname.groups.tab || ''
@@ -40,9 +46,12 @@ export function MlStudioExperimentLayout({
       <DashboardHeader
         crumbs={[
           { to: '/dashboard/ml-studio', label: 'ML Studio' },
-          { to: '/dashboard/ml-studio/experiments', label: 'Experiments' },
           {
-            to: `/dashboard/ml-studio/experiments/${experiment.id}`,
+            to: `/dashboard/ml-studio/projects/${projectId}/experiments`,
+            label: project?.name ?? 'Project',
+          },
+          {
+            to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}`,
             label: experiment.name,
           },
         ]}
@@ -59,7 +68,9 @@ export function MlStudioExperimentLayout({
 
           <Button
             preset="outline"
-            onClick={() => navigate('/dashboard/ml-studio/experiments')}
+            onClick={() =>
+              navigate(`/dashboard/ml-studio/projects/${projectId}/experiments`)
+            }
           >
             <ArrowLeftIcon />
             Go to All Experiments
@@ -78,7 +89,7 @@ export function MlStudioExperimentLayout({
               )}
               onClick={() =>
                 navigate(
-                  `/dashboard/ml-studio/experiments/${experiment.id}${tab.id ? `/${tab.id}` : ''}`,
+                  `/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}${tab.id ? `/${tab.id}` : ''}`,
                   { replace: true }
                 )
               }

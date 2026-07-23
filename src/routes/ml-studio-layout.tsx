@@ -7,20 +7,34 @@ import { ModelContextProvider } from '@/features/ml-studio/contexts/model-contex
 import { Navigate, Outlet, useParams } from 'react-router-dom'
 
 export function MlStudioLayout() {
-  const { modelId } = useParams<{ modelId: string }>()
+  const { projectId, modelId } = useParams<{
+    projectId: string
+    modelId: string
+  }>()
 
   if (!modelId) {
-    return <Navigate to="/dashboard/ml-studio/models" replace />
+    return (
+      <Navigate
+        to={`/dashboard/ml-studio/projects/${projectId}/models`}
+        replace
+      />
+    )
   }
 
   return (
     <MlStudioDataProvider>
-      <ModelRoute modelId={modelId} />
+      <ModelRoute projectId={projectId} modelId={modelId} />
     </MlStudioDataProvider>
   )
 }
 
-function ModelRoute({ modelId }: { modelId: string }) {
+function ModelRoute({
+  projectId,
+  modelId,
+}: {
+  projectId?: string
+  modelId: string
+}) {
   const { models, isLoading } = useMlStudioData()
 
   if (isLoading) {
@@ -28,7 +42,12 @@ function ModelRoute({ modelId }: { modelId: string }) {
   }
 
   if (!models.some((m) => m.id === modelId)) {
-    return <Navigate to="/dashboard/ml-studio/models" replace />
+    return (
+      <Navigate
+        to={`/dashboard/ml-studio/projects/${projectId}/models`}
+        replace
+      />
+    )
   }
 
   return (

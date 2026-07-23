@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/table'
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import type { VersionStage } from '../../types'
@@ -29,7 +30,9 @@ import { StatusBadge } from '../status-badge'
 const stages: VersionStage[] = ['candidate', 'staging', 'production', 'retired']
 
 export function DeploymentsTab() {
-  const { orgId, models, versions } = useMlStudioData()
+  const { projectId } = useParams<{ projectId: string }>()
+  const { orgId, models: allModels, versions } = useMlStudioData()
+  const models = allModels.filter((m) => m.projectId === projectId)
   const { data } = useQuery(ML_STUDIO_DEPLOYMENT_UPDATES, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -54,7 +57,8 @@ export function DeploymentsTab() {
         return { update: u, version, model }
       })
       .filter(({ update, version, model }) => {
-        if (modelFilter !== 'all' && model?.id !== modelFilter) return false
+        if (!model) return false
+        if (modelFilter !== 'all' && model.id !== modelFilter) return false
         if (stageFilter !== 'all' && update.toStatus !== stageFilter)
           return false
         if (query) {

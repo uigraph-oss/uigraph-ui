@@ -7,20 +7,34 @@ import {
 import { Navigate, Outlet, useParams } from 'react-router-dom'
 
 export function MlStudioExperimentRouteLayout() {
-  const { experimentId } = useParams<{ experimentId: string }>()
+  const { projectId, experimentId } = useParams<{
+    projectId: string
+    experimentId: string
+  }>()
 
   if (!experimentId) {
-    return <Navigate to="/dashboard/ml-studio/experiments" replace />
+    return (
+      <Navigate
+        to={`/dashboard/ml-studio/projects/${projectId}/experiments`}
+        replace
+      />
+    )
   }
 
   return (
     <MlStudioDataProvider>
-      <ExperimentRoute experimentId={experimentId} />
+      <ExperimentRoute projectId={projectId} experimentId={experimentId} />
     </MlStudioDataProvider>
   )
 }
 
-function ExperimentRoute({ experimentId }: { experimentId: string }) {
+function ExperimentRoute({
+  projectId,
+  experimentId,
+}: {
+  projectId?: string
+  experimentId: string
+}) {
   const { experiments, isLoading } = useMlStudioData()
 
   if (isLoading) {
@@ -28,7 +42,12 @@ function ExperimentRoute({ experimentId }: { experimentId: string }) {
   }
 
   if (!experiments.some((e) => e.id === experimentId)) {
-    return <Navigate to="/dashboard/ml-studio/experiments" replace />
+    return (
+      <Navigate
+        to={`/dashboard/ml-studio/projects/${projectId}/experiments`}
+        replace
+      />
+    )
   }
 
   return (

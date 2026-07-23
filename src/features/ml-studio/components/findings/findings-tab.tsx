@@ -11,14 +11,19 @@ import {
 } from '@/components/ui/table'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { ModelVersionLink } from '../model-version-link'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
   const navigate = useNavigate()
-  const { findings } = useMlStudioData()
+  const { projectId } = useParams<{ projectId: string }>()
+  const { findings: allFindings, models } = useMlStudioData()
+  const projectModelIds = new Set(
+    models.filter((m) => m.projectId === projectId).map((m) => m.id)
+  )
+  const findings = allFindings.filter((f) => projectModelIds.has(f.modelId))
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -55,7 +60,9 @@ export function FindingsTab() {
                 key={f.id}
                 className="cursor-pointer"
                 onClick={() =>
-                  navigate(`/dashboard/ml-studio/findings/${f.id}`)
+                  navigate(
+                    `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
+                  )
                 }
               >
                 <TableCell>
@@ -79,7 +86,11 @@ export function FindingsTab() {
         </Table>
       </div>
 
-      <FindingModal open={modalOpen} onOpenChange={setModalOpen} />
+      <FindingModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        projectId={projectId}
+      />
     </div>
   )
 }

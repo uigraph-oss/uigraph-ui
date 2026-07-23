@@ -1,33 +1,11 @@
 'use client'
 
 import { GridScrollBody } from '@/components/grid-scroll-body'
-import { Button } from '@/components/ui/button'
 import { DashboardHeader } from '@/features/dashboard'
-import { cn } from '@/lib/utils'
-import { URLPatternPolyfill } from '@/utils/polyfill'
-import { useMemo } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { MlStudioDataProvider } from '../contexts/ml-studio-data-context'
 
-const rootTabs = [
-  { id: 'models', label: 'Models' },
-  { id: 'experiments', label: 'Experiments' },
-  { id: 'deployments', label: 'Deployments' },
-  { id: 'findings', label: 'Findings' },
-] as const
-
-const tabURLPattern = new URLPatternPolyfill({
-  pathname: '/dashboard/ml-studio/:tab{/*}?',
-})
-
 export function MlStudioRootLayout() {
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-
-  const activeTab = useMemo(() => {
-    return tabURLPattern.exec({ pathname })?.pathname.groups.tab || 'models'
-  }, [pathname])
-
   return (
     <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
       <DashboardHeader
@@ -35,25 +13,6 @@ export function MlStudioRootLayout() {
       />
 
       <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
-        <div className="border-stock flex items-center overflow-x-auto border-b">
-          {rootTabs.map((tab) => (
-            <Button
-              key={tab.id}
-              variant="ghost"
-              className={cn(
-                'h-11 rounded-none bg-transparent px-8 text-[#828DA3] hover:bg-transparent',
-                activeTab === tab.id &&
-                  'text-[#F4F7FC] shadow-[inset_0_-2px_0_0_var(--color-primary)]'
-              )}
-              onClick={() =>
-                navigate(`/dashboard/ml-studio/${tab.id}`, { replace: true })
-              }
-            >
-              {tab.label}
-            </Button>
-          ))}
-        </div>
-
         <GridScrollBody>
           <MlStudioDataProvider>
             <Outlet />

@@ -8,14 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { formatMetric } from '../../format'
 import { StatusBadge } from '../status-badge'
 
 export function ExperimentsTab() {
   const navigate = useNavigate()
-  const { experiments, runs: allRuns } = useMlStudioData()
+  const { projectId } = useParams<{ projectId: string }>()
+  const { experiments: allExperiments, runs: allRuns } = useMlStudioData()
+  const experiments = allExperiments.filter((e) => e.projectId === projectId)
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
@@ -47,7 +49,9 @@ export function ExperimentsTab() {
                   key={exp.id}
                   className="cursor-pointer"
                   onClick={() =>
-                    navigate(`/dashboard/ml-studio/experiments/${exp.id}`)
+                    navigate(
+                      `/dashboard/ml-studio/projects/${projectId}/experiments/${exp.id}`
+                    )
                   }
                 >
                   <TableCell>

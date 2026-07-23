@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
 import { ArrowLeftIcon, ChevronDownIcon } from 'lucide-react'
 import { useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
 import { deploymentTransitions } from '../../deployment-transitions'
@@ -35,7 +35,7 @@ const modelTabs = [
 ] as const
 
 const tabURLPattern = new URLPatternPolyfill({
-  pathname: '/dashboard/ml-studio/models/:modelId{/:tab}?',
+  pathname: '/dashboard/ml-studio/projects/:projectId/models/:modelId{/:tab}?',
 })
 
 export function MlStudioModelLayout({
@@ -51,9 +51,12 @@ export function MlStudioModelLayout({
     selectedVersion,
     setVersionId,
   } = useModelContext()
-  const { orgId, createVersionDeploymentUpdate } = useMlStudioData()
+  const { orgId, projects, createVersionDeploymentUpdate } = useMlStudioData()
+  const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+
+  const project = projects.find((p) => p.id === projectId)
 
   const activeTab = useMemo(() => {
     return tabURLPattern.exec({ pathname })?.pathname.groups.tab || ''
@@ -64,9 +67,12 @@ export function MlStudioModelLayout({
       <DashboardHeader
         crumbs={[
           { to: '/dashboard/ml-studio', label: 'ML Studio' },
-          { to: '/dashboard/ml-studio/models', label: 'Models' },
           {
-            to: `/dashboard/ml-studio/models/${model.id}`,
+            to: `/dashboard/ml-studio/projects/${projectId}/models`,
+            label: project?.name ?? 'Project',
+          },
+          {
+            to: `/dashboard/ml-studio/projects/${projectId}/models/${model.id}`,
             label: model.name,
           },
         ]}
@@ -172,7 +178,9 @@ export function MlStudioModelLayout({
             </Select>
             <Button
               preset="outline"
-              onClick={() => navigate('/dashboard/ml-studio/models')}
+              onClick={() =>
+                navigate(`/dashboard/ml-studio/projects/${projectId}/models`)
+              }
             >
               <ArrowLeftIcon />
               Go To Model Registry
@@ -192,7 +200,7 @@ export function MlStudioModelLayout({
               )}
               onClick={() =>
                 navigate(
-                  `/dashboard/ml-studio/models/${model.id}${tab.id ? `/${tab.id}` : ''}`,
+                  `/dashboard/ml-studio/projects/${projectId}/models/${model.id}${tab.id ? `/${tab.id}` : ''}`,
                   { replace: true }
                 )
               }

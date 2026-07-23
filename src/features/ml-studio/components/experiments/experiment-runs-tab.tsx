@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric } from '../../format'
 import { MetricSparkline } from '../metric-sparkline'
@@ -21,6 +21,7 @@ import { RunComparisonDialog } from './run-comparison-dialog'
 
 export function ExperimentRunsTab() {
   const { experiment, runs } = useExperimentContext()
+  const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const [selected, setSelected] = useState<string[]>([])
   const [comparing, setComparing] = useState(false)
@@ -74,7 +75,7 @@ export function ExperimentRunsTab() {
                 className="cursor-pointer"
                 onClick={() =>
                   navigate(
-                    `/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`
+                    `/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${run.id}`
                   )
                 }
               >
@@ -86,7 +87,7 @@ export function ExperimentRunsTab() {
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Link
-                    to={`/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`}
+                    to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${run.id}`}
                     className="hover:text-primary font-medium text-[#F4F7FC]"
                   >
                     {run.name}

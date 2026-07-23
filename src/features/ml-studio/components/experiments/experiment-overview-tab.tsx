@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { format } from 'date-fns'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric } from '../../format'
 import type { RunStatus } from '../../types'
@@ -38,6 +38,7 @@ const runStatusLabels: Record<RunStatus, string> = {
 
 export function ExperimentOverviewTab() {
   const { experiment, runs } = useExperimentContext()
+  const { projectId } = useParams<{ projectId: string }>()
 
   const statusCounts = runs.reduce<Record<string, number>>((acc, run) => {
     acc[run.status] = (acc[run.status] ?? 0) + 1
@@ -174,7 +175,7 @@ export function ExperimentOverviewTab() {
                   <TableCell className="text-[#586378]">{index + 1}</TableCell>
                   <TableCell>
                     <Link
-                      to={`/dashboard/ml-studio/experiments/${experiment.id}/runs/${run.id}`}
+                      to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${run.id}`}
                       className="hover:text-primary font-medium text-[#F4F7FC]"
                     >
                       {run.name}

@@ -20,9 +20,8 @@ export function ModelVersionLink({
     return <span className="text-[#586378]">—</span>
   }
 
-  const to = versionId
-    ? `/dashboard/ml-studio/models/${modelId}?v=${versionId}`
-    : `/dashboard/ml-studio/models/${modelId}`
+  const base = `/dashboard/ml-studio/projects/${model.projectId}/models/${modelId}`
+  const to = versionId ? `${base}?v=${versionId}` : base
 
   return (
     <Link

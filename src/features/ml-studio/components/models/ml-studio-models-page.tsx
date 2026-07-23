@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { ModelModal } from './model-modal'
 
 export function ModelsTab() {
   const navigate = useNavigate()
-  const { models, versions } = useMlStudioData()
+  const { projectId } = useParams<{ projectId: string }>()
+  const { models: allModels, versions } = useMlStudioData()
+  const models = allModels.filter((m) => m.projectId === projectId)
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -52,7 +54,9 @@ export function ModelsTab() {
               key={model.id}
               className="border-stock bg-card hover:border-primary/50 flex cursor-pointer flex-col gap-4 rounded-xl border p-5 transition-colors"
               onClick={() =>
-                navigate(`/dashboard/ml-studio/models/${model.id}`)
+                navigate(
+                  `/dashboard/ml-studio/projects/${projectId}/models/${model.id}`
+                )
               }
             >
               <div className="min-w-0">

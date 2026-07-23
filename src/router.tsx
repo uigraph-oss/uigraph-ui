@@ -43,6 +43,21 @@ const MlStudioRootLayout = lazy(() =>
     (mod) => ({ default: mod.MlStudioRootLayout })
   )
 )
+const ProjectsTab = lazy(() =>
+  import('@/features/ml-studio/components/projects/projects-tab').then(
+    (mod) => ({ default: mod.ProjectsTab })
+  )
+)
+const MlStudioProjectLayout = lazy(() =>
+  import('@/features/ml-studio/components/projects/ml-studio-project-layout').then(
+    (mod) => ({ default: mod.MlStudioProjectLayout })
+  )
+)
+const ProjectIndexRedirect = lazy(() =>
+  import('@/features/ml-studio/components/projects/ml-studio-project-layout').then(
+    (mod) => ({ default: mod.ProjectIndexRedirect })
+  )
+)
 const ModelsTab = lazy(() =>
   import('@/features/ml-studio/components/models/ml-studio-models-page').then(
     (mod) => ({ default: mod.ModelsTab })
@@ -463,7 +478,14 @@ export function AppRoutes() {
           </Route>
 
           <Route path="/dashboard/ml-studio" element={<MlStudioRootLayout />}>
-            <Route index element={<Navigate to="models" replace />} />
+            <Route index element={<ProjectsTab />} />
+          </Route>
+
+          <Route
+            path="/dashboard/ml-studio/projects/:projectId"
+            element={<MlStudioProjectLayout />}
+          >
+            <Route index element={<ProjectIndexRedirect />} />
             <Route path="models" element={<ModelsTab />} />
             <Route path="experiments" element={<ExperimentsTab />} />
             <Route
@@ -476,7 +498,7 @@ export function AppRoutes() {
           </Route>
 
           <Route
-            path="/dashboard/ml-studio/models/:modelId"
+            path="/dashboard/ml-studio/projects/:projectId/models/:modelId"
             element={<MlStudioLayout />}
           >
             <Route index element={<ModelOverviewTab />} />
@@ -486,7 +508,7 @@ export function AppRoutes() {
           </Route>
 
           <Route
-            path="/dashboard/ml-studio/experiments/:experimentId"
+            path="/dashboard/ml-studio/projects/:projectId/experiments/:experimentId"
             element={<MlStudioExperimentRouteLayout />}
           >
             <Route index element={<ExperimentOverviewTab />} />
