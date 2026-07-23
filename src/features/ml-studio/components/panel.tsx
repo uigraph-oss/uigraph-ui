@@ -19,7 +19,7 @@ export function Panel({
   return (
     <div
       className={cn(
-        'border-stock bg-card flex flex-col gap-4 rounded-xl border p-5',
+        'border-stock bg-card flex flex-col gap-4 rounded-xl border px-5 py-4',
         className
       )}
     >
