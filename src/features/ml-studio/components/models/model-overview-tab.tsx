@@ -35,6 +35,17 @@ export function ModelOverviewTab() {
   const metrics = Object.entries(latestRun?.metrics ?? {})
   const parameters = Object.entries(latestRun?.parameters ?? {})
 
+  const lastUpdatedAt = latestRun?.endedAt || latestRun?.startedAt
+  const lastUpdated = lastUpdatedAt ? (
+    <span
+      className="text-xs text-[#586378]"
+      title={format(new Date(lastUpdatedAt), 'PPpp')}
+    >
+      Updated{' '}
+      {formatDistanceToNow(new Date(lastUpdatedAt), { addSuffix: true })}
+    </span>
+  ) : null
+
   const datasetQuery = useQuery(ML_STUDIO_DATASET, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId || !latestRun?.datasetId,
@@ -46,7 +57,7 @@ export function ModelOverviewTab() {
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
       <ModelCard />
 
-      <Panel title="Metrics">
+      <Panel title="Metrics" action={lastUpdated}>
         {metrics.length > 0 ? (
           <div className="grid grid-cols-2 gap-x-8 gap-y-5">
             {metrics.map(([key, value]) => (
@@ -67,7 +78,7 @@ export function ModelOverviewTab() {
         )}
       </Panel>
 
-      <Panel title="Parameters">
+      <Panel title="Parameters" action={lastUpdated}>
         {parameters.length > 0 ? (
           <Table>
             <TableHeader>
