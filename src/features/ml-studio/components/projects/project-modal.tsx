@@ -21,8 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -53,6 +54,12 @@ export function ProjectModal({
   onOpenChange: (open: boolean) => void
 }) {
   const orgId = useCurrentOrganization()?.id
+  const { data: teamsData } = useQuery(TEAMS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const teams = teamsData?.teams ?? []
   const [createProject] = useMutation(CREATE_ML_PROJECT, {
     refetchQueries: ['MlStudioProjects'],
     awaitRefetchQueries: true,
@@ -169,11 +176,18 @@ export function ProjectModal({
                 <FormItem>
                   <FormLabel>Team</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Growth"
-                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                      {...field}
-                    />
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
+                        <SelectValue placeholder="Select team" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {teams.map((team) => (
+                          <SelectItem key={team.id} value={team.name}>
+                            {team.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

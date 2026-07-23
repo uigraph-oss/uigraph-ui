@@ -1,14 +1,7 @@
 'use client'
 
+import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { PlusIcon } from 'lucide-react'
@@ -17,10 +10,37 @@ import { useNavigate } from 'react-router-dom'
 import { ML_STUDIO_PROJECTS } from '../../api/ml-studio'
 import { ProjectModal } from './project-modal'
 
+const AVATAR_COLORS = [
+  '#2563EB',
+  '#0D9488',
+  '#7C3AED',
+  '#D97706',
+  '#DB2777',
+  '#0891B2',
+  '#16A34A',
+  '#9333EA',
+  '#EA580C',
+  '#0369A1',
+]
+
+function getAvatarColor(id: string): string {
+  let hash = 5381
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) + hash + id.charCodeAt(i)) >>> 0
+  }
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length]
+}
+
+function getMonogram(name: string) {
+  const words = name.trim().split(/\s+/)
+  if (words.length >= 2) return `${words[0][0]}${words[1][0]}`.toUpperCase()
+  return name.substring(0, 2).toUpperCase()
+}
+
 export function ProjectsTab() {
   const navigate = useNavigate()
   const orgId = useCurrentOrganization()?.id
-  const { data } = useQuery(ML_STUDIO_PROJECTS, {
+  const { data, loading } = useQuery(ML_STUDIO_PROJECTS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
     variables: { orgId: orgId! },
@@ -43,8 +63,10 @@ export function ProjectsTab() {
         </Button>
       </div>
 
-      {projects.length === 0 ? (
-        <div className="border-stock bg-card flex flex-col items-center gap-3 rounded-xl border px-6 py-16 text-center">
+      {loading && projects.length === 0 ? (
+        <SectionLoader label="Loading projects..." />
+      ) : projects.length === 0 ? (
+        <div className="border-stock flex flex-col items-center gap-3 rounded-[28px] border border-dashed px-6 py-16 text-center">
           <p className="text-sm font-medium text-[#F4F7FC]">No projects yet</p>
           <p className="max-w-sm text-sm text-[#828DA3]">
             Create a project to group your models and experiments, or sync one
@@ -56,46 +78,68 @@ export function ProjectsTab() {
           </Button>
         </div>
       ) : (
-        <div className="border-stock bg-card overflow-hidden rounded-xl border">
-          <Table className="table-fixed [&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-28">Type</TableHead>
-                <TableHead className="w-48">Source</TableHead>
-                <TableHead className="w-40">Team</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {projects.map((project) => (
-                <TableRow
-                  key={project.id}
-                  className="cursor-pointer"
-                  onClick={() =>
-                    navigate(`/dashboard/ml-studio/projects/${project.id}`)
-                  }
-                >
-                  <TableCell>
-                    <div className="truncate font-medium text-[#F4F7FC]">
-                      {project.name}
+        <div
+          className="grid grid-cols-1 gap-4"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          }}
+        >
+          {projects.map((project) => {
+            const avatarColor = getAvatarColor(project.id || project.name)
+            return (
+              <button
+                key={project.id}
+                type="button"
+                onClick={() =>
+                  navigate(`/dashboard/ml-studio/projects/${project.id}`)
+                }
+                className="group flex flex-col overflow-hidden rounded-2xl bg-[#141925] text-left ring-1 ring-[#2A3242] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.25),0_6px_20px_rgba(0,0,0,0.4)] hover:ring-[#015AEB]"
+              >
+                <div className="flex flex-1 flex-col p-5">
+                  <div className="mb-4 flex items-start gap-3 pr-6">
+                    <div
+                      className="flex size-10 shrink-0 items-center justify-center rounded-xl text-[12px] font-bold tracking-wider"
+                      style={{
+                        backgroundColor: `${avatarColor}18`,
+                        color: avatarColor,
+                      }}
+                    >
+                      {getMonogram(project.name)}
                     </div>
-                    <div className="truncate text-sm text-[#828DA3]">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-[14px] leading-5 font-semibold tracking-[-0.01em] text-[#F4F7FC]">
+                        {project.name}
+                      </h3>
+                      {project.sourceUrl && (
+                        <p className="mt-0.5 truncate font-mono text-[11px] text-[#828DA3]">
+                          {project.sourceUrl}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {project.description && (
+                    <p className="mb-3 line-clamp-2 text-[13px] leading-[1.5] text-[#828DA3]">
                       {project.description}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-[#828DA3] capitalize">
-                    {project.type}
-                  </TableCell>
-                  <TableCell className="truncate text-sm text-[#828DA3]">
-                    {project.sourceUrl}
-                  </TableCell>
-                  <TableCell className="truncate text-sm text-[#828DA3]">
-                    {project.team}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    </p>
+                  )}
+
+                  <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-2">
+                    {project.type && (
+                      <span className="inline-flex items-center rounded-md bg-[#1E2533] px-2 py-0.5 text-[11px] font-medium text-[#D2D9E6] capitalize">
+                        {project.type}
+                      </span>
+                    )}
+                    {project.team && (
+                      <span className="inline-flex max-w-[140px] items-center truncate rounded-md bg-[#1E2533] px-2 py-0.5 text-[11px] text-[#828DA3]">
+                        {project.team}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </button>
+            )
+          })}
         </div>
       )}
 
