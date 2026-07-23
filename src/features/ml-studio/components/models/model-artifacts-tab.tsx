@@ -64,7 +64,7 @@ export function ModelArtifactsTab() {
         action={
           latestRun && (
             <Button preset="outline" onClick={() => navigate(runLink)}>
-              Go To {latestRun.name}
+              Go To Training Run
             </Button>
           )
         }

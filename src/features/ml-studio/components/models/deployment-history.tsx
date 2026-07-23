@@ -16,7 +16,13 @@ export function DeploymentHistory({ versionId }: { versionId: string }) {
     variables: { orgId: orgId!, versionId },
   })
 
-  const updates = data?.mlVersionDeploymentUpdates ?? []
+  const updates = [...(data?.mlVersionDeploymentUpdates ?? [])]
+    .sort(
+      (a, b) =>
+        new Date(b.changedAt ?? 0).getTime() -
+        new Date(a.changedAt ?? 0).getTime()
+    )
+    .slice(0, 5)
 
   return (
     <Panel title="Deployment history" className="md:col-span-2">

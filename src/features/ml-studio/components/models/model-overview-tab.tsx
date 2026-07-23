@@ -9,22 +9,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { Link, useNavigate } from 'react-router-dom'
-import { ML_STUDIO_DATASET } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
-import { InfoRow, Panel } from '../panel'
-import { StatusBadge } from '../status-badge'
+import { Panel } from '../panel'
 import { DeploymentHistory } from './deployment-history'
 import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
   const { selectedVersion, selectedRun, selectedRunExperiment } =
     useModelContext()
-  const orgId = useCurrentOrganization()?.id
   const navigate = useNavigate()
 
   const latestRun = selectedRun
@@ -45,13 +40,6 @@ export function ModelOverviewTab() {
       {formatDistanceToNow(new Date(lastUpdatedAt), { addSuffix: true })}
     </span>
   ) : null
-
-  const datasetQuery = useQuery(ML_STUDIO_DATASET, {
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId || !latestRun?.datasetId,
-    variables: { orgId: orgId!, id: latestRun?.datasetId ?? '' },
-  })
-  const runDataset = datasetQuery.data?.mlDataset
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
@@ -103,56 +91,40 @@ export function ModelOverviewTab() {
         )}
       </Panel>
 
-      <Panel
-        title="Training run"
-        className="md:col-span-2"
-        action={
-          latestRun && (
-            <Button preset="outline" onClick={() => navigate(runLink)}>
-              Go To {latestRun.name}
-            </Button>
-          )
-        }
-      >
+      <div className="border-stock bg-card flex items-center gap-4 rounded-xl border px-5 py-3 md:col-span-2">
         {latestRun ? (
-          <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-            <InfoRow label="Run">
-              <Link to={runLink} className="hover:text-primary">
+          <>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#828DA3]">
+              <span className="text-[#586378]">Created from run</span>
+              <Link
+                to={runLink}
+                className="hover:text-primary font-medium text-[#F4F7FC]"
+              >
                 {latestRun.name}
               </Link>
-            </InfoRow>
-            <InfoRow label="Status">
-              <StatusBadge value={latestRun.status} />
-            </InfoRow>
-            <InfoRow label="Created">
+              <span className="text-[#586378]">·</span>
               <span title={format(new Date(latestRun.startedAt), 'PPpp')}>
                 {formatDistanceToNow(new Date(latestRun.startedAt), {
                   addSuffix: true,
                 })}
               </span>
-            </InfoRow>
-            <InfoRow label="Duration">{latestRun.duration}</InfoRow>
-            <InfoRow label="Dataset">
-              {runDataset ? (
-                runDataset.name
-              ) : (
-                <span className="text-[#586378]">—</span>
-              )}
-            </InfoRow>
-            <InfoRow label="Notes">
-              {latestRun.notes ? (
-                <span className="text-[#828DA3]">{latestRun.notes}</span>
-              ) : (
-                <span className="text-[#586378]">—</span>
-              )}
-            </InfoRow>
-          </div>
+              <span className="text-[#586378]">·</span>
+              <span>took {latestRun.duration}</span>
+            </div>
+            <Button
+              preset="outline"
+              className="ml-auto"
+              onClick={() => navigate(runLink)}
+            >
+              Go To Training Run
+            </Button>
+          </>
         ) : (
           <p className="text-sm text-[#586378]">
             No run is associated with this version.
           </p>
         )}
-      </Panel>
+      </div>
 
       {selectedVersion && <DeploymentHistory versionId={selectedVersion.id} />}
     </div>
