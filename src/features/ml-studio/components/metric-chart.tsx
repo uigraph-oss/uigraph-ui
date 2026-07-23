@@ -66,14 +66,44 @@ export function MetricLineChart({
   )
 }
 
+function ClickableTick({
+  x,
+  y,
+  payload,
+  onLabelClick,
+}: {
+  x?: number
+  y?: number
+  payload?: { value: string }
+  onLabelClick: (label: string) => void
+}) {
+  const label = payload?.value ?? ''
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={16}
+      textAnchor="middle"
+      fill="#8B93A7"
+      fontSize={12}
+      className="cursor-pointer hover:fill-[#3B6BFF] hover:underline"
+      onClick={() => onLabelClick(label)}
+    >
+      {label}
+    </text>
+  )
+}
+
 export function MetricTrendChart({
   data,
   metricKeys,
   className,
+  onLabelClick,
 }: {
   data: Record<string, string | number>[]
   metricKeys: string[]
   className?: string
+  onLabelClick?: (label: string) => void
 }) {
   const config: ChartConfig = Object.fromEntries(
     metricKeys.map((k, i) => [
@@ -91,6 +121,11 @@ export function MetricTrendChart({
           tickLine={false}
           axisLine={false}
           tickMargin={12}
+          tick={
+            onLabelClick ? (
+              <ClickableTick onLabelClick={onLabelClick} />
+            ) : undefined
+          }
         />
         <YAxis tickLine={false} axisLine={false} width={40} />
         <ChartTooltip content={<ChartTooltipContent />} />

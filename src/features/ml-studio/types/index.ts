@@ -91,6 +91,8 @@ export type Run = {
   series: Record<string, MetricPoint[]>
   datasetId?: string
   artifactIds: string[]
+  updatedAt?: string
+  syncedAt?: string
 }
 
 export type ArtifactType =
@@ -109,6 +111,8 @@ export type Artifact = {
   uri: string
   size: string
   format: string
+  updatedAt?: string
+  syncedAt?: string
 }
 
 export type DatasetContext = 'training' | 'evaluation'

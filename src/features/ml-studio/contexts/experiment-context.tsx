@@ -56,6 +56,8 @@ export const [ExperimentContextProvider, useExperimentContext] = createContext(
           series: (r.series ?? {}) as Record<string, MetricPoint[]>,
           datasetId: r.datasetId ?? undefined,
           artifactIds: [],
+          updatedAt: r.updatedAt ?? undefined,
+          syncedAt: r.syncedAt ?? undefined,
         })),
       [runsQuery.data?.mlRuns]
     )

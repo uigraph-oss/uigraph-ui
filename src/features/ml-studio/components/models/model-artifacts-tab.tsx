@@ -13,8 +13,9 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import { Link, useNavigate } from 'react-router-dom'
-import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/ml-studio'
+import { ML_STUDIO_PROJECT, ML_STUDIO_RUN_ARTIFACTS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
+import { artifactDownloadUrl } from '../../format'
 import { Panel } from '../panel'
 
 export function ModelArtifactsTab() {
@@ -24,6 +25,13 @@ export function ModelArtifactsTab() {
 
   const latestRun = selectedRun
   const runExperiment = selectedRunExperiment
+
+  const projectQuery = useQuery(ML_STUDIO_PROJECT, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runExperiment?.projectId,
+    variables: { orgId: orgId!, id: runExperiment?.projectId ?? '' },
+  })
+  const sourceUrl = projectQuery.data?.mlProject?.sourceUrl
   const runLink = latestRun
     ? `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
     : ''
@@ -69,19 +77,48 @@ export function ModelArtifactsTab() {
                 <TableHead>Type</TableHead>
                 <TableHead>Format</TableHead>
                 <TableHead>Size</TableHead>
+                <TableHead>Synced</TableHead>
+                <TableHead>Download</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {artifacts.map((a) => (
-                <TableRow key={a.id}>
-                  <TableCell className="font-medium text-[#F4F7FC]">
-                    {a.name}
-                  </TableCell>
-                  <TableCell className="text-[#828DA3]">{a.type}</TableCell>
-                  <TableCell className="text-[#828DA3]">{a.format}</TableCell>
-                  <TableCell className="text-[#828DA3]">{a.size}</TableCell>
-                </TableRow>
-              ))}
+              {artifacts.map((a) => {
+                const downloadUrl = artifactDownloadUrl(sourceUrl, a.uri)
+                return (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium text-[#F4F7FC]">
+                      {a.name}
+                    </TableCell>
+                    <TableCell className="text-[#828DA3]">{a.type}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.format}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.size}</TableCell>
+                    <TableCell
+                      className="text-[#828DA3]"
+                      title={a.syncedAt ?? undefined}
+                    >
+                      {a.syncedAt
+                        ? formatDistanceToNow(new Date(a.syncedAt), {
+                            addSuffix: true,
+                          })
+                        : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {downloadUrl ? (
+                        <a
+                          href={downloadUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary hover:underline"
+                        >
+                          Download
+                        </a>
+                      ) : (
+                        <span className="text-[#586378]">—</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         ) : (

@@ -13,23 +13,35 @@ import {
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { format } from 'date-fns'
+import { format, formatDistanceToNow } from 'date-fns'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   ML_STUDIO_DATASET,
+  ML_STUDIO_PROJECT,
   ML_STUDIO_RUN,
   ML_STUDIO_RUN_ARTIFACTS,
 } from '../../api/ml-studio'
+import { artifactDownloadUrl } from '../../format'
 import { MetricPoint } from '../../types'
 import { MetricLineChart } from '../metric-chart'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function RunDetailPage() {
-  const { runId } = useParams<{ runId: string }>()
+  const { runId, projectId } = useParams<{
+    runId: string
+    projectId: string
+  }>()
   const navigate = useNavigate()
   const orgId = useCurrentOrganization()?.id
+
+  const projectQuery = useQuery(ML_STUDIO_PROJECT, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, id: projectId! },
+  })
+  const sourceUrl = projectQuery.data?.mlProject?.sourceUrl
 
   const runQuery = useQuery(ML_STUDIO_RUN, {
     fetchPolicy: 'cache-and-network',
@@ -86,7 +98,16 @@ export function RunDetailPage() {
           <InfoRow label="Started">
             {run.startedAt ? format(new Date(run.startedAt), 'PPpp') : '—'}
           </InfoRow>
+          <InfoRow label="Ended">
+            {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
+          </InfoRow>
           <InfoRow label="Duration">{run.duration}</InfoRow>
+          <InfoRow label="Last updated">
+            {run.updatedAt ? format(new Date(run.updatedAt), 'PPpp') : '—'}
+          </InfoRow>
+          <InfoRow label="Last synced">
+            {run.syncedAt ? format(new Date(run.syncedAt), 'PPpp') : '—'}
+          </InfoRow>
         </div>
       </Panel>
 
@@ -155,22 +176,51 @@ export function RunDetailPage() {
                 <TableHead>Format</TableHead>
                 <TableHead>Size</TableHead>
                 <TableHead>URI</TableHead>
+                <TableHead>Synced</TableHead>
+                <TableHead>Download</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {artifacts.map((a) => (
-                <TableRow key={a.id}>
-                  <TableCell className="font-medium text-[#F4F7FC]">
-                    {a.name}
-                  </TableCell>
-                  <TableCell className="text-[#828DA3]">{a.type}</TableCell>
-                  <TableCell className="text-[#828DA3]">{a.format}</TableCell>
-                  <TableCell className="text-[#828DA3]">{a.size}</TableCell>
-                  <TableCell className="font-mono text-xs text-[#586378]">
-                    {a.uri}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {artifacts.map((a) => {
+                const downloadUrl = artifactDownloadUrl(sourceUrl, a.uri)
+                return (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium text-[#F4F7FC]">
+                      {a.name}
+                    </TableCell>
+                    <TableCell className="text-[#828DA3]">{a.type}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.format}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.size}</TableCell>
+                    <TableCell className="font-mono text-xs text-[#586378]">
+                      {a.uri}
+                    </TableCell>
+                    <TableCell
+                      className="text-sm text-[#828DA3]"
+                      title={a.syncedAt ?? undefined}
+                    >
+                      {a.syncedAt
+                        ? formatDistanceToNow(new Date(a.syncedAt), {
+                            addSuffix: true,
+                          })
+                        : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {downloadUrl ? (
+                        <a
+                          href={downloadUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary hover:underline"
+                        >
+                          Download
+                        </a>
+                      ) : (
+                        <span className="text-[#586378]">—</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         ) : (

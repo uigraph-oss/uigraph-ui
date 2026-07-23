@@ -10,6 +10,11 @@ export const ML_STUDIO_PROJECTS = graphql(`
       sourceType
       sourceUrl
       teamId
+      stats {
+        modelCount
+        experimentCount
+        runCount
+      }
     }
   }
 `)
@@ -185,6 +190,8 @@ export const ML_STUDIO_RUN = graphql(`
       metrics
       datasetId
       series
+      updatedAt
+      syncedAt
     }
   }
 `)
@@ -204,6 +211,8 @@ export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
       metrics
       datasetId
       series
+      updatedAt
+      syncedAt
     }
   }
 `)
@@ -223,6 +232,8 @@ export const ML_STUDIO_RUNS = graphql(`
       metrics
       datasetId
       series
+      updatedAt
+      syncedAt
     }
   }
 `)
@@ -237,6 +248,8 @@ export const ML_STUDIO_ARTIFACTS = graphql(`
       uri
       size
       format
+      updatedAt
+      syncedAt
     }
   }
 `)
@@ -251,6 +264,8 @@ export const ML_STUDIO_RUN_ARTIFACTS = graphql(`
       uri
       size
       format
+      updatedAt
+      syncedAt
     }
   }
 `)

@@ -22,6 +22,40 @@ import { useNavigate } from 'react-router-dom'
 import { ML_STUDIO_PROJECTS } from '../../api/ml-studio'
 import { ProjectModal } from './project-modal'
 
+// Type → accent color: semantic, tells you what kind of project this is
+const TYPE_COLORS: Record<string, string> = {
+  model: '#2563EB', // blue
+  training: '#7C3AED', // violet
+  inference: '#0891B2', // cyan
+  evaluation: '#16A34A', // green
+  dataset: '#D97706', // amber
+  research: '#DB2777', // pink
+  experiment: '#EA580C', // orange
+}
+
+function getTypeColor(type: string | null | undefined): string {
+  if (!type) return '#94A3B8'
+  return TYPE_COLORS[type.toLowerCase()] ?? '#94A3B8'
+}
+
+// Each project type surfaces different work, so show only the metrics that
+// actually mean something there — a model project has models, a training
+// project has experiments and runs.
+function getProjectMetrics(
+  type: string | null | undefined,
+  stats: { modelCount: number; experimentCount: number; runCount: number }
+): { value: number; label: string }[] {
+  const models = { value: stats.modelCount, label: 'Models' }
+  const experiments = { value: stats.experimentCount, label: 'Experiments' }
+  const runs = { value: stats.runCount, label: 'Runs' }
+
+  const key = type?.toLowerCase()
+  if (key === 'model') return [models]
+  if (key === 'training' || key === 'experiment') return [experiments, runs]
+
+  return [models, experiments, runs].filter((m) => m.value > 0)
+}
+
 const AVATAR_COLORS = [
   '#2563EB',
   '#0D9488',
@@ -75,7 +109,7 @@ export function ProjectsTab() {
     skip: !orgId,
     variables: { orgId: orgId! },
   })
-  const projects = data?.mlProjects ?? []
+  const projects = useMemo(() => data?.mlProjects ?? [], [data?.mlProjects])
   const { data: teamsData } = useQuery(TEAMS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -228,6 +262,15 @@ export function ProjectsTab() {
           >
             {filtered.map((project) => {
               const avatarColor = getAvatarColor(project.id || project.name)
+              const bandColor = getTypeColor(project.type)
+              const teamName = project.teamId
+                ? teamNameById.get(project.teamId)
+                : undefined
+              const metrics = getProjectMetrics(project.type, {
+                modelCount: project.stats?.modelCount ?? 0,
+                experimentCount: project.stats?.experimentCount ?? 0,
+                runCount: project.stats?.runCount ?? 0,
+              })
               return (
                 <button
                   key={project.id}
@@ -264,24 +307,54 @@ export function ProjectsTab() {
                       </div>
                     </div>
 
-                    {project.description && (
-                      <p className="mb-3 line-clamp-2 text-[13px] leading-[1.5] text-[#828DA3]">
-                        {project.description}
-                      </p>
-                    )}
+                    {/* Reserve two lines so cards align whether the
+                        description is long, short, or missing */}
+                    <p className="mb-3 line-clamp-2 min-h-[39px] text-[13px] leading-[1.5] text-[#828DA3]">
+                      {project.description}
+                    </p>
 
-                    <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-2">
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
                       {project.type && (
-                        <span className="inline-flex items-center rounded-md bg-[#1E2533] px-2 py-0.5 text-[11px] font-medium text-[#D2D9E6] capitalize">
+                        <span
+                          className="inline-flex items-center rounded-md px-2 py-1 text-[11px] leading-none font-medium capitalize"
+                          style={{
+                            backgroundColor: `${bandColor}1F`,
+                            color: bandColor,
+                          }}
+                        >
                           {project.type}
                         </span>
                       )}
-                      {project.teamId && teamNameById.get(project.teamId) && (
-                        <span className="inline-flex max-w-[140px] items-center truncate rounded-md bg-[#1E2533] px-2 py-0.5 text-[11px] text-[#828DA3]">
-                          {teamNameById.get(project.teamId)}
+                      {teamName && (
+                        <span className="inline-flex max-w-[140px] items-center truncate rounded-md px-2 py-1 text-[11px] leading-none font-medium text-[#9AA6BC] ring-1 ring-[#2A3242] ring-inset">
+                          {teamName}
                         </span>
                       )}
                     </div>
+
+                    {/* Type-aware metrics — only what's meaningful for this project */}
+                    {metrics.length > 0 && (
+                      <div className="mt-auto flex items-center gap-5 border-t border-[#2A3242] pt-4">
+                        {metrics.map(({ value, label }) => (
+                          <div
+                            key={label}
+                            className="flex items-baseline gap-1.5"
+                          >
+                            <span
+                              className="text-[16px] leading-none font-bold tracking-tight tabular-nums"
+                              style={{
+                                color: value > 0 ? bandColor : '#586378',
+                              }}
+                            >
+                              {value}
+                            </span>
+                            <span className="text-[12px] text-[#828DA3]">
+                              {label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </button>
               )

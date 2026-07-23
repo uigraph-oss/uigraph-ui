@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { formatDistanceToNow } from 'date-fns'
 import { GitCompareIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -66,6 +67,7 @@ export function ExperimentRunsTab() {
               <TableHead>{primaryLabel}</TableHead>
               <TableHead>Loss trend</TableHead>
               <TableHead>Duration</TableHead>
+              <TableHead>Synced</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -109,6 +111,16 @@ export function ExperimentRunsTab() {
                 </TableCell>
                 <TableCell className="text-sm text-[#828DA3]">
                   {run.duration}
+                </TableCell>
+                <TableCell
+                  className="text-sm text-[#828DA3]"
+                  title={run.syncedAt ?? undefined}
+                >
+                  {run.syncedAt
+                    ? formatDistanceToNow(new Date(run.syncedAt), {
+                        addSuffix: true,
+                      })
+                    : '—'}
                 </TableCell>
               </TableRow>
             ))}
