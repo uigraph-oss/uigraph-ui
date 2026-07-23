@@ -1,5 +1,6 @@
 'use client'
 
+import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -17,7 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useQuery } from '@apollo/client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import type { VersionStage } from '../../types'
@@ -38,6 +39,8 @@ export function DeploymentsTab() {
   const [search, setSearch] = useState('')
   const [modelFilter, setModelFilter] = useState('all')
   const [stageFilter, setStageFilter] = useState('all')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const rows = useMemo(() => {
     const versionById = new Map(versions.map((v) => [v.id, v]))
@@ -69,6 +72,17 @@ export function DeploymentsTab() {
     modelFilter,
     stageFilter,
   ])
+
+  useEffect(() => {
+    setPage(1)
+  }, [search, modelFilter, stageFilter])
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
+  const pagedRows = rows.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  )
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
@@ -125,8 +139,8 @@ export function DeploymentsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.length > 0 ? (
-              rows.map(({ update, version }) => (
+            {pagedRows.length > 0 ? (
+              pagedRows.map(({ update, version }) => (
                 <TableRow key={update.id}>
                   <TableCell>
                     {version ? (
@@ -171,6 +185,43 @@ export function DeploymentsTab() {
             )}
           </TableBody>
         </Table>
+
+        {rows.length > 0 ? (
+          <div className="border-stock flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
+            <p className="text-sm text-[#828DA3]">
+              Showing {(currentPage - 1) * pageSize + 1}–
+              {Math.min(currentPage * pageSize, rows.length)} of {rows.length}
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#828DA3]">Per page</span>
+                <Select
+                  value={String(pageSize)}
+                  onValueChange={(v) => {
+                    setPageSize(Number(v))
+                    setPage(1)
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[70px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[10, 20, 50].map((n) => (
+                      <SelectItem key={n} value={String(n)}>
+                        {n}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <FunctionalPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setPage}
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )
