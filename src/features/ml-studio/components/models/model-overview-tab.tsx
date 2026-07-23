@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { format, formatDistanceToNow } from 'date-fns'
+import { FlaskConical } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
@@ -91,25 +92,36 @@ export function ModelOverviewTab() {
         )}
       </Panel>
 
-      <div className="border-stock bg-card flex items-center gap-4 rounded-xl border px-5 py-3 md:col-span-2">
+      <div className="border-stock bg-card flex items-center gap-4 rounded-xl border p-4 md:col-span-2">
         {latestRun ? (
           <>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#828DA3]">
-              <span className="text-[#586378]">Created from run</span>
-              <Link
-                to={runLink}
-                className="hover:text-primary font-medium text-[#F4F7FC]"
-              >
-                {latestRun.name}
-              </Link>
-              <span className="text-[#586378]">·</span>
-              <span title={format(new Date(latestRun.startedAt), 'PPpp')}>
-                {formatDistanceToNow(new Date(latestRun.startedAt), {
-                  addSuffix: true,
-                })}
-              </span>
-              <span className="text-[#586378]">·</span>
-              <span>took {latestRun.duration}</span>
+            <div className="border-stock flex size-10 shrink-0 items-center justify-center rounded-lg border bg-[#0F1523] text-[#828DA3]">
+              <FlaskConical className="size-5" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#586378]">Created from run</span>
+                <Link
+                  to={runLink}
+                  className="hover:text-primary text-sm font-medium text-[#F4F7FC]"
+                >
+                  {latestRun.name}
+                </Link>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-[#828DA3]">
+                {latestRun.endedAt ? (
+                  <span title={format(new Date(latestRun.endedAt), 'PPpp')}>
+                    Completed{' '}
+                    {formatDistanceToNow(new Date(latestRun.endedAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                ) : (
+                  <span>In progress</span>
+                )}
+                <span className="text-[#586378]">·</span>
+                <span>Training duration {latestRun.duration}</span>
+              </div>
             </div>
             <Button
               preset="outline"
