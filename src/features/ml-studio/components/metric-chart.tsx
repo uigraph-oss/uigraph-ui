@@ -1,5 +1,7 @@
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -57,6 +59,51 @@ export function MetricLineChart({
             stroke={`var(--color-${k})`}
             strokeWidth={2}
             dot={false}
+          />
+        ))}
+      </LineChart>
+    </ChartContainer>
+  )
+}
+
+export function MetricTrendChart({
+  data,
+  metricKeys,
+  className,
+}: {
+  data: Record<string, string | number>[]
+  metricKeys: string[]
+  className?: string
+}) {
+  const config: ChartConfig = Object.fromEntries(
+    metricKeys.map((k, i) => [
+      k,
+      { label: k.replace(/_/g, ' '), color: palette[i % palette.length] },
+    ])
+  )
+
+  return (
+    <ChartContainer config={config} className={className}>
+      <LineChart data={data} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
+        <CartesianGrid vertical={false} stroke="#2A3242" />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={12}
+        />
+        <YAxis tickLine={false} axisLine={false} width={40} />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        {metricKeys.map((k) => (
+          <Line
+            key={k}
+            dataKey={k}
+            type="monotone"
+            stroke={`var(--color-${k})`}
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
           />
         ))}
       </LineChart>

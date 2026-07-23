@@ -1,28 +1,32 @@
 'use client'
 
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { MetricBarChart } from '../metric-chart'
+import { MetricTrendChart } from '../metric-chart'
 import { Panel } from '../panel'
 
 export function ExperimentMetricsTab() {
   const { runs } = useExperimentContext()
 
-  const primaryMetric = Object.keys(runs[0]?.metrics ?? {})[0] ?? ''
-  const primaryLabel = primaryMetric.replace(/_/g, ' ')
-  const barData = runs.map((r) => ({
-    label: r.name,
-    [primaryMetric]: r.metrics[primaryMetric] ?? 0,
-  }))
+  const metricKeys = Array.from(
+    new Set(runs.flatMap((r) => Object.keys(r.metrics ?? {})))
+  )
+  const barData = runs.map((r) => {
+    const row: Record<string, string | number> = { label: r.name }
+    metricKeys.forEach((k) => {
+      row[k] = r.metrics[k] ?? 0
+    })
+    return row
+  })
 
   return (
     <div className="flex flex-col gap-5 p-6">
       <Panel
         title="Scalar metrics by run"
-        description={`${primaryLabel} across runs in this experiment.`}
+        description="Final metric values compared across runs in this experiment."
       >
-        <MetricBarChart
+        <MetricTrendChart
           data={barData}
-          metricKeys={[primaryMetric]}
+          metricKeys={metricKeys}
           className="aspect-[3/1] w-full"
         />
       </Panel>

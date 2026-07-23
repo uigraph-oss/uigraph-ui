@@ -1,12 +1,44 @@
 'use client'
 
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
+import { ML_STUDIO_RUNS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
-import { MetricLineChart } from '../metric-chart'
+import { MetricLineChart, MetricTrendChart } from '../metric-chart'
 import { Panel } from '../panel'
 
 export function ModelMetricsTab() {
-  const { selectedRun } = useModelContext()
+  const { selectedRun, versions } = useModelContext()
+  const orgId = useCurrentOrganization()?.id
+
+  const runsQuery = useQuery(ML_STUDIO_RUNS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+
+  const runsById = new Map((runsQuery.data?.mlRuns ?? []).map((r) => [r.id, r]))
+
+  const versionRows = [...versions]
+    .filter((v) => v.runId && runsById.has(v.runId))
+    .sort((a, b) => Number(a.version) - Number(b.version))
+    .map((v) => ({ version: v, run: runsById.get(v.runId!)! }))
+
+  const versionMetricKeys = Array.from(
+    new Set(versionRows.flatMap(({ run }) => Object.keys(run.metrics ?? {})))
+  )
+
+  const versionBarData = versionRows.map(({ version, run }) => {
+    const metrics = (run.metrics ?? {}) as Record<string, number>
+    const row: Record<string, string | number> = {
+      label: `v${version.version}`,
+    }
+    versionMetricKeys.forEach((k) => {
+      row[k] = metrics[k] ?? 0
+    })
+    return row
+  })
 
   const latestRun = selectedRun
 
@@ -49,6 +81,19 @@ export function ModelMetricsTab() {
               </div>
             ))}
           </div>
+        </Panel>
+      )}
+
+      {versionRows.length > 1 && versionMetricKeys.length > 0 && (
+        <Panel
+          title="Metrics across versions"
+          description="How each metric trends across model versions."
+        >
+          <MetricTrendChart
+            data={versionBarData}
+            metricKeys={versionMetricKeys}
+            className="aspect-[3/1] w-full"
+          />
         </Panel>
       )}
 

@@ -361,3 +361,19 @@ export function DynamoDBIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+export function MLflowIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 32 32" width="1em" height="1em" fill="none" {...props}>
+      <path
+        d="M16 3C8.82 3 3 8.82 3 16c0 2.64.79 5.1 2.14 7.16l4.02-2.32A8.4 8.4 0 0 1 7.6 16 8.4 8.4 0 0 1 16 7.6c1.7 0 3.28.5 4.6 1.37V3.8A12.9 12.9 0 0 0 16 3Z"
+        fill="#0194E2"
+      ></path>
+      <path d="M22.4 6.53v6.09l4.72-3.63-4.72-2.46Z" fill="#43C9ED"></path>
+      <path
+        d="M25 24.4a8.4 8.4 0 0 1-9 2.23v5.17A12.9 12.9 0 0 0 16 32c7.18 0 13-5.82 13-13 0-2.64-.79-5.1-2.14-7.16l-4.02 2.32A8.4 8.4 0 0 1 24.4 16 8.4 8.4 0 0 1 25 24.4Z"
+        fill="#0194E2"
+      ></path>
+    </svg>
+  )
+}
