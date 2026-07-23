@@ -259,7 +259,11 @@ export function ExperimentRunsTab() {
         onOpenChange={setComparing}
         className="[--width:72rem]"
       >
-        <RunComparisonDialog runs={selectedRuns} />
+        <RunComparisonDialog
+          runs={selectedRuns}
+          availableRuns={runs}
+          onToggleRun={toggle}
+        />
       </BetterDialogProvider>
     </div>
   )
