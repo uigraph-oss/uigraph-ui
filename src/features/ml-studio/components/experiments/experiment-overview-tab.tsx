@@ -77,11 +77,18 @@ export function ExperimentOverviewTab() {
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-      <Panel
-        description={experiment.description || 'No description.'}
-        className="md:col-span-2"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-x-12 gap-y-4">
+      <Panel className="md:col-span-2">
+        {experiment.description && (
+          <div className="min-w-0">
+            <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
+              About
+            </div>
+            <p className="mt-1 text-sm leading-relaxed text-[#828DA3]">
+              {experiment.description}
+            </p>
+          </div>
+        )}
+        <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-4">
           <Stat
             label="Started"
             value={format(new Date(experiment.startedAt), 'PP')}
