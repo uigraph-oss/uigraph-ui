@@ -37,7 +37,6 @@ export function ModelCardEditModal({
 
   const [domain, setDomain] = useState('')
   const [problemType, setProblemType] = useState('')
-  const [owners, setOwners] = useState('')
   const [license, setLicense] = useState('')
   const [references, setReferences] = useState('')
   const [intendedUse, setIntendedUse] = useState('')
@@ -52,7 +51,6 @@ export function ModelCardEditModal({
     }
     setDomain(model.domain)
     setProblemType(model.problemType)
-    setOwners(model.owners)
     setLicense(model.license)
     setReferences(model.references.join('\n'))
     setIntendedUse(model.intendedUse)
@@ -73,7 +71,6 @@ export function ModelCardEditModal({
           id: model.id,
           domain,
           problemType,
-          owners,
           license,
           references: references
             .split('\n')
@@ -136,18 +133,6 @@ export function ModelCardEditModal({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-foreground text-sm font-medium">
-                Owners
-              </Label>
-              <Input
-                placeholder="Maya Patel, Ranking team"
-                autoComplete="off"
-                className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
-                value={owners}
-                onChange={(e) => setOwners(e.target.value)}
-              />
-            </div>
             <div className="space-y-2">
               <Label className="text-foreground text-sm font-medium">
                 License

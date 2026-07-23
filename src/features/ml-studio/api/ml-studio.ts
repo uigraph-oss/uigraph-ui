@@ -43,7 +43,6 @@ export const ML_STUDIO_MODEL = graphql(`
       domain
       problemType
       tags
-      owners
       license
       references
       intendedUse
@@ -67,7 +66,6 @@ export const ML_STUDIO_MODELS = graphql(`
       domain
       problemType
       tags
-      owners
       license
       references
       intendedUse
@@ -217,6 +215,44 @@ export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
   }
 `)
 
+export const ML_STUDIO_EXPERIMENT_RUNS_PAGE = graphql(`
+  query MlStudioExperimentRunsPage(
+    $orgId: ID!
+    $experimentId: ID
+    $projectId: ID
+    $search: String
+    $limit: Int
+    $offset: Int
+  ) {
+    mlRunsPage(
+      orgId: $orgId
+      experimentId: $experimentId
+      projectId: $projectId
+      search: $search
+      limit: $limit
+      offset: $offset
+    ) {
+      total
+      runs {
+        id
+        experimentId
+        name
+        status
+        startedAt
+        endedAt
+        duration
+        notes
+        parameters
+        metrics
+        datasetId
+        series
+        updatedAt
+        syncedAt
+      }
+    }
+  }
+`)
+
 export const ML_STUDIO_RUNS = graphql(`
   query MlStudioRuns($orgId: ID!) {
     mlRuns(orgId: $orgId) {
@@ -347,7 +383,6 @@ export const UPDATE_ML_MODEL = graphql(`
     $id: ID!
     $domain: String
     $problemType: String
-    $owners: String
     $license: String
     $references: [String!]
     $intendedUse: String
@@ -360,7 +395,6 @@ export const UPDATE_ML_MODEL = graphql(`
       id: $id
       domain: $domain
       problemType: $problemType
-      owners: $owners
       license: $license
       references: $references
       intendedUse: $intendedUse
@@ -371,7 +405,6 @@ export const UPDATE_ML_MODEL = graphql(`
       id
       domain
       problemType
-      owners
       license
       references
       intendedUse

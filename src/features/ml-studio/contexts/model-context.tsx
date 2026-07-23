@@ -47,7 +47,6 @@ export const [ModelContextProvider, useModelContext] = createContext(
         domain: m.domain,
         problemType: m.problemType as Model['problemType'],
         tags: m.tags,
-        owners: m.owners,
         license: m.license,
         references: m.references,
         intendedUse: m.intendedUse,

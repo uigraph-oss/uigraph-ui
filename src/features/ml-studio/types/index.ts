@@ -26,7 +26,6 @@ export type Model = {
   domain: string
   problemType: ProblemType
   tags: string[]
-  owners: string
   license: string
   references: string[]
   intendedUse: string

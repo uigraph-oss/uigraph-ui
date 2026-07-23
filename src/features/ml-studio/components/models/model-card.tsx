@@ -2,6 +2,8 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { useQuery } from '@apollo/client'
 import {
   AlertTriangle,
   ExternalLink,
@@ -12,6 +14,7 @@ import {
 } from 'lucide-react'
 import { ReactNode, useState } from 'react'
 import { useModelContext } from '../../contexts/model-context'
+import { useProject } from '../../contexts/project-context'
 import { Panel } from '../panel'
 import { ModelCardEditModal } from './model-card-edit-modal'
 
@@ -52,7 +55,17 @@ function Consideration({
 
 export function ModelCard() {
   const { model } = useModelContext()
+  const { orgId, project } = useProject()
   const [editing, setEditing] = useState(false)
+
+  const teamsQuery = useQuery(TEAMS, {
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const teams = teamsQuery.data?.teams ?? []
+  const teamName = project?.teamId
+    ? (teams.find((team) => team.id === project.teamId)?.name ?? '')
+    : ''
 
   return (
     <>
@@ -76,7 +89,7 @@ export function ModelCard() {
           />
           <Stat label="Domain" value={model.domain} />
           <Stat label="License" value={model.license} />
-          <Stat label="Owners" value={model.owners} />
+          <Stat label="Team" value={teamName} />
         </div>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

@@ -13,7 +13,13 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
-import { ArrowLeftIcon } from 'lucide-react'
+import {
+  ArrowLeftIcon,
+  ChartLineIcon,
+  DatabaseIcon,
+  PackageIcon,
+  SlidersHorizontalIcon,
+} from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   ML_STUDIO_DATASET,
@@ -86,24 +92,29 @@ export function RunDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Started">
+          <InfoRow label="Started at">
             {run.startedAt ? format(new Date(run.startedAt), 'PPpp') : '—'}
           </InfoRow>
-          <InfoRow label="Ended">
+          <InfoRow label="Completed at">
             {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
           </InfoRow>
-          <InfoRow label="Duration">{run.duration}</InfoRow>
-          <InfoRow label="Last updated">
-            {run.updatedAt ? format(new Date(run.updatedAt), 'PPpp') : '—'}
-          </InfoRow>
-          <InfoRow label="Last synced">
-            {run.syncedAt ? format(new Date(run.syncedAt), 'PPpp') : '—'}
+          <InfoRow label="Training duration">{run.duration}</InfoRow>
+          <InfoRow label="Updated at">
+            {run.updatedAt ? (
+              <span title={format(new Date(run.updatedAt), 'PPpp')}>
+                {formatDistanceToNow(new Date(run.updatedAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            ) : (
+              '—'
+            )}
           </InfoRow>
         </div>
       </Panel>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <Panel title="Parameters">
+        <Panel title="Parameters" icon={<SlidersHorizontalIcon size={16} />}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -124,7 +135,7 @@ export function RunDetailPage() {
           </Table>
         </Panel>
 
-        <Panel title="Metrics">
+        <Panel title="Metrics" icon={<ChartLineIcon size={16} />}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -146,7 +157,7 @@ export function RunDetailPage() {
         </Panel>
       </div>
 
-      <Panel title="Artifacts">
+      <Panel title="Artifacts" icon={<PackageIcon size={16} />}>
         {artifacts.length > 0 ? (
           <Table>
             <TableHeader>
@@ -208,7 +219,7 @@ export function RunDetailPage() {
         )}
       </Panel>
 
-      <Panel title="Input dataset">
+      <Panel title="Input dataset" icon={<DatabaseIcon size={16} />}>
         {dataset ? (
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-2 gap-5 md:grid-cols-4">

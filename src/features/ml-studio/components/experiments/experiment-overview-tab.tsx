@@ -8,7 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { format } from 'date-fns'
+import { format, formatDistanceToNow } from 'date-fns'
+import { ActivityIcon, GaugeIcon, TrophyIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric } from '../../format'
@@ -18,7 +19,7 @@ import { StatusBadge } from '../status-badge'
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 flex-1 px-4 py-3">
+    <div className="min-w-0 py-1">
       <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
         {label}
       </div>
@@ -68,31 +69,41 @@ export function ExperimentOverviewTab() {
   const leadingRun = scoredRuns[0]
   const topRuns = scoredRuns.slice(0, 5)
 
+  const lastActivityAt = runs
+    .flatMap((r) => [r.endedAt, r.startedAt])
+    .filter((t): t is string => Boolean(t))
+    .sort()
+    .at(-1)
+
   return (
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
       <Panel
         description={experiment.description || 'No description.'}
         className="md:col-span-2"
       >
-        <div className="flex flex-wrap divide-x divide-[var(--color-stock)]">
-          <Stat
-            label="Status"
-            value={
-              experiment.status.charAt(0).toUpperCase() +
-              experiment.status.slice(1)
-            }
-          />
+        <div className="flex flex-wrap items-center justify-between gap-x-12 gap-y-4">
           <Stat
             label="Started"
             value={format(new Date(experiment.startedAt), 'PP')}
           />
           <Stat label="Total runs" value={String(runs.length)} />
           <Stat label="Tracked metrics" value={String(trackedMetrics.length)} />
+          <Stat
+            label="Last activity"
+            value={
+              lastActivityAt
+                ? formatDistanceToNow(new Date(lastActivityAt), {
+                    addSuffix: true,
+                  })
+                : '—'
+            }
+          />
         </div>
       </Panel>
 
       <Panel
         title="Run health"
+        icon={<ActivityIcon size={16} />}
         description="Status breakdown across every run in this experiment."
       >
         {runs.length > 0 ? (
@@ -115,6 +126,7 @@ export function ExperimentOverviewTab() {
 
       <Panel
         title="Leading metric"
+        icon={<GaugeIcon size={16} />}
         description={
           primaryMetric
             ? `${primaryLabel} — ${lowerIsBetter ? 'lower' : 'higher'} is better.`
@@ -151,6 +163,7 @@ export function ExperimentOverviewTab() {
 
       <Panel
         title="Leaderboard"
+        icon={<TrophyIcon size={16} />}
         description={
           leadingRun
             ? `Top runs ranked by ${primaryLabel}.`
