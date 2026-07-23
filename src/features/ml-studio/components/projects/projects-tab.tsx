@@ -16,6 +16,7 @@ import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
+import { format } from 'date-fns'
 import { PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -271,6 +272,9 @@ export function ProjectsTab() {
                 experimentCount: project.stats?.experimentCount ?? 0,
                 runCount: project.stats?.runCount ?? 0,
               })
+              const updatedDate = project.updatedAt
+                ? new Date(project.updatedAt)
+                : null
               return (
                 <button
                   key={project.id}
@@ -296,10 +300,10 @@ export function ProjectsTab() {
                           {project.name}
                         </h3>
                         {project.sourceType && (
-                          <p className="mt-0.5 flex items-center gap-1.5 truncate text-[11px] text-[#828DA3]">
+                          <p className="mt-[3px] flex items-center gap-1.5 truncate text-[11px] text-[#828DA3]">
                             <SourceIcon
                               sourceType={project.sourceType}
-                              className="size-3.5 shrink-0"
+                              className="mb-0.5 size-3 shrink-0"
                             />
                             {getSourceLabel(project.sourceType)}
                           </p>
@@ -333,7 +337,7 @@ export function ProjectsTab() {
                     </div>
 
                     {/* Type-aware metrics — only what's meaningful for this project */}
-                    {metrics.length > 0 && (
+                    {(metrics.length > 0 || updatedDate) && (
                       <div className="mt-auto flex items-center gap-5 border-t border-[#2A3242] pt-4">
                         {metrics.map(({ value, label }) => (
                           <div
@@ -353,6 +357,11 @@ export function ProjectsTab() {
                             </span>
                           </div>
                         ))}
+                        {updatedDate && (
+                          <span className="ml-auto text-[11px] text-[#586378]">
+                            {format(updatedDate, 'd MMM yyyy')}
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>

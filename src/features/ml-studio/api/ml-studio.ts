@@ -10,6 +10,7 @@ export const ML_STUDIO_PROJECTS = graphql(`
       sourceType
       sourceUrl
       teamId
+      updatedAt
       stats {
         modelCount
         experimentCount
@@ -282,6 +283,7 @@ export const ML_STUDIO_ARTIFACTS = graphql(`
       name
       type
       uri
+      downloadUri
       size
       format
       updatedAt
@@ -298,6 +300,7 @@ export const ML_STUDIO_RUN_ARTIFACTS = graphql(`
       name
       type
       uri
+      downloadUri
       size
       format
       updatedAt

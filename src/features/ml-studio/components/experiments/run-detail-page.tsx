@@ -17,34 +17,25 @@ import {
   ArrowLeftIcon,
   ChartLineIcon,
   DatabaseIcon,
+  DownloadIcon,
   PackageIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   ML_STUDIO_DATASET,
-  ML_STUDIO_PROJECT,
   ML_STUDIO_RUN,
   ML_STUDIO_RUN_ARTIFACTS,
 } from '../../api/ml-studio'
-import { artifactDownloadUrl } from '../../format'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function RunDetailPage() {
-  const { runId, projectId } = useParams<{
+  const { runId } = useParams<{
     runId: string
-    projectId: string
   }>()
   const navigate = useNavigate()
   const orgId = useCurrentOrganization()?.id
-
-  const projectQuery = useQuery(ML_STUDIO_PROJECT, {
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId || !projectId,
-    variables: { orgId: orgId!, id: projectId! },
-  })
-  const sourceUrl = projectQuery.data?.mlProject?.sourceUrl
 
   const runQuery = useQuery(ML_STUDIO_RUN, {
     fetchPolicy: 'cache-and-network',
@@ -166,14 +157,12 @@ export function RunDetailPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Format</TableHead>
                 <TableHead>Size</TableHead>
-                <TableHead>URI</TableHead>
                 <TableHead>Synced</TableHead>
-                <TableHead>Download</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {artifacts.map((a) => {
-                const downloadUrl = artifactDownloadUrl(sourceUrl, a.uri)
                 return (
                   <TableRow key={a.id}>
                     <TableCell className="font-medium text-[#F4F7FC]">
@@ -182,9 +171,6 @@ export function RunDetailPage() {
                     <TableCell className="text-[#828DA3]">{a.type}</TableCell>
                     <TableCell className="text-[#828DA3]">{a.format}</TableCell>
                     <TableCell className="text-[#828DA3]">{a.size}</TableCell>
-                    <TableCell className="font-mono text-xs text-[#586378]">
-                      {a.uri}
-                    </TableCell>
                     <TableCell
                       className="text-sm text-[#828DA3]"
                       title={a.syncedAt ?? undefined}
@@ -196,13 +182,14 @@ export function RunDetailPage() {
                         : '—'}
                     </TableCell>
                     <TableCell>
-                      {downloadUrl ? (
+                      {a.downloadUri ? (
                         <a
-                          href={downloadUrl}
+                          href={a.downloadUri}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-primary hover:underline"
+                          className="inline-flex items-center gap-1.5 text-[#B4BECE] hover:text-[#F4F7FC]"
                         >
+                          <DownloadIcon size={14} />
                           Download
                         </a>
                       ) : (

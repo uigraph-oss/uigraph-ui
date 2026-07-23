@@ -108,6 +108,7 @@ export type Artifact = {
   name: string
   type: ArtifactType
   uri: string
+  downloadUri: string
   size: string
   format: string
   updatedAt?: string

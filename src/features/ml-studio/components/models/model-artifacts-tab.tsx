@@ -12,10 +12,10 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
+import { DownloadIcon } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ML_STUDIO_PROJECT, ML_STUDIO_RUN_ARTIFACTS } from '../../api/ml-studio'
+import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
-import { artifactDownloadUrl } from '../../format'
 import { Panel } from '../panel'
 
 export function ModelArtifactsTab() {
@@ -26,12 +26,6 @@ export function ModelArtifactsTab() {
   const latestRun = selectedRun
   const runExperiment = selectedRunExperiment
 
-  const projectQuery = useQuery(ML_STUDIO_PROJECT, {
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId || !runExperiment?.projectId,
-    variables: { orgId: orgId!, id: runExperiment?.projectId ?? '' },
-  })
-  const sourceUrl = projectQuery.data?.mlProject?.sourceUrl
   const runLink = latestRun
     ? `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
     : ''
@@ -78,12 +72,11 @@ export function ModelArtifactsTab() {
                 <TableHead>Format</TableHead>
                 <TableHead>Size</TableHead>
                 <TableHead>Synced</TableHead>
-                <TableHead>Download</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {artifacts.map((a) => {
-                const downloadUrl = artifactDownloadUrl(sourceUrl, a.uri)
                 return (
                   <TableRow key={a.id}>
                     <TableCell className="font-medium text-[#F4F7FC]">
@@ -103,13 +96,14 @@ export function ModelArtifactsTab() {
                         : '—'}
                     </TableCell>
                     <TableCell>
-                      {downloadUrl ? (
+                      {a.downloadUri ? (
                         <a
-                          href={downloadUrl}
+                          href={a.downloadUri}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-primary hover:underline"
+                          className="inline-flex items-center gap-1.5 text-[#B4BECE] hover:text-[#F4F7FC]"
                         >
+                          <DownloadIcon size={14} />
                           Download
                         </a>
                       ) : (
