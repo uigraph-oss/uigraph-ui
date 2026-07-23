@@ -9,40 +9,71 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { Pencil } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import {
+  ML_STUDIO_EXPERIMENT,
+  ML_STUDIO_FINDINGS,
+  ML_STUDIO_MODEL,
+  ML_STUDIO_MODEL_VERSION,
+  ML_STUDIO_RUN,
+} from '../../api/ml-studio'
+import type { Finding } from '../../types'
 import { StatusBadge } from '../status-badge'
 import { FindingModal } from './finding-modal'
 
 export function FindingDetailPage() {
-  const { findingId } = useParams<{ findingId: string }>()
+  const { projectId, findingId } = useParams<{
+    projectId: string
+    findingId: string
+  }>()
+  const orgId = useCurrentOrganization()?.id
 
-  const {
-    findings,
-    runs: allRuns,
-    experiments,
-    models,
-    versions,
-  } = useMlStudioData()
-  const finding = findings.find((f) => f.id === findingId)
+  const findingsQuery = useQuery(ML_STUDIO_FINDINGS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const finding = findingsQuery.data?.mlFindings.find((f) => f.id === findingId)
+
+  const modelQuery = useQuery(ML_STUDIO_MODEL, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !finding?.modelId,
+    variables: { orgId: orgId!, id: finding?.modelId ?? '' },
+  })
+  const versionQuery = useQuery(ML_STUDIO_MODEL_VERSION, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !finding?.versionId,
+    variables: { orgId: orgId!, id: finding?.versionId ?? '' },
+  })
 
   const [editOpen, setEditOpen] = useState(false)
+
+  if (findingsQuery.loading && !finding) {
+    return <div className="p-6 text-[#828DA3]">Loading…</div>
+  }
 
   if (!finding) {
     return <div className="p-6 text-[#828DA3]">Finding not found.</div>
   }
 
-  const runs = allRuns.filter((r) => finding.runIds.includes(r.id))
-  const experimentById = new Map(experiments.map((e) => [e.id, e]))
-
-  const runCount = runs.length
-  const model = models.find((m) => m.id === finding.modelId)
+  const model = modelQuery.data?.mlModel
+  const version = versionQuery.data?.mlModelVersion
+  const runCount = finding.runIds.length
   const modelBase = `/dashboard/ml-studio/projects/${model?.projectId}/models/${finding.modelId}`
-  const version = finding.versionId
-    ? versions.find((v) => v.id === finding.versionId)
-    : undefined
+
+  const findingForModal: Finding = {
+    id: finding.id,
+    modelId: finding.modelId,
+    versionId: finding.versionId ?? undefined,
+    title: finding.title,
+    summary: finding.summary,
+    description: finding.description,
+    runIds: finding.runIds,
+  }
 
   return (
     <div className="flex w-full flex-col gap-6 p-6">
@@ -101,37 +132,9 @@ export function FindingDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {runs.map((r) => {
-                  const runExperiment = experimentById.get(r.experimentId)
-                  const experimentBase = `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${r.experimentId}`
-                  return (
-                    <TableRow key={r.id}>
-                      <TableCell>
-                        <Link
-                          to={`${experimentBase}/runs/${r.id}`}
-                          className="hover:text-primary font-medium text-[#F4F7FC]"
-                        >
-                          {r.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge value={r.status} />
-                      </TableCell>
-                      <TableCell>
-                        {runExperiment ? (
-                          <Link
-                            to={experimentBase}
-                            className="hover:text-primary text-[#828DA3]"
-                          >
-                            {runExperiment.name}
-                          </Link>
-                        ) : (
-                          <span className="text-[#586378]">Unknown</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
+                {finding.runIds.map((runId) => (
+                  <EvidenceRunRow key={runId} runId={runId} />
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -143,8 +146,64 @@ export function FindingDetailPage() {
       <FindingModal
         open={editOpen}
         onOpenChange={setEditOpen}
-        finding={finding}
+        finding={findingForModal}
       />
     </div>
+  )
+}
+
+function EvidenceRunRow({ runId }: { runId: string }) {
+  const orgId = useCurrentOrganization()?.id
+
+  const runQuery = useQuery(ML_STUDIO_RUN, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, id: runId },
+  })
+  const run = runQuery.data?.mlRun
+
+  const experimentQuery = useQuery(ML_STUDIO_EXPERIMENT, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !run?.experimentId,
+    variables: { orgId: orgId!, id: run?.experimentId ?? '' },
+  })
+  const runExperiment = experimentQuery.data?.mlExperiment
+
+  const experimentBase = `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${run?.experimentId}`
+
+  return (
+    <TableRow>
+      <TableCell>
+        {run ? (
+          <Link
+            to={`${experimentBase}/runs/${run.id}`}
+            className="hover:text-primary font-medium text-[#F4F7FC]"
+          >
+            {run.name}
+          </Link>
+        ) : (
+          <span className="text-[#586378]">{runId}</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {run ? (
+          <StatusBadge value={run.status} />
+        ) : (
+          <span className="text-[#586378]">—</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {runExperiment ? (
+          <Link
+            to={experimentBase}
+            className="hover:text-primary text-[#828DA3]"
+          >
+            {runExperiment.name}
+          </Link>
+        ) : (
+          <span className="text-[#586378]">Unknown</span>
+        )}
+      </TableCell>
+    </TableRow>
   )
 }

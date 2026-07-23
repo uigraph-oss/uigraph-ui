@@ -9,14 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { ML_STUDIO_DATASETS } from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 
 export function ExperimentDatasetsTab() {
   const { experimentId } = useExperimentContext()
-  const { orgId } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
 
   const datasetsQuery = useQuery(ML_STUDIO_DATASETS, {
     skip: !orgId || !experimentId,

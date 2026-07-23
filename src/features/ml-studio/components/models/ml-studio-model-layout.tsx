@@ -19,11 +19,13 @@ import {
 import { DashboardHeader } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
+import { useMutation } from '@apollo/client'
 import { ArrowLeftIcon, ChevronDownIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { CREATE_ML_VERSION_DEPLOYMENT_UPDATE } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
+import { useProject } from '../../contexts/project-context'
 import { deploymentTransitions } from '../../deployment-transitions'
 import { StatusBadge } from '../status-badge'
 
@@ -51,12 +53,21 @@ export function MlStudioModelLayout({
     selectedVersion,
     setVersionId,
   } = useModelContext()
-  const { orgId, projects, createVersionDeploymentUpdate } = useMlStudioData()
+  const { orgId, project } = useProject()
+  const [createVersionDeploymentUpdate] = useMutation(
+    CREATE_ML_VERSION_DEPLOYMENT_UPDATE,
+    {
+      refetchQueries: [
+        'MlStudioModelVersions',
+        'MlVersionDeploymentUpdates',
+        'MlStudioDeploymentUpdates',
+      ],
+      awaitRefetchQueries: true,
+    }
+  )
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-
-  const project = projects.find((p) => p.id === projectId)
 
   const activeTab = useMemo(() => {
     return tabURLPattern.exec({ pathname })?.pathname.groups.tab || ''

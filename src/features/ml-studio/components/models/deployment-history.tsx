@@ -1,15 +1,15 @@
 'use client'
 
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ML_VERSION_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 
 export function DeploymentHistory({ versionId }: { versionId: string }) {
-  const { orgId } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
   const { data } = useQuery(ML_VERSION_DEPLOYMENT_UPDATES, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,

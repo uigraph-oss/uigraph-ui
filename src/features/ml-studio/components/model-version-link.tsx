@@ -1,7 +1,9 @@
 'use client'
 
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { useMlStudioData } from '../contexts/ml-studio-data-context'
+import { ML_STUDIO_MODEL, ML_STUDIO_MODEL_VERSION } from '../api/ml-studio'
 
 export function ModelVersionLink({
   modelId,
@@ -10,11 +12,21 @@ export function ModelVersionLink({
   modelId: string
   versionId?: string
 }) {
-  const { models, versions } = useMlStudioData()
-  const model = models.find((m) => m.id === modelId)
-  const version = versionId
-    ? versions.find((v) => v.id === versionId)
-    : undefined
+  const orgId = useCurrentOrganization()?.id
+
+  const modelQuery = useQuery(ML_STUDIO_MODEL, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !modelId,
+    variables: { orgId: orgId!, id: modelId },
+  })
+  const versionQuery = useQuery(ML_STUDIO_MODEL_VERSION, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !versionId,
+    variables: { orgId: orgId!, id: versionId ?? '' },
+  })
+
+  const model = modelQuery.data?.mlModel
+  const version = versionId ? versionQuery.data?.mlModelVersion : undefined
 
   if (!model) {
     return <span className="text-[#586378]">—</span>

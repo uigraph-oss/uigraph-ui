@@ -1,9 +1,9 @@
 import { MlStudioExperimentLayout } from '@/features/ml-studio/components/experiments/ml-studio-experiment-layout'
-import { ExperimentContextProvider } from '@/features/ml-studio/contexts/experiment-context'
 import {
-  MlStudioDataProvider,
-  useMlStudioData,
-} from '@/features/ml-studio/contexts/ml-studio-data-context'
+  ExperimentContextProvider,
+  useExperimentContext,
+} from '@/features/ml-studio/contexts/experiment-context'
+import { ProjectProvider } from '@/features/ml-studio/contexts/project-context'
 import { Navigate, Outlet, useParams } from 'react-router-dom'
 
 export function MlStudioExperimentRouteLayout() {
@@ -22,26 +22,22 @@ export function MlStudioExperimentRouteLayout() {
   }
 
   return (
-    <MlStudioDataProvider>
-      <ExperimentRoute projectId={projectId} experimentId={experimentId} />
-    </MlStudioDataProvider>
+    <ProjectProvider projectId={projectId ?? ''}>
+      <ExperimentContextProvider experimentId={experimentId}>
+        <ExperimentRoute projectId={projectId} />
+      </ExperimentContextProvider>
+    </ProjectProvider>
   )
 }
 
-function ExperimentRoute({
-  projectId,
-  experimentId,
-}: {
-  projectId?: string
-  experimentId: string
-}) {
-  const { experiments, isLoading } = useMlStudioData()
+function ExperimentRoute({ projectId }: { projectId?: string }) {
+  const { available, loading } = useExperimentContext()
 
-  if (isLoading) {
+  if (!available && loading) {
     return <div className="p-6 text-[#828DA3]">Loading…</div>
   }
 
-  if (!experiments.some((e) => e.id === experimentId)) {
+  if (!available) {
     return (
       <Navigate
         to={`/dashboard/ml-studio/projects/${projectId}/experiments`}
@@ -51,10 +47,8 @@ function ExperimentRoute({
   }
 
   return (
-    <ExperimentContextProvider experimentId={experimentId}>
-      <MlStudioExperimentLayout>
-        <Outlet />
-      </MlStudioExperimentLayout>
-    </ExperimentContextProvider>
+    <MlStudioExperimentLayout>
+      <Outlet />
+    </MlStudioExperimentLayout>
   )
 }

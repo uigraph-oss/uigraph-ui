@@ -9,7 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useMlStudioData } from '../contexts/ml-studio-data-context'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
+import { ML_STUDIO_MODELS, ML_STUDIO_VERSIONS } from '../api/ml-studio'
 
 export function ModelVersionSelect({
   modelId,
@@ -26,7 +28,19 @@ export function ModelVersionSelect({
   lockedModelId?: string
   projectId?: string
 }) {
-  const { models: allModels, versions } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const modelsQuery = useQuery(ML_STUDIO_MODELS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const versionsQuery = useQuery(ML_STUDIO_VERSIONS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const allModels = modelsQuery.data?.mlModels ?? []
+  const versions = versionsQuery.data?.mlModelVersions ?? []
   let models = allModels
   if (lockedModelId) {
     models = allModels.filter((m) => m.id === lockedModelId)

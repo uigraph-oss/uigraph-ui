@@ -17,11 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import {
+  ML_STUDIO_DEPLOYMENT_UPDATES,
+  ML_STUDIO_MODEL_VERSIONS,
+  ML_STUDIO_MODELS,
+} from '../../api/ml-studio'
 import type { VersionStage } from '../../types'
 import { MlUser } from '../ml-user'
 import { ModelVersionLink } from '../model-version-link'
@@ -31,12 +35,29 @@ const stages: VersionStage[] = ['candidate', 'staging', 'production', 'retired']
 
 export function DeploymentsTab() {
   const { projectId } = useParams<{ projectId: string }>()
-  const { orgId, models: allModels, versions } = useMlStudioData()
-  const models = allModels.filter((m) => m.projectId === projectId)
+  const orgId = useCurrentOrganization()?.id
+  const modelsQuery = useQuery(ML_STUDIO_MODELS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const versionsQuery = useQuery(ML_STUDIO_MODEL_VERSIONS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const models = useMemo(
+    () => modelsQuery.data?.mlModels ?? [],
+    [modelsQuery.data]
+  )
+  const versions = useMemo(
+    () => versionsQuery.data?.mlModelVersions ?? [],
+    [versionsQuery.data]
+  )
   const { data } = useQuery(ML_STUDIO_DEPLOYMENT_UPDATES, {
     fetchPolicy: 'cache-and-network',
-    skip: !orgId,
-    variables: { orgId: orgId! },
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
   })
 
   const [search, setSearch] = useState('')

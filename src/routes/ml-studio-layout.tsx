@@ -1,9 +1,9 @@
 import { MlStudioModelLayout } from '@/features/ml-studio/components/models/ml-studio-model-layout'
 import {
-  MlStudioDataProvider,
-  useMlStudioData,
-} from '@/features/ml-studio/contexts/ml-studio-data-context'
-import { ModelContextProvider } from '@/features/ml-studio/contexts/model-context'
+  ModelContextProvider,
+  useModelContext,
+} from '@/features/ml-studio/contexts/model-context'
+import { ProjectProvider } from '@/features/ml-studio/contexts/project-context'
 import { Navigate, Outlet, useParams } from 'react-router-dom'
 
 export function MlStudioLayout() {
@@ -22,26 +22,22 @@ export function MlStudioLayout() {
   }
 
   return (
-    <MlStudioDataProvider>
-      <ModelRoute projectId={projectId} modelId={modelId} />
-    </MlStudioDataProvider>
+    <ProjectProvider projectId={projectId ?? ''}>
+      <ModelContextProvider modelId={modelId}>
+        <ModelRoute projectId={projectId} />
+      </ModelContextProvider>
+    </ProjectProvider>
   )
 }
 
-function ModelRoute({
-  projectId,
-  modelId,
-}: {
-  projectId?: string
-  modelId: string
-}) {
-  const { models, isLoading } = useMlStudioData()
+function ModelRoute({ projectId }: { projectId?: string }) {
+  const { available, loading } = useModelContext()
 
-  if (isLoading) {
+  if (!available && loading) {
     return <div className="p-6 text-[#828DA3]">Loading…</div>
   }
 
-  if (!models.some((m) => m.id === modelId)) {
+  if (!available) {
     return (
       <Navigate
         to={`/dashboard/ml-studio/projects/${projectId}/models`}
@@ -51,10 +47,8 @@ function ModelRoute({
   }
 
   return (
-    <ModelContextProvider modelId={modelId}>
-      <MlStudioModelLayout>
-        <Outlet />
-      </MlStudioModelLayout>
-    </ModelContextProvider>
+    <MlStudioModelLayout>
+      <Outlet />
+    </MlStudioModelLayout>
   )
 }

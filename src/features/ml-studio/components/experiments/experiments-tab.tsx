@@ -8,16 +8,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import {
+  ML_STUDIO_EXPERIMENT_RUNS,
+  ML_STUDIO_EXPERIMENTS,
+} from '../../api/ml-studio'
 import { formatMetric } from '../../format'
 import { StatusBadge } from '../status-badge'
 
 export function ExperimentsTab() {
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
-  const { experiments: allExperiments, runs: allRuns } = useMlStudioData()
-  const experiments = allExperiments.filter((e) => e.projectId === projectId)
+  const orgId = useCurrentOrganization()?.id
+  const experimentsQuery = useQuery(ML_STUDIO_EXPERIMENTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const runsQuery = useQuery(ML_STUDIO_EXPERIMENT_RUNS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const experiments = experimentsQuery.data?.mlExperiments ?? []
+  const allRuns = runsQuery.data?.mlRuns ?? []
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
@@ -43,7 +59,11 @@ export function ExperimentsTab() {
             {experiments.map((exp) => {
               const runs = allRuns.filter((r) => r.experimentId === exp.id)
               const latestRun = runs[runs.length - 1]
-              const primaryMetric = Object.keys(latestRun?.metrics ?? {})[0]
+              const metrics = (latestRun?.metrics ?? {}) as Record<
+                string,
+                number
+              >
+              const primaryMetric = Object.keys(metrics)[0]
               return (
                 <TableRow
                   key={exp.id}
@@ -72,7 +92,7 @@ export function ExperimentsTab() {
                     {primaryMetric ? (
                       <>
                         <div className="truncate">
-                          {formatMetric(latestRun.metrics[primaryMetric])}
+                          {formatMetric(metrics[primaryMetric])}
                         </div>
                         <div className="truncate text-xs text-[#586378]">
                           {primaryMetric.replace(/_/g, ' ')}
@@ -83,7 +103,9 @@ export function ExperimentsTab() {
                     )}
                   </TableCell>
                   <TableCell className="text-sm text-[#828DA3]">
-                    {new Date(exp.startedAt).toLocaleDateString()}
+                    {exp.startedAt
+                      ? new Date(exp.startedAt).toLocaleDateString()
+                      : '—'}
                   </TableCell>
                 </TableRow>
               )

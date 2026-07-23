@@ -11,10 +11,17 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { format } from 'date-fns'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import {
+  ML_STUDIO_DATASET,
+  ML_STUDIO_RUN,
+  ML_STUDIO_RUN_ARTIFACTS,
+} from '../../api/ml-studio'
+import { MetricPoint } from '../../types'
 import { MetricLineChart } from '../metric-chart'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
@@ -22,9 +29,29 @@ import { StatusBadge } from '../status-badge'
 export function RunDetailPage() {
   const { runId } = useParams<{ runId: string }>()
   const navigate = useNavigate()
+  const orgId = useCurrentOrganization()?.id
 
-  const { runs, artifacts: allArtifacts, datasets } = useMlStudioData()
-  const run = runs.find((r) => r.id === runId)
+  const runQuery = useQuery(ML_STUDIO_RUN, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, id: runId! },
+  })
+  const run = runQuery.data?.mlRun
+
+  const artifactsQuery = useQuery(ML_STUDIO_RUN_ARTIFACTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, runId },
+  })
+  const artifacts = artifactsQuery.data?.mlArtifacts ?? []
+
+  const datasetQuery = useQuery(ML_STUDIO_DATASET, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !run?.datasetId,
+    variables: { orgId: orgId!, id: run?.datasetId ?? '' },
+  })
+  const dataset = run?.datasetId ? datasetQuery.data?.mlDataset : undefined
+
   const [control, activeTab] = useBetterTabs([
     { id: 'params', label: 'Parameters' },
     { id: 'metrics', label: 'Metrics' },
@@ -34,8 +61,9 @@ export function RunDetailPage() {
     return <div className="p-6 text-[#828DA3]">Run not found.</div>
   }
 
-  const artifacts = allArtifacts.filter((a) => run.artifactIds.includes(a.id))
-  const dataset = datasets.find((d) => d.id === run.datasetId)
+  const parameters = (run.parameters ?? {}) as Record<string, unknown>
+  const metrics = (run.metrics ?? {}) as Record<string, number>
+  const series = (run.series ?? {}) as Record<string, MetricPoint[]>
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -56,7 +84,7 @@ export function RunDetailPage() {
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
           <InfoRow label="Started">
-            {format(new Date(run.startedAt), 'PPpp')}
+            {run.startedAt ? format(new Date(run.startedAt), 'PPpp') : '—'}
           </InfoRow>
           <InfoRow label="Duration">{run.duration}</InfoRow>
         </div>
@@ -75,7 +103,7 @@ export function RunDetailPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Object.entries(run.parameters).map(([key, value]) => (
+                  {Object.entries(parameters).map(([key, value]) => (
                     <TableRow key={key}>
                       <TableCell className="text-[#828DA3]">{key}</TableCell>
                       <TableCell className="font-mono text-[#F4F7FC]">
@@ -95,7 +123,7 @@ export function RunDetailPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Object.entries(run.metrics).map(([key, value]) => (
+                  {Object.entries(metrics).map(([key, value]) => (
                     <TableRow key={key}>
                       <TableCell className="text-[#828DA3]">{key}</TableCell>
                       <TableCell className="font-mono text-[#F4F7FC]">
@@ -113,10 +141,7 @@ export function RunDetailPage() {
           title="Time-series metrics"
           description="Logged per training step."
         >
-          <MetricLineChart
-            series={run.series}
-            className="aspect-[4/3] w-full"
-          />
+          <MetricLineChart series={series} className="aspect-[4/3] w-full" />
         </Panel>
       </div>
 

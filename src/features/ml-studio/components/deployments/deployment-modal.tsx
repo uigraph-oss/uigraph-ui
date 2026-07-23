@@ -12,8 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { CREATE_ML_DEPLOYMENT } from '../../api/ml-studio'
 import { FormField, FormGrid } from '../form-field'
 import { ModelVersionSelect } from '../model-version-select'
 
@@ -24,7 +26,11 @@ export function DeploymentModal({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { orgId, createDeployment } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const [createDeployment] = useMutation(CREATE_ML_DEPLOYMENT, {
+    refetchQueries: ['MlStudioDeploymentUpdates'],
+    awaitRefetchQueries: true,
+  })
   const [modelId, setModelId] = useState('')
   const [versionId, setVersionId] = useState('')
   const [name, setName] = useState('')

@@ -2,7 +2,7 @@
 
 import { ActorAvatar } from '@/components/actor-avatar'
 import { cn } from '@/lib/utils'
-import { useMlStudioData } from '../contexts/ml-studio-data-context'
+import { useMlActors } from '../hooks/use-ml-actors'
 
 export function MlUser({
   identifier,
@@ -11,7 +11,7 @@ export function MlUser({
   identifier?: string | null
   className?: string
 }) {
-  const { resolveActor } = useMlStudioData()
+  const { resolveActor } = useMlActors()
 
   if (!identifier) {
     return <span className="text-[#586378]">—</span>

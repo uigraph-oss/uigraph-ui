@@ -1,18 +1,31 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { ML_STUDIO_MODEL_VERSIONS, ML_STUDIO_MODELS } from '../../api/ml-studio'
 import { ModelModal } from './model-modal'
 
 export function ModelsTab() {
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
-  const { models: allModels, versions } = useMlStudioData()
-  const models = allModels.filter((m) => m.projectId === projectId)
+  const orgId = useCurrentOrganization()?.id
+  const modelsQuery = useQuery(ML_STUDIO_MODELS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const versionsQuery = useQuery(ML_STUDIO_MODEL_VERSIONS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const models = modelsQuery.data?.mlModels ?? []
+  const versions = versionsQuery.data?.mlModelVersions ?? []
   const [modalOpen, setModalOpen] = useState(false)
 
   return (

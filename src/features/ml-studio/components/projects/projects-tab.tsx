@@ -9,15 +9,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { ML_STUDIO_PROJECTS } from '../../api/ml-studio'
 import { ProjectModal } from './project-modal'
 
 export function ProjectsTab() {
   const navigate = useNavigate()
-  const { projects, models, experiments } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const { data } = useQuery(ML_STUDIO_PROJECTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const projects = data?.mlProjects ?? []
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -54,49 +62,38 @@ export function ProjectsTab() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead className="w-28">Type</TableHead>
-                <TableHead className="w-24">Items</TableHead>
                 <TableHead className="w-48">Source</TableHead>
                 <TableHead className="w-40">Team</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projects.map((project) => {
-                const itemCount =
-                  project.type === 'model'
-                    ? models.filter((m) => m.projectId === project.id).length
-                    : experiments.filter((e) => e.projectId === project.id)
-                        .length
-                return (
-                  <TableRow
-                    key={project.id}
-                    className="cursor-pointer"
-                    onClick={() =>
-                      navigate(`/dashboard/ml-studio/projects/${project.id}`)
-                    }
-                  >
-                    <TableCell>
-                      <div className="truncate font-medium text-[#F4F7FC]">
-                        {project.name}
-                      </div>
-                      <div className="truncate text-sm text-[#828DA3]">
-                        {project.description}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-[#828DA3] capitalize">
-                      {project.type}
-                    </TableCell>
-                    <TableCell className="text-[#828DA3]">
-                      {itemCount}
-                    </TableCell>
-                    <TableCell className="truncate text-sm text-[#828DA3]">
-                      {project.sourceUrl}
-                    </TableCell>
-                    <TableCell className="truncate text-sm text-[#828DA3]">
-                      {project.team}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+              {projects.map((project) => (
+                <TableRow
+                  key={project.id}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    navigate(`/dashboard/ml-studio/projects/${project.id}`)
+                  }
+                >
+                  <TableCell>
+                    <div className="truncate font-medium text-[#F4F7FC]">
+                      {project.name}
+                    </div>
+                    <div className="truncate text-sm text-[#828DA3]">
+                      {project.description}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-[#828DA3] capitalize">
+                    {project.type}
+                  </TableCell>
+                  <TableCell className="truncate text-sm text-[#828DA3]">
+                    {project.sourceUrl}
+                  </TableCell>
+                  <TableCell className="truncate text-sm text-[#828DA3]">
+                    {project.team}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>

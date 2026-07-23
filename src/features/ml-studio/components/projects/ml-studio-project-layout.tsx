@@ -13,10 +13,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
-import {
-  MlStudioDataProvider,
-  useMlStudioData,
-} from '../../contexts/ml-studio-data-context'
+import { ProjectProvider, useProject } from '../../contexts/project-context'
 
 const projectTabs = [
   { id: 'models', label: 'Models' },
@@ -30,10 +27,11 @@ const tabURLPattern = new URLPatternPolyfill({
 })
 
 export function MlStudioProjectLayout() {
+  const { projectId } = useParams<{ projectId: string }>()
   return (
-    <MlStudioDataProvider>
+    <ProjectProvider projectId={projectId ?? ''}>
       <ProjectShell />
-    </MlStudioDataProvider>
+    </ProjectProvider>
   )
 }
 
@@ -41,9 +39,7 @@ function ProjectShell() {
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
   const { pathname } = useLocation()
-  const { projects } = useMlStudioData()
-
-  const project = projects.find((p) => p.id === projectId)
+  const { project } = useProject()
 
   const activeTab = useMemo(() => {
     return tabURLPattern.exec({ pathname })?.pathname.groups.tab || 'models'
@@ -94,9 +90,11 @@ function ProjectShell() {
 
 export function ProjectIndexRedirect() {
   const { projectId } = useParams<{ projectId: string }>()
-  const { projects } = useMlStudioData()
+  const { project, loading } = useProject()
 
-  const project = projects.find((p) => p.id === projectId)
+  if (!project && loading) {
+    return <div className="p-6 text-[#828DA3]">Loading…</div>
+  }
 
   if (project?.type === 'training') {
     return (

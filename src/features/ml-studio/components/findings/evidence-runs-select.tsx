@@ -15,9 +15,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { ML_STUDIO_EXPERIMENTS, ML_STUDIO_RUNS } from '../../api/ml-studio'
 import { StatusBadge } from '../status-badge'
 
 export function EvidenceRunsSelect({
@@ -27,7 +29,22 @@ export function EvidenceRunsSelect({
   value: string[]
   onChange: (runIds: string[]) => void
 }) {
-  const { runs, experiments } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const runsQuery = useQuery(ML_STUDIO_RUNS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const experimentsQuery = useQuery(ML_STUDIO_EXPERIMENTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const runs = useMemo(() => runsQuery.data?.mlRuns ?? [], [runsQuery.data])
+  const experiments = useMemo(
+    () => experimentsQuery.data?.mlExperiments ?? [],
+    [experimentsQuery.data]
+  )
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
 

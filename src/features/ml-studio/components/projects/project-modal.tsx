@@ -21,11 +21,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { CREATE_ML_PROJECT } from '../../api/ml-studio'
 
 const projectSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -50,7 +52,11 @@ export function ProjectModal({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { orgId, createProject } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const [createProject] = useMutation(CREATE_ML_PROJECT, {
+    refetchQueries: ['MlStudioProjects'],
+    awaitRefetchQueries: true,
+  })
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),

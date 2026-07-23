@@ -14,8 +14,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { UPDATE_ML_MODEL } from '../../api/ml-studio'
 import { Model } from '../../types'
 
 export function ModelCardEditModal({
@@ -27,7 +29,11 @@ export function ModelCardEditModal({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { orgId, updateModel } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const [updateModel] = useMutation(UPDATE_ML_MODEL, {
+    refetchQueries: ['MlStudioModel', 'MlStudioModels'],
+    awaitRefetchQueries: true,
+  })
 
   const [domain, setDomain] = useState('')
   const [problemType, setProblemType] = useState('')

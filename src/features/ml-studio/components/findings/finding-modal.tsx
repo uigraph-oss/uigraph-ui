@@ -14,11 +14,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { CREATE_ML_FINDING, UPDATE_ML_FINDING } from '../../api/ml-studio'
 import type { Finding } from '../../types'
 import { ModelVersionSelect } from '../model-version-select'
 import { EvidenceRunsSelect } from './evidence-runs-select'
@@ -52,7 +54,15 @@ export function FindingModal({
   finding?: Finding | null
   projectId?: string
 }) {
-  const { orgId, createFinding, updateFinding } = useMlStudioData()
+  const orgId = useCurrentOrganization()?.id
+  const [createFinding] = useMutation(CREATE_ML_FINDING, {
+    refetchQueries: ['MlStudioFindings'],
+    awaitRefetchQueries: true,
+  })
+  const [updateFinding] = useMutation(UPDATE_ML_FINDING, {
+    refetchQueries: ['MlStudioFindings'],
+    awaitRefetchQueries: true,
+  })
   const isEdit = !!finding
 
   const form = useForm<FindingFormValues>({

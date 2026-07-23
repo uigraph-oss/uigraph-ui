@@ -3,7 +3,6 @@
 import { GridScrollBody } from '@/components/grid-scroll-body'
 import { DashboardHeader } from '@/features/dashboard'
 import { Outlet } from 'react-router-dom'
-import { MlStudioDataProvider } from '../contexts/ml-studio-data-context'
 
 export function MlStudioRootLayout() {
   return (
@@ -14,9 +13,7 @@ export function MlStudioRootLayout() {
 
       <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
         <GridScrollBody>
-          <MlStudioDataProvider>
-            <Outlet />
-          </MlStudioDataProvider>
+          <Outlet />
         </GridScrollBody>
       </div>
     </div>

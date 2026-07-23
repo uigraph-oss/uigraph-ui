@@ -2,13 +2,18 @@
 
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import {
+  ML_STUDIO_DEPLOYMENT_UPDATES,
+  ML_STUDIO_EXPERIMENT,
+  ML_STUDIO_RUN,
+} from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
+import { useProject } from '../../contexts/project-context'
 import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
@@ -38,7 +43,6 @@ export function ModelTimelineTab() {
 
 function VersionsTimeline() {
   const { versions } = useModelContext()
-  const { runs, experiments } = useMlStudioData()
 
   const ordered = useMemo(
     () =>
@@ -53,10 +57,6 @@ function VersionsTimeline() {
       {ordered.length > 0 ? (
         <ol className="relative flex flex-col">
           {ordered.map((v, i) => {
-            const run = runs.find((r) => r.id === v.runId)
-            const runExperiment = experiments.find(
-              (e) => e.id === run?.experimentId
-            )
             return (
               <li key={v.id} className="relative flex gap-4 pb-6 last:pb-0">
                 <div className="flex flex-col items-center">
@@ -95,19 +95,7 @@ function VersionsTimeline() {
                   )}
 
                   <p className="mt-1 text-xs text-[#586378]">
-                    {run ? (
-                      <>
-                        From run{' '}
-                        <Link
-                          to={`/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${run.experimentId}/runs/${run.id}`}
-                          className="hover:text-primary text-[#828DA3]"
-                        >
-                          {run.name}
-                        </Link>
-                      </>
-                    ) : (
-                      'No source run'
-                    )}
+                    <VersionSourceRun runId={v.runId} />
                   </p>
                 </div>
               </li>
@@ -121,13 +109,47 @@ function VersionsTimeline() {
   )
 }
 
+function VersionSourceRun({ runId }: { runId?: string }) {
+  const orgId = useCurrentOrganization()?.id
+
+  const runQuery = useQuery(ML_STUDIO_RUN, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, id: runId ?? '' },
+  })
+  const run = runQuery.data?.mlRun
+
+  const experimentQuery = useQuery(ML_STUDIO_EXPERIMENT, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !run?.experimentId,
+    variables: { orgId: orgId!, id: run?.experimentId ?? '' },
+  })
+  const runExperiment = experimentQuery.data?.mlExperiment
+
+  if (!run) {
+    return <>No source run</>
+  }
+
+  return (
+    <>
+      From run{' '}
+      <Link
+        to={`/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${run.experimentId}/runs/${run.id}`}
+        className="hover:text-primary text-[#828DA3]"
+      >
+        {run.name}
+      </Link>
+    </>
+  )
+}
+
 function DeploymentsTimeline() {
   const { versions } = useModelContext()
-  const { orgId } = useMlStudioData()
+  const { orgId, projectId } = useProject()
   const { data } = useQuery(ML_STUDIO_DEPLOYMENT_UPDATES, {
     fetchPolicy: 'cache-and-network',
-    skip: !orgId,
-    variables: { orgId: orgId! },
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
   })
 
   const versionById = useMemo(

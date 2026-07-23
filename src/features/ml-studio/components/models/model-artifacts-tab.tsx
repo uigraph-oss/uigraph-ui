@@ -9,27 +9,31 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import { Link, useNavigate } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { Panel } from '../panel'
 
 export function ModelArtifactsTab() {
-  const { selectedVersion } = useModelContext()
-  const { runs, experiments, artifacts: allArtifacts } = useMlStudioData()
+  const { selectedRun, selectedRunExperiment } = useModelContext()
+  const orgId = useCurrentOrganization()?.id
   const navigate = useNavigate()
 
-  const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
-  const runExperiment = experiments.find(
-    (e) => e.id === latestRun?.experimentId
-  )
+  const latestRun = selectedRun
+  const runExperiment = selectedRunExperiment
   const runLink = latestRun
     ? `/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${latestRun.experimentId}/runs/${latestRun.id}`
     : ''
-  const artifacts = latestRun
-    ? allArtifacts.filter((a) => latestRun.artifactIds.includes(a.id))
-    : []
+
+  const artifactsQuery = useQuery(ML_STUDIO_RUN_ARTIFACTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !latestRun?.id,
+    variables: { orgId: orgId!, runId: latestRun?.id ?? '' },
+  })
+  const artifacts = artifactsQuery.data?.mlArtifacts ?? []
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6">

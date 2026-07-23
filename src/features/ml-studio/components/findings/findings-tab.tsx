@@ -9,21 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { ML_STUDIO_FINDINGS } from '../../api/ml-studio'
 import { ModelVersionLink } from '../model-version-link'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
-  const { findings: allFindings, models } = useMlStudioData()
-  const projectModelIds = new Set(
-    models.filter((m) => m.projectId === projectId).map((m) => m.id)
-  )
-  const findings = allFindings.filter((f) => projectModelIds.has(f.modelId))
+  const orgId = useCurrentOrganization()?.id
+  const { data } = useQuery(ML_STUDIO_FINDINGS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const findings = data?.mlFindings ?? []
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -77,7 +81,7 @@ export function FindingsTab() {
                 <TableCell>
                   <ModelVersionLink
                     modelId={f.modelId}
-                    versionId={f.versionId}
+                    versionId={f.versionId ?? undefined}
                   />
                 </TableCell>
               </TableRow>

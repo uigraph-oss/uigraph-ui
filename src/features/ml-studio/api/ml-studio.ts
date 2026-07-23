@@ -15,9 +15,48 @@ export const ML_STUDIO_PROJECTS = graphql(`
   }
 `)
 
+export const ML_STUDIO_PROJECT = graphql(`
+  query MlStudioProject($orgId: ID!, $id: ID!) {
+    mlProject(orgId: $orgId, id: $id) {
+      id
+      name
+      type
+      description
+      sourceType
+      sourceUrl
+      team
+      email
+    }
+  }
+`)
+
+export const ML_STUDIO_MODEL = graphql(`
+  query MlStudioModel($orgId: ID!, $id: ID!) {
+    mlModel(orgId: $orgId, id: $id) {
+      id
+      projectId
+      name
+      description
+      domain
+      problemType
+      tags
+      owners
+      license
+      references
+      intendedUse
+      limitations
+      ethicalConsiderations
+      caveats
+      productionVersionId
+      createdAt
+      updatedAt
+    }
+  }
+`)
+
 export const ML_STUDIO_MODELS = graphql(`
-  query MlStudioModels($orgId: ID!) {
-    mlModels(orgId: $orgId) {
+  query MlStudioModels($orgId: ID!, $projectId: ID) {
+    mlModels(orgId: $orgId, projectId: $projectId) {
       id
       projectId
       name
@@ -53,6 +92,34 @@ export const ML_STUDIO_VERSIONS = graphql(`
   }
 `)
 
+export const ML_STUDIO_MODEL_VERSIONS = graphql(`
+  query MlStudioModelVersions($orgId: ID!, $modelId: ID, $projectId: ID) {
+    mlModelVersions(orgId: $orgId, modelId: $modelId, projectId: $projectId) {
+      id
+      modelId
+      version
+      description
+      deploymentStatus
+      runId
+      createdAt
+    }
+  }
+`)
+
+export const ML_STUDIO_MODEL_VERSION = graphql(`
+  query MlStudioModelVersion($orgId: ID!, $id: ID!) {
+    mlModelVersion(orgId: $orgId, id: $id) {
+      id
+      modelId
+      version
+      description
+      deploymentStatus
+      runId
+      createdAt
+    }
+  }
+`)
+
 export const ML_VERSION_DEPLOYMENT_UPDATES = graphql(`
   query MlVersionDeploymentUpdates($orgId: ID!, $versionId: ID!) {
     mlVersionDeploymentUpdates(orgId: $orgId, versionId: $versionId) {
@@ -67,8 +134,8 @@ export const ML_VERSION_DEPLOYMENT_UPDATES = graphql(`
 `)
 
 export const ML_STUDIO_DEPLOYMENT_UPDATES = graphql(`
-  query MlStudioDeploymentUpdates($orgId: ID!) {
-    mlVersionDeploymentUpdates(orgId: $orgId) {
+  query MlStudioDeploymentUpdates($orgId: ID!, $projectId: ID) {
+    mlVersionDeploymentUpdates(orgId: $orgId, projectId: $projectId) {
       id
       versionId
       fromStatus
@@ -79,15 +146,66 @@ export const ML_STUDIO_DEPLOYMENT_UPDATES = graphql(`
   }
 `)
 
-export const ML_STUDIO_EXPERIMENTS = graphql(`
-  query MlStudioExperiments($orgId: ID!) {
-    mlExperiments(orgId: $orgId) {
+export const ML_STUDIO_EXPERIMENT = graphql(`
+  query MlStudioExperiment($orgId: ID!, $id: ID!) {
+    mlExperiment(orgId: $orgId, id: $id) {
       id
       projectId
       name
       description
       status
       startedAt
+    }
+  }
+`)
+
+export const ML_STUDIO_EXPERIMENTS = graphql(`
+  query MlStudioExperiments($orgId: ID!, $projectId: ID) {
+    mlExperiments(orgId: $orgId, projectId: $projectId) {
+      id
+      projectId
+      name
+      description
+      status
+      startedAt
+    }
+  }
+`)
+
+export const ML_STUDIO_RUN = graphql(`
+  query MlStudioRun($orgId: ID!, $id: ID!) {
+    mlRun(orgId: $orgId, id: $id) {
+      id
+      experimentId
+      name
+      status
+      startedAt
+      endedAt
+      duration
+      notes
+      parameters
+      metrics
+      datasetId
+      series
+    }
+  }
+`)
+
+export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
+  query MlStudioExperimentRuns($orgId: ID!, $experimentId: ID, $projectId: ID) {
+    mlRuns(orgId: $orgId, experimentId: $experimentId, projectId: $projectId) {
+      id
+      experimentId
+      name
+      status
+      startedAt
+      endedAt
+      duration
+      notes
+      parameters
+      metrics
+      datasetId
+      series
     }
   }
 `)
@@ -121,6 +239,40 @@ export const ML_STUDIO_ARTIFACTS = graphql(`
       uri
       size
       format
+    }
+  }
+`)
+
+export const ML_STUDIO_RUN_ARTIFACTS = graphql(`
+  query MlStudioRunArtifacts($orgId: ID!, $runId: ID) {
+    mlArtifacts(orgId: $orgId, runId: $runId) {
+      id
+      runId
+      name
+      type
+      uri
+      size
+      format
+    }
+  }
+`)
+
+export const ML_STUDIO_DATASET = graphql(`
+  query MlStudioDataset($orgId: ID!, $id: ID!) {
+    mlDataset(orgId: $orgId, id: $id) {
+      id
+      experimentId
+      name
+      digest
+      source
+      sourceType
+      context
+      rowCount
+      schema {
+        name
+        type
+        description
+      }
     }
   }
 `)
@@ -163,8 +315,8 @@ export const ML_STUDIO_DEPLOYMENTS = graphql(`
 `)
 
 export const ML_STUDIO_FINDINGS = graphql(`
-  query MlStudioFindings($orgId: ID!) {
-    mlFindings(orgId: $orgId) {
+  query MlStudioFindings($orgId: ID!, $projectId: ID) {
+    mlFindings(orgId: $orgId, projectId: $projectId) {
       id
       modelId
       versionId

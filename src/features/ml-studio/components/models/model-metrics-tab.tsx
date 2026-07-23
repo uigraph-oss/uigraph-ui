@@ -1,16 +1,14 @@
 'use client'
 
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { MetricLineChart } from '../metric-chart'
 import { Panel } from '../panel'
 
 export function ModelMetricsTab() {
-  const { selectedVersion } = useModelContext()
-  const { runs } = useMlStudioData()
+  const { selectedRun } = useModelContext()
 
-  const latestRun = runs.find((r) => r.id === selectedVersion?.runId)
+  const latestRun = selectedRun
 
   if (!latestRun) {
     return (

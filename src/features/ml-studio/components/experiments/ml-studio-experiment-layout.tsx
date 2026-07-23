@@ -9,7 +9,7 @@ import { ArrowLeftIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import { useProject } from '../../contexts/project-context'
 import { StatusBadge } from '../status-badge'
 
 const experimentTabs = [
@@ -30,12 +30,10 @@ export function MlStudioExperimentLayout({
   children: React.ReactNode
 }) {
   const { experiment } = useExperimentContext()
-  const { projects } = useMlStudioData()
+  const { project } = useProject()
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-
-  const project = projects.find((p) => p.id === projectId)
 
   const activeTab = useMemo(() => {
     return tabURLPattern.exec({ pathname })?.pathname.groups.tab || ''
