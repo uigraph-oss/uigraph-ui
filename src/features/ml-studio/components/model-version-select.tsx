@@ -34,7 +34,7 @@ export function ModelVersionSelect({
             onVersionChange('')
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
           <SelectContent>
@@ -48,7 +48,7 @@ export function ModelVersionSelect({
       </FormField>
       <FormField label="Version">
         <Select value={versionId} onValueChange={onVersionChange}>
-          <SelectTrigger>
+          <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
             <SelectValue placeholder="Select version" />
           </SelectTrigger>
           <SelectContent>

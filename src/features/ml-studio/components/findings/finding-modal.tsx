@@ -4,12 +4,42 @@ import {
   BetterDialogContent,
   BetterDialogProvider,
 } from '@/components/better-dialog'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
-import { FormField } from '../form-field'
 import { ModelVersionSelect } from '../model-version-select'
+import { EvidenceRunsSelect } from './evidence-runs-select'
+
+const findingSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string(),
+  runIds: z.array(z.string()),
+  modelId: z.string().min(1, 'Model is required'),
+  versionId: z.string(),
+})
+
+type FindingFormValues = z.infer<typeof findingSchema>
+
+const defaultValues: FindingFormValues = {
+  title: '',
+  description: '',
+  runIds: [],
+  modelId: '',
+  versionId: '',
+}
 
 export function FindingModal({
   open,
@@ -19,29 +49,32 @@ export function FindingModal({
   onOpenChange: (open: boolean) => void
 }) {
   const { orgId, createFinding } = useMlStudioData()
-  const [modelId, setModelId] = useState('')
-  const [versionId, setVersionId] = useState('')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [evidence, setEvidence] = useState('')
 
-  async function submit() {
-    if (!orgId || !modelId || !title) {
+  const form = useForm<FindingFormValues>({
+    resolver: zodResolver(findingSchema),
+    defaultValues,
+  })
+  const { control, handleSubmit, formState, reset, watch, setValue } = form
+
+  useEffect(() => {
+    if (open) {
+      reset(defaultValues)
+    }
+  }, [open, reset])
+
+  async function onSubmit(values: FindingFormValues) {
+    if (!orgId) {
       return
     }
-    const runIds = evidence
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
     await createFinding({
       variables: {
         orgId,
         input: {
-          modelId,
-          versionId: versionId || null,
-          title,
-          description,
-          runIds,
+          modelId: values.modelId,
+          versionId: values.versionId || null,
+          title: values.title,
+          description: values.description,
+          runIds: values.runIds,
         },
       },
     })
@@ -55,51 +88,95 @@ export function FindingModal({
         description="Capture what was learned from an experiment."
         footerCancel
         footerSubmit="Create finding"
-        onFooterSubmitClick={submit}
+        footerSubmitLoading={formState.isSubmitting}
+        onFooterSubmitClick={handleSubmit(onSubmit)}
       >
-        <div className="flex flex-col gap-5">
-          <FormField label="Title" hint="A short summary of the insight.">
-            <Input
-              placeholder="Two-tower architecture improves cold-start recommendations"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-5"
+          >
+            <FormField
+              control={control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Two-tower architecture improves cold-start recommendations"
+                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormField>
 
-          <FormField label="Body" hint="The explanation of the insight.">
-            <Textarea
-              placeholder="What did we discover, why did it happen, and why does it matter?"
-              rows={5}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <FormField
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Body</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="What did we discover, why did it happen, and why does it matter?"
+                      className="min-h-[6.75rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormField>
 
-          <FormField label="Evidence" hint="Comma separated run IDs.">
-            <Input
-              placeholder="r-vr-v2-a, r-vr-v2-b"
-              value={evidence}
-              onChange={(e) => setEvidence(e.target.value)}
+            <FormField
+              control={control}
+              name="runIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Evidence</FormLabel>
+                  <FormControl>
+                    <EvidenceRunsSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormField>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium text-[#F4F7FC]">
-                Supports → Model Version
-              </span>
-              <span className="text-xs text-[#828DA3]">
-                The model version this finding justifies (optional).
-              </span>
-            </div>
-            <ModelVersionSelect
-              modelId={modelId}
-              versionId={versionId}
-              onModelChange={setModelId}
-              onVersionChange={setVersionId}
+            <FormField
+              control={control}
+              name="modelId"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex flex-col gap-0.5">
+                    <FormLabel>Supports → Model Version</FormLabel>
+                    <FormDescription>
+                      The model version this finding justifies.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <ModelVersionSelect
+                      modelId={field.value}
+                      versionId={watch('versionId')}
+                      onModelChange={(value) => {
+                        field.onChange(value)
+                        setValue('versionId', '')
+                      }}
+                      onVersionChange={(value) => setValue('versionId', value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
+          </form>
+        </Form>
       </BetterDialogContent>
     </BetterDialogProvider>
   )
