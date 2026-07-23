@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { format, formatDistanceToNow } from 'date-fns'
-import { FlaskConical } from 'lucide-react'
+import { BarChart3, FlaskConical, SlidersHorizontal } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
@@ -46,7 +46,11 @@ export function ModelOverviewTab() {
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
       <ModelCard />
 
-      <Panel title="Metrics" action={lastUpdated}>
+      <Panel
+        title="Metrics"
+        icon={<BarChart3 className="size-4" />}
+        action={lastUpdated}
+      >
         {metrics.length > 0 ? (
           <div className="grid grid-cols-2 gap-x-8 gap-y-5">
             {metrics.map(([key, value]) => (
@@ -67,7 +71,11 @@ export function ModelOverviewTab() {
         )}
       </Panel>
 
-      <Panel title="Parameters" action={lastUpdated}>
+      <Panel
+        title="Parameters"
+        icon={<SlidersHorizontal className="size-4" />}
+        action={lastUpdated}
+      >
         {parameters.length > 0 ? (
           <Table>
             <TableHeader>

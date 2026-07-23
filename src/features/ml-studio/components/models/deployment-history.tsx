@@ -3,6 +3,7 @@
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
+import { History } from 'lucide-react'
 import { ML_VERSION_DEPLOYMENT_UPDATES } from '../../api/ml-studio'
 import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
@@ -25,7 +26,11 @@ export function DeploymentHistory({ versionId }: { versionId: string }) {
     .slice(0, 5)
 
   return (
-    <Panel title="Deployment history" className="md:col-span-2">
+    <Panel
+      title="Deployment history"
+      icon={<History className="size-4" />}
+      className="md:col-span-2"
+    >
       {updates.length > 0 ? (
         <ol className="flex flex-col gap-4">
           {updates.map((u) => (
