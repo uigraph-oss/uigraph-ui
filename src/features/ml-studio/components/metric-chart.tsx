@@ -10,6 +10,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Line,
   LineChart,
   XAxis,
@@ -142,6 +143,37 @@ export function MetricTrendChart({
           />
         ))}
       </LineChart>
+    </ChartContainer>
+  )
+}
+
+export function RunValueBarChart({
+  data,
+  className,
+}: {
+  data: { name: string; value: number }[]
+  className?: string
+}) {
+  const config: ChartConfig = Object.fromEntries(
+    data.map((d, i) => [
+      d.name,
+      { label: d.name, color: palette[i % palette.length] },
+    ])
+  )
+
+  return (
+    <ChartContainer config={config} className={className}>
+      <BarChart data={data} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
+        <CartesianGrid vertical={false} stroke="#2A3242" />
+        <XAxis dataKey="name" tickLine={false} axisLine={false} />
+        <YAxis tickLine={false} axisLine={false} width={48} />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <Bar dataKey="value" radius={4}>
+          {data.map((d, i) => (
+            <Cell key={d.name} fill={palette[i % palette.length]} />
+          ))}
+        </Bar>
+      </BarChart>
     </ChartContainer>
   )
 }

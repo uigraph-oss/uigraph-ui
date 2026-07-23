@@ -1,96 +1,67 @@
 'use client'
 
 import { BetterDialogContent } from '@/components/better-dialog'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { ChartColumnIcon, SlidersHorizontalIcon } from 'lucide-react'
 import type { Run } from '../../types'
-import { MetricBarChart, MetricLineChart } from '../metric-chart'
-import { InfoRow, Panel } from '../panel'
-import { StatusBadge } from '../status-badge'
+import { RunValueBarChart } from '../metric-chart'
 
 export function RunComparisonDialog({ runs }: { runs: Run[] }) {
-  const paramKeys = Array.from(
-    new Set(runs.flatMap((r) => Object.keys(r.parameters)))
-  )
   const metricKeys = Array.from(
     new Set(runs.flatMap((r) => Object.keys(r.metrics)))
   )
-  const lossSeries = Object.fromEntries(
-    runs.map((r) => [r.name, r.series.loss || []])
+  const paramKeys = Array.from(
+    new Set(runs.flatMap((r) => Object.keys(r.parameters)))
   )
-  const metricData = metricKeys.map((key) => {
-    const row: Record<string, string | number> = { label: key }
-    runs.forEach((r) => {
-      if (r.metrics[key] !== undefined) {
-        row[r.name] = r.metrics[key]
-      }
-    })
-    return row
-  })
+
+  const [metricControl, activeMetric] = useBetterTabs(
+    metricKeys.map((key) => ({ id: key, label: key }))
+  )
+  const [paramControl, activeParam] = useBetterTabs(
+    paramKeys.map((key) => ({ id: key, label: key }))
+  )
+
+  const metricData = runs
+    .filter((r) => r.metrics[activeMetric] !== undefined)
+    .map((r) => ({ name: r.name, value: r.metrics[activeMetric] }))
+
+  const paramData = runs
+    .filter((r) => Number.isFinite(Number(r.parameters[activeParam])))
+    .map((r) => ({ name: r.name, value: Number(r.parameters[activeParam]) }))
 
   return (
     <BetterDialogContent
       title="Compare runs"
       description={runs.map((r) => r.name).join(' · ')}
-      className="flex flex-col gap-5"
+      className="flex flex-col gap-8"
     >
-      <Panel title="Overview">
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          {runs.map((r) => (
-            <InfoRow key={r.id} label={r.name}>
-              <StatusBadge value={r.status} />
-            </InfoRow>
-          ))}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <h3 className="flex items-center gap-2 font-semibold text-[#F4F7FC]">
+            <ChartColumnIcon className="size-4 text-[#828DA3]" />
+            Metrics
+          </h3>
+          <BetterTabController control={metricControl} className="mx-0" />
         </div>
-      </Panel>
+        <RunValueBarChart data={metricData} className="aspect-[3/1] w-full" />
+      </div>
 
-      <Panel title="Parameters">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Parameter</TableHead>
-              {runs.map((r) => (
-                <TableHead key={r.id}>{r.name}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paramKeys.map((key) => (
-              <TableRow key={key}>
-                <TableCell className="text-[#828DA3]">{key}</TableCell>
-                {runs.map((r) => (
-                  <TableCell key={r.id} className="font-mono text-[#F4F7FC]">
-                    {r.parameters[key] !== undefined
-                      ? String(r.parameters[key])
-                      : '—'}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Panel>
-
-      <Panel
-        title="Metrics"
-        description="Final value per metric, grouped by run."
-      >
-        <MetricBarChart
-          data={metricData}
-          metricKeys={runs.map((r) => r.name)}
-          className="aspect-[3/1] w-full"
-        />
-      </Panel>
-
-      <Panel title="Loss curves" description="Overlaid time-series per run.">
-        <MetricLineChart series={lossSeries} className="aspect-[3/1] w-full" />
-      </Panel>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <h3 className="flex items-center gap-2 font-semibold text-[#F4F7FC]">
+            <SlidersHorizontalIcon className="size-4 text-[#828DA3]" />
+            Parameters
+          </h3>
+          <BetterTabController control={paramControl} className="mx-0" />
+        </div>
+        {paramData.length > 0 ? (
+          <RunValueBarChart data={paramData} className="aspect-[3/1] w-full" />
+        ) : (
+          <p className="text-sm text-[#586378]">
+            This parameter is not numeric and cannot be charted.
+          </p>
+        )}
+      </div>
     </BetterDialogContent>
   )
 }
