@@ -15,12 +15,9 @@ import {
 } from 'react-router-dom'
 import { ProjectProvider, useProject } from '../../contexts/project-context'
 
-const projectTabs = [
-  { id: 'models', label: 'Models' },
-  { id: 'experiments', label: 'Experiments' },
-  { id: 'deployments', label: 'Deployments' },
-  { id: 'findings', label: 'Findings' },
-] as const
+const modelsTab = { id: 'models', label: 'Models' } as const
+const experimentsTab = { id: 'experiments', label: 'Experiments' } as const
+const findingsTab = { id: 'findings', label: 'Findings' } as const
 
 const tabURLPattern = new URLPatternPolyfill({
   pathname: '/dashboard/ml-studio/projects/:projectId/:tab{/*}?',
@@ -40,6 +37,16 @@ function ProjectShell() {
   const { projectId } = useParams<{ projectId: string }>()
   const { pathname } = useLocation()
   const { project } = useProject()
+
+  const projectTabs = useMemo(() => {
+    if (project?.type === 'model') {
+      return [modelsTab, findingsTab]
+    }
+    if (project?.type === 'training') {
+      return [experimentsTab, findingsTab]
+    }
+    return [modelsTab, experimentsTab, findingsTab]
+  }, [project?.type])
 
   const activeTab = useMemo(() => {
     return tabURLPattern.exec({ pathname })?.pathname.groups.tab || 'models'

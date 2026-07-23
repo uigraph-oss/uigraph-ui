@@ -118,11 +118,6 @@ const RunDetailPage = lazy(() =>
     (mod) => ({ default: mod.RunDetailPage })
   )
 )
-const DeploymentsTab = lazy(() =>
-  import('@/features/ml-studio/components/deployments/deployments-tab').then(
-    (mod) => ({ default: mod.DeploymentsTab })
-  )
-)
 const FindingsTab = lazy(() =>
   import('@/features/ml-studio/components/findings/findings-tab').then(
     (mod) => ({
@@ -492,7 +487,6 @@ export function AppRoutes() {
               path="experiments/:experimentId/runs/:runId"
               element={<RunDetailPage />}
             />
-            <Route path="deployments" element={<DeploymentsTab />} />
             <Route path="findings" element={<FindingsTab />} />
             <Route path="findings/:findingId" element={<FindingDetailPage />} />
           </Route>
