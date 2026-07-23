@@ -9,8 +9,7 @@ export const ML_STUDIO_PROJECTS = graphql(`
       description
       sourceType
       sourceUrl
-      team
-      email
+      teamId
     }
   }
 `)
@@ -24,8 +23,7 @@ export const ML_STUDIO_PROJECT = graphql(`
       description
       sourceType
       sourceUrl
-      team
-      email
+      teamId
     }
   }
 `)

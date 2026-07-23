@@ -29,8 +29,7 @@ export const [ProjectProvider, useProject] = createContext(
         description: p.description,
         sourceType: p.sourceType,
         sourceUrl: p.sourceUrl,
-        team: p.team,
-        email: p.email,
+        teamId: p.teamId ?? null,
       }
     }, [data?.mlProject])
 

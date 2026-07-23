@@ -2,6 +2,7 @@
 
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { PlusIcon } from 'lucide-react'
@@ -46,6 +47,14 @@ export function ProjectsTab() {
     variables: { orgId: orgId! },
   })
   const projects = data?.mlProjects ?? []
+  const { data: teamsData } = useQuery(TEAMS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const teamNameById = new Map(
+    (teamsData?.teams ?? []).map((team) => [team.id, team.name])
+  )
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -130,9 +139,9 @@ export function ProjectsTab() {
                         {project.type}
                       </span>
                     )}
-                    {project.team && (
+                    {project.teamId && teamNameById.get(project.teamId) && (
                       <span className="inline-flex max-w-[140px] items-center truncate rounded-md bg-[#1E2533] px-2 py-0.5 text-[11px] text-[#828DA3]">
-                        {project.team}
+                        {teamNameById.get(project.teamId)}
                       </span>
                     )}
                   </div>

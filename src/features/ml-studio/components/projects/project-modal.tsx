@@ -34,7 +34,7 @@ const projectSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string(),
   type: z.enum(['model', 'training']),
-  team: z.string(),
+  teamId: z.string().min(1, 'Team is required'),
 })
 
 type ProjectFormValues = z.infer<typeof projectSchema>
@@ -43,7 +43,7 @@ const emptyValues: ProjectFormValues = {
   name: '',
   description: '',
   type: 'model',
-  team: '',
+  teamId: '',
 }
 
 export function ProjectModal({
@@ -89,7 +89,7 @@ export function ProjectModal({
           name: values.name,
           type: values.type,
           description: values.description,
-          team: values.team,
+          teamId: values.teamId,
         },
       },
     })
@@ -171,7 +171,7 @@ export function ProjectModal({
 
             <FormField
               control={control}
-              name="team"
+              name="teamId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Team</FormLabel>
@@ -182,7 +182,7 @@ export function ProjectModal({
                       </SelectTrigger>
                       <SelectContent>
                         {teams.map((team) => (
-                          <SelectItem key={team.id} value={team.name}>
+                          <SelectItem key={team.id} value={team.id}>
                             {team.name}
                           </SelectItem>
                         ))}

@@ -15,8 +15,7 @@ export type Project = {
   description: string
   sourceType: string
   sourceUrl: string
-  team: string
-  email: string
+  teamId: string | null
 }
 
 export type Model = {
