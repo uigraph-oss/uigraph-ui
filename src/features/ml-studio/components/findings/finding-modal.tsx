@@ -19,6 +19,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMlStudioData } from '../../contexts/ml-studio-data-context'
+import type { Finding } from '../../types'
 import { ModelVersionSelect } from '../model-version-select'
 import { EvidenceRunsSelect } from './evidence-runs-select'
 
@@ -32,7 +33,7 @@ const findingSchema = z.object({
 
 type FindingFormValues = z.infer<typeof findingSchema>
 
-const defaultValues: FindingFormValues = {
+const emptyValues: FindingFormValues = {
   title: '',
   description: '',
   runIds: [],
@@ -43,50 +44,79 @@ const defaultValues: FindingFormValues = {
 export function FindingModal({
   open,
   onOpenChange,
+  finding,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
+  finding?: Finding | null
 }) {
-  const { orgId, createFinding } = useMlStudioData()
+  const { orgId, createFinding, updateFinding } = useMlStudioData()
+  const isEdit = !!finding
 
   const form = useForm<FindingFormValues>({
     resolver: zodResolver(findingSchema),
-    defaultValues,
+    defaultValues: emptyValues,
   })
   const { control, handleSubmit, formState, reset, watch, setValue } = form
 
   useEffect(() => {
-    if (open) {
-      reset(defaultValues)
+    if (!open) {
+      return
     }
-  }, [open, reset])
+    reset(
+      finding
+        ? {
+            title: finding.title,
+            description: finding.description,
+            runIds: finding.runIds,
+            modelId: finding.modelId,
+            versionId: finding.versionId ?? '',
+          }
+        : emptyValues
+    )
+  }, [open, finding, reset])
 
   async function onSubmit(values: FindingFormValues) {
     if (!orgId) {
       return
     }
-    await createFinding({
-      variables: {
-        orgId,
-        input: {
-          modelId: values.modelId,
-          versionId: values.versionId || null,
-          title: values.title,
-          description: values.description,
-          runIds: values.runIds,
+    if (finding) {
+      await updateFinding({
+        variables: {
+          orgId,
+          id: finding.id,
+          input: {
+            versionId: values.versionId || null,
+            title: values.title,
+            description: values.description,
+            runIds: values.runIds,
+          },
         },
-      },
-    })
+      })
+    } else {
+      await createFinding({
+        variables: {
+          orgId,
+          input: {
+            modelId: values.modelId,
+            versionId: values.versionId || null,
+            title: values.title,
+            description: values.description,
+            runIds: values.runIds,
+          },
+        },
+      })
+    }
     onOpenChange(false)
   }
 
   return (
     <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
       <BetterDialogContent
-        title="New finding"
+        title={isEdit ? 'Edit finding' : 'New finding'}
         description="Capture what was learned from an experiment."
         footerCancel
-        footerSubmit="Create finding"
+        footerSubmit={isEdit ? 'Save changes' : 'Create finding'}
         footerSubmitLoading={formState.isSubmitting}
         onFooterSubmitClick={handleSubmit(onSubmit)}
       >
@@ -160,6 +190,7 @@ export function FindingModal({
                       versionId={watch('versionId')}
                       onModelChange={field.onChange}
                       onVersionChange={(value) => setValue('versionId', value)}
+                      lockedModelId={isEdit ? finding?.modelId : undefined}
                     />
                   </FormControl>
                   <FormMessage />

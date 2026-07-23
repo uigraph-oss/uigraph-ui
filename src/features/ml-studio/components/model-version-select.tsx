@@ -16,13 +16,18 @@ export function ModelVersionSelect({
   versionId,
   onModelChange,
   onVersionChange,
+  lockedModelId,
 }: {
   modelId: string
   versionId: string
   onModelChange: (modelId: string) => void
   onVersionChange: (versionId: string) => void
+  lockedModelId?: string
 }) {
-  const { models, versions } = useMlStudioData()
+  const { models: allModels, versions } = useMlStudioData()
+  const models = lockedModelId
+    ? allModels.filter((m) => m.id === lockedModelId)
+    : allModels
 
   const selectedValue = versionId
     ? `ver:${versionId}`
