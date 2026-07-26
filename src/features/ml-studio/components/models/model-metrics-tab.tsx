@@ -7,10 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
-import { CalendarDays, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
@@ -18,6 +18,7 @@ import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { MetricTrendChart } from '../metric-chart'
 import { MetricSelect } from '../metric-select'
+import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 
 const limitOptions = ['5', '10', '25', '50', 'all']
@@ -48,7 +49,13 @@ function VersionMetricsLoader({
 }
 
 export function ModelMetricsTab() {
-  const { selectedVersion, versions, setVersionId } = useModelContext()
+  const {
+    selectedVersion,
+    selectedRun,
+    selectedRunExperiment,
+    versions,
+    setVersionId,
+  } = useModelContext()
   const orgId = useCurrentOrganization()?.id
   const { projectId, modelId } = useParams<{
     projectId: string
@@ -61,6 +68,7 @@ export function ModelMetricsTab() {
     string[]
   >([])
   const [hiddenVersionMetrics, setHiddenVersionMetrics] = useState<string[]>([])
+  const [summaryTab, setSummaryTab] = useState<'run' | 'evaluations'>('run')
 
   const evaluationsQuery = useQuery(ML_VERSION_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
@@ -110,7 +118,7 @@ export function ModelMetricsTab() {
       id: evaluation.id,
       name: evaluation.name,
       evaluatedAt: evaluation.evaluatedAt,
-      evaluator: evaluation.evaluator,
+      createdBy: evaluation.createdBy,
       metrics: (evaluation.metrics ?? {}) as Record<string, number>,
     }))
 
@@ -137,7 +145,14 @@ export function ModelMetricsTab() {
   )
 
   const latest = allEvaluations[allEvaluations.length - 1]
-  const scalars = latest ? Object.entries(latest.metrics) : []
+
+  const runScalars = Object.entries(selectedRun?.metrics ?? {})
+
+  const latestScalars = Object.entries(latest?.metrics ?? {})
+
+  const summarySource =
+    summaryTab === 'run' && runScalars.length > 0 ? 'run' : 'evaluations'
+  const scalars = summarySource === 'run' ? runScalars : latestScalars
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6">
@@ -149,33 +164,94 @@ export function ModelMetricsTab() {
         />
       ))}
 
-      {latest && scalars.length > 0 && (
-        <Panel
-          title="Metrics"
-          description={`Values from the latest evaluation, ${latest.name}.`}
-          action={
-            <div className="flex flex-col items-end gap-1.5 text-sm">
-              {latest.evaluatedAt && (
+      {scalars.length > 0 && (
+        <Panel>
+          <div className="grid grid-cols-3 items-center gap-x-8">
+            <div>
+              <h3 className="font-semibold text-[#F4F7FC]">Metrics</h3>
+              <p className="mt-0.5 text-sm text-[#828DA3]">
+                {summarySource === 'run'
+                  ? `Final metrics from the training run ${selectedRun?.name ?? ''}.`
+                  : `Metrics from the latest evaluation ${latest?.name ?? ''}.`}
+              </p>
+            </div>
+
+            <div className="border-stock grid grid-cols-2 gap-1 justify-self-center rounded-[0.80315625rem] border p-1">
+              <button
+                type="button"
+                onClick={() => setSummaryTab('run')}
+                disabled={runScalars.length === 0}
+                className={cn(
+                  'rounded-[0.5rem] px-3 py-1.5 text-sm disabled:opacity-40',
+                  summarySource === 'run'
+                    ? 'bg-accent text-foreground'
+                    : 'text-foreground/60 hover:text-foreground'
+                )}
+              >
+                Training Run
+              </button>
+              <button
+                type="button"
+                onClick={() => setSummaryTab('evaluations')}
+                disabled={latestScalars.length === 0}
+                className={cn(
+                  'rounded-[0.5rem] px-3 py-1.5 text-sm disabled:opacity-40',
+                  summarySource === 'evaluations'
+                    ? 'bg-accent text-foreground'
+                    : 'text-foreground/60 hover:text-foreground'
+                )}
+              >
+                Latest Evaluation
+              </button>
+            </div>
+
+            <div className="justify-self-end text-sm">
+              {summarySource === 'run' && (
                 <div
-                  className="text-foreground/80 flex items-center gap-2"
-                  title={`Evaluated ${formatDistanceToNow(new Date(latest.evaluatedAt), { addSuffix: true })}`}
+                  className="flex items-center gap-1.5 text-[#586378]"
+                  title={
+                    selectedRun?.startedAt
+                      ? format(new Date(selectedRun.startedAt), 'PP pp')
+                      : undefined
+                  }
                 >
-                  <CalendarDays className="h-4 w-4 text-[#586378]" />
-                  <span className="text-[#586378]">Evaluated At</span>
-                  <span>{format(new Date(latest.evaluatedAt), 'PP pp')}</span>
+                  <span>Trained by</span>
+                  <MlUser identifier={selectedRunExperiment?.createdBy} />
+                  {selectedRun?.startedAt && (
+                    <span>
+                      ,{' '}
+                      {formatDistanceToNow(new Date(selectedRun.startedAt), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  )}
                 </div>
               )}
-              {latest.evaluator && (
-                <div className="text-foreground/80 flex items-center gap-2">
-                  <UserRound className="h-4 w-4 text-[#586378]" />
-                  <span className="text-[#586378]">Evaluated By</span>
-                  <span>{latest.evaluator}</span>
+              {summarySource === 'evaluations' && latest && (
+                <div
+                  className="flex items-center gap-1.5 text-[#586378]"
+                  title={
+                    latest.evaluatedAt
+                      ? format(new Date(latest.evaluatedAt), 'PP pp')
+                      : undefined
+                  }
+                >
+                  <span>Evaluated by</span>
+                  <MlUser identifier={latest.createdBy} />
+                  {latest.evaluatedAt && (
+                    <span>
+                      ,{' '}
+                      {formatDistanceToNow(new Date(latest.evaluatedAt), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
-          }
-        >
-          <div className="grid grid-cols-2 gap-x-8 gap-y-6 md:grid-cols-4">
+          </div>
+
+          <div className="mt-3 grid grid-cols-3 gap-x-8 gap-y-7">
             {scalars.map(([key, value]) => (
               <div key={key}>
                 <div className="text-2xl font-bold text-[#F4F7FC]">
@@ -305,7 +381,7 @@ export function ModelMetricsTab() {
           <p className="text-sm text-[#586378]">
             {evaluationsQuery.loading
               ? 'Loading evaluations…'
-              : "No metrics recorded for this version's evaluations."}
+              : 'No training run or evaluation metrics recorded for this version.'}
           </p>
         </Panel>
       )}

@@ -138,6 +138,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
         tags: e.tags,
         startedAt: e.startedAt ?? '',
         source: e.source as Experiment['source'],
+        createdBy: e.createdBy ?? undefined,
       }
     }, [experimentQuery.data?.mlExperiment])
 

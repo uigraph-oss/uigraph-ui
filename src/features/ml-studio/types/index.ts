@@ -72,6 +72,7 @@ export type Experiment = {
   tags: string[]
   startedAt: string
   source: ExperimentSource
+  createdBy?: string
 }
 
 export type RunStatus = 'running' | 'completed' | 'failed' | 'cancelled'

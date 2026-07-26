@@ -4,9 +4,10 @@ import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { format, formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
+import { Check, Circle, Square, X } from 'lucide-react'
 import { parseAsString, useQueryState } from 'nuqs'
-import { useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ML_STUDIO_DEPLOYMENT_UPDATES,
@@ -17,13 +18,32 @@ import { useModelContext } from '../../contexts/model-context'
 import { useProject } from '../../contexts/project-context'
 import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
-import { StatusBadge } from '../status-badge'
 
-const dotColor: Record<string, string> = {
-  production: 'bg-[#21AD6D]',
-  staging: 'bg-[#3B6BFF]',
-  candidate: 'bg-[#7FA0FF]',
-  retired: 'bg-[#586378]',
+const markerStyle: Record<string, { icon: ReactNode; className: string }> = {
+  production: {
+    icon: <Check className="size-4" strokeWidth={3} />,
+    className: 'border-[#21AD6D]/50 bg-[#21AD6D]/15 text-[#3BD68E]',
+  },
+  staging: {
+    icon: <Square className="size-3.5" strokeWidth={2} />,
+    className: 'border-[#38415420] bg-[#171D28] text-[#8A93A6]',
+  },
+  candidate: {
+    icon: <Circle className="size-3.5" strokeWidth={2} />,
+    className: 'border-[#38415420] bg-[#171D28] text-[#8A93A6]',
+  },
+  retired: {
+    icon: <X className="size-4" strokeWidth={3} />,
+    className: 'border-[#E5484D]/30 bg-[#E5484D]/12 text-[#FF6369]',
+  },
+  deprecated: {
+    icon: <X className="size-4" strokeWidth={3} />,
+    className: 'border-[#E5484D]/30 bg-[#E5484D]/12 text-[#FF6369]',
+  },
+  unknown: {
+    icon: <Circle className="size-3.5" strokeWidth={2} />,
+    className: 'border-[#38415420] bg-[#171D28] text-[#8A93A6]',
+  },
 }
 
 export function ModelTimelineTab() {
@@ -46,8 +66,69 @@ export function ModelTimelineTab() {
   )
 }
 
+function TimelineItem({
+  status,
+  isLast,
+  title,
+  badges,
+  meta,
+}: {
+  status: string
+  isLast: boolean
+  title: ReactNode
+  badges?: ReactNode
+  meta: ReactNode
+}) {
+  const marker = markerStyle[status] || markerStyle.unknown
+
+  return (
+    <li className="relative flex gap-5 pb-9 last:pb-0">
+      <div className="relative flex flex-col items-center">
+        <span
+          className={cn(
+            'z-10 flex size-10 shrink-0 items-center justify-center rounded-full border',
+            marker.className
+          )}
+        >
+          {marker.icon}
+        </span>
+        {!isLast && (
+          <span className="absolute top-11 bottom-[-40px] w-px bg-[#2A3242]" />
+        )}
+      </div>
+
+      <div className="flex-1 pt-1">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <h4 className="text-[19px] leading-7 font-bold tracking-[-0.01em] text-[#F4F7FC]">
+            {title}
+          </h4>
+          {badges}
+        </div>
+        <p className="mt-1 text-[15px] leading-6 text-[#6B7488]">{meta}</p>
+      </div>
+    </li>
+  )
+}
+
+function TimelineTitle({ version, stage }: { version: string; stage: string }) {
+  return (
+    <>
+      {version} <span className="mx-1 text-[#8A93A6]">→</span>
+      <span className="capitalize">{stage.replace(/-/g, ' ')}</span>
+    </>
+  )
+}
+
+function CurrentPill() {
+  return (
+    <span className="rounded-full border border-[#21AD6D]/45 bg-[#21AD6D]/10 px-3 py-1 text-[15px] leading-5 font-semibold text-[#3BD68E]">
+      current
+    </span>
+  )
+}
+
 function VersionsTimeline() {
-  const { versions } = useModelContext()
+  const { versions, model } = useModelContext()
 
   const ordered = useMemo(
     () =>
@@ -61,51 +142,32 @@ function VersionsTimeline() {
     <Panel title="Versions">
       {ordered.length > 0 ? (
         <ol className="relative flex flex-col">
-          {ordered.map((v, i) => {
-            return (
-              <li key={v.id} className="relative flex gap-4 pb-6 last:pb-0">
-                <div className="flex flex-col items-center">
-                  <span
-                    className={cn(
-                      'z-10 mt-1 size-3 rounded-full',
-                      dotColor[v.deploymentStatus] || 'bg-[#586378]'
-                    )}
-                  />
-                  {i < ordered.length - 1 && (
-                    <span className="absolute top-4 h-full w-px bg-[#2A3242]" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-[#F4F7FC]">
-                      {v.version}
-                    </span>
-                    <StatusBadge value={v.deploymentStatus} />
-                    <span
-                      className="ml-auto text-xs text-[#586378]"
-                      title={format(new Date(v.createdAt), 'PPpp')}
-                    >
-                      Created{' '}
-                      {formatDistanceToNow(new Date(v.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </span>
-                  </div>
-
+          {ordered.map((v, i) => (
+            <TimelineItem
+              key={v.id}
+              status={v.deploymentStatus}
+              isLast={i === ordered.length - 1}
+              title={
+                <TimelineTitle version={v.version} stage={v.deploymentStatus} />
+              }
+              badges={model?.productionVersionId === v.id && <CurrentPill />}
+              meta={
+                <>
+                  {format(new Date(v.createdAt), 'MMM d, yyyy')}
+                  <span className="px-1.5">·</span>
+                  {format(new Date(v.createdAt), 'HH:mm')}
+                  <span className="px-1.5">·</span>
+                  <VersionSourceRun runId={v.runId} />
                   {v.description && (
-                    <p className="mt-1 text-sm text-[#828DA3]">
+                    <>
+                      <span className="px-1.5">·</span>
                       {v.description}
-                    </p>
+                    </>
                   )}
-
-                  <p className="mt-1 text-xs text-[#586378]">
-                    <VersionSourceRun runId={v.runId} />
-                  </p>
-                </div>
-              </li>
-            )
-          })}
+                </>
+              }
+            />
+          ))}
         </ol>
       ) : (
         <p className="text-sm text-[#586378]">No versions recorded.</p>
@@ -137,7 +199,7 @@ function VersionSourceRun({ runId }: { runId?: string }) {
 
   return (
     <>
-      From run{' '}
+      registered from run{' '}
       <Link
         to={`/dashboard/ml-studio/projects/${runExperiment?.projectId}/experiments/${run.experimentId}/runs/${run.id}`}
         className="hover:text-primary text-[#828DA3]"
@@ -179,52 +241,39 @@ function DeploymentsTimeline() {
           {updates.map((u, i) => {
             const version = versionById.get(u.versionId)
             return (
-              <li key={u.id} className="relative flex gap-4 pb-6 last:pb-0">
-                <div className="flex flex-col items-center">
-                  <span
-                    className={cn(
-                      'z-10 mt-1 size-3 rounded-full',
-                      dotColor[u.toStatus] || 'bg-[#586378]'
-                    )}
+              <TimelineItem
+                key={u.id}
+                status={u.toStatus}
+                isLast={i === updates.length - 1}
+                title={
+                  <TimelineTitle
+                    version={version?.version ?? 'Version'}
+                    stage={u.toStatus}
                   />
-                  {i < updates.length - 1 && (
-                    <span className="absolute top-4 h-full w-px bg-[#2A3242]" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    {version && (
-                      <span className="font-medium text-[#F4F7FC]">
-                        {version.version}
-                      </span>
-                    )}
-                    <div className="flex items-center gap-2">
-                      {u.fromStatus ? (
-                        <>
-                          <StatusBadge value={u.fromStatus} />
-                          <span className="text-[#586378]">→</span>
-                        </>
-                      ) : null}
-                      <StatusBadge value={u.toStatus} />
-                    </div>
+                }
+                badges={
+                  u.fromStatus && (
+                    <span className="rounded-full border border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#828DA3] capitalize">
+                      from {u.fromStatus.replace(/-/g, ' ')}
+                    </span>
+                  )
+                }
+                meta={
+                  <>
                     {u.changedAt && (
-                      <span
-                        className="ml-auto text-xs text-[#586378]"
-                        title={format(new Date(u.changedAt), 'PPpp')}
-                      >
-                        {formatDistanceToNow(new Date(u.changedAt), {
-                          addSuffix: true,
-                        })}
-                      </span>
+                      <>
+                        {format(new Date(u.changedAt), 'MMM d, yyyy')}
+                        <span className="px-1.5">·</span>
+                        {format(new Date(u.changedAt), 'HH:mm')}
+                        <span className="px-1.5">·</span>
+                      </>
                     )}
-                  </div>
-
-                  <div className="mt-1 flex items-center gap-1.5 text-xs text-[#586378]">
-                    by <MlUser identifier={u.changedBy} />
-                  </div>
-                </div>
-              </li>
+                    <span className="inline-flex items-center gap-1.5 align-middle">
+                      by <MlUser identifier={u.changedBy} />
+                    </span>
+                  </>
+                }
+              />
             )
           })}
         </ol>

@@ -139,6 +139,7 @@ export const ML_VERSION_EVALUATIONS = graphql(`
       summary
       evaluatedAt
       evaluator
+      createdBy
       parameters
       metrics
     }
@@ -160,6 +161,7 @@ export const ML_EXPERIMENT_EVALUATIONS = graphql(`
       summary
       evaluatedAt
       evaluator
+      createdBy
       parameters
       metrics
     }
@@ -181,6 +183,7 @@ export const ML_EVALUATION = graphql(`
       summary
       evaluatedAt
       evaluator
+      createdBy
       parameters
       metrics
     }
@@ -224,6 +227,7 @@ export const ML_STUDIO_EXPERIMENT = graphql(`
       tags
       startedAt
       source
+      createdBy
     }
   }
 `)
