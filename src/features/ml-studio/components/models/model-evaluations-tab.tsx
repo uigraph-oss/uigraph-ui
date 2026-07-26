@@ -14,6 +14,7 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
+import { Link2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
@@ -61,7 +62,8 @@ export function ModelEvaluationsTab() {
           </p>
         </div>
         {selectedVersion && (
-          <Button preset="outline" onClick={() => setLinkOpen(true)}>
+          <Button preset="primary" onClick={() => setLinkOpen(true)}>
+            <Link2Icon />
             Link Evaluations
           </Button>
         )}
