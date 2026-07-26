@@ -157,6 +157,18 @@ export function ExperimentOverviewTab() {
         title="Run health"
         icon={<ActivityIcon size={16} />}
         description="Status breakdown across every run in this experiment."
+        action={
+          leadingRun ? (
+            <Link
+              to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${leadingRun.id}`}
+              className="border-stock hover:text-primary flex shrink-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm font-medium text-[#F4F7FC]"
+            >
+              <TrophyIcon size={14} className="text-[#E3B341]" />
+              <span className="truncate">{leadingRun.name}</span>
+              <span className="text-[#828DA3]">{formatMetric(bestValue)}</span>
+            </Link>
+          ) : undefined
+        }
       >
         {runs.length > 0 ? (
           <div className="grid grid-cols-4 gap-4">
