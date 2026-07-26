@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -125,11 +126,12 @@ export function ModelsTab() {
       </div>
 
       {projectId && (
-        <ModelModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          projectId={projectId}
-        />
+        <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
+          <ModelModal
+            onClose={() => setModalOpen(false)}
+            projectId={projectId}
+          />
+        </BetterDialogProvider>
       )}
     </div>
   )

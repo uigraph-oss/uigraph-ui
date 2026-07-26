@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  BetterDialogContent,
-  BetterDialogProvider,
-} from '@/components/better-dialog'
+import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -19,13 +16,7 @@ import { CREATE_ML_DEPLOYMENT } from '../../api/ml-studio'
 import { FormField, FormGrid } from '../form-field'
 import { ModelVersionSelect } from '../model-version-select'
 
-export function DeploymentModal({
-  open,
-  onOpenChange,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}) {
+export function DeploymentModal({ onClose }: { onClose: () => void }) {
   const orgId = useCurrentOrganization()?.id
   const [createDeployment] = useMutation(CREATE_ML_DEPLOYMENT, {
     refetchQueries: ['MlStudioDeploymentUpdates'],
@@ -58,81 +49,79 @@ export function DeploymentModal({
         },
       },
     })
-    onOpenChange(false)
+    onClose()
   }
 
   return (
-    <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
-      <BetterDialogContent
-        title="New deployment"
-        description="Roll this version out to a serving environment."
-        footerCancel
-        footerSubmit="Create deployment"
-        onFooterSubmitClick={submit}
-      >
-        <div className="flex flex-col gap-5">
-          <ModelVersionSelect
-            modelId={modelId}
-            versionId={versionId}
-            onModelChange={setModelId}
-            onVersionChange={setVersionId}
-          />
+    <BetterDialogContent
+      title="New deployment"
+      description="Roll this version out to a serving environment."
+      footerCancel
+      footerSubmit="Create deployment"
+      onFooterSubmitClick={submit}
+    >
+      <div className="flex flex-col gap-5">
+        <ModelVersionSelect
+          modelId={modelId}
+          versionId={versionId}
+          onModelChange={setModelId}
+          onVersionChange={setVersionId}
+        />
 
-          <FormGrid>
-            <FormField label="Name">
-              <Input
-                placeholder="rec-prod-us"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </FormField>
-            <FormField label="Environment">
-              <Select value={environment} onValueChange={setEnvironment}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select environment" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="production">Production</SelectItem>
-                  <SelectItem value="staging">Staging</SelectItem>
-                  <SelectItem value="canary">Canary</SelectItem>
-                  <SelectItem value="shadow">Shadow</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-          </FormGrid>
-
-          <FormGrid>
-            <FormField label="Status">
-              <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="live">Live</SelectItem>
-                  <SelectItem value="rolling-out">Rolling out</SelectItem>
-                  <SelectItem value="rolled-back">Rolled back</SelectItem>
-                  <SelectItem value="stopped">Stopped</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-            <FormField label="Region">
-              <Input
-                placeholder="us-east-1"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-              />
-            </FormField>
-          </FormGrid>
-
-          <FormField label="Endpoint">
+        <FormGrid>
+          <FormField label="Name">
             <Input
-              placeholder="https://infer.internal/rec/v3"
-              value={endpoint}
-              onChange={(e) => setEndpoint(e.target.value)}
+              placeholder="rec-prod-us"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </FormField>
-        </div>
-      </BetterDialogContent>
-    </BetterDialogProvider>
+          <FormField label="Environment">
+            <Select value={environment} onValueChange={setEnvironment}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select environment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="production">Production</SelectItem>
+                <SelectItem value="staging">Staging</SelectItem>
+                <SelectItem value="canary">Canary</SelectItem>
+                <SelectItem value="shadow">Shadow</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+        </FormGrid>
+
+        <FormGrid>
+          <FormField label="Status">
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="live">Live</SelectItem>
+                <SelectItem value="rolling-out">Rolling out</SelectItem>
+                <SelectItem value="rolled-back">Rolled back</SelectItem>
+                <SelectItem value="stopped">Stopped</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Region">
+            <Input
+              placeholder="us-east-1"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+            />
+          </FormField>
+        </FormGrid>
+
+        <FormField label="Endpoint">
+          <Input
+            placeholder="https://infer.internal/rec/v3"
+            value={endpoint}
+            onChange={(e) => setEndpoint(e.target.value)}
+          />
+        </FormField>
+      </div>
+    </BetterDialogContent>
   )
 }

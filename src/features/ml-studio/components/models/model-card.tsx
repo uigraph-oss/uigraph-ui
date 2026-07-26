@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
@@ -161,11 +162,9 @@ export function ModelCard() {
         )}
       </Panel>
 
-      <ModelCardEditModal
-        model={model}
-        open={editing}
-        onOpenChange={setEditing}
-      />
+      <BetterDialogProvider open={editing} onOpenChange={setEditing}>
+        <ModelCardEditModal model={model} onClose={() => setEditing(false)} />
+      </BetterDialogProvider>
     </>
   )
 }

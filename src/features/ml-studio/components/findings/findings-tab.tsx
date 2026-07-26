@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -90,11 +91,12 @@ export function FindingsTab() {
         </Table>
       </div>
 
-      <FindingModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        projectId={projectId}
-      />
+      <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
+        <FindingModal
+          onClose={() => setModalOpen(false)}
+          projectId={projectId}
+        />
+      </BetterDialogProvider>
     </div>
   )
 }

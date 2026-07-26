@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -143,11 +144,12 @@ export function FindingDetailPage() {
         )}
       </div>
 
-      <FindingModal
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        finding={findingForModal}
-      />
+      <BetterDialogProvider open={editOpen} onOpenChange={setEditOpen}>
+        <FindingModal
+          onClose={() => setEditOpen(false)}
+          finding={findingForModal}
+        />
+      </BetterDialogProvider>
     </div>
   )
 }

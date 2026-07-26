@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  BetterDialogContent,
-  BetterDialogProvider,
-} from '@/components/better-dialog'
+import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -15,60 +12,49 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { FormField, FormGrid } from '../form-field'
 
-export function VersionModal({
-  open,
-  onOpenChange,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}) {
+export function VersionModal({ onClose }: { onClose: () => void }) {
   return (
-    <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
-      <BetterDialogContent
-        title="Create version"
-        description="Promote a run into a new named version of this model."
-        footerCancel
-        footerSubmit="Create version"
-        onFooterSubmitClick={() => onOpenChange(false)}
-      >
-        <div className="flex flex-col gap-5">
-          <FormGrid>
-            <FormField label="Version">
-              <Input placeholder="v4.0.0" />
-            </FormField>
-            <FormField label="Display name">
-              <Input placeholder="Video Recs v3" />
-            </FormField>
-          </FormGrid>
-
-          <FormField label="Description">
-            <Textarea placeholder="What changed in this version?" rows={3} />
+    <BetterDialogContent
+      title="Create version"
+      description="Promote a run into a new named version of this model."
+      footerCancel
+      footerSubmit="Create version"
+      onFooterSubmitClick={() => onClose()}
+    >
+      <div className="flex flex-col gap-5">
+        <FormGrid>
+          <FormField label="Version">
+            <Input placeholder="v4.0.0" />
           </FormField>
-
-          <FormField label="Linked run">
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a run to promote" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="r-vr-v2-b">
-                  r-vr-v2-b · watch-history-context
-                </SelectItem>
-                <SelectItem value="r-vr-v2-a">
-                  r-vr-v2-a · feed-baseline
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          <FormField label="Display name">
+            <Input placeholder="Video Recs v3" />
           </FormField>
+        </FormGrid>
 
-          <FormField label="Release notes">
-            <Textarea
-              placeholder="Highlights, metrics, and caveats."
-              rows={4}
-            />
-          </FormField>
-        </div>
-      </BetterDialogContent>
-    </BetterDialogProvider>
+        <FormField label="Description">
+          <Textarea placeholder="What changed in this version?" rows={3} />
+        </FormField>
+
+        <FormField label="Linked run">
+          <Select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a run to promote" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="r-vr-v2-b">
+                r-vr-v2-b · watch-history-context
+              </SelectItem>
+              <SelectItem value="r-vr-v2-a">
+                r-vr-v2-a · feed-baseline
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </FormField>
+
+        <FormField label="Release notes">
+          <Textarea placeholder="Highlights, metrics, and caveats." rows={4} />
+        </FormField>
+      </div>
+    </BetterDialogContent>
   )
 }

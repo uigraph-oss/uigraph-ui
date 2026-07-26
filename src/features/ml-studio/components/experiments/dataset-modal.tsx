@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  BetterDialogContent,
-  BetterDialogProvider,
-} from '@/components/better-dialog'
+import { BetterDialogContent } from '@/components/better-dialog'
 import {
   Form,
   FormControl,
@@ -23,7 +20,6 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { CREATE_ML_DATASET, UPDATE_ML_DATASET } from '../../api/ml-studio'
@@ -50,13 +46,11 @@ const emptyValues: DatasetFormValues = {
 }
 
 export function DatasetModal({
-  open,
-  onOpenChange,
+  onClose,
   experimentId,
   dataset,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  onClose: () => void
   experimentId: string
   dataset?: Dataset | null
 }) {
@@ -73,27 +67,18 @@ export function DatasetModal({
 
   const form = useForm<DatasetFormValues>({
     resolver: zodResolver(datasetSchema),
-    defaultValues: emptyValues,
+    defaultValues: dataset
+      ? {
+          name: dataset.name,
+          source: dataset.source,
+          sourceType: dataset.sourceType,
+          context: dataset.context,
+          rowCount: dataset.rowCount ? String(dataset.rowCount) : '',
+          digest: dataset.digest,
+        }
+      : emptyValues,
   })
-  const { control, handleSubmit, formState, reset } = form
-
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-    reset(
-      dataset
-        ? {
-            name: dataset.name,
-            source: dataset.source,
-            sourceType: dataset.sourceType,
-            context: dataset.context,
-            rowCount: dataset.rowCount ? String(dataset.rowCount) : '',
-            digest: dataset.digest,
-          }
-        : emptyValues
-    )
-  }, [open, dataset, reset])
+  const { control, handleSubmit, formState } = form
 
   async function onSubmit(values: DatasetFormValues) {
     if (!orgId) {
@@ -117,33 +102,66 @@ export function DatasetModal({
         variables: { orgId, experimentId, input },
       })
     }
-    onOpenChange(false)
+    onClose()
   }
 
   return (
-    <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
-      <BetterDialogContent
-        title={isEdit ? 'Edit dataset' : 'New dataset'}
-        description="Document a dataset used in this experiment — a path, URL, or table reference works fine."
-        footerCancel
-        footerSubmit={isEdit ? 'Save changes' : 'Log dataset'}
-        footerSubmitLoading={formState.isSubmitting}
-        onFooterSubmitClick={handleSubmit(onSubmit)}
-      >
-        <Form {...form}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-5"
-          >
+    <BetterDialogContent
+      title={isEdit ? 'Edit dataset' : 'New dataset'}
+      description="Document a dataset used in this experiment — a path, URL, or table reference works fine."
+      footerCancel
+      footerSubmit={isEdit ? 'Save changes' : 'Log dataset'}
+      footerSubmitLoading={formState.isSubmitting}
+      onFooterSubmitClick={handleSubmit(onSubmit)}
+    >
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="training-set-v2"
+                    className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="source"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Source</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="s3://my-bucket/datasets/roblox_players.csv"
+                    className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 font-mono text-sm focus:outline-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={control}
-              name="name"
+              name="sourceType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Source type</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="training-set-v2"
+                      placeholder="s3, local, url, table..."
                       className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                       {...field}
                     />
@@ -155,14 +173,39 @@ export function DatasetModal({
 
             <FormField
               control={control}
-              name="source"
+              name="context"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Source</FormLabel>
+                  <FormLabel>Context</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
+                        <SelectValue placeholder="Select context" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="training">Training</SelectItem>
+                        <SelectItem value="evaluation">Evaluation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={control}
+              name="rowCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Row count</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="s3://my-bucket/datasets/roblox_players.csv"
-                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 font-mono text-sm focus:outline-none"
+                      type="number"
+                      placeholder="120000"
+                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                       {...field}
                     />
                   </FormControl>
@@ -171,92 +214,26 @@ export function DatasetModal({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={control}
-                name="sourceType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Source type</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="s3, local, url, table..."
-                        className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="context"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Context</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
-                          <SelectValue placeholder="Select context" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="training">Training</SelectItem>
-                          <SelectItem value="evaluation">Evaluation</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={control}
-                name="rowCount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Row count</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="120000"
-                        className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="digest"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Digest</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="sha256:abc123..."
-                        className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 font-mono text-sm focus:outline-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </form>
-        </Form>
-      </BetterDialogContent>
-    </BetterDialogProvider>
+            <FormField
+              control={control}
+              name="digest"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Digest</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="sha256:abc123..."
+                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 font-mono text-sm focus:outline-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
+    </BetterDialogContent>
   )
 }

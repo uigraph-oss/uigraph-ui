@@ -3,6 +3,7 @@
 import type { MlStudioProjectsQuery } from '@/api/.gql/graphql'
 import { MLflowIcon, MoreVerticalIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -253,11 +254,15 @@ function ProjectCard({
         </DropdownMenu>
       )}
 
-      <ProjectModal
+      <BetterDialogProvider
         open={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
-        project={project}
-      />
+      >
+        <ProjectModal
+          onClose={() => setIsEditModalOpen(false)}
+          project={project}
+        />
+      </BetterDialogProvider>
 
       <BetterDeleteConfirmationModal
         open={isDeleteModalOpen}
@@ -457,7 +462,9 @@ export function ProjectsTab() {
         )}
       </div>
 
-      <ProjectModal open={modalOpen} onOpenChange={setModalOpen} />
+      <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
+        <ProjectModal onClose={() => setModalOpen(false)} />
+      </BetterDialogProvider>
     </div>
   )
 }

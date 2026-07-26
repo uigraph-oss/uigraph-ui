@@ -2,6 +2,7 @@
 
 import { MLflowIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -218,12 +219,13 @@ export function ExperimentsTab() {
       </div>
 
       {projectId && (
-        <ExperimentModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          experiment={editingExperiment}
-          projectId={projectId}
-        />
+        <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
+          <ExperimentModal
+            onClose={() => setModalOpen(false)}
+            experiment={editingExperiment}
+            projectId={projectId}
+          />
+        </BetterDialogProvider>
       )}
 
       <BetterDeleteConfirmationModal

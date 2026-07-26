@@ -1,6 +1,7 @@
 'use client'
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -176,12 +177,13 @@ export function ExperimentDatasetsTab() {
       )}
 
       {experimentId && (
-        <DatasetModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          experimentId={experimentId}
-          dataset={editingDataset}
-        />
+        <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
+          <DatasetModal
+            onClose={() => setModalOpen(false)}
+            experimentId={experimentId}
+            dataset={editingDataset}
+          />
+        </BetterDialogProvider>
       )}
 
       <BetterDeleteConfirmationModal
