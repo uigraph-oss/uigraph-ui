@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -68,7 +68,13 @@ export function ModelMetricsTab() {
     string[]
   >([])
   const [hiddenVersionMetrics, setHiddenVersionMetrics] = useState<string[]>([])
-  const [summaryTab, setSummaryTab] = useState<'run' | 'evaluations'>('run')
+  const [summaryTabs, summaryTab] = useBetterTabs(
+    [
+      { id: 'run', label: 'Training Run' },
+      { id: 'evaluations', label: 'Latest Evaluation' },
+    ],
+    'run'
+  )
 
   const evaluationsQuery = useQuery(ML_VERSION_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
@@ -176,34 +182,7 @@ export function ModelMetricsTab() {
               </p>
             </div>
 
-            <div className="border-stock grid grid-cols-2 gap-1 justify-self-center rounded-[0.80315625rem] border p-1">
-              <button
-                type="button"
-                onClick={() => setSummaryTab('run')}
-                disabled={runScalars.length === 0}
-                className={cn(
-                  'rounded-[0.5rem] px-3 py-1.5 text-sm disabled:opacity-40',
-                  summarySource === 'run'
-                    ? 'bg-accent text-foreground'
-                    : 'text-foreground/60 hover:text-foreground'
-                )}
-              >
-                Training Run
-              </button>
-              <button
-                type="button"
-                onClick={() => setSummaryTab('evaluations')}
-                disabled={latestScalars.length === 0}
-                className={cn(
-                  'rounded-[0.5rem] px-3 py-1.5 text-sm disabled:opacity-40',
-                  summarySource === 'evaluations'
-                    ? 'bg-accent text-foreground'
-                    : 'text-foreground/60 hover:text-foreground'
-                )}
-              >
-                Latest Evaluation
-              </button>
-            </div>
+            <BetterTabController control={summaryTabs} />
 
             <div className="justify-self-end text-sm">
               {summarySource === 'run' && (
