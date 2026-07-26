@@ -27,8 +27,9 @@ import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
-import { CREATE_ML_PROJECT } from '../../api/ml-studio'
+import { CREATE_ML_PROJECT, UPDATE_ML_PROJECT } from '../../api/ml-studio'
 
 const projectSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -49,9 +50,17 @@ const emptyValues: ProjectFormValues = {
 export function ProjectModal({
   open,
   onOpenChange,
+  project,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
+  project?: {
+    id: string
+    name: string
+    description: string
+    type: string
+    teamId?: string | null
+  }
 }) {
   const orgId = useCurrentOrganization()?.id
   const { data: teamsData } = useQuery(TEAMS, {
@@ -62,6 +71,10 @@ export function ProjectModal({
   const teams = teamsData?.teams ?? []
   const [createProject] = useMutation(CREATE_ML_PROJECT, {
     refetchQueries: ['MlStudioProjects'],
+    awaitRefetchQueries: true,
+  })
+  const [updateProject] = useMutation(UPDATE_ML_PROJECT, {
+    refetchQueries: ['MlStudioProjects', 'MlStudioProject'],
     awaitRefetchQueries: true,
   })
 
@@ -75,34 +88,52 @@ export function ProjectModal({
     if (!open) {
       return
     }
-    reset(emptyValues)
-  }, [open, reset])
+    if (!project) {
+      reset(emptyValues)
+      return
+    }
+    reset({
+      name: project.name,
+      description: project.description,
+      type: project.type === 'training' ? 'training' : 'model',
+      teamId: project.teamId ?? '',
+    })
+  }, [open, project, reset])
 
   async function onSubmit(values: ProjectFormValues) {
     if (!orgId) {
       return
     }
-    await createProject({
-      variables: {
-        orgId,
-        input: {
-          name: values.name,
-          type: values.type,
-          description: values.description,
-          teamId: values.teamId,
-        },
-      },
-    })
+    const input = {
+      name: values.name,
+      type: values.type,
+      description: values.description,
+      teamId: values.teamId,
+    }
+    if (project) {
+      try {
+        await updateProject({ variables: { orgId, id: project.id, input } })
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to update project'
+        )
+        return
+      }
+      toast.success('Project updated')
+      onOpenChange(false)
+      return
+    }
+    await createProject({ variables: { orgId, input } })
     onOpenChange(false)
   }
 
   return (
     <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
       <BetterDialogContent
-        title="New project"
+        title={project ? 'Edit project' : 'New project'}
         description="Group models and experiments across your ML sources."
         footerCancel
-        footerSubmit="Create project"
+        footerSubmit={project ? 'Save changes' : 'Create project'}
         footerSubmitLoading={formState.isSubmitting}
         onFooterSubmitClick={handleSubmit(onSubmit)}
       >

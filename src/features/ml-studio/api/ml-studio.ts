@@ -494,6 +494,24 @@ export const CREATE_ML_PROJECT = graphql(`
   }
 `)
 
+export const UPDATE_ML_PROJECT = graphql(`
+  mutation UpdateMlProject(
+    $orgId: ID!
+    $id: ID!
+    $input: UpdateMlProjectInput!
+  ) {
+    updateMlProject(orgId: $orgId, id: $id, input: $input) {
+      id
+    }
+  }
+`)
+
+export const DELETE_ML_PROJECT = graphql(`
+  mutation DeleteMlProject($orgId: ID!, $id: ID!) {
+    deleteMlProject(orgId: $orgId, id: $id)
+  }
+`)
+
 export const CREATE_ML_FINDING = graphql(`
   mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {
     createMlFinding(orgId: $orgId, input: $input) {

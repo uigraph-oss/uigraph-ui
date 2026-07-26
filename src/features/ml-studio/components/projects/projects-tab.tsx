@@ -1,9 +1,17 @@
 'use client'
 
-import { MLflowIcon } from '@/assets/svgs'
+import type { MlStudioProjectsQuery } from '@/api/.gql/graphql'
+import { MLflowIcon, MoreVerticalIcon } from '@/assets/svgs'
+import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -15,12 +23,13 @@ import {
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { format } from 'date-fns'
 import { PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ML_STUDIO_PROJECTS } from '../../api/ml-studio'
+import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
+import { DELETE_ML_PROJECT, ML_STUDIO_PROJECTS } from '../../api/ml-studio'
 import { ProjectModal } from './project-modal'
 
 // Type → accent color: semantic, tells you what kind of project this is
@@ -102,8 +111,182 @@ function SourceIcon({
   return null
 }
 
+type Project = MlStudioProjectsQuery['mlProjects'][number]
+
+function ProjectCard({
+  project,
+  teamName,
+}: {
+  project: Project
+  teamName?: string
+}) {
+  const orgId = useCurrentOrganization()?.id
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [deleteProject] = useMutation(DELETE_ML_PROJECT, {
+    refetchQueries: ['MlStudioProjects'],
+    awaitRefetchQueries: true,
+  })
+
+  const avatarColor = getAvatarColor(project.id || project.name)
+  const bandColor = getTypeColor(project.type)
+  const metrics = getProjectMetrics(project.type, {
+    modelCount: project.stats?.modelCount ?? 0,
+    experimentCount: project.stats?.experimentCount ?? 0,
+    runCount: project.stats?.runCount ?? 0,
+  })
+  const updatedDate = project.updatedAt ? new Date(project.updatedAt) : null
+  // Synced projects mirror their ML source, so only manual ones can be changed here
+  const isManual = !project.sourceType
+
+  return (
+    <div className="group relative">
+      <Link
+        to={`/dashboard/ml-studio/projects/${project.id}`}
+        className="flex flex-col overflow-hidden rounded-2xl bg-[#141925] text-left ring-1 ring-[#2A3242] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.25),0_6px_20px_rgba(0,0,0,0.4)] hover:ring-[#015AEB]"
+      >
+        <div className="flex flex-1 flex-col p-5">
+          <div className="mb-4 flex items-start gap-3 pr-6">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-[12px] font-bold tracking-wider"
+              style={{
+                backgroundColor: `${avatarColor}18`,
+                color: avatarColor,
+              }}
+            >
+              {getMonogram(project.name)}
+            </div>
+            <div className="min-w-0">
+              <h3 className="truncate text-[14px] leading-5 font-semibold tracking-[-0.01em] text-[#F4F7FC]">
+                {project.name}
+              </h3>
+              {project.sourceType && (
+                <p className="mt-[3px] flex items-center gap-1.5 truncate text-[11px] text-[#828DA3]">
+                  <SourceIcon
+                    sourceType={project.sourceType}
+                    className="mb-0.5 size-3 shrink-0"
+                  />
+                  {getSourceLabel(project.sourceType)}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Reserve two lines so cards align whether the
+              description is long, short, or missing */}
+          <p className="mb-3 line-clamp-2 min-h-[39px] text-[13px] leading-[1.5] text-[#828DA3]">
+            {project.description}
+          </p>
+
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {project.type && (
+              <span
+                className="inline-flex items-center rounded-md px-2 py-1 text-[11px] leading-none font-medium capitalize"
+                style={{
+                  backgroundColor: `${bandColor}1F`,
+                  color: bandColor,
+                }}
+              >
+                {project.type}
+              </span>
+            )}
+            {teamName && (
+              <span className="inline-flex max-w-[140px] items-center truncate rounded-md px-2 py-1 text-[11px] leading-none font-medium text-[#9AA6BC] ring-1 ring-[#2A3242] ring-inset">
+                {teamName}
+              </span>
+            )}
+          </div>
+
+          {/* Type-aware metrics — only what's meaningful for this project */}
+          {(metrics.length > 0 || updatedDate) && (
+            <div className="mt-auto flex items-center gap-5 border-t border-[#2A3242] pt-4">
+              {metrics.map(({ value, label }) => (
+                <div key={label} className="flex items-baseline gap-1.5">
+                  <span
+                    className="text-[16px] leading-none font-bold tracking-tight tabular-nums"
+                    style={{
+                      color: value > 0 ? bandColor : '#586378',
+                    }}
+                  >
+                    {value}
+                  </span>
+                  <span className="text-[12px] text-[#828DA3]">{label}</span>
+                </div>
+              ))}
+              {updatedDate && (
+                <span className="ml-auto text-[11px] text-[#586378]">
+                  {format(updatedDate, 'd MMM yyyy')}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </Link>
+
+      {/* ··· menu — appears on hover */}
+      {isManual && (
+        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={cn(
+                'absolute top-4 right-3 h-6 w-6 rounded-md bg-[#1E2533]/90 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#1E2533]',
+                isDropdownOpen && 'opacity-100'
+              )}
+            >
+              <MoreVerticalIcon className="h-3.5 w-3.5 text-[#828DA3]" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+
+      <ProjectModal
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        project={project}
+      />
+
+      <BetterDeleteConfirmationModal
+        open={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        title="Do you want to delete this project?"
+        description="Deleting your project is a permanent action and cannot be undone. Please think carefully before proceeding."
+        onConfirm={async () => {
+          if (!orgId) {
+            return
+          }
+          try {
+            await deleteProject({ variables: { orgId, id: project.id } })
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : 'Failed to delete project'
+            )
+            return
+          }
+          setIsDeleteModalOpen(false)
+          toast.success('Project deleted')
+        }}
+      />
+    </div>
+  )
+}
+
 export function ProjectsTab() {
-  const navigate = useNavigate()
   const orgId = useCurrentOrganization()?.id
   const { data, loading } = useQuery(ML_STUDIO_PROJECTS, {
     fetchPolicy: 'cache-and-network',
@@ -261,113 +444,15 @@ export function ProjectsTab() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
             }}
           >
-            {filtered.map((project) => {
-              const avatarColor = getAvatarColor(project.id || project.name)
-              const bandColor = getTypeColor(project.type)
-              const teamName = project.teamId
-                ? teamNameById.get(project.teamId)
-                : undefined
-              const metrics = getProjectMetrics(project.type, {
-                modelCount: project.stats?.modelCount ?? 0,
-                experimentCount: project.stats?.experimentCount ?? 0,
-                runCount: project.stats?.runCount ?? 0,
-              })
-              const updatedDate = project.updatedAt
-                ? new Date(project.updatedAt)
-                : null
-              return (
-                <button
-                  key={project.id}
-                  type="button"
-                  onClick={() =>
-                    navigate(`/dashboard/ml-studio/projects/${project.id}`)
-                  }
-                  className="group flex flex-col overflow-hidden rounded-2xl bg-[#141925] text-left ring-1 ring-[#2A3242] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_0_2px_rgba(37,99,235,0.25),0_6px_20px_rgba(0,0,0,0.4)] hover:ring-[#015AEB]"
-                >
-                  <div className="flex flex-1 flex-col p-5">
-                    <div className="mb-4 flex items-start gap-3 pr-6">
-                      <div
-                        className="flex size-10 shrink-0 items-center justify-center rounded-xl text-[12px] font-bold tracking-wider"
-                        style={{
-                          backgroundColor: `${avatarColor}18`,
-                          color: avatarColor,
-                        }}
-                      >
-                        {getMonogram(project.name)}
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="truncate text-[14px] leading-5 font-semibold tracking-[-0.01em] text-[#F4F7FC]">
-                          {project.name}
-                        </h3>
-                        {project.sourceType && (
-                          <p className="mt-[3px] flex items-center gap-1.5 truncate text-[11px] text-[#828DA3]">
-                            <SourceIcon
-                              sourceType={project.sourceType}
-                              className="mb-0.5 size-3 shrink-0"
-                            />
-                            {getSourceLabel(project.sourceType)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Reserve two lines so cards align whether the
-                        description is long, short, or missing */}
-                    <p className="mb-3 line-clamp-2 min-h-[39px] text-[13px] leading-[1.5] text-[#828DA3]">
-                      {project.description}
-                    </p>
-
-                    <div className="mb-4 flex flex-wrap items-center gap-2">
-                      {project.type && (
-                        <span
-                          className="inline-flex items-center rounded-md px-2 py-1 text-[11px] leading-none font-medium capitalize"
-                          style={{
-                            backgroundColor: `${bandColor}1F`,
-                            color: bandColor,
-                          }}
-                        >
-                          {project.type}
-                        </span>
-                      )}
-                      {teamName && (
-                        <span className="inline-flex max-w-[140px] items-center truncate rounded-md px-2 py-1 text-[11px] leading-none font-medium text-[#9AA6BC] ring-1 ring-[#2A3242] ring-inset">
-                          {teamName}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Type-aware metrics — only what's meaningful for this project */}
-                    {(metrics.length > 0 || updatedDate) && (
-                      <div className="mt-auto flex items-center gap-5 border-t border-[#2A3242] pt-4">
-                        {metrics.map(({ value, label }) => (
-                          <div
-                            key={label}
-                            className="flex items-baseline gap-1.5"
-                          >
-                            <span
-                              className="text-[16px] leading-none font-bold tracking-tight tabular-nums"
-                              style={{
-                                color: value > 0 ? bandColor : '#586378',
-                              }}
-                            >
-                              {value}
-                            </span>
-                            <span className="text-[12px] text-[#828DA3]">
-                              {label}
-                            </span>
-                          </div>
-                        ))}
-                        {updatedDate && (
-                          <span className="ml-auto text-[11px] text-[#586378]">
-                            {format(updatedDate, 'd MMM yyyy')}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
+            {filtered.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                teamName={
+                  project.teamId ? teamNameById.get(project.teamId) : undefined
+                }
+              />
+            ))}
           </div>
         )}
       </div>
