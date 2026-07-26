@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { formatToHumanReadableMS } from '@/utils/time'
 import { format, formatDistanceToNow } from 'date-fns'
 import { BarChart3, FlaskConical, SlidersHorizontal } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -128,7 +129,10 @@ export function ModelOverviewTab() {
                   <span>In progress</span>
                 )}
                 <span className="text-[#586378]">·</span>
-                <span>Training duration {latestRun.duration}</span>
+                <span>
+                  Training duration{' '}
+                  {formatToHumanReadableMS(latestRun.duration)}
+                </span>
               </div>
             </div>
             <Button

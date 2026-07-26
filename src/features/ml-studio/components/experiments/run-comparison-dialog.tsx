@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { formatToHumanReadableMS } from '@/utils/time'
 import { formatDistanceToNow } from 'date-fns'
 import {
   ChartColumnIcon,
@@ -27,13 +28,7 @@ import { RunValueBarChart } from '../metric-chart'
 import { StatusBadge } from '../status-badge'
 
 function durationSeconds(run: Run) {
-  if (run.startedAt && run.endedAt) {
-    return (
-      (new Date(run.endedAt).getTime() - new Date(run.startedAt).getTime()) /
-      1000
-    )
-  }
-  return 0
+  return run.duration / 1000
 }
 
 export function RunComparisonDialog({
@@ -140,7 +135,7 @@ export function RunComparisonDialog({
                       })}`
                     : '—'}
                 </span>
-                <span>{r.duration}</span>
+                <span>{formatToHumanReadableMS(r.duration)}</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="inline-flex">

@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { formatToHumanReadableMS } from '@/utils/time'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ActivityIcon, GaugeIcon, TrophyIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
@@ -208,7 +209,7 @@ export function ExperimentOverviewTab() {
                     {formatMetric(run.metrics[primaryMetric])}
                   </TableCell>
                   <TableCell className="text-sm text-[#828DA3]">
-                    {run.duration}
+                    {formatToHumanReadableMS(run.duration)}
                   </TableCell>
                 </TableRow>
               ))}

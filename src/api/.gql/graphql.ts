@@ -471,7 +471,7 @@ export type CreateMlProjectInput = {
 
 export type CreateMlRunInput = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
-  duration?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
   endedAt?: InputMaybe<Scalars['Time']['input']>;
   metrics?: InputMaybe<Scalars['JSON']['input']>;
   name: Scalars['String']['input'];
@@ -1229,7 +1229,7 @@ export type MlProjectStats = {
 
 export type MlRun = {
   datasetId?: Maybe<Scalars['ID']['output']>;
-  duration: Scalars['String']['output'];
+  duration: Scalars['Int']['output'];
   endedAt?: Maybe<Scalars['Time']['output']>;
   experimentId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
@@ -3774,7 +3774,7 @@ export type UpdateMlProjectInput = {
 
 export type UpdateMlRunInput = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
-  duration?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
   endedAt?: InputMaybe<Scalars['Time']['input']>;
   metrics?: InputMaybe<Scalars['JSON']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -4968,7 +4968,7 @@ export type MlStudioRunQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioRunQuery = { mlRun: { id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null } };
+export type MlStudioRunQuery = { mlRun: { id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: number, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null } };
 
 export type MlStudioExperimentRunsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -4977,7 +4977,7 @@ export type MlStudioExperimentRunsQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioExperimentRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
+export type MlStudioExperimentRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: number, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
 
 export type MlStudioExperimentRunsPageQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -4989,14 +4989,14 @@ export type MlStudioExperimentRunsPageQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioExperimentRunsPageQuery = { mlRunsPage: { total: number, runs: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null }> } };
+export type MlStudioExperimentRunsPageQuery = { mlRunsPage: { total: number, runs: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: number, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null }> } };
 
 export type MlStudioRunsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
 }>;
 
 
-export type MlStudioRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
+export type MlStudioRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt?: string | null, endedAt?: string | null, duration: number, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, series: unknown, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
 
 export type MlStudioArtifactsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];

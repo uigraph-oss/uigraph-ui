@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { formatToHumanReadableMS } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import {
@@ -140,7 +141,9 @@ export function RunDetailPage() {
           <InfoRow label="Completed at">
             {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
           </InfoRow>
-          <InfoRow label="Training duration">{run.duration}</InfoRow>
+          <InfoRow label="Training duration">
+            {formatToHumanReadableMS(run.duration)}
+          </InfoRow>
           <InfoRow label="Updated at">
             {run.updatedAt ? (
               <span title={format(new Date(run.updatedAt), 'PPpp')}>

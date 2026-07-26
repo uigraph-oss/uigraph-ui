@@ -26,29 +26,132 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusIcon, Trash2 } from 'lucide-react'
+import ms from 'ms'
 import { useEffect } from 'react'
-import {
-  useFieldArray,
-  useForm,
-  type Control,
-  type UseFormRegister,
-} from 'react-hook-form'
+import { useFieldArray, useForm, type Control } from 'react-hook-form'
 import { z } from 'zod'
 import { CREATE_ML_RUN, UPDATE_ML_RUN } from '../../api/ml-studio'
 import type { Run } from '../../types'
 
-const kvSchema = z.array(z.object({ key: z.string(), value: z.string() }))
+const KEY_PATTERN = /^[A-Za-z_][A-Za-z0-9_.-]*$/
+const KEY_MESSAGE =
+  'Use letters, numbers, ".", "-" or "_", starting with a letter or "_"'
+const keySchema = z
+  .string()
+  .trim()
+  .min(1, 'Key is required')
+  .max(64, 'Key must be 64 characters or fewer')
+  .regex(KEY_PATTERN, KEY_MESSAGE)
 
-const runSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  status: z.enum(['running', 'completed', 'failed', 'cancelled']),
-  startedAt: z.string(),
-  endedAt: z.string(),
-  duration: z.string(),
-  notes: z.string(),
-  parameters: kvSchema,
-  metrics: kvSchema,
-})
+function withUniqueKeys<T extends { key: string }>(
+  rows: T[],
+  ctx: z.RefinementCtx
+) {
+  const seen = new Set<string>()
+  rows.forEach((row, index) => {
+    const key = row.key.trim()
+    if (!key) {
+      return
+    }
+    if (seen.has(key)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Key must be unique',
+        path: [index, 'key'],
+      })
+      return
+    }
+    seen.add(key)
+  })
+}
+
+const parametersSchema = z
+  .array(
+    z.object({
+      key: keySchema,
+      value: z
+        .string()
+        .trim()
+        .min(1, 'Value is required')
+        .max(256, 'Value must be 256 characters or fewer'),
+    })
+  )
+  .max(50, 'At most 50 parameters')
+  .superRefine(withUniqueKeys)
+
+const metricsSchema = z
+  .array(
+    z.object({
+      key: keySchema,
+      value: z
+        .string()
+        .trim()
+        .min(1, 'Value is required')
+        .refine(
+          (value) => Number.isFinite(Number(value)),
+          'Value must be a number'
+        ),
+    })
+  )
+  .max(50, 'At most 50 metrics')
+  .superRefine(withUniqueKeys)
+
+const runSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, 'Name is required')
+      .max(100, 'Name must be 100 characters or fewer'),
+    status: z.enum(['running', 'completed', 'failed', 'cancelled']),
+    startedAt: z.string(),
+    endedAt: z.string(),
+    duration: z
+      .string()
+      .trim()
+      .refine(
+        (value) => Number.isFinite(ms(value as ms.StringValue)),
+        'Use a duration like "5s", "2h" or "1500ms"'
+      ),
+    notes: z.string().max(2000, 'Notes must be 2000 characters or fewer'),
+    parameters: parametersSchema,
+    metrics: metricsSchema,
+  })
+  .superRefine((values, ctx) => {
+    if (values.startedAt !== '' && Number.isNaN(Date.parse(values.startedAt))) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Enter a valid date and time',
+        path: ['startedAt'],
+      })
+    }
+    if (values.endedAt === '') {
+      return
+    }
+    if (Number.isNaN(Date.parse(values.endedAt))) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Enter a valid date and time',
+        path: ['endedAt'],
+      })
+      return
+    }
+    if (values.startedAt === '') {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Set a start time first',
+        path: ['startedAt'],
+      })
+      return
+    }
+    if (Date.parse(values.endedAt) < Date.parse(values.startedAt)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'End time must be after the start time',
+        path: ['endedAt'],
+      })
+    }
+  })
 
 type RunFormValues = z.infer<typeof runSchema>
 
@@ -73,19 +176,18 @@ function toRows(values?: Record<string, string | number>) {
   }))
 }
 
-function toMap(rows: { key: string; value: string }[], numeric: boolean) {
-  const out: Record<string, string | number> = {}
+function toParameterMap(rows: { key: string; value: string }[]) {
+  const out: Record<string, string> = {}
   for (const row of rows) {
-    const key = row.key.trim()
-    if (!key) {
-      continue
-    }
-    if (numeric) {
-      const num = Number(row.value)
-      out[key] = row.value.trim() !== '' && !Number.isNaN(num) ? num : row.value
-    } else {
-      out[key] = row.value
-    }
+    out[row.key.trim()] = row.value.trim()
+  }
+  return out
+}
+
+function toMetricMap(rows: { key: string; value: string }[]) {
+  const out: Record<string, number> = {}
+  for (const row of rows) {
+    out[row.key.trim()] = Number(row.value.trim())
   }
   return out
 }
@@ -93,14 +195,12 @@ function toMap(rows: { key: string; value: string }[], numeric: boolean) {
 function KeyValueFields({
   name,
   control,
-  register,
   keyPlaceholder,
   valuePlaceholder,
   addLabel,
 }: {
   name: 'parameters' | 'metrics'
   control: Control<RunFormValues>
-  register: UseFormRegister<RunFormValues>
   keyPlaceholder: string
   valuePlaceholder: string
   addLabel: string
@@ -110,21 +210,43 @@ function KeyValueFields({
   return (
     <div className="flex flex-col gap-2">
       {fields.map((field, index) => (
-        <div key={field.id} className="flex items-center gap-2">
-          <Input
-            placeholder={keyPlaceholder}
-            className="h-11 rounded-[12px] border-[#2A3242] bg-transparent"
-            {...register(`${name}.${index}.key` as const)}
+        <div key={field.id} className="flex items-start gap-2">
+          <FormField
+            control={control}
+            name={`${name}.${index}.key` as const}
+            render={({ field: keyField }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    placeholder={keyPlaceholder}
+                    className="h-11 rounded-[12px] border-[#2A3242] bg-transparent"
+                    {...keyField}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <Input
-            placeholder={valuePlaceholder}
-            className="h-11 rounded-[12px] border-[#2A3242] bg-transparent"
-            {...register(`${name}.${index}.value` as const)}
+          <FormField
+            control={control}
+            name={`${name}.${index}.value` as const}
+            render={({ field: valueField }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    placeholder={valuePlaceholder}
+                    className="h-11 rounded-[12px] border-[#2A3242] bg-transparent"
+                    {...valueField}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
           <button
             type="button"
             onClick={() => remove(index)}
-            className="flex size-9 shrink-0 items-center justify-center rounded-[8px] text-[#828DA3] transition-all hover:bg-red-500/15 hover:text-red-400"
+            className="mt-1 flex size-9 shrink-0 items-center justify-center rounded-[8px] text-[#828DA3] transition-all hover:bg-red-500/15 hover:text-red-400"
             aria-label={`Remove ${name}`}
           >
             <Trash2 className="size-4" />
@@ -135,6 +257,7 @@ function KeyValueFields({
         type="button"
         preset="outline"
         className="h-10 w-fit"
+        disabled={fields.length >= 50}
         onClick={() => append({ key: '', value: '' })}
       >
         <PlusIcon />
@@ -173,8 +296,10 @@ export function RunModal({
   const form = useForm<RunFormValues>({
     resolver: zodResolver(runSchema),
     defaultValues: emptyValues,
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
   })
-  const { control, register, handleSubmit, formState, reset } = form
+  const { control, handleSubmit, formState, reset } = form
 
   useEffect(() => {
     if (!open) {
@@ -187,7 +312,7 @@ export function RunModal({
             status: run.status,
             startedAt: run.startedAt ? run.startedAt.slice(0, 16) : '',
             endedAt: run.endedAt ? run.endedAt.slice(0, 16) : '',
-            duration: run.duration,
+            duration: ms(run.duration),
             notes: run.notes,
             parameters: toRows(run.parameters),
             metrics: toRows(run.metrics),
@@ -201,16 +326,16 @@ export function RunModal({
       return
     }
     const input = {
-      name: values.name,
+      name: values.name.trim(),
       status: values.status,
       startedAt: values.startedAt
         ? new Date(values.startedAt).toISOString()
         : null,
       endedAt: values.endedAt ? new Date(values.endedAt).toISOString() : null,
-      duration: values.duration,
+      duration: ms(values.duration as ms.StringValue),
       notes: values.notes,
-      parameters: toMap(values.parameters, false),
-      metrics: toMap(values.metrics, true),
+      parameters: toParameterMap(values.parameters),
+      metrics: toMetricMap(values.metrics),
     }
     if (run) {
       await updateRun({
@@ -293,7 +418,7 @@ export function RunModal({
                     <FormLabel>Duration</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="45m"
+                        placeholder="5s"
                         className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                         {...field}
                       />
@@ -365,7 +490,6 @@ export function RunModal({
               <KeyValueFields
                 name="parameters"
                 control={control}
-                register={register}
                 keyPlaceholder="learning_rate"
                 valuePlaceholder="0.001"
                 addLabel="Add parameter"
@@ -377,7 +501,6 @@ export function RunModal({
               <KeyValueFields
                 name="metrics"
                 control={control}
-                register={register}
                 keyPlaceholder="accuracy"
                 valuePlaceholder="0.94"
                 addLabel="Add metric"

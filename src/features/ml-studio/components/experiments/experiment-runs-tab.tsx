@@ -28,6 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { formatToHumanReadableMS } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -263,7 +264,7 @@ export function ExperimentRunsTab() {
                       />
                     </TableCell>
                     <TableCell className="text-sm text-[#828DA3]">
-                      {run.duration}
+                      {formatToHumanReadableMS(run.duration)}
                     </TableCell>
                     <TableCell
                       className="text-sm text-[#828DA3]"
