@@ -15,7 +15,12 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
-import { ML_STUDIO_EXPERIMENT, ML_STUDIO_RUN } from '../../api/ml-studio'
+import {
+  ML_EVALUATION,
+  ML_STUDIO_EXPERIMENT,
+  ML_STUDIO_MODEL,
+  ML_STUDIO_RUN,
+} from '../../api/ml-studio'
 import { ProjectProvider, useProject } from '../../contexts/project-context'
 
 const modelsTab = { id: 'models', label: 'Models' } as const
@@ -29,6 +34,11 @@ const tabURLPattern = new URLPatternPolyfill({
 const runURLPattern = new URLPatternPolyfill({
   pathname:
     '/dashboard/ml-studio/projects/:projectId/experiments/:experimentId/runs/:runId',
+})
+
+const evaluationURLPattern = new URLPatternPolyfill({
+  pathname:
+    '/dashboard/ml-studio/projects/:projectId/models/:modelId/evaluations/:evaluationId',
 })
 
 export function MlStudioProjectLayout() {
@@ -52,6 +62,13 @@ function ProjectShell() {
   }, [pathname])
   const isRunDetail = Boolean(runMatch?.runId)
 
+  const evaluationMatch = useMemo(() => {
+    return evaluationURLPattern.exec({ pathname })?.pathname.groups
+  }, [pathname])
+  const isEvaluationDetail = Boolean(evaluationMatch?.evaluationId)
+
+  const isDetail = isRunDetail || isEvaluationDetail
+
   const experimentQuery = useQuery(ML_STUDIO_EXPERIMENT, {
     fetchPolicy: 'cache-first',
     skip: !orgId || !runMatch?.experimentId,
@@ -61,6 +78,16 @@ function ProjectShell() {
     fetchPolicy: 'cache-first',
     skip: !orgId || !runMatch?.runId,
     variables: { orgId: orgId!, id: runMatch?.runId ?? '' },
+  })
+  const modelQuery = useQuery(ML_STUDIO_MODEL, {
+    fetchPolicy: 'cache-first',
+    skip: !orgId || !evaluationMatch?.modelId,
+    variables: { orgId: orgId!, id: evaluationMatch?.modelId ?? '' },
+  })
+  const evaluationQuery = useQuery(ML_EVALUATION, {
+    fetchPolicy: 'cache-first',
+    skip: !orgId || !evaluationMatch?.evaluationId,
+    variables: { orgId: orgId!, id: evaluationMatch?.evaluationId ?? '' },
   })
 
   const projectTabs = useMemo(() => {
@@ -94,6 +121,16 @@ function ProjectShell() {
       label: runQuery.data?.mlRun?.name ?? 'Run',
     })
   }
+  if (isEvaluationDetail) {
+    crumbs.push({
+      to: `/dashboard/ml-studio/projects/${projectId}/models/${evaluationMatch!.modelId}/evaluations`,
+      label: modelQuery.data?.mlModel?.name ?? 'Model',
+    })
+    crumbs.push({
+      to: pathname,
+      label: evaluationQuery.data?.mlEvaluation?.name ?? 'Evaluation',
+    })
+  }
 
   return (
     <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
@@ -102,10 +139,10 @@ function ProjectShell() {
       <div
         className={cn(
           'grid rounded-t-[1.2rem] bg-[#141925]',
-          isRunDetail ? 'grid-rows-[1fr]' : 'grid-rows-[auto_1fr]'
+          isDetail ? 'grid-rows-[1fr]' : 'grid-rows-[auto_1fr]'
         )}
       >
-        {isRunDetail ? null : (
+        {isDetail ? null : (
           <div className="border-stock flex items-center overflow-x-auto border-b">
             {projectTabs.map((tab) => (
               <Button

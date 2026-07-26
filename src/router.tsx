@@ -78,6 +78,11 @@ const ModelEvaluationsTab = lazy(() =>
     (mod) => ({ default: mod.ModelEvaluationsTab })
   )
 )
+const EvaluationDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/models/evaluation-detail-page').then(
+    (mod) => ({ default: mod.EvaluationDetailPage })
+  )
+)
 const ModelArtifactsTab = lazy(() =>
   import('@/features/ml-studio/components/models/model-artifacts-tab').then(
     (mod) => ({ default: mod.ModelArtifactsTab })
@@ -491,6 +496,10 @@ export function AppRoutes() {
             <Route
               path="experiments/:experimentId/runs/:runId"
               element={<RunDetailPage />}
+            />
+            <Route
+              path="models/:modelId/evaluations/:evaluationId"
+              element={<EvaluationDetailPage />}
             />
             <Route path="findings" element={<FindingsTab />} />
             <Route path="findings/:findingId" element={<FindingDetailPage />} />

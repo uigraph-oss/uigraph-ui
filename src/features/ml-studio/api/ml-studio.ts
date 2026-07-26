@@ -142,6 +142,24 @@ export const ML_VERSION_EVALUATIONS = graphql(`
   }
 `)
 
+export const ML_EVALUATION = graphql(`
+  query MlEvaluation($orgId: ID!, $id: ID!) {
+    mlEvaluation(orgId: $orgId, id: $id) {
+      id
+      versionId
+      datasetId
+      name
+      type
+      description
+      summary
+      evaluatedAt
+      evaluator
+      parameters
+      metrics
+    }
+  }
+`)
+
 export const ML_VERSION_DEPLOYMENT_UPDATES = graphql(`
   query MlVersionDeploymentUpdates($orgId: ID!, $versionId: ID!) {
     mlVersionDeploymentUpdates(orgId: $orgId, versionId: $versionId) {
