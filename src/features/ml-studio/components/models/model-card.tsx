@@ -106,13 +106,13 @@ export function ModelCard() {
           />
           <Consideration
             icon={<Scale className="size-4" />}
-            title="Ethical considerations"
-            value={model.ethicalConsiderations}
+            title="Considerations"
+            value={model.considerations}
           />
           <Consideration
             icon={<Lightbulb className="size-4" />}
-            title="Caveats & recommendations"
-            value={model.caveats}
+            title="Recommendations"
+            value={model.recommendations}
           />
         </div>
 

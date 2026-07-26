@@ -48,8 +48,8 @@ export const ML_STUDIO_MODEL = graphql(`
       references
       intendedUse
       limitations
-      ethicalConsiderations
-      caveats
+      considerations
+      recommendations
       productionVersionId
       origin
       createdAt
@@ -72,8 +72,8 @@ export const ML_STUDIO_MODELS = graphql(`
       references
       intendedUse
       limitations
-      ethicalConsiderations
-      caveats
+      considerations
+      recommendations
       productionVersionId
       origin
       createdAt
@@ -409,8 +409,8 @@ export const UPDATE_ML_MODEL = graphql(`
     $references: [String!]
     $intendedUse: String
     $limitations: String
-    $ethicalConsiderations: String
-    $caveats: String
+    $considerations: String
+    $recommendations: String
   ) {
     updateMlModel(
       orgId: $orgId
@@ -421,8 +421,8 @@ export const UPDATE_ML_MODEL = graphql(`
       references: $references
       intendedUse: $intendedUse
       limitations: $limitations
-      ethicalConsiderations: $ethicalConsiderations
-      caveats: $caveats
+      considerations: $considerations
+      recommendations: $recommendations
     ) {
       id
       domain
@@ -431,8 +431,8 @@ export const UPDATE_ML_MODEL = graphql(`
       references
       intendedUse
       limitations
-      ethicalConsiderations
-      caveats
+      considerations
+      recommendations
     }
   }
 `)

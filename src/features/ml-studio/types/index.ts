@@ -30,8 +30,8 @@ export type Model = {
   references: string[]
   intendedUse: string
   limitations: string
-  ethicalConsiderations: string
-  caveats: string
+  considerations: string
+  recommendations: string
   createdAt: string
   updatedAt: string
   productionVersionId?: string

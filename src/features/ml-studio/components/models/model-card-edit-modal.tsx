@@ -36,10 +36,8 @@ export function ModelCardEditModal({
   const [references, setReferences] = useState(model.references.join('\n'))
   const [intendedUse, setIntendedUse] = useState(model.intendedUse)
   const [limitations, setLimitations] = useState(model.limitations)
-  const [ethicalConsiderations, setEthicalConsiderations] = useState(
-    model.ethicalConsiderations
-  )
-  const [caveats, setCaveats] = useState(model.caveats)
+  const [considerations, setConsiderations] = useState(model.considerations)
+  const [recommendations, setRecommendations] = useState(model.recommendations)
   const [saving, setSaving] = useState(false)
 
   async function submit() {
@@ -61,8 +59,8 @@ export function ModelCardEditModal({
             .filter(Boolean),
           intendedUse,
           limitations,
-          ethicalConsiderations,
-          caveats,
+          considerations,
+          recommendations,
         },
       })
       onClose()
@@ -155,25 +153,25 @@ export function ModelCardEditModal({
 
         <div className="space-y-2">
           <Label className="text-foreground text-sm font-medium">
-            Ethical considerations
+            Considerations
           </Label>
           <Textarea
             placeholder="Risks, sensitive data, fairness concerns."
             className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
-            value={ethicalConsiderations}
-            onChange={(e) => setEthicalConsiderations(e.target.value)}
+            value={considerations}
+            onChange={(e) => setConsiderations(e.target.value)}
           />
         </div>
 
         <div className="space-y-2">
           <Label className="text-foreground text-sm font-medium">
-            Caveats & recommendations
+            Recommendations
           </Label>
           <Textarea
             placeholder="Guidance for responsible use."
             className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
-            value={caveats}
-            onChange={(e) => setCaveats(e.target.value)}
+            value={recommendations}
+            onChange={(e) => setRecommendations(e.target.value)}
           />
         </div>
 
