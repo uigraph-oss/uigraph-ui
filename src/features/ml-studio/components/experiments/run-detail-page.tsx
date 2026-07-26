@@ -11,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { formatToHumanReadableMS } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import {
@@ -33,12 +33,14 @@ import {
   ML_STUDIO_RUN,
   ML_STUDIO_RUN_ARTIFACTS,
 } from '../../api/ml-studio'
+import { formatRunDuration } from '../../format'
 import type { MetricPoint, Run } from '../../types'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 import { RunModal } from './run-modal'
 
 export function RunDetailPage() {
+  const now = useNow()
   const { runId } = useParams<{
     runId: string
   }>()
@@ -87,7 +89,6 @@ export function RunDetailPage() {
     status: run.status as Run['status'],
     startedAt: run.startedAt ?? '',
     endedAt: run.endedAt ?? undefined,
-    duration: run.duration,
     notes: run.notes,
     parameters: (run.parameters ?? {}) as Record<string, string | number>,
     metrics: (run.metrics ?? {}) as Record<string, number>,
@@ -142,7 +143,7 @@ export function RunDetailPage() {
             {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
           </InfoRow>
           <InfoRow label="Training duration">
-            {formatToHumanReadableMS(run.duration)}
+            {formatRunDuration(runForModal, now)}
           </InfoRow>
           <InfoRow label="Updated at">
             {run.updatedAt ? (

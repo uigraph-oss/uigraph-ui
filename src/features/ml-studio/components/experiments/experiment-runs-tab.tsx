@@ -27,8 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { formatToHumanReadableMS } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -46,7 +46,7 @@ import {
   ML_STUDIO_EXPERIMENT_RUNS_PAGE,
 } from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { formatMetric } from '../../format'
+import { formatMetric, formatRunDuration } from '../../format'
 import type { MetricPoint, Run } from '../../types'
 import { MetricSparkline } from '../metric-sparkline'
 import { StatusBadge } from '../status-badge'
@@ -54,6 +54,7 @@ import { RunComparisonDialog } from './run-comparison-dialog'
 import { RunModal } from './run-modal'
 
 export function ExperimentRunsTab() {
+  const now = useNow()
   const { experiment } = useExperimentContext()
   const orgId = useCurrentOrganization()?.id
   const { projectId } = useParams<{ projectId: string }>()
@@ -108,7 +109,6 @@ export function ExperimentRunsTab() {
         status: r.status as Run['status'],
         startedAt: r.startedAt ?? '',
         endedAt: r.endedAt ?? undefined,
-        duration: r.duration,
         notes: r.notes,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
@@ -264,7 +264,7 @@ export function ExperimentRunsTab() {
                       />
                     </TableCell>
                     <TableCell className="text-sm text-[#828DA3]">
-                      {formatToHumanReadableMS(run.duration)}
+                      {formatRunDuration(run, now)}
                     </TableCell>
                     <TableCell
                       className="text-sm text-[#828DA3]"

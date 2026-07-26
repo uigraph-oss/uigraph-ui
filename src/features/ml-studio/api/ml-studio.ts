@@ -188,7 +188,6 @@ export const ML_STUDIO_RUN = graphql(`
       status
       startedAt
       endedAt
-      duration
       notes
       parameters
       metrics
@@ -210,7 +209,6 @@ export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
       status
       startedAt
       endedAt
-      duration
       notes
       parameters
       metrics
@@ -248,7 +246,6 @@ export const ML_STUDIO_EXPERIMENT_RUNS_PAGE = graphql(`
         status
         startedAt
         endedAt
-        duration
         notes
         parameters
         metrics
@@ -271,7 +268,6 @@ export const ML_STUDIO_RUNS = graphql(`
       status
       startedAt
       endedAt
-      duration
       notes
       parameters
       metrics

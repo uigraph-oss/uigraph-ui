@@ -115,7 +115,6 @@ export const [ModelContextProvider, useModelContext] = createContext(
         status: r.status as Run['status'],
         startedAt: r.startedAt ?? '',
         endedAt: r.endedAt ?? undefined,
-        duration: r.duration,
         notes: r.notes,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,

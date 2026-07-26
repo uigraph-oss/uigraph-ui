@@ -9,17 +9,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatToHumanReadableMS } from '@/utils/time'
+import { useNow } from '@/hooks/use-now'
 import { format, formatDistanceToNow } from 'date-fns'
 import { BarChart3, FlaskConical, SlidersHorizontal } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useModelContext } from '../../contexts/model-context'
-import { formatMetric } from '../../format'
+import { formatMetric, formatRunDuration } from '../../format'
 import { Panel } from '../panel'
 import { DeploymentHistory } from './deployment-history'
 import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
+  const now = useNow()
   const { selectedVersion, selectedRun, selectedRunExperiment } =
     useModelContext()
   const navigate = useNavigate()
@@ -130,8 +131,7 @@ export function ModelOverviewTab() {
                 )}
                 <span className="text-[#586378]">·</span>
                 <span>
-                  Training duration{' '}
-                  {formatToHumanReadableMS(latestRun.duration)}
+                  Training duration {formatRunDuration(latestRun, now)}
                 </span>
               </div>
             </div>

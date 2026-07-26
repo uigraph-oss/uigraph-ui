@@ -26,7 +26,6 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusIcon, Trash2 } from 'lucide-react'
-import ms from 'ms'
 import { useEffect } from 'react'
 import { useFieldArray, useForm, type Control } from 'react-hook-form'
 import { z } from 'zod'
@@ -106,13 +105,6 @@ const runSchema = z
     status: z.enum(['running', 'completed', 'failed', 'cancelled']),
     startedAt: z.string(),
     endedAt: z.string(),
-    duration: z
-      .string()
-      .trim()
-      .refine(
-        (value) => Number.isFinite(ms(value as ms.StringValue)),
-        'Use a duration like "5s", "2h" or "1500ms"'
-      ),
     notes: z.string().max(2000, 'Notes must be 2000 characters or fewer'),
     parameters: parametersSchema,
     metrics: metricsSchema,
@@ -160,7 +152,6 @@ const emptyValues: RunFormValues = {
   status: 'completed',
   startedAt: '',
   endedAt: '',
-  duration: '',
   notes: '',
   parameters: [],
   metrics: [],
@@ -312,7 +303,6 @@ export function RunModal({
             status: run.status,
             startedAt: run.startedAt ? run.startedAt.slice(0, 16) : '',
             endedAt: run.endedAt ? run.endedAt.slice(0, 16) : '',
-            duration: ms(run.duration),
             notes: run.notes,
             parameters: toRows(run.parameters),
             metrics: toRows(run.metrics),
@@ -332,7 +322,6 @@ export function RunModal({
         ? new Date(values.startedAt).toISOString()
         : null,
       endedAt: values.endedAt ? new Date(values.endedAt).toISOString() : null,
-      duration: ms(values.duration as ms.StringValue),
       notes: values.notes,
       parameters: toParameterMap(values.parameters),
       metrics: toMetricMap(values.metrics),
@@ -382,52 +371,29 @@ export function RunModal({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="running">Running</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                          <SelectItem value="failed">Failed</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Duration</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="5s"
-                        className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="running">Running</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="failed">Failed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField

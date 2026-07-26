@@ -8,12 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatToHumanReadableMS } from '@/utils/time'
+import { useNow } from '@/hooks/use-now'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ActivityIcon, GaugeIcon, TrophyIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { formatMetric } from '../../format'
+import { formatMetric, formatRunDuration } from '../../format'
 import type { RunStatus } from '../../types'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
@@ -39,6 +39,7 @@ const runStatusLabels: Record<RunStatus, string> = {
 }
 
 export function ExperimentOverviewTab() {
+  const now = useNow()
   const { experiment, runs } = useExperimentContext()
   const { projectId } = useParams<{ projectId: string }>()
 
@@ -209,7 +210,7 @@ export function ExperimentOverviewTab() {
                     {formatMetric(run.metrics[primaryMetric])}
                   </TableCell>
                   <TableCell className="text-sm text-[#828DA3]">
-                    {formatToHumanReadableMS(run.duration)}
+                    {formatRunDuration(run, now)}
                   </TableCell>
                 </TableRow>
               ))}

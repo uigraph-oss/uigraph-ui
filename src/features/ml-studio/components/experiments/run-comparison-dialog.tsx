@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
-import { formatToHumanReadableMS } from '@/utils/time'
+import { useNow } from '@/hooks/use-now'
 import { formatDistanceToNow } from 'date-fns'
 import {
   ChartColumnIcon,
@@ -23,13 +23,10 @@ import {
   SlidersHorizontalIcon,
   XIcon,
 } from 'lucide-react'
+import { formatRunDuration, runDurationMS } from '../../format'
 import type { Run } from '../../types'
 import { RunValueBarChart } from '../metric-chart'
 import { StatusBadge } from '../status-badge'
-
-function durationSeconds(run: Run) {
-  return run.duration / 1000
-}
 
 export function RunComparisonDialog({
   runs,
@@ -40,6 +37,7 @@ export function RunComparisonDialog({
   availableRuns: Run[]
   onToggleRun: (id: string) => void
 }) {
+  const now = useNow()
   const metricKeys = Array.from(
     new Set(runs.flatMap((r) => Object.keys(r.metrics)))
   )
@@ -62,10 +60,11 @@ export function RunComparisonDialog({
     .filter((r) => Number.isFinite(Number(r.parameters[activeParam])))
     .map((r) => ({ name: r.name, value: Number(r.parameters[activeParam]) }))
 
-  const durationData = runs.map((r) => ({
-    name: r.name,
-    value: durationSeconds(r),
-  }))
+  const durationData = runs.flatMap((r) => {
+    const durationMS = runDurationMS(r.startedAt, r.endedAt, r.status, now)
+    if (durationMS === null) return []
+    return [{ name: r.name, value: durationMS / 1000 }]
+  })
 
   const addableRuns = availableRuns.filter(
     (r) => !runs.some((s) => s.id === r.id)
@@ -135,7 +134,7 @@ export function RunComparisonDialog({
                       })}`
                     : '—'}
                 </span>
-                <span>{formatToHumanReadableMS(r.duration)}</span>
+                <span>{formatRunDuration(r, now)}</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="inline-flex">

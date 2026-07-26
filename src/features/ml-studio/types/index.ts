@@ -87,7 +87,6 @@ export type Run = {
   status: RunStatus
   startedAt: string
   endedAt?: string
-  duration: number
   notes: string
   parameters: Record<string, string | number>
   metrics: Record<string, number>
