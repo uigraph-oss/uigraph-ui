@@ -5,7 +5,7 @@ import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { format } from 'date-fns'
+import { format, isValid } from 'date-fns'
 import { Check, Circle, Square, X } from 'lucide-react'
 import { parseAsString, useQueryState } from 'nuqs'
 import { ReactNode, useMemo } from 'react'
@@ -165,10 +165,14 @@ function VersionsTimeline() {
               }
               meta={
                 <>
-                  {format(new Date(v.createdAt), 'MMM d, yyyy')}
-                  <span className="px-1.5">·</span>
-                  {format(new Date(v.createdAt), 'HH:mm')}
-                  <span className="px-1.5">·</span>
+                  {isValid(new Date(v.createdAt)) && (
+                    <>
+                      {format(new Date(v.createdAt), 'MMM d, yyyy')}
+                      <span className="px-1.5">·</span>
+                      {format(new Date(v.createdAt), 'HH:mm')}
+                      <span className="px-1.5">·</span>
+                    </>
+                  )}
                   <VersionSourceRun runId={v.runId} />
                   {v.description && (
                     <>
