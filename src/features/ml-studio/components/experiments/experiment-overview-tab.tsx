@@ -14,7 +14,12 @@ import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
-import { ActivityIcon, GaugeIcon, PencilIcon, TrophyIcon } from 'lucide-react'
+import {
+  ActivityIcon,
+  ClipboardCheckIcon,
+  PencilIcon,
+  TrophyIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ML_EXPERIMENT_EVALUATIONS } from '../../api/ml-studio'
@@ -36,6 +41,13 @@ function Stat({ label, value }: { label: string; value: string }) {
       </div>
     </div>
   )
+}
+
+const evaluationTypeLabels: Record<string, string> = {
+  'Offline Benchmark': 'Offline',
+  'Online A/B Test': 'Online',
+  'Human Review': 'Human review',
+  'Production Monitoring': 'Monitoring',
 }
 
 const runStatusLabels: Record<RunStatus, string> = {
@@ -81,14 +93,35 @@ export function ExperimentOverviewTab() {
         ? a.metrics[primaryMetric] - b.metrics[primaryMetric]
         : b.metrics[primaryMetric] - a.metrics[primaryMetric]
     )
-  const values = scoredRuns.map((r) => r.metrics[primaryMetric])
-  const bestValue = values[0]
-  const meanValue =
-    values.length > 0
-      ? values.reduce((sum, v) => sum + v, 0) / values.length
-      : undefined
   const leadingRun = scoredRuns[0]
   const topRuns = scoredRuns.slice(0, 5)
+
+  const latestRun = [...runs]
+    .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+    .at(0)
+
+  const evaluationTypeCounts = evaluations.reduce<Record<string, number>>(
+    (acc, evaluation) => {
+      acc[evaluation.type] = (acc[evaluation.type] ?? 0) + 1
+      return acc
+    },
+    {}
+  )
+
+  const latestEvaluation = evaluations
+    .flatMap((evaluation) =>
+      evaluation.evaluatedAt
+        ? [
+            {
+              id: evaluation.id,
+              name: evaluation.name,
+              evaluatedAt: evaluation.evaluatedAt,
+            },
+          ]
+        : []
+    )
+    .sort((a, b) => b.evaluatedAt.localeCompare(a.evaluatedAt))
+    .at(0)
 
   const lastActivityAt = runs
     .flatMap((r) => [r.endedAt, r.startedAt])
@@ -158,15 +191,22 @@ export function ExperimentOverviewTab() {
         icon={<ActivityIcon size={16} />}
         description="Status breakdown across every run in this experiment."
         action={
-          leadingRun ? (
-            <Link
-              to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${leadingRun.id}`}
-              className="border-stock hover:text-primary flex shrink-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm font-medium text-[#F4F7FC]"
-            >
-              <TrophyIcon size={14} className="text-[#E3B341]" />
-              <span className="truncate">{leadingRun.name}</span>
-              <span className="text-[#828DA3]">{formatMetric(bestValue)}</span>
-            </Link>
+          latestRun ? (
+            <div className="flex shrink-0 items-center gap-1.5 text-xs font-normal text-[#586378]">
+              <span>Latest run:</span>
+              <Link
+                to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${latestRun.id}`}
+                className="hover:text-primary truncate text-[#828DA3]"
+              >
+                {latestRun.name}
+              </Link>
+              <span>
+                ·{' '}
+                {formatDistanceToNow(new Date(latestRun.startedAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
           ) : undefined
         }
       >
@@ -189,38 +229,45 @@ export function ExperimentOverviewTab() {
       </Panel>
 
       <Panel
-        title="Leading metric"
-        icon={<GaugeIcon size={16} />}
-        description={
-          primaryMetric
-            ? `${primaryLabel} — ${lowerIsBetter ? 'lower' : 'higher'} is better.`
-            : undefined
+        title="Evaluations"
+        icon={<ClipboardCheckIcon size={16} />}
+        description={`${evaluations.length} ${evaluations.length === 1 ? 'evaluation' : 'evaluations'} in this experiment.`}
+        action={
+          latestEvaluation ? (
+            <div className="flex shrink-0 items-center gap-1.5 text-xs font-normal text-[#586378]">
+              <span>Latest:</span>
+              <Link
+                to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/evaluations/${latestEvaluation.id}`}
+                className="hover:text-primary truncate text-[#828DA3]"
+              >
+                {latestEvaluation.name}
+              </Link>
+              <span>
+                ·{' '}
+                {formatDistanceToNow(new Date(latestEvaluation.evaluatedAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+          ) : undefined
         }
       >
-        {primaryMetric && values.length > 0 ? (
-          <div className="grid grid-cols-3 gap-x-8 gap-y-5">
-            <div>
-              <div className="text-2xl font-bold text-[#F4F7FC]">
-                {formatMetric(bestValue)}
+        {evaluations.length > 0 ? (
+          <div className="grid grid-cols-4 gap-4">
+            {Object.keys(evaluationTypeLabels).map((type) => (
+              <div key={type}>
+                <div className="text-2xl font-bold text-[#F4F7FC]">
+                  {evaluationTypeCounts[type] ?? 0}
+                </div>
+                <div className="mt-1 text-xs text-[#828DA3]">
+                  {evaluationTypeLabels[type]}
+                </div>
               </div>
-              <div className="mt-1 text-sm text-[#828DA3]">Best</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-[#F4F7FC]">
-                {meanValue !== undefined ? formatMetric(meanValue) : '—'}
-              </div>
-              <div className="mt-1 text-sm text-[#828DA3]">Mean</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-[#F4F7FC]">
-                {values.length}
-              </div>
-              <div className="mt-1 text-sm text-[#828DA3]">Scored runs</div>
-            </div>
+            ))}
           </div>
         ) : (
           <p className="text-sm text-[#586378]">
-            No metrics recorded for this experiment.
+            No evaluations recorded for this experiment.
           </p>
         )}
       </Panel>
