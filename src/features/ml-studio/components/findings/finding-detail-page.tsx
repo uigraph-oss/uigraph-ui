@@ -16,13 +16,11 @@ import { useQuery } from '@apollo/client'
 import { Pencil } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import {
-  ML_STUDIO_EXPERIMENT,
-  ML_STUDIO_FINDINGS,
-  ML_STUDIO_MODEL,
-  ML_STUDIO_MODEL_VERSION,
-  ML_STUDIO_RUN,
-} from '../../api/ml-studio'
+import { ML_STUDIO_EXPERIMENT } from '../../api/experiments'
+import { ML_STUDIO_FINDINGS } from '../../api/findings'
+import { ML_STUDIO_MODEL_VERSION } from '../../api/model-versions'
+import { ML_STUDIO_MODEL } from '../../api/models'
+import { ML_STUDIO_RUN } from '../../api/runs'
 import type { Finding } from '../../types'
 import { StatusBadge } from '../status-badge'
 import { FindingModal } from './finding-modal'

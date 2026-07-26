@@ -14,7 +14,7 @@ import { useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import { DownloadIcon } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/ml-studio'
+import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/artifacts'
 import { useModelContext } from '../../contexts/model-context'
 import { Panel } from '../panel'
 

@@ -12,7 +12,7 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { CREATE_ML_DEPLOYMENT } from '../../api/ml-studio'
+import { CREATE_ML_DEPLOYMENT } from '../../api/deployments'
 import { FormField, FormGrid } from '../form-field'
 import { ModelVersionSelect } from '../model-version-select'
 

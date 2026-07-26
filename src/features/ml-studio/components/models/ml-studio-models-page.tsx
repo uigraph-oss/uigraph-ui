@@ -16,11 +16,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { EllipsisVertical, Pencil, PlusIcon, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  DELETE_ML_MODEL,
-  ML_STUDIO_MODEL_VERSIONS,
-  ML_STUDIO_MODELS,
-} from '../../api/ml-studio'
+import { ML_STUDIO_MODEL_VERSIONS } from '../../api/model-versions'
+import { DELETE_ML_MODEL, ML_STUDIO_MODELS } from '../../api/models'
 import type { Model } from '../../types'
 import { ModelModal } from './model-modal'
 

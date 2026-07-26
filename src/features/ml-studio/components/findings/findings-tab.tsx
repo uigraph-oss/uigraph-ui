@@ -8,7 +8,7 @@ import { useQuery } from '@apollo/client'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ML_STUDIO_FINDINGS } from '../../api/ml-studio'
+import { ML_STUDIO_FINDINGS } from '../../api/findings'
 import { FindingCard } from './finding-card'
 import { FindingModal } from './finding-modal'
 

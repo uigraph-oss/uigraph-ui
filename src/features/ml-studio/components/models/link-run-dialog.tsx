@@ -27,12 +27,10 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
-import {
-  ML_STUDIO_EXPERIMENTS,
-  ML_STUDIO_EXPERIMENT_RUNS,
-  ML_STUDIO_PROJECTS,
-  SET_ML_MODEL_VERSION_RUN,
-} from '../../api/ml-studio'
+import { ML_STUDIO_EXPERIMENTS } from '../../api/experiments'
+import { SET_ML_MODEL_VERSION_RUN } from '../../api/model-versions'
+import { ML_STUDIO_PROJECTS } from '../../api/projects'
+import { ML_STUDIO_EXPERIMENT_RUNS } from '../../api/runs'
 import { FormField } from '../form-field'
 import { StatusBadge } from '../status-badge'
 

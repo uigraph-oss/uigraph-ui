@@ -31,7 +31,7 @@ import {
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { CREATE_ML_VERSION_DEPLOYMENT_UPDATE } from '../../api/ml-studio'
+import { CREATE_ML_VERSION_DEPLOYMENT_UPDATE } from '../../api/deployments'
 import { useModelContext } from '../../contexts/model-context'
 import { useProject } from '../../contexts/project-context'
 import { deploymentTransitions } from '../../deployment-transitions'

@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/select'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { ML_STUDIO_MODELS, ML_STUDIO_VERSIONS } from '../api/ml-studio'
+import { ML_STUDIO_VERSIONS } from '../api/model-versions'
+import { ML_STUDIO_MODELS } from '../api/models'
 
 export function ModelVersionSelect({
   modelId,

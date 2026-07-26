@@ -26,9 +26,9 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   DELETE_ML_EXPERIMENT,
-  ML_STUDIO_EXPERIMENT_RUNS,
   ML_STUDIO_EXPERIMENTS,
-} from '../../api/ml-studio'
+} from '../../api/experiments'
+import { ML_STUDIO_EXPERIMENT_RUNS } from '../../api/runs'
 import { formatMetric } from '../../format'
 import type { Experiment } from '../../types'
 import { MlUser } from '../ml-user'

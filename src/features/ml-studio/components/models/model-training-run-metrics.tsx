@@ -3,7 +3,7 @@
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
-import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
+import { ML_VERSION_EVALUATIONS } from '../../api/evaluations'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { MlUser } from '../ml-user'

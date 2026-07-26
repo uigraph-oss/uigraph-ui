@@ -3,7 +3,8 @@
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { ML_STUDIO_MODEL, ML_STUDIO_MODEL_VERSION } from '../api/ml-studio'
+import { ML_STUDIO_MODEL_VERSION } from '../api/model-versions'
+import { ML_STUDIO_MODEL } from '../api/models'
 
 export function ModelVersionLink({
   modelId,

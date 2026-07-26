@@ -32,7 +32,7 @@ import { PlusIcon, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useFieldArray, useForm, type Control } from 'react-hook-form'
 import { z } from 'zod'
-import { CREATE_ML_RUN, UPDATE_ML_RUN } from '../../api/ml-studio'
+import { CREATE_ML_RUN, UPDATE_ML_RUN } from '../../api/runs'
 import type { Run } from '../../types'
 
 const KEY_PATTERN = /^[A-Za-z_][A-Za-z0-9_.-]*$/

@@ -21,11 +21,9 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import {
-  ML_STUDIO_DEPLOYMENT_UPDATES,
-  ML_STUDIO_MODEL_VERSIONS,
-  ML_STUDIO_MODELS,
-} from '../../api/ml-studio'
+import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/deployments'
+import { ML_STUDIO_MODEL_VERSIONS } from '../../api/model-versions'
+import { ML_STUDIO_MODELS } from '../../api/models'
 import type { VersionStage } from '../../types'
 import { MlUser } from '../ml-user'
 import { ModelVersionLink } from '../model-version-link'

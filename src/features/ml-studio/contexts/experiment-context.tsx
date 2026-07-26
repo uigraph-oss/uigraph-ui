@@ -4,10 +4,8 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
-import {
-  ML_STUDIO_EXPERIMENT,
-  ML_STUDIO_EXPERIMENT_RUNS,
-} from '../api/ml-studio'
+import { ML_STUDIO_EXPERIMENT } from '../api/experiments'
+import { ML_STUDIO_EXPERIMENT_RUNS } from '../api/runs'
 import type { Experiment, Run } from '../types'
 
 export const [ExperimentContextProvider, useExperimentContext] = createContext(

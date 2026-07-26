@@ -5,12 +5,10 @@ import { useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useMemo } from 'react'
-import {
-  ML_STUDIO_EXPERIMENT,
-  ML_STUDIO_MODEL,
-  ML_STUDIO_MODEL_VERSIONS,
-  ML_STUDIO_RUN,
-} from '../api/ml-studio'
+import { ML_STUDIO_EXPERIMENT } from '../api/experiments'
+import { ML_STUDIO_MODEL_VERSIONS } from '../api/model-versions'
+import { ML_STUDIO_MODEL } from '../api/models'
+import { ML_STUDIO_RUN } from '../api/runs'
 import type { Experiment, Model, ModelVersion, Run } from '../types'
 
 export const [ModelContextProvider, useModelContext] = createContext(

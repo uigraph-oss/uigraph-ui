@@ -15,7 +15,7 @@ import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { CREATE_ML_MODEL, UPDATE_ML_MODEL_INFO } from '../../api/ml-studio'
+import { CREATE_ML_MODEL, UPDATE_ML_MODEL_INFO } from '../../api/models'
 import type { Model } from '../../types'
 import { FormField, FormGrid } from '../form-field'
 

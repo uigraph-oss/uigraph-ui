@@ -30,9 +30,9 @@ import { useState } from 'react'
 import {
   LINK_ML_VERSION_EVALUATIONS,
   ML_EXPERIMENT_EVALUATIONS,
-  ML_STUDIO_EXPERIMENTS,
-  ML_STUDIO_PROJECTS,
-} from '../../api/ml-studio'
+} from '../../api/evaluations'
+import { ML_STUDIO_EXPERIMENTS } from '../../api/experiments'
+import { ML_STUDIO_PROJECTS } from '../../api/projects'
 import { FormField } from '../form-field'
 
 const triggerClassName =

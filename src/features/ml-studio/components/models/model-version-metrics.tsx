@@ -10,7 +10,7 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { useCallback, useEffect, useState } from 'react'
-import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
+import { ML_VERSION_EVALUATIONS } from '../../api/evaluations'
 import { useModelContext } from '../../contexts/model-context'
 import { MetricTrendChart } from '../metric-chart'
 import { MetricSelect } from '../metric-select'

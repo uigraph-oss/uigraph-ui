@@ -19,7 +19,8 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { ML_STUDIO_EXPERIMENTS, ML_STUDIO_RUNS } from '../../api/ml-studio'
+import { ML_STUDIO_EXPERIMENTS } from '../../api/experiments'
+import { ML_STUDIO_RUNS } from '../../api/runs'
 import { StatusBadge } from '../status-badge'
 
 export function EvidenceRunsSelect({

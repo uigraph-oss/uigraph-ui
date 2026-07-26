@@ -24,7 +24,7 @@ import { format, formatDistanceToNow } from 'date-fns'
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ML_EXPERIMENT_EVALUATIONS_PAGE } from '../../api/ml-studio'
+import { ML_EXPERIMENT_EVALUATIONS_PAGE } from '../../api/evaluations'
 import { formatMetric } from '../../format'
 
 export function ExperimentEvaluationsTab() {

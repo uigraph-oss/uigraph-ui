@@ -30,7 +30,7 @@ import { PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
-import { DELETE_ML_PROJECT, ML_STUDIO_PROJECTS } from '../../api/ml-studio'
+import { DELETE_ML_PROJECT, ML_STUDIO_PROJECTS } from '../../api/projects'
 import { ProjectModal } from './project-modal'
 
 // Type → accent color: semantic, tells you what kind of project this is

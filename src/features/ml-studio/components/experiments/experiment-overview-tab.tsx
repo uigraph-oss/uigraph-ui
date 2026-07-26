@@ -29,7 +29,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ML_EXPERIMENT_EVALUATIONS } from '../../api/ml-studio'
+import { ML_EXPERIMENT_EVALUATIONS } from '../../api/evaluations'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import type { RunStatus } from '../../types'

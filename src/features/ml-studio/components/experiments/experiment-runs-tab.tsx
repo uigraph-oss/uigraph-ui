@@ -41,10 +41,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  DELETE_ML_RUN,
-  ML_STUDIO_EXPERIMENT_RUNS_PAGE,
-} from '../../api/ml-studio'
+import { DELETE_ML_RUN, ML_STUDIO_EXPERIMENT_RUNS_PAGE } from '../../api/runs'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import type { Run } from '../../types'

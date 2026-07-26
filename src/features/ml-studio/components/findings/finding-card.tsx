@@ -20,12 +20,10 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useState } from 'react'
-import {
-  DELETE_ML_FINDING,
-  ML_STUDIO_MODEL,
-  ML_STUDIO_MODEL_VERSION,
-  ML_STUDIO_RUN,
-} from '../../api/ml-studio'
+import { DELETE_ML_FINDING } from '../../api/findings'
+import { ML_STUDIO_MODEL_VERSION } from '../../api/model-versions'
+import { ML_STUDIO_MODEL } from '../../api/models'
+import { ML_STUDIO_RUN } from '../../api/runs'
 import type { Finding } from '../../types'
 import { FindingModal } from './finding-modal'
 

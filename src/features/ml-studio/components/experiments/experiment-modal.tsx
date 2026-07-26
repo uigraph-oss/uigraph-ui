@@ -25,7 +25,10 @@ import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { CREATE_ML_EXPERIMENT, UPDATE_ML_EXPERIMENT } from '../../api/ml-studio'
+import {
+  CREATE_ML_EXPERIMENT,
+  UPDATE_ML_EXPERIMENT,
+} from '../../api/experiments'
 import type { Experiment } from '../../types'
 
 const experimentSchema = z.object({

@@ -28,12 +28,9 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  DELETE_ML_RUN,
-  ML_STUDIO_DATASET,
-  ML_STUDIO_RUN,
-  ML_STUDIO_RUN_ARTIFACTS,
-} from '../../api/ml-studio'
+import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/artifacts'
+import { ML_STUDIO_DATASET } from '../../api/datasets'
+import { DELETE_ML_RUN, ML_STUDIO_RUN } from '../../api/runs'
 import { formatRunDuration } from '../../format'
 import type { Run } from '../../types'
 import { InfoRow, Panel } from '../panel'

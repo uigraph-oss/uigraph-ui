@@ -20,7 +20,8 @@ import {
   SlidersHorizontalIcon,
 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ML_EVALUATION, ML_STUDIO_DATASET } from '../../api/ml-studio'
+import { ML_STUDIO_DATASET } from '../../api/datasets'
+import { ML_EVALUATION } from '../../api/evaluations'
 import { InfoRow, Panel } from '../panel'
 
 export function EvaluationDetailPage() {

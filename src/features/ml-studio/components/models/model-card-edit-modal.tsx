@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { UPDATE_ML_MODEL } from '../../api/ml-studio'
+import { UPDATE_ML_MODEL } from '../../api/models'
 import { Model } from '../../types'
 
 export function ModelCardEditModal({

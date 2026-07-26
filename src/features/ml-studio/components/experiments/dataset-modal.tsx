@@ -22,7 +22,7 @@ import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { CREATE_ML_DATASET, UPDATE_ML_DATASET } from '../../api/ml-studio'
+import { CREATE_ML_DATASET, UPDATE_ML_DATASET } from '../../api/datasets'
 import type { Dataset } from '../../types'
 
 const datasetSchema = z.object({

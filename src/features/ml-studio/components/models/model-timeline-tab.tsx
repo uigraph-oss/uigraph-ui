@@ -10,11 +10,9 @@ import { Check, Circle, Square, X } from 'lucide-react'
 import { parseAsString, useQueryState } from 'nuqs'
 import { ReactNode, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  ML_STUDIO_DEPLOYMENT_UPDATES,
-  ML_STUDIO_EXPERIMENT,
-  ML_STUDIO_RUN,
-} from '../../api/ml-studio'
+import { ML_STUDIO_DEPLOYMENT_UPDATES } from '../../api/deployments'
+import { ML_STUDIO_EXPERIMENT } from '../../api/experiments'
+import { ML_STUDIO_RUN } from '../../api/runs'
 import { useModelContext } from '../../contexts/model-context'
 import { useProject } from '../../contexts/project-context'
 import { MlUser } from '../ml-user'

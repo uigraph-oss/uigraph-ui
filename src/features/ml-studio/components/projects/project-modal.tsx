@@ -25,7 +25,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { CREATE_ML_PROJECT, UPDATE_ML_PROJECT } from '../../api/ml-studio'
+import { CREATE_ML_PROJECT, UPDATE_ML_PROJECT } from '../../api/projects'
 
 const projectSchema = z.object({
   name: z.string().min(1, 'Name is required'),

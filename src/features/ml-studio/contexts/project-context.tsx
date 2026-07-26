@@ -4,7 +4,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { createContext } from 'daily-code/react'
 import { useMemo } from 'react'
-import { ML_STUDIO_PROJECT } from '../api/ml-studio'
+import { ML_STUDIO_PROJECT } from '../api/projects'
 import type { Project } from '../types'
 
 export const [ProjectProvider, useProject] = createContext(
