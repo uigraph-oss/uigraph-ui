@@ -3,6 +3,13 @@
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Table,
   TableBody,
   TableCell,
@@ -66,6 +73,7 @@ export function ExperimentOverviewTab() {
   }>()
   const orgId = useCurrentOrganization()?.id
   const [editOpen, setEditOpen] = useState(false)
+  const [selectedMetric, setSelectedMetric] = useState('')
 
   const evaluationsQuery = useQuery(ML_EXPERIMENT_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
@@ -79,8 +87,12 @@ export function ExperimentOverviewTab() {
     return acc
   }, {})
 
-  const trackedMetrics = Object.keys(runs[0]?.metrics ?? {})
-  const primaryMetric = trackedMetrics[0] ?? ''
+  const trackedMetrics = [
+    ...new Set(runs.flatMap((run) => Object.keys(run.metrics))),
+  ]
+  const primaryMetric = trackedMetrics.includes(selectedMetric)
+    ? selectedMetric
+    : (trackedMetrics[0] ?? '')
   const primaryLabel = primaryMetric.replace(/_/g, ' ')
   const lowerIsBetter = /loss|error|mae|mse|rmse|perplexity/i.test(
     primaryMetric
@@ -281,6 +293,22 @@ export function ExperimentOverviewTab() {
             : 'Runs ranked once metrics are recorded.'
         }
         className="md:col-span-2"
+        action={
+          trackedMetrics.length > 0 ? (
+            <Select value={primaryMetric} onValueChange={setSelectedMetric}>
+              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {trackedMetrics.map((metric) => (
+                  <SelectItem key={metric} value={metric}>
+                    {metric.replace(/_/g, ' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : undefined
+        }
       >
         {topRuns.length > 0 ? (
           <Table>
