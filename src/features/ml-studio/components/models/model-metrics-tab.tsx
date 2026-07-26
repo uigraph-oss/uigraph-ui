@@ -13,7 +13,10 @@ import { format, formatDistanceToNow } from 'date-fns'
 import { CalendarDays, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
+import {
+  ML_STUDIO_EXPERIMENT_RUNS,
+  ML_VERSION_EVALUATIONS,
+} from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { MetricTrendChart } from '../metric-chart'
@@ -22,7 +25,7 @@ import { Panel } from '../panel'
 const limitOptions = ['5', '10', '25', '50', 'all']
 
 export function ModelMetricsTab() {
-  const { selectedVersion } = useModelContext()
+  const { selectedVersion, versions, setVersionId } = useModelContext()
   const orgId = useCurrentOrganization()?.id
   const { projectId, modelId } = useParams<{
     projectId: string
@@ -30,11 +33,50 @@ export function ModelMetricsTab() {
   }>()
   const navigate = useNavigate()
   const [limit, setLimit] = useState('25')
+  const [versionLimit, setVersionLimit] = useState('25')
 
   const evaluationsQuery = useQuery(ML_VERSION_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId || !selectedVersion?.id,
     variables: { orgId: orgId!, versionId: selectedVersion?.id ?? '' },
+  })
+
+  const runsQuery = useQuery(ML_STUDIO_EXPERIMENT_RUNS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !projectId,
+    variables: { orgId: orgId!, projectId: projectId ?? '' },
+  })
+
+  const runMetricsById = new Map(
+    (runsQuery.data?.mlRuns ?? []).map((run) => [
+      run.id,
+      (run.metrics ?? {}) as Record<string, number>,
+    ])
+  )
+
+  const allVersionPoints = [...versions]
+    .sort((a, b) => Number(a.version) - Number(b.version))
+    .map((version) => ({
+      id: version.id,
+      label: `v${version.version}`,
+      metrics: version.runId
+        ? (runMetricsById.get(version.runId) ?? {})
+        : ({} as Record<string, number>),
+    }))
+  const versionPoints =
+    versionLimit === 'all'
+      ? allVersionPoints
+      : allVersionPoints.slice(-Number(versionLimit))
+
+  const versionMetricKeys = Array.from(
+    new Set(versionPoints.flatMap((v) => Object.keys(v.metrics)))
+  )
+  const versionChartData = versionPoints.map((v) => {
+    const row: Record<string, string | number> = { label: v.label }
+    versionMetricKeys.forEach((k) => {
+      row[k] = v.metrics[k] ?? 0
+    })
+    return row
   })
 
   const allEvaluations = [
@@ -65,26 +107,11 @@ export function ModelMetricsTab() {
   })
 
   const latest = allEvaluations[allEvaluations.length - 1]
-
-  if (!latest) {
-    return (
-      <div className="grid grid-cols-1 gap-6 p-6">
-        <Panel title="Metrics">
-          <p className="text-sm text-[#586378]">
-            {evaluationsQuery.loading
-              ? 'Loading evaluations…'
-              : 'No evaluations recorded for this version.'}
-          </p>
-        </Panel>
-      </div>
-    )
-  }
-
-  const scalars = Object.entries(latest.metrics)
+  const scalars = latest ? Object.entries(latest.metrics) : []
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6">
-      {scalars.length > 0 && (
+      {latest && scalars.length > 0 && (
         <Panel
           title="Metrics"
           description={`Values from the latest evaluation, ${latest.name}.`}
@@ -163,10 +190,48 @@ export function ModelMetricsTab() {
         </Panel>
       )}
 
+      {allVersionPoints.length > 1 && versionMetricKeys.length > 0 && (
+        <Panel
+          title="Metrics across versions"
+          description="How each metric compares across versions of this model, from the run that produced each version."
+          action={
+            <Select value={versionLimit} onValueChange={setVersionLimit}>
+              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {limitOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option === 'all'
+                      ? 'All versions'
+                      : `Last ${option} versions`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          }
+        >
+          <MetricTrendChart
+            data={versionChartData}
+            metricKeys={versionMetricKeys}
+            className="aspect-[3/1] w-full"
+            onLabelClick={(label) => {
+              const version = versionPoints.find((v) => v.label === label)
+              if (!version) {
+                return
+              }
+              void setVersionId(version.id)
+            }}
+          />
+        </Panel>
+      )}
+
       {scalars.length === 0 && (
         <Panel title="Metrics">
           <p className="text-sm text-[#586378]">
-            No metrics recorded for this version&apos;s evaluations.
+            {evaluationsQuery.loading
+              ? 'Loading evaluations…'
+              : "No metrics recorded for this version's evaluations."}
           </p>
         </Panel>
       )}

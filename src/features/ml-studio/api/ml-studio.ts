@@ -129,6 +129,30 @@ export const ML_VERSION_EVALUATIONS = graphql(`
     mlVersionEvaluations(orgId: $orgId, versionId: $versionId) {
       id
       versionId
+      experimentId
+      modelName
+      version
+      datasetId
+      name
+      type
+      description
+      summary
+      evaluatedAt
+      evaluator
+      parameters
+      metrics
+    }
+  }
+`)
+
+export const ML_EXPERIMENT_EVALUATIONS = graphql(`
+  query MlExperimentEvaluations($orgId: ID!, $experimentId: ID!) {
+    mlExperimentEvaluations(orgId: $orgId, experimentId: $experimentId) {
+      id
+      versionId
+      experimentId
+      modelName
+      version
       datasetId
       name
       type
@@ -147,6 +171,9 @@ export const ML_EVALUATION = graphql(`
     mlEvaluation(orgId: $orgId, id: $id) {
       id
       versionId
+      experimentId
+      modelName
+      version
       datasetId
       name
       type

@@ -11,10 +11,13 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useNow } from '@/hooks/use-now'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ActivityIcon, GaugeIcon, PencilIcon, TrophyIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ML_EXPERIMENT_EVALUATIONS } from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import type { RunStatus } from '../../types'
@@ -45,8 +48,19 @@ const runStatusLabels: Record<RunStatus, string> = {
 export function ExperimentOverviewTab() {
   const now = useNow()
   const { experiment, runs } = useExperimentContext()
-  const { projectId } = useParams<{ projectId: string }>()
+  const { projectId, experimentId } = useParams<{
+    projectId: string
+    experimentId: string
+  }>()
+  const orgId = useCurrentOrganization()?.id
   const [editOpen, setEditOpen] = useState(false)
+
+  const evaluationsQuery = useQuery(ML_EXPERIMENT_EVALUATIONS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !experimentId,
+    variables: { orgId: orgId!, experimentId: experimentId ?? '' },
+  })
+  const evaluations = evaluationsQuery.data?.mlExperimentEvaluations ?? []
 
   const statusCounts = runs.reduce<Record<string, number>>((acc, run) => {
     acc[run.status] = (acc[run.status] ?? 0) + 1
@@ -118,12 +132,13 @@ export function ExperimentOverviewTab() {
             <p className="mt-1 text-sm text-[#586378]">No tags yet.</p>
           )}
         </div>
-        <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-5">
           <Stat
             label="Started"
             value={format(new Date(experiment.startedAt), 'PP')}
           />
           <Stat label="Total runs" value={String(runs.length)} />
+          <Stat label="Evaluations" value={String(evaluations.length)} />
           <Stat label="Tracked metrics" value={String(trackedMetrics.length)} />
           <Stat
             label="Last activity"

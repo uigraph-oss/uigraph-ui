@@ -15,6 +15,7 @@ import { StatusBadge } from '../status-badge'
 const experimentTabs = [
   { id: '', label: 'Overview' },
   { id: 'runs', label: 'Training Runs' },
+  { id: 'evaluations', label: 'Evaluation Runs' },
   { id: 'datasets', label: 'Datasets' },
   { id: 'metrics', label: 'Metrics' },
 ] as const

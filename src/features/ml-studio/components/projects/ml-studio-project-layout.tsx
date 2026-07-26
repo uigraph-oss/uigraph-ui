@@ -36,9 +36,14 @@ const runURLPattern = new URLPatternPolyfill({
     '/dashboard/ml-studio/projects/:projectId/experiments/:experimentId/runs/:runId',
 })
 
-const evaluationURLPattern = new URLPatternPolyfill({
+const modelEvaluationURLPattern = new URLPatternPolyfill({
   pathname:
     '/dashboard/ml-studio/projects/:projectId/models/:modelId/evaluations/:evaluationId',
+})
+
+const experimentEvaluationURLPattern = new URLPatternPolyfill({
+  pathname:
+    '/dashboard/ml-studio/projects/:projectId/experiments/:experimentId/evaluations/:evaluationId',
 })
 
 export function MlStudioProjectLayout() {
@@ -62,17 +67,32 @@ function ProjectShell() {
   }, [pathname])
   const isRunDetail = Boolean(runMatch?.runId)
 
-  const evaluationMatch = useMemo(() => {
-    return evaluationURLPattern.exec({ pathname })?.pathname.groups
+  const modelEvaluationMatch = useMemo(() => {
+    return modelEvaluationURLPattern.exec({ pathname })?.pathname.groups
   }, [pathname])
-  const isEvaluationDetail = Boolean(evaluationMatch?.evaluationId)
+  const isModelEvaluationDetail = Boolean(modelEvaluationMatch?.evaluationId)
 
-  const isDetail = isRunDetail || isEvaluationDetail
+  const experimentEvaluationMatch = useMemo(() => {
+    return experimentEvaluationURLPattern.exec({ pathname })?.pathname.groups
+  }, [pathname])
+  const isExperimentEvaluationDetail = Boolean(
+    experimentEvaluationMatch?.evaluationId
+  )
+
+  const isDetail =
+    isRunDetail || isModelEvaluationDetail || isExperimentEvaluationDetail
+
+  const experimentId =
+    runMatch?.experimentId ?? experimentEvaluationMatch?.experimentId ?? ''
+  const evaluationId =
+    modelEvaluationMatch?.evaluationId ??
+    experimentEvaluationMatch?.evaluationId ??
+    ''
 
   const experimentQuery = useQuery(ML_STUDIO_EXPERIMENT, {
     fetchPolicy: 'cache-first',
-    skip: !orgId || !runMatch?.experimentId,
-    variables: { orgId: orgId!, id: runMatch?.experimentId ?? '' },
+    skip: !orgId || !experimentId,
+    variables: { orgId: orgId!, id: experimentId },
   })
   const runQuery = useQuery(ML_STUDIO_RUN, {
     fetchPolicy: 'cache-first',
@@ -81,13 +101,13 @@ function ProjectShell() {
   })
   const modelQuery = useQuery(ML_STUDIO_MODEL, {
     fetchPolicy: 'cache-first',
-    skip: !orgId || !evaluationMatch?.modelId,
-    variables: { orgId: orgId!, id: evaluationMatch?.modelId ?? '' },
+    skip: !orgId || !modelEvaluationMatch?.modelId,
+    variables: { orgId: orgId!, id: modelEvaluationMatch?.modelId ?? '' },
   })
   const evaluationQuery = useQuery(ML_EVALUATION, {
     fetchPolicy: 'cache-first',
-    skip: !orgId || !evaluationMatch?.evaluationId,
-    variables: { orgId: orgId!, id: evaluationMatch?.evaluationId ?? '' },
+    skip: !orgId || !evaluationId,
+    variables: { orgId: orgId!, id: evaluationId },
   })
 
   const projectTabs = useMemo(() => {
@@ -113,7 +133,7 @@ function ProjectShell() {
   ]
   if (isRunDetail) {
     crumbs.push({
-      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${runMatch!.experimentId}`,
+      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}`,
       label: experimentQuery.data?.mlExperiment?.name ?? 'Experiment',
     })
     crumbs.push({
@@ -121,9 +141,19 @@ function ProjectShell() {
       label: runQuery.data?.mlRun?.name ?? 'Run',
     })
   }
-  if (isEvaluationDetail) {
+  if (isExperimentEvaluationDetail) {
     crumbs.push({
-      to: `/dashboard/ml-studio/projects/${projectId}/models/${evaluationMatch!.modelId}/evaluations`,
+      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}/evaluations`,
+      label: experimentQuery.data?.mlExperiment?.name ?? 'Experiment',
+    })
+    crumbs.push({
+      to: pathname,
+      label: evaluationQuery.data?.mlEvaluation?.name ?? 'Evaluation',
+    })
+  }
+  if (isModelEvaluationDetail) {
+    crumbs.push({
+      to: `/dashboard/ml-studio/projects/${projectId}/models/${modelEvaluationMatch!.modelId}/evaluations`,
       label: modelQuery.data?.mlModel?.name ?? 'Model',
     })
     crumbs.push({

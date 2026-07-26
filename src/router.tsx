@@ -113,6 +113,11 @@ const ExperimentRunsTab = lazy(() =>
     (mod) => ({ default: mod.ExperimentRunsTab })
   )
 )
+const ExperimentEvaluationsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-evaluations-tab').then(
+    (mod) => ({ default: mod.ExperimentEvaluationsTab })
+  )
+)
 const ExperimentDatasetsTab = lazy(() =>
   import('@/features/ml-studio/components/experiments/experiment-datasets-tab').then(
     (mod) => ({ default: mod.ExperimentDatasetsTab })
@@ -498,6 +503,10 @@ export function AppRoutes() {
               element={<RunDetailPage />}
             />
             <Route
+              path="experiments/:experimentId/evaluations/:evaluationId"
+              element={<EvaluationDetailPage />}
+            />
+            <Route
               path="models/:modelId/evaluations/:evaluationId"
               element={<EvaluationDetailPage />}
             />
@@ -522,6 +531,7 @@ export function AppRoutes() {
           >
             <Route index element={<ExperimentOverviewTab />} />
             <Route path="runs" element={<ExperimentRunsTab />} />
+            <Route path="evaluations" element={<ExperimentEvaluationsTab />} />
             <Route path="datasets" element={<ExperimentDatasetsTab />} />
             <Route path="metrics" element={<ExperimentMetricsTab />} />
           </Route>
