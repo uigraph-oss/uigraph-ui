@@ -65,119 +65,94 @@ export function ModelEvaluationsTab() {
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6">
-      {evaluations.map((evaluation) => (
-        <Panel
-          key={evaluation.id}
-          title={evaluation.name}
-          description={evaluation.summary || evaluation.description}
-          action={
-            <div className="flex flex-col items-end gap-1.5 text-sm">
-              <Badge className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]">
-                {evaluation.type}
-              </Badge>
-              {evaluation.evaluatedAt && (
-                <span
-                  className="text-[#586378]"
-                  title={format(new Date(evaluation.evaluatedAt), 'PP pp')}
-                >
-                  {formatDistanceToNow(new Date(evaluation.evaluatedAt), {
-                    addSuffix: true,
-                  })}
-                </span>
-              )}
-              {evaluation.evaluator && (
-                <span className="text-[#586378]">
-                  Evaluated by {evaluation.evaluator}
-                </span>
-              )}
-            </div>
-          }
-        >
-          <div className="text-xs tracking-wide text-[#586378] uppercase">
-            Metrics
-          </div>
-          {evaluation.metrics.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Metric</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Direction</TableHead>
-                  <TableHead>Measured</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {evaluation.metrics.map((metric) => (
-                  <TableRow key={metric.id}>
-                    <TableCell className="font-medium text-[#F4F7FC]">
-                      {metric.name.replace(/_/g, ' ')}
-                    </TableCell>
-                    <TableCell className="text-[#F4F7FC]">
-                      {formatMetric(metric.value)}
-                      {metric.unit && (
-                        <span className="text-[#586378]"> {metric.unit}</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-[#828DA3]">
-                      {metric.category}
-                    </TableCell>
-                    <TableCell className="text-[#828DA3]">
-                      {metric.direction}
-                    </TableCell>
-                    <TableCell
-                      className="text-[#828DA3]"
-                      title={metric.measuredAt ?? undefined}
-                    >
-                      {metric.measuredAt
-                        ? formatDistanceToNow(new Date(metric.measuredAt), {
-                            addSuffix: true,
-                          })
-                        : '—'}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p className="text-sm text-[#586378]">
-              No metrics recorded for this evaluation.
-            </p>
-          )}
+      {evaluations.map((evaluation) => {
+        const metrics = Object.entries(
+          (evaluation.metrics ?? {}) as Record<string, number>
+        )
+        const parameters = Object.entries(
+          (evaluation.parameters ?? {}) as Record<string, string | number>
+        )
 
-          <div className="text-xs tracking-wide text-[#586378] uppercase">
-            Parameters
-          </div>
-          {Object.entries(
-            (evaluation.parameters ?? {}) as Record<string, unknown>
-          ).length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Parameter</TableHead>
-                  <TableHead>Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Object.entries(
-                  (evaluation.parameters ?? {}) as Record<string, unknown>
-                ).map(([key, value]) => (
-                  <TableRow key={key}>
-                    <TableCell className="text-[#828DA3]">{key}</TableCell>
-                    <TableCell className="font-mono text-[#F4F7FC]">
-                      {String(value)}
-                    </TableCell>
-                  </TableRow>
+        return (
+          <Panel
+            key={evaluation.id}
+            title={evaluation.name}
+            description={evaluation.summary || evaluation.description}
+            action={
+              <div className="flex flex-col items-end gap-1.5 text-sm">
+                <Badge className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]">
+                  {evaluation.type}
+                </Badge>
+                {evaluation.evaluatedAt && (
+                  <span
+                    className="text-[#586378]"
+                    title={format(new Date(evaluation.evaluatedAt), 'PP pp')}
+                  >
+                    {formatDistanceToNow(new Date(evaluation.evaluatedAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                )}
+                {evaluation.evaluator && (
+                  <span className="text-[#586378]">
+                    Evaluated by {evaluation.evaluator}
+                  </span>
+                )}
+              </div>
+            }
+          >
+            <div className="text-xs tracking-wide text-[#586378] uppercase">
+              Metrics
+            </div>
+            {metrics.length > 0 ? (
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6 md:grid-cols-4">
+                {metrics.map(([key, value]) => (
+                  <div key={key}>
+                    <div className="text-2xl font-bold text-[#F4F7FC]">
+                      {formatMetric(value)}
+                    </div>
+                    <div className="mt-1 text-xs tracking-wide text-[#586378] uppercase">
+                      {key.replace(/_/g, ' ')}
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p className="text-sm text-[#586378]">
-              No parameters recorded for this evaluation.
-            </p>
-          )}
-        </Panel>
-      ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[#586378]">
+                No metrics recorded for this evaluation.
+              </p>
+            )}
+
+            <div className="text-xs tracking-wide text-[#586378] uppercase">
+              Parameters
+            </div>
+            {parameters.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Parameter</TableHead>
+                    <TableHead>Value</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {parameters.map(([key, value]) => (
+                    <TableRow key={key}>
+                      <TableCell className="text-[#828DA3]">{key}</TableCell>
+                      <TableCell className="font-mono text-[#F4F7FC]">
+                        {String(value)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-[#586378]">
+                No parameters recorded for this evaluation.
+              </p>
+            )}
+          </Panel>
+        )
+      })}
     </div>
   )
 }

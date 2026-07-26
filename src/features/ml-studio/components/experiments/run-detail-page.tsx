@@ -35,7 +35,7 @@ import {
   ML_STUDIO_RUN_ARTIFACTS,
 } from '../../api/ml-studio'
 import { formatRunDuration } from '../../format'
-import type { MetricPoint, Run } from '../../types'
+import type { Run } from '../../types'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 import { RunModal } from './run-modal'
@@ -93,7 +93,6 @@ export function RunDetailPage() {
     notes: run.notes,
     parameters: (run.parameters ?? {}) as Record<string, string | number>,
     metrics: (run.metrics ?? {}) as Record<string, number>,
-    series: (run.series ?? {}) as Record<string, MetricPoint[]>,
     datasetId: run.datasetId ?? undefined,
     artifactIds: [],
     source: run.source as Run['source'],

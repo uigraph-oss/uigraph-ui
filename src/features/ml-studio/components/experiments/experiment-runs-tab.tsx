@@ -47,8 +47,7 @@ import {
 } from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
-import type { MetricPoint, Run } from '../../types'
-import { MetricSparkline } from '../metric-sparkline'
+import type { Run } from '../../types'
 import { StatusBadge } from '../status-badge'
 import { RunComparisonDialog } from './run-comparison-dialog'
 import { RunModal } from './run-modal'
@@ -112,7 +111,6 @@ export function ExperimentRunsTab() {
         notes: r.notes,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
-        series: (r.series ?? {}) as Record<string, MetricPoint[]>,
         datasetId: r.datasetId ?? undefined,
         artifactIds: [],
         source: r.source as Run['source'],
@@ -213,7 +211,6 @@ export function ExperimentRunsTab() {
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="capitalize">{primaryLabel}</TableHead>
-                <TableHead>Loss trend</TableHead>
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
                 <TableHead className="w-12" />
@@ -268,12 +265,6 @@ export function ExperimentRunsTab() {
                       {primaryMetric && run.metrics[primaryMetric] !== undefined
                         ? formatMetric(run.metrics[primaryMetric])
                         : '—'}
-                    </TableCell>
-                    <TableCell>
-                      <MetricSparkline
-                        points={run.series.loss || []}
-                        color="#F5A623"
-                      />
                     </TableCell>
                     <TableCell
                       className={

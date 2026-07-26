@@ -76,11 +76,6 @@ export type Experiment = {
 
 export type RunStatus = 'running' | 'completed' | 'failed' | 'cancelled'
 
-export type MetricPoint = {
-  step: number
-  value: number
-}
-
 export type Run = {
   id: string
   experimentId: string
@@ -91,7 +86,6 @@ export type Run = {
   notes: string
   parameters: Record<string, string | number>
   metrics: Record<string, number>
-  series: Record<string, MetricPoint[]>
   datasetId?: string
   artifactIds: string[]
   source: ExperimentSource

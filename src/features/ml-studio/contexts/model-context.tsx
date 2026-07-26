@@ -11,13 +11,7 @@ import {
   ML_STUDIO_MODEL_VERSIONS,
   ML_STUDIO_RUN,
 } from '../api/ml-studio'
-import type {
-  Experiment,
-  MetricPoint,
-  Model,
-  ModelVersion,
-  Run,
-} from '../types'
+import type { Experiment, Model, ModelVersion, Run } from '../types'
 
 export const [ModelContextProvider, useModelContext] = createContext(
   ({ modelId }: { modelId: string }) => {
@@ -118,7 +112,6 @@ export const [ModelContextProvider, useModelContext] = createContext(
         notes: r.notes,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
-        series: (r.series ?? {}) as Record<string, MetricPoint[]>,
         datasetId: r.datasetId ?? undefined,
         artifactIds: [],
         source: r.source as Run['source'],

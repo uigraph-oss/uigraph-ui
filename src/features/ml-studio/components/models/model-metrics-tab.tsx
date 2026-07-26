@@ -15,7 +15,7 @@ import { useState } from 'react'
 import { ML_STUDIO_RUNS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
-import { MetricLineChart, MetricTrendChart } from '../metric-chart'
+import { MetricTrendChart } from '../metric-chart'
 import { Panel } from '../panel'
 
 const limitOptions = ['5', '10', '25', '50', 'all']
@@ -70,13 +70,7 @@ export function ModelMetricsTab() {
     )
   }
 
-  const series = latestRun.series
-  const curves = Object.entries(series).filter(
-    ([, points]) => points.length > 1
-  )
-  const scalars = Object.entries(latestRun.metrics).filter(
-    ([key]) => (series[key]?.length ?? 0) <= 1
-  )
+  const scalars = Object.entries(latestRun.metrics)
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6">
@@ -153,24 +147,7 @@ export function ModelMetricsTab() {
         </Panel>
       )}
 
-      {curves.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {curves.map(([key, points]) => (
-            <Panel
-              key={key}
-              title={key.replace(/_/g, ' ')}
-              description={`${points.length} steps logged`}
-            >
-              <MetricLineChart
-                series={{ [key]: points }}
-                className="aspect-[16/9] w-full"
-              />
-            </Panel>
-          ))}
-        </div>
-      )}
-
-      {scalars.length === 0 && curves.length === 0 && (
+      {scalars.length === 0 && (
         <Panel title="Metrics">
           <p className="text-sm text-[#586378]">
             No metrics recorded for this version.

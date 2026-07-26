@@ -137,15 +137,7 @@ export const ML_VERSION_EVALUATIONS = graphql(`
       evaluatedAt
       evaluator
       parameters
-      metrics {
-        id
-        name
-        value
-        unit
-        direction
-        category
-        measuredAt
-      }
+      metrics
     }
   }
 `)
@@ -220,7 +212,6 @@ export const ML_STUDIO_RUN = graphql(`
       parameters
       metrics
       datasetId
-      series
       source
       updatedAt
       syncedAt
@@ -241,7 +232,6 @@ export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
       parameters
       metrics
       datasetId
-      series
       source
       updatedAt
       syncedAt
@@ -278,7 +268,6 @@ export const ML_STUDIO_EXPERIMENT_RUNS_PAGE = graphql(`
         parameters
         metrics
         datasetId
-        series
         source
         updatedAt
         syncedAt
@@ -300,7 +289,6 @@ export const ML_STUDIO_RUNS = graphql(`
       parameters
       metrics
       datasetId
-      series
       source
       updatedAt
       syncedAt

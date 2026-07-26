@@ -8,7 +8,7 @@ import {
   ML_STUDIO_EXPERIMENT,
   ML_STUDIO_EXPERIMENT_RUNS,
 } from '../api/ml-studio'
-import type { Experiment, MetricPoint, Run } from '../types'
+import type { Experiment, Run } from '../types'
 
 export const [ExperimentContextProvider, useExperimentContext] = createContext(
   ({ experimentId }: { experimentId: string }) => {
@@ -54,7 +54,6 @@ export const [ExperimentContextProvider, useExperimentContext] = createContext(
           notes: r.notes,
           parameters: (r.parameters ?? {}) as Record<string, string | number>,
           metrics: (r.metrics ?? {}) as Record<string, number>,
-          series: (r.series ?? {}) as Record<string, MetricPoint[]>,
           datasetId: r.datasetId ?? undefined,
           artifactIds: [],
           source: r.source as Run['source'],
