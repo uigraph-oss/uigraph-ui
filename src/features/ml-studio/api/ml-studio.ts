@@ -450,6 +450,11 @@ export const ML_STUDIO_FINDINGS = graphql(`
       summary
       description
       runIds
+      createdAt
+      createdByActor {
+        id
+        name
+      }
     }
   }
 `)

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
+import { format } from 'date-fns'
 import { FlaskConicalIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -74,6 +75,8 @@ export function FindingsTab() {
               title={f.title}
               summary={f.summary}
               description={f.description}
+              createdAt={f.createdAt}
+              authorName={f.createdByActor?.name}
               modelId={f.modelId}
               versionId={f.versionId ?? undefined}
               runIds={f.runIds}
@@ -101,6 +104,8 @@ function FindingCard({
   title,
   summary,
   description,
+  createdAt,
+  authorName,
   modelId,
   versionId,
   runIds,
@@ -109,6 +114,8 @@ function FindingCard({
   title: string
   summary: string
   description: string
+  createdAt?: string | null
+  authorName?: string | null
   modelId: string
   versionId?: string
   runIds: string[]
@@ -139,8 +146,10 @@ function FindingCard({
       <div className="flex flex-col gap-1.5">
         <h3 className="text-lg font-semibold text-[#F4F7FC]">{title}</h3>
         <p className="text-[15px] text-[#828DA3]">
-          Supports {model?.name ?? 'Unknown model'}
-          {version ? ` · ${version.version}` : ''}
+          {createdAt ? `Recorded ${format(new Date(createdAt), 'PP')} · ` : ''}
+          {authorName ? `${authorName} · ` : ''}
+          supports {model?.name ?? 'Unknown model'}
+          {version ? ` ${version.version}` : ''}
         </p>
       </div>
 
