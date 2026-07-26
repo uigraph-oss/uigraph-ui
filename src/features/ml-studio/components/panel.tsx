@@ -24,19 +24,19 @@ export function Panel({
       )}
     >
       {(title || action) && (
-        <div className="flex items-start justify-between gap-3">
-          <div>
+        <div>
+          <div className="flex items-center justify-between gap-3">
             {title && (
               <h3 className="flex items-center gap-2 font-semibold text-[#F4F7FC]">
                 {icon && <span className="text-[#828DA3]">{icon}</span>}
                 {title}
               </h3>
             )}
-            {description && (
-              <p className="mt-0.5 text-sm text-[#828DA3]">{description}</p>
-            )}
+            {action}
           </div>
-          {action}
+          {description && (
+            <p className="mt-0.5 text-sm text-[#828DA3]">{description}</p>
+          )}
         </div>
       )}
       {children}

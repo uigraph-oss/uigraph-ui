@@ -189,7 +189,7 @@ export function ExperimentOverviewTab() {
       <Panel
         title="Run health"
         icon={<ActivityIcon size={16} />}
-        description="Status breakdown across every run in this experiment."
+        description="Status breakdown across all runs."
         action={
           latestRun ? (
             <div className="flex shrink-0 items-center gap-1.5 text-xs font-normal text-[#586378]">
