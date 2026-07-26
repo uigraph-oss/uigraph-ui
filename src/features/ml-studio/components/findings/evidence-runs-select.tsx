@@ -139,6 +139,7 @@ export function EvidenceRunsSelect({
         <PopoverContent
           className="w-(--radix-popover-trigger-width) p-0"
           align="start"
+          onWheel={(e) => e.stopPropagation()}
         >
           <Command
             filter={(itemValue, search) => {

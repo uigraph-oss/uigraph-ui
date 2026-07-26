@@ -82,6 +82,12 @@ export function LinkRunDialog({
   const runs = runsQuery.data?.mlRuns ?? []
   const selectedRun = runs.find((r) => r.id === selectedRunId)
 
+  const noProjects = !projectsQuery.loading && projects.length === 0
+  const noExperiments =
+    !!selectedProjectId && !experimentsQuery.loading && experiments.length === 0
+  const noRuns =
+    !!selectedExperimentId && !runsQuery.loading && runs.length === 0
+
   const [setVersionRun] = useMutation(SET_ML_MODEL_VERSION_RUN, {
     refetchQueries: ['MlStudioModelVersions'],
     awaitRefetchQueries: true,
@@ -143,6 +149,11 @@ export function LinkRunDialog({
               ))}
             </SelectContent>
           </Select>
+          {noProjects && (
+            <p className="text-destructive text-xs">
+              No projects found in this organization.
+            </p>
+          )}
         </FormField>
 
         <FormField label="Experiment">
@@ -168,6 +179,11 @@ export function LinkRunDialog({
               ))}
             </SelectContent>
           </Select>
+          {noExperiments && (
+            <p className="text-destructive text-xs">
+              No experiments found in this project.
+            </p>
+          )}
         </FormField>
 
         <FormField label="Training run">
@@ -192,8 +208,9 @@ export function LinkRunDialog({
               </button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-(--radix-popover-trigger-width) p-0"
               align="start"
+              className="w-(--radix-popover-trigger-width) p-0"
+              onWheel={(e) => e.stopPropagation()}
             >
               <Command>
                 <CommandInput placeholder="Search runs by id or name..." />
@@ -226,6 +243,11 @@ export function LinkRunDialog({
               </Command>
             </PopoverContent>
           </Popover>
+          {noRuns && (
+            <p className="text-destructive text-xs">
+              No runs found in this experiment.
+            </p>
+          )}
         </FormField>
 
         {runId && (
