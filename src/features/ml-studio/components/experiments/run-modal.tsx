@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  BetterDialogContent,
-  BetterDialogProvider,
-} from '@/components/better-dialog'
+import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -22,11 +19,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { format } from 'date-fns'
 import { PlusIcon, Trash2 } from 'lucide-react'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { useFieldArray, useForm, type Control } from 'react-hook-form'
 import { z } from 'zod'
 import { CREATE_ML_RUN, UPDATE_ML_RUN } from '../../api/ml-studio'
@@ -251,13 +254,11 @@ function KeyValueFields({
 }
 
 export function RunModal({
-  open,
-  onOpenChange,
+  onClose,
   experimentId,
   run,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  onClose: () => void
   experimentId: string
   run?: Run | null
 }) {
@@ -278,30 +279,51 @@ export function RunModal({
 
   const form = useForm<RunFormValues>({
     resolver: zodResolver(runSchema),
-    defaultValues: emptyValues,
+    defaultValues: run
+      ? {
+          name: run.name,
+          status: run.status,
+          startedAt: run.startedAt ? run.startedAt.slice(0, 16) : '',
+          endedAt: run.endedAt ? run.endedAt.slice(0, 16) : '',
+          notes: run.notes,
+          parameters: toRows(run.parameters),
+          metrics: toRows(run.metrics),
+        }
+      : emptyValues,
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
-  const { control, handleSubmit, formState, reset } = form
+  const { control, handleSubmit, formState, setValue, watch } = form
+  const [durationInput, setDurationInput] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!open) {
+  const startMs = Date.parse(watch('startedAt'))
+  const endMs = Date.parse(watch('endedAt'))
+  const durationDisabled = !Number.isFinite(startMs)
+  const derivedDuration =
+    Number.isFinite(startMs) && Number.isFinite(endMs) && endMs >= startMs
+      ? String(Math.round((endMs - startMs) / 60000))
+      : ''
+  const durationValue = durationInput ?? derivedDuration
+
+  function onDurationChange(value: string) {
+    setDurationInput(value)
+    if (!Number.isFinite(startMs)) {
       return
     }
-    reset(
-      run
-        ? {
-            name: run.name,
-            status: run.status,
-            startedAt: run.startedAt ? run.startedAt.slice(0, 16) : '',
-            endedAt: run.endedAt ? run.endedAt.slice(0, 16) : '',
-            notes: run.notes,
-            parameters: toRows(run.parameters),
-            metrics: toRows(run.metrics),
-          }
-        : emptyValues
+    if (value.trim() === '') {
+      setValue('endedAt', '', { shouldValidate: true })
+      return
+    }
+    const minutes = Number(value)
+    if (!Number.isInteger(minutes) || minutes < 0) {
+      return
+    }
+    setValue(
+      'endedAt',
+      format(new Date(startMs + minutes * 60000), "yyyy-MM-dd'T'HH:mm"),
+      { shouldValidate: true }
     )
-  }, [open, run, reset])
+  }
 
   async function onSubmit(values: RunFormValues) {
     if (!orgId) {
@@ -327,33 +349,72 @@ export function RunModal({
         variables: { orgId, experimentId, input },
       })
     }
-    onOpenChange(false)
+    onClose()
   }
 
   return (
-    <BetterDialogProvider open={open} onOpenChange={onOpenChange}>
-      <BetterDialogContent
-        title={isEdit ? 'Edit run' : 'New run'}
-        description="Report a run's parameters and metrics for this experiment."
-        footerCancel
-        footerSubmit={isEdit ? 'Save changes' : 'Create run'}
-        footerSubmitLoading={formState.isSubmitting}
-        onFooterSubmitClick={handleSubmit(onSubmit)}
-      >
-        <Form {...form}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-5"
-          >
+    <BetterDialogContent
+      title={isEdit ? 'Edit run' : 'New run'}
+      description="Report a run's parameters and metrics for this experiment."
+      footerCancel
+      footerSubmit={isEdit ? 'Save changes' : 'Create run'}
+      footerSubmitLoading={formState.isSubmitting}
+      onFooterSubmitClick={handleSubmit(onSubmit)}
+    >
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="baseline-run-4"
+                    className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="running">Running</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-3 gap-4">
             <FormField
               control={control}
-              name="name"
+              name="startedAt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Started at</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="baseline-run-4"
+                      type="datetime-local"
                       className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                       {...field}
                     />
@@ -365,76 +426,14 @@ export function RunModal({
 
             <FormField
               control={control}
-              name="status"
+              name="endedAt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Ended at</FormLabel>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="running">Running</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="failed">Failed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={control}
-                name="startedAt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Started at</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="datetime-local"
-                        className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="endedAt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ended at</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="datetime-local"
-                        className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="What changed in this run?"
-                      className="min-h-[5rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none"
+                    <Input
+                      type="datetime-local"
+                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                       {...field}
                     />
                   </FormControl>
@@ -444,29 +443,76 @@ export function RunModal({
             />
 
             <FormItem>
-              <FormLabel>Parameters</FormLabel>
-              <KeyValueFields
-                name="parameters"
-                control={control}
-                keyPlaceholder="learning_rate"
-                valuePlaceholder="0.001"
-                addLabel="Add parameter"
-              />
+              <FormLabel>Duration (min)</FormLabel>
+              {durationDisabled ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Input
+                        disabled
+                        value=""
+                        readOnly
+                        placeholder="—"
+                        className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>Set a start time first</TooltipContent>
+                </Tooltip>
+              ) : (
+                <Input
+                  inputMode="numeric"
+                  placeholder="60"
+                  value={durationValue}
+                  onChange={(e) => onDurationChange(e.target.value)}
+                  onBlur={() => setDurationInput(null)}
+                  className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
+                />
+              )}
             </FormItem>
+          </div>
 
-            <FormItem>
-              <FormLabel>Metrics</FormLabel>
-              <KeyValueFields
-                name="metrics"
-                control={control}
-                keyPlaceholder="accuracy"
-                valuePlaceholder="0.94"
-                addLabel="Add metric"
-              />
-            </FormItem>
-          </form>
-        </Form>
-      </BetterDialogContent>
-    </BetterDialogProvider>
+          <FormField
+            control={control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="What changed in this run?"
+                    className="min-h-[5rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormItem>
+            <FormLabel>Parameters</FormLabel>
+            <KeyValueFields
+              name="parameters"
+              control={control}
+              keyPlaceholder="learning_rate"
+              valuePlaceholder="0.001"
+              addLabel="Add parameter"
+            />
+          </FormItem>
+
+          <FormItem>
+            <FormLabel>Metrics</FormLabel>
+            <KeyValueFields
+              name="metrics"
+              control={control}
+              keyPlaceholder="accuracy"
+              valuePlaceholder="0.94"
+              addLabel="Add metric"
+            />
+          </FormItem>
+        </form>
+      </Form>
+    </BetterDialogContent>
   )
 }

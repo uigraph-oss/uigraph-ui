@@ -1,6 +1,7 @@
 'use client'
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -321,12 +322,13 @@ export function RunDetailPage() {
         )}
       </Panel>
 
-      <RunModal
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        experimentId={run.experimentId}
-        run={runForModal}
-      />
+      <BetterDialogProvider open={editOpen} onOpenChange={setEditOpen}>
+        <RunModal
+          onClose={() => setEditOpen(false)}
+          experimentId={run.experimentId}
+          run={runForModal}
+        />
+      </BetterDialogProvider>
 
       <BetterDeleteConfirmationModal
         open={deleteOpen}

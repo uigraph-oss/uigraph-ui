@@ -373,12 +373,13 @@ export function ExperimentRunsTab() {
         />
       </BetterDialogProvider>
 
-      <RunModal
-        open={runModalOpen}
-        onOpenChange={setRunModalOpen}
-        experimentId={experiment.id}
-        run={editingRun}
-      />
+      <BetterDialogProvider open={runModalOpen} onOpenChange={setRunModalOpen}>
+        <RunModal
+          onClose={() => setRunModalOpen(false)}
+          experimentId={experiment.id}
+          run={editingRun}
+        />
+      </BetterDialogProvider>
 
       <BetterDeleteConfirmationModal
         open={!!deletingRun}
