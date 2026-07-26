@@ -1,21 +1,36 @@
 'use client'
 
+import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { format } from 'date-fns'
-import { FlaskConicalIcon, PlusIcon } from 'lucide-react'
+import {
+  EllipsisVertical,
+  FlaskConicalIcon,
+  Pencil,
+  PlusIcon,
+  Trash2,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
+  DELETE_ML_FINDING,
   ML_STUDIO_FINDINGS,
   ML_STUDIO_MODEL,
   ML_STUDIO_MODEL_VERSION,
   ML_STUDIO_RUN,
 } from '../../api/ml-studio'
+import type { Finding } from '../../types'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
@@ -29,6 +44,16 @@ export function FindingsTab() {
   })
   const findings = data?.mlFindings ?? []
   const [modalOpen, setModalOpen] = useState(false)
+  const [editingFinding, setEditingFinding] = useState<Finding | null>(null)
+  const [deletingFindingId, setDeletingFindingId] = useState<string | null>(
+    null
+  )
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+
+  const [deleteFinding] = useMutation(DELETE_ML_FINDING, {
+    refetchQueries: ['MlStudioFindings'],
+    awaitRefetchQueries: true,
+  })
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
@@ -42,7 +67,10 @@ export function FindingsTab() {
         <Button
           preset="primary"
           className="h-10"
-          onClick={() => setModalOpen(true)}
+          onClick={() => {
+            setEditingFinding(null)
+            setModalOpen(true)
+          }}
         >
           <PlusIcon />
           New finding
@@ -60,7 +88,13 @@ export function FindingsTab() {
             Record what you learned from your experiment runs and link it to the
             model version it supports.
           </p>
-          <Button className="mt-1" onClick={() => setModalOpen(true)}>
+          <Button
+            className="mt-1"
+            onClick={() => {
+              setEditingFinding(null)
+              setModalOpen(true)
+            }}
+          >
             <PlusIcon />
             Create your first finding
           </Button>
@@ -68,7 +102,7 @@ export function FindingsTab() {
       )}
 
       {findings.length > 0 && (
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(28rem,1fr))] gap-3">
           {findings.map((f) => (
             <FindingCard
               key={f.id}
@@ -80,6 +114,25 @@ export function FindingsTab() {
               modelId={f.modelId}
               versionId={f.versionId ?? undefined}
               runIds={f.runIds}
+              menuOpen={openMenuId === f.id}
+              onMenuOpenChange={(open) => setOpenMenuId(open ? f.id : null)}
+              onEdit={() => {
+                setOpenMenuId(null)
+                setEditingFinding({
+                  id: f.id,
+                  modelId: f.modelId,
+                  versionId: f.versionId ?? undefined,
+                  title: f.title,
+                  summary: f.summary,
+                  description: f.description,
+                  runIds: f.runIds,
+                })
+                setModalOpen(true)
+              }}
+              onDelete={() => {
+                setOpenMenuId(null)
+                setDeletingFindingId(f.id)
+              }}
               onClick={() =>
                 navigate(
                   `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
@@ -93,9 +146,27 @@ export function FindingsTab() {
       <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
         <FindingModal
           onClose={() => setModalOpen(false)}
+          finding={editingFinding}
           projectId={projectId}
         />
       </BetterDialogProvider>
+
+      <BetterDeleteConfirmationModal
+        open={!!deletingFindingId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingFindingId(null)
+          }
+        }}
+        title="Delete finding?"
+        description="This will permanently remove this finding. The runs it cites will stay untouched."
+        onConfirm={async () => {
+          if (!orgId || !deletingFindingId) {
+            return
+          }
+          await deleteFinding({ variables: { orgId, id: deletingFindingId } })
+        }}
+      />
     </div>
   )
 }
@@ -109,6 +180,10 @@ function FindingCard({
   modelId,
   versionId,
   runIds,
+  menuOpen,
+  onMenuOpenChange,
+  onEdit,
+  onDelete,
   onClick,
 }: {
   title: string
@@ -119,6 +194,10 @@ function FindingCard({
   modelId: string
   versionId?: string
   runIds: string[]
+  menuOpen: boolean
+  onMenuOpenChange: (open: boolean) => void
+  onEdit: () => void
+  onDelete: () => void
   onClick: () => void
 }) {
   const orgId = useCurrentOrganization()?.id
@@ -138,19 +217,51 @@ function FindingCard({
   const version = versionId ? versionQuery.data?.mlModelVersion : undefined
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          onClick()
+        }
+      }}
       className="border-stock bg-card hover:border-primary/40 flex w-full cursor-pointer flex-col gap-3 rounded-2xl border px-6 py-5 text-left transition-colors"
     >
-      <div className="flex flex-col gap-1.5">
-        <h3 className="text-lg font-semibold text-[#F4F7FC]">{title}</h3>
-        <p className="text-[15px] text-[#828DA3]">
-          {createdAt ? `Recorded ${format(new Date(createdAt), 'PP')} · ` : ''}
-          {authorName ? `${authorName} · ` : ''}
-          supports {model?.name ?? 'Unknown model'}
-          {version ? ` ${version.version}` : ''}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-0.5">
+          <h3 className="text-base font-semibold text-[#F4F7FC]">{title}</h3>
+          <p className="text-sm text-[#828DA3]">
+            {createdAt
+              ? `Published ${format(new Date(createdAt), 'PP')} · `
+              : ''}
+            {authorName ? `${authorName} · ` : ''}
+            supports {version ? `${version.version} promotion` : model?.name}
+          </p>
+        </div>
+
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownMenu open={menuOpen} onOpenChange={onMenuOpenChange}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <EllipsisVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[#141925]">
+              <DropdownMenuItem onClick={onEdit}>
+                <Pencil className="h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={onDelete}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="stroke-destructive h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <p className="line-clamp-3 text-[15px] leading-relaxed text-[#828DA3]">
@@ -169,7 +280,7 @@ function FindingCard({
           ))}
         </div>
       )}
-    </button>
+    </div>
   )
 }
 
