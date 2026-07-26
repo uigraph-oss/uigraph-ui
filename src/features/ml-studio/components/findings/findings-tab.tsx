@@ -44,16 +44,6 @@ export function FindingsTab() {
   })
   const findings = data?.mlFindings ?? []
   const [modalOpen, setModalOpen] = useState(false)
-  const [editingFinding, setEditingFinding] = useState<Finding | null>(null)
-  const [deletingFindingId, setDeletingFindingId] = useState<string | null>(
-    null
-  )
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-
-  const [deleteFinding] = useMutation(DELETE_ML_FINDING, {
-    refetchQueries: ['MlStudioFindings'],
-    awaitRefetchQueries: true,
-  })
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-4 pb-6">
@@ -67,10 +57,7 @@ export function FindingsTab() {
         <Button
           preset="primary"
           className="h-10"
-          onClick={() => {
-            setEditingFinding(null)
-            setModalOpen(true)
-          }}
+          onClick={() => setModalOpen(true)}
         >
           <PlusIcon />
           New finding
@@ -88,13 +75,7 @@ export function FindingsTab() {
             Record what you learned from your experiment runs and link it to the
             model version it supports.
           </p>
-          <Button
-            className="mt-1"
-            onClick={() => {
-              setEditingFinding(null)
-              setModalOpen(true)
-            }}
-          >
+          <Button className="mt-1" onClick={() => setModalOpen(true)}>
             <PlusIcon />
             Create your first finding
           </Button>
@@ -106,6 +87,7 @@ export function FindingsTab() {
           {findings.map((f) => (
             <FindingCard
               key={f.id}
+              id={f.id}
               title={f.title}
               summary={f.summary}
               description={f.description}
@@ -114,25 +96,6 @@ export function FindingsTab() {
               modelId={f.modelId}
               versionId={f.versionId ?? undefined}
               runIds={f.runIds}
-              menuOpen={openMenuId === f.id}
-              onMenuOpenChange={(open) => setOpenMenuId(open ? f.id : null)}
-              onEdit={() => {
-                setOpenMenuId(null)
-                setEditingFinding({
-                  id: f.id,
-                  modelId: f.modelId,
-                  versionId: f.versionId ?? undefined,
-                  title: f.title,
-                  summary: f.summary,
-                  description: f.description,
-                  runIds: f.runIds,
-                })
-                setModalOpen(true)
-              }}
-              onDelete={() => {
-                setOpenMenuId(null)
-                setDeletingFindingId(f.id)
-              }}
               onClick={() =>
                 navigate(
                   `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
@@ -146,32 +109,15 @@ export function FindingsTab() {
       <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
         <FindingModal
           onClose={() => setModalOpen(false)}
-          finding={editingFinding}
           projectId={projectId}
         />
       </BetterDialogProvider>
-
-      <BetterDeleteConfirmationModal
-        open={!!deletingFindingId}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDeletingFindingId(null)
-          }
-        }}
-        title="Delete finding?"
-        description="This will permanently remove this finding. The runs it cites will stay untouched."
-        onConfirm={async () => {
-          if (!orgId || !deletingFindingId) {
-            return
-          }
-          await deleteFinding({ variables: { orgId, id: deletingFindingId } })
-        }}
-      />
     </div>
   )
 }
 
 function FindingCard({
+  id,
   title,
   summary,
   description,
@@ -180,12 +126,9 @@ function FindingCard({
   modelId,
   versionId,
   runIds,
-  menuOpen,
-  onMenuOpenChange,
-  onEdit,
-  onDelete,
   onClick,
 }: {
+  id: string
   title: string
   summary: string
   description: string
@@ -194,13 +137,27 @@ function FindingCard({
   modelId: string
   versionId?: string
   runIds: string[]
-  menuOpen: boolean
-  onMenuOpenChange: (open: boolean) => void
-  onEdit: () => void
-  onDelete: () => void
   onClick: () => void
 }) {
   const orgId = useCurrentOrganization()?.id
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
+  const [deleteFinding] = useMutation(DELETE_ML_FINDING, {
+    refetchQueries: ['MlStudioFindings'],
+    awaitRefetchQueries: true,
+  })
+
+  const finding: Finding = {
+    id,
+    modelId,
+    versionId,
+    title,
+    summary,
+    description,
+    runIds,
+  }
 
   const modelQuery = useQuery(ML_STUDIO_MODEL, {
     fetchPolicy: 'cache-and-network',
@@ -241,19 +198,27 @@ function FindingCard({
         </div>
 
         <div onClick={(e) => e.stopPropagation()}>
-          <DropdownMenu open={menuOpen} onOpenChange={onMenuOpenChange}>
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <EllipsisVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-[#141925]">
-              <DropdownMenuItem onClick={onEdit}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setMenuOpen(false)
+                  setEditOpen(true)
+                }}
+              >
                 <Pencil className="h-4 w-4" />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={onDelete}
+                onClick={() => {
+                  setMenuOpen(false)
+                  setDeleteOpen(true)
+                }}
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="stroke-destructive h-4 w-4" />
@@ -261,6 +226,26 @@ function FindingCard({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <BetterDialogProvider open={editOpen} onOpenChange={setEditOpen}>
+            <FindingModal
+              onClose={() => setEditOpen(false)}
+              finding={finding}
+            />
+          </BetterDialogProvider>
+
+          <BetterDeleteConfirmationModal
+            open={deleteOpen}
+            onOpenChange={setDeleteOpen}
+            title="Delete finding?"
+            description="This will permanently remove this finding. The runs it cites will stay untouched."
+            onConfirm={async () => {
+              if (!orgId) {
+                return
+              }
+              await deleteFinding({ variables: { orgId, id } })
+            }}
+          />
         </div>
       </div>
 
