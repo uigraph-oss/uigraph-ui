@@ -102,7 +102,7 @@ export function FindingsTab() {
       )}
 
       {findings.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(28rem,1fr))] gap-3">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(40rem,1fr))] gap-3">
           {findings.map((f) => (
             <FindingCard
               key={f.id}
