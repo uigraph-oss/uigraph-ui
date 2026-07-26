@@ -2,6 +2,7 @@
 
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -176,15 +177,17 @@ function EvidenceRunRow({ runId }: { runId: string }) {
   return (
     <TableRow>
       <TableCell>
-        {run ? (
+        {run && (
           <Link
             to={`${experimentBase}/runs/${run.id}`}
             className="hover:text-primary font-medium text-[#F4F7FC]"
           >
             {run.name}
           </Link>
-        ) : (
-          <span className="text-[#586378]">{runId}</span>
+        )}
+        {!run && runQuery.loading && <Skeleton className="h-5 w-32" />}
+        {!run && !runQuery.loading && (
+          <span className="text-[#586378]">Deleted run</span>
         )}
       </TableCell>
       <TableCell>

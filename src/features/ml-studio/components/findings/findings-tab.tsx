@@ -3,21 +3,18 @@
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { PlusIcon } from 'lucide-react'
+import { FlaskConicalIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ML_STUDIO_FINDINGS } from '../../api/ml-studio'
-import { ModelVersionLink } from '../model-version-link'
+import {
+  ML_STUDIO_FINDINGS,
+  ML_STUDIO_MODEL,
+  ML_STUDIO_MODEL_VERSION,
+  ML_STUDIO_RUN,
+} from '../../api/ml-studio'
 import { FindingModal } from './finding-modal'
 
 export function FindingsTab() {
@@ -70,45 +67,23 @@ export function FindingsTab() {
       )}
 
       {findings.length > 0 && (
-        <div className="border-stock bg-card overflow-hidden rounded-xl border">
-          <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Evidence</TableHead>
-                <TableHead>Supports</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {findings.map((f) => (
-                <TableRow
-                  key={f.id}
-                  className="cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
-                    )
-                  }
-                >
-                  <TableCell>
-                    <div className="font-medium text-[#F4F7FC]">{f.title}</div>
-                    <div className="line-clamp-1 text-sm text-[#828DA3]">
-                      {f.summary}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-[#828DA3]">
-                    {f.runIds.length} {f.runIds.length === 1 ? 'run' : 'runs'}
-                  </TableCell>
-                  <TableCell>
-                    <ModelVersionLink
-                      modelId={f.modelId}
-                      versionId={f.versionId ?? undefined}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className="flex flex-col gap-3">
+          {findings.map((f) => (
+            <FindingCard
+              key={f.id}
+              title={f.title}
+              summary={f.summary}
+              description={f.description}
+              modelId={f.modelId}
+              versionId={f.versionId ?? undefined}
+              runIds={f.runIds}
+              onClick={() =>
+                navigate(
+                  `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
+                )
+              }
+            />
+          ))}
         </div>
       )}
 
@@ -119,5 +94,101 @@ export function FindingsTab() {
         />
       </BetterDialogProvider>
     </div>
+  )
+}
+
+function FindingCard({
+  title,
+  summary,
+  description,
+  modelId,
+  versionId,
+  runIds,
+  onClick,
+}: {
+  title: string
+  summary: string
+  description: string
+  modelId: string
+  versionId?: string
+  runIds: string[]
+  onClick: () => void
+}) {
+  const orgId = useCurrentOrganization()?.id
+
+  const modelQuery = useQuery(ML_STUDIO_MODEL, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !modelId,
+    variables: { orgId: orgId!, id: modelId },
+  })
+  const versionQuery = useQuery(ML_STUDIO_MODEL_VERSION, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !versionId,
+    variables: { orgId: orgId!, id: versionId ?? '' },
+  })
+
+  const model = modelQuery.data?.mlModel
+  const version = versionId ? versionQuery.data?.mlModelVersion : undefined
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="border-stock bg-card hover:border-primary/40 flex w-full cursor-pointer flex-col gap-3 rounded-2xl border px-6 py-5 text-left transition-colors"
+    >
+      <div className="flex flex-col gap-1.5">
+        <h3 className="text-lg font-semibold text-[#F4F7FC]">{title}</h3>
+        <p className="text-[15px] text-[#828DA3]">
+          Supports {model?.name ?? 'Unknown model'}
+          {version ? ` · ${version.version}` : ''}
+        </p>
+      </div>
+
+      <p className="line-clamp-3 text-[15px] leading-relaxed text-[#828DA3]">
+        <span className="font-medium text-[#C6CEDB]">{summary}</span>
+        {description ? ` — ${description}` : ''}
+      </p>
+
+      {runIds.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span className="flex items-center gap-1.5 text-sm text-[#586378]">
+            <FlaskConicalIcon className="size-4" />
+            Evidence Runs:
+          </span>
+          {runIds.map((runId) => (
+            <EvidenceChip key={runId} runId={runId} />
+          ))}
+        </div>
+      )}
+    </button>
+  )
+}
+
+function EvidenceChip({ runId }: { runId: string }) {
+  const orgId = useCurrentOrganization()?.id
+
+  const runQuery = useQuery(ML_STUDIO_RUN, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, id: runId },
+  })
+  const run = runQuery.data?.mlRun
+
+  if (!run && runQuery.loading) {
+    return <Skeleton className="h-[26px] w-28 rounded-lg" />
+  }
+
+  if (!run) {
+    return (
+      <span className="border-stock rounded-lg border px-2.5 py-1 font-mono text-xs text-[#586378]">
+        Deleted run
+      </span>
+    )
+  }
+
+  return (
+    <span className="border-stock rounded-lg border px-2.5 py-1 font-mono text-xs text-[#828DA3]">
+      {run.name}
+    </span>
   )
 }
