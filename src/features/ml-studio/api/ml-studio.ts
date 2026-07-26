@@ -174,6 +174,7 @@ export const ML_STUDIO_EXPERIMENTS = graphql(`
       status
       startedAt
       source
+      createdBy
     }
   }
 `)

@@ -1,5 +1,6 @@
 'use client'
 
+import { MLflowIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,6 +29,7 @@ import {
 } from '../../api/ml-studio'
 import { formatMetric } from '../../format'
 import type { Experiment } from '../../types'
+import { MlUser } from '../ml-user'
 import { StatusBadge } from '../status-badge'
 import { ExperimentModal } from './experiment-modal'
 
@@ -86,6 +88,7 @@ export function ExperimentsTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead className="w-44">Source</TableHead>
               <TableHead className="w-28">Status</TableHead>
               <TableHead className="w-20">Runs</TableHead>
               <TableHead className="w-48">Latest result</TableHead>
@@ -129,6 +132,15 @@ export function ExperimentsTab() {
                     <div className="truncate text-sm text-[#828DA3]">
                       {exp.description}
                     </div>
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {isManual && <MlUser identifier={exp.createdBy} />}
+                    {!isManual && (
+                      <span className="flex items-center gap-2 text-[#F4F7FC]">
+                        <MLflowIcon className="size-5" />
+                        MLflow
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <StatusBadge value={exp.status} />
