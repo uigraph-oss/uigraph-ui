@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -21,28 +22,28 @@ import { Panel } from '../panel'
 
 const markerStyle: Record<string, { icon: ReactNode; className: string }> = {
   production: {
-    icon: <Check className="size-4" strokeWidth={3} />,
-    className: 'border-[#21AD6D]/50 bg-[#21AD6D]/15 text-[#3BD68E]',
+    icon: <Check className="size-3.5" />,
+    className: 'border-[#21AD6D]/30 bg-[#21AD6D]/15 text-[#3BD68E]',
   },
   staging: {
-    icon: <Square className="size-3.5" strokeWidth={2} />,
-    className: 'border-[#38415420] bg-[#171D28] text-[#8A93A6]',
+    icon: <Square className="size-3" />,
+    className: 'border-[#2A3242] bg-[#1E2533] text-[#828DA3]',
   },
   candidate: {
-    icon: <Circle className="size-3.5" strokeWidth={2} />,
-    className: 'border-[#38415420] bg-[#171D28] text-[#8A93A6]',
+    icon: <Circle className="size-3" />,
+    className: 'border-[#2A3242] bg-[#1E2533] text-[#828DA3]',
   },
   retired: {
-    icon: <X className="size-4" strokeWidth={3} />,
-    className: 'border-[#E5484D]/30 bg-[#E5484D]/12 text-[#FF6369]',
+    icon: <X className="size-3.5" />,
+    className: 'border-[#E5484D]/30 bg-[#E5484D]/15 text-[#FF6369]',
   },
   deprecated: {
-    icon: <X className="size-4" strokeWidth={3} />,
-    className: 'border-[#E5484D]/30 bg-[#E5484D]/12 text-[#FF6369]',
+    icon: <X className="size-3.5" />,
+    className: 'border-[#E5484D]/30 bg-[#E5484D]/15 text-[#FF6369]',
   },
   unknown: {
-    icon: <Circle className="size-3.5" strokeWidth={2} />,
-    className: 'border-[#38415420] bg-[#171D28] text-[#8A93A6]',
+    icon: <Circle className="size-3" />,
+    className: 'border-[#2A3242] bg-[#1E2533] text-[#828DA3]',
   },
 }
 
@@ -82,29 +83,27 @@ function TimelineItem({
   const marker = markerStyle[status] || markerStyle.unknown
 
   return (
-    <li className="relative flex gap-5 pb-9 last:pb-0">
+    <li className="relative flex gap-3 pb-6 last:pb-0">
       <div className="relative flex flex-col items-center">
         <span
           className={cn(
-            'z-10 flex size-10 shrink-0 items-center justify-center rounded-full border',
+            'z-10 flex size-7 shrink-0 items-center justify-center rounded-full border',
             marker.className
           )}
         >
           {marker.icon}
         </span>
         {!isLast && (
-          <span className="absolute top-11 bottom-[-40px] w-px bg-[#2A3242]" />
+          <span className="absolute top-8 bottom-[-24px] w-px bg-[#2A3242]" />
         )}
       </div>
 
-      <div className="flex-1 pt-1">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h4 className="text-[19px] leading-7 font-bold tracking-[-0.01em] text-[#F4F7FC]">
-            {title}
-          </h4>
+      <div className="flex-1">
+        <div className="flex min-h-7 flex-wrap items-center gap-2">
+          <h4 className="text-sm font-semibold text-[#F4F7FC]">{title}</h4>
           {badges}
         </div>
-        <p className="mt-1 text-[15px] leading-6 text-[#6B7488]">{meta}</p>
+        <p className="mt-0.5 text-xs text-[#586378]">{meta}</p>
       </div>
     </li>
   )
@@ -113,7 +112,7 @@ function TimelineItem({
 function TimelineTitle({ version, stage }: { version: string; stage: string }) {
   return (
     <>
-      {version} <span className="mx-1 text-[#8A93A6]">→</span>
+      {version} <span className="text-[#586378]">→</span>{' '}
       <span className="capitalize">{stage.replace(/-/g, ' ')}</span>
     </>
   )
@@ -121,14 +120,22 @@ function TimelineTitle({ version, stage }: { version: string; stage: string }) {
 
 function CurrentPill() {
   return (
-    <span className="rounded-full border border-[#21AD6D]/45 bg-[#21AD6D]/10 px-3 py-1 text-[15px] leading-5 font-semibold text-[#3BD68E]">
+    <Badge className="rounded-md border border-[#21AD6D]/30 bg-[#21AD6D]/15 font-medium text-[#3BD68E]">
       current
-    </span>
+    </Badge>
+  )
+}
+
+function LatestPill() {
+  return (
+    <Badge className="rounded-md border border-[#3B6BFF]/30 bg-[#3B6BFF]/15 font-medium text-[#7FA0FF]">
+      latest
+    </Badge>
   )
 }
 
 function VersionsTimeline() {
-  const { versions, model } = useModelContext()
+  const { versions, model, latestVersionId } = useModelContext()
 
   const ordered = useMemo(
     () =>
@@ -150,7 +157,12 @@ function VersionsTimeline() {
               title={
                 <TimelineTitle version={v.version} stage={v.deploymentStatus} />
               }
-              badges={model?.productionVersionId === v.id && <CurrentPill />}
+              badges={
+                <>
+                  {model?.productionVersionId === v.id && <CurrentPill />}
+                  {latestVersionId === v.id && <LatestPill />}
+                </>
+              }
               meta={
                 <>
                   {format(new Date(v.createdAt), 'MMM d, yyyy')}
@@ -253,9 +265,9 @@ function DeploymentsTimeline() {
                 }
                 badges={
                   u.fromStatus && (
-                    <span className="rounded-full border border-[#2A3242] bg-[#1E2533] px-2.5 py-0.5 text-xs font-medium text-[#828DA3] capitalize">
+                    <Badge className="rounded-md border border-[#2A3242] bg-[#1E2533] font-medium text-[#828DA3] capitalize">
                       from {u.fromStatus.replace(/-/g, ' ')}
-                    </span>
+                    </Badge>
                   )
                 }
                 meta={
