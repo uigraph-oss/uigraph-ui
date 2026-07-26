@@ -82,7 +82,7 @@ export function LinkEvaluationsDialog({
     evaluations.length === 0
 
   const [linkEvaluations] = useMutation(LINK_ML_VERSION_EVALUATIONS, {
-    refetchQueries: ['MlVersionEvaluations'],
+    refetchQueries: ['MlVersionEvaluations', 'MlVersionEvaluationsPage'],
     awaitRefetchQueries: true,
   })
 

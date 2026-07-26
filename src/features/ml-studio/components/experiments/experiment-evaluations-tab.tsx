@@ -1,6 +1,15 @@
 'use client'
 
+import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -12,8 +21,10 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
+import { Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ML_EXPERIMENT_EVALUATIONS } from '../../api/ml-studio'
+import { ML_EXPERIMENT_EVALUATIONS_PAGE } from '../../api/ml-studio'
 import { formatMetric } from '../../format'
 
 export function ExperimentEvaluationsTab() {
@@ -24,12 +35,37 @@ export function ExperimentEvaluationsTab() {
   }>()
   const navigate = useNavigate()
 
-  const evaluationsQuery = useQuery(ML_EXPERIMENT_EVALUATIONS, {
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setCurrentPage(1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  const evaluationsQuery = useQuery(ML_EXPERIMENT_EVALUATIONS_PAGE, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId || !experimentId,
-    variables: { orgId: orgId!, experimentId: experimentId ?? '' },
+    variables: {
+      orgId: orgId!,
+      experimentId: experimentId ?? '',
+      search: search || undefined,
+      limit: rowsPerPage,
+      offset: (currentPage - 1) * rowsPerPage,
+    },
   })
-  const evaluations = evaluationsQuery.data?.mlExperimentEvaluations ?? []
+
+  const pageData =
+    evaluationsQuery.data?.mlExperimentEvaluationsPage ??
+    evaluationsQuery.previousData?.mlExperimentEvaluationsPage
+  const evaluations = pageData?.evaluations ?? []
+  const total = pageData?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage))
 
   const primaryMetric =
     Object.keys(
@@ -54,7 +90,41 @@ export function ExperimentEvaluationsTab() {
       </div>
 
       <div className="rounded-[12px] border border-[#2A3242]">
-        <div className="overflow-x-auto">
+        <div className="flex items-center justify-between p-4">
+          <div className="relative max-w-[420px]">
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-[#828DA3]" />
+            <Input
+              placeholder="Search evaluations by name"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="h-11 w-full rounded-[12px] border-[#2A3242] bg-[#1E2533] pt-3 pb-3 pl-10"
+            />
+          </div>
+
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
+            <span>Show per page:</span>
+            <Select
+              value={String(rowsPerPage)}
+              onValueChange={(value) => {
+                setRowsPerPage(Number(value))
+                setCurrentPage(1)
+              }}
+            >
+              <SelectTrigger className="h-12 w-[120px] rounded-[12px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5 rows</SelectItem>
+                <SelectItem value="10">10 rows</SelectItem>
+                <SelectItem value="20">20 rows</SelectItem>
+                <SelectItem value="50">50 rows</SelectItem>
+                <SelectItem value="100">100 rows</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="border-stock overflow-x-auto border-t">
           <Table className="[&_td]:px-6 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-6">
             <TableHeader>
               <TableRow>
@@ -62,7 +132,6 @@ export function ExperimentEvaluationsTab() {
                 <TableHead>Model / Version</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead className="capitalize">{primaryLabel}</TableHead>
-                <TableHead>Evaluator</TableHead>
                 <TableHead>Evaluated</TableHead>
               </TableRow>
             </TableHeader>
@@ -70,7 +139,7 @@ export function ExperimentEvaluationsTab() {
               {evaluations.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={5}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {evaluationsQuery.loading
@@ -124,15 +193,6 @@ export function ExperimentEvaluationsTab() {
                       </TableCell>
                       <TableCell
                         className={
-                          evaluation.evaluator
-                            ? 'text-sm text-[#828DA3]'
-                            : 'text-xs text-[#828DA3]'
-                        }
-                      >
-                        {evaluation.evaluator || '—'}
-                      </TableCell>
-                      <TableCell
-                        className={
                           evaluation.evaluatedAt
                             ? 'text-sm text-[#828DA3]'
                             : 'text-xs text-[#828DA3]'
@@ -159,10 +219,17 @@ export function ExperimentEvaluationsTab() {
         </div>
       </div>
 
-      <div className="text-muted-foreground text-sm">
-        Total{' '}
-        <span className="font-medium text-[#F4F7FC]">{evaluations.length}</span>{' '}
-        evaluation runs
+      <div className="mt-2 flex items-center justify-between">
+        <div className="text-muted-foreground text-sm">
+          Total <span className="font-medium text-[#F4F7FC]">{total}</span>{' '}
+          evaluation runs
+        </div>
+
+        <FunctionalPagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+        />
       </div>
     </div>
   )
