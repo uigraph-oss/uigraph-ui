@@ -64,15 +64,21 @@ function withUniqueKeys<T extends { key: string }>(
   })
 }
 
+const NUMBER_PATTERN = /^-?(\d+(\.\d+)?|\.\d+)([eE][+-]?\d+)?$/
+const NUMBER_MESSAGE = 'Value must be a number'
+const numberValueSchema = z
+  .string()
+  .trim()
+  .min(1, 'Value is required')
+  .max(32, 'Value must be 32 characters or fewer')
+  .regex(NUMBER_PATTERN, NUMBER_MESSAGE)
+  .refine((value) => Number.isFinite(Number(value)), NUMBER_MESSAGE)
+
 const parametersSchema = z
   .array(
     z.object({
       key: keySchema,
-      value: z
-        .string()
-        .trim()
-        .min(1, 'Value is required')
-        .max(256, 'Value must be 256 characters or fewer'),
+      value: numberValueSchema,
     })
   )
   .max(50, 'At most 50 parameters')
@@ -82,14 +88,7 @@ const metricsSchema = z
   .array(
     z.object({
       key: keySchema,
-      value: z
-        .string()
-        .trim()
-        .min(1, 'Value is required')
-        .refine(
-          (value) => Number.isFinite(Number(value)),
-          'Value must be a number'
-        ),
+      value: numberValueSchema,
     })
   )
   .max(50, 'At most 50 metrics')
@@ -167,15 +166,7 @@ function toRows(values?: Record<string, string | number>) {
   }))
 }
 
-function toParameterMap(rows: { key: string; value: string }[]) {
-  const out: Record<string, string> = {}
-  for (const row of rows) {
-    out[row.key.trim()] = row.value.trim()
-  }
-  return out
-}
-
-function toMetricMap(rows: { key: string; value: string }[]) {
+function toNumberMap(rows: { key: string; value: string }[]) {
   const out: Record<string, number> = {}
   for (const row of rows) {
     out[row.key.trim()] = Number(row.value.trim())
@@ -226,6 +217,7 @@ function KeyValueFields({
                 <FormControl>
                   <Input
                     placeholder={valuePlaceholder}
+                    inputMode="decimal"
                     className="h-11 rounded-[12px] border-[#2A3242] bg-transparent"
                     {...valueField}
                   />
@@ -323,8 +315,8 @@ export function RunModal({
         : null,
       endedAt: values.endedAt ? new Date(values.endedAt).toISOString() : null,
       notes: values.notes,
-      parameters: toParameterMap(values.parameters),
-      metrics: toMetricMap(values.metrics),
+      parameters: toNumberMap(values.parameters),
+      metrics: toNumberMap(values.metrics),
     }
     if (run) {
       await updateRun({
