@@ -11,6 +11,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Label,
   Line,
   LineChart,
   XAxis,
@@ -185,6 +186,122 @@ export function MetricTrendChart({
           ))}
         </LineChart>
       </ChartContainer>
+    </div>
+  )
+}
+
+export function ParameterImpactChart({
+  data,
+  xKey,
+  yKey,
+  className,
+  onPointClick,
+}: {
+  data: { id: string; label: string; x: number; y: number }[]
+  xKey: string
+  yKey: string
+  className?: string
+  onPointClick?: (id: string) => void
+}) {
+  const config: ChartConfig = {
+    y: { label: yKey.replace(/_/g, ' '), color: palette[0] },
+  }
+
+  const chartData = [...data].sort((a, b) => a.x - b.x)
+
+  return (
+    <ChartContainer config={config} className={className}>
+      <LineChart
+        data={chartData}
+        margin={{ left: 8, right: 16, top: 8, bottom: 28 }}
+        className={onPointClick ? 'cursor-pointer' : undefined}
+        onClick={(state) => {
+          const point = state.activePayload?.[0]?.payload as
+            { id: string } | undefined
+          if (onPointClick && point) {
+            onPointClick(point.id)
+          }
+        }}
+      >
+        <CartesianGrid vertical={false} stroke="#2A3242" />
+        <XAxis
+          type="number"
+          dataKey="x"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={12}
+          domain={['dataMin', 'dataMax']}
+          tickFormatter={formatValue}
+        >
+          <Label
+            value={xKey.replace(/_/g, ' ')}
+            position="bottom"
+            offset={12}
+            className="fill-[#828DA3] text-xs"
+          />
+        </XAxis>
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          width={56}
+          tickFormatter={formatValue}
+        >
+          <Label
+            value={yKey.replace(/_/g, ' ')}
+            angle={-90}
+            position="insideLeft"
+            className="fill-[#828DA3] text-xs"
+            style={{ textAnchor: 'middle' }}
+          />
+        </YAxis>
+        <ChartTooltip
+          content={<ParameterImpactTooltip xKey={xKey} yKey={yKey} />}
+        />
+        <Line
+          dataKey="y"
+          type="monotone"
+          stroke={palette[0]}
+          strokeWidth={2}
+          dot={{ r: 3 }}
+          activeDot={{ r: 5 }}
+        />
+      </LineChart>
+    </ChartContainer>
+  )
+}
+
+function ParameterImpactTooltip({
+  active,
+  payload,
+  xKey,
+  yKey,
+}: {
+  active?: boolean
+  payload?: { payload: { label: string; x: number; y: number } }[]
+  xKey: string
+  yKey: string
+}) {
+  if (!active || !payload?.length) {
+    return null
+  }
+
+  const point = payload[0].payload
+
+  return (
+    <div className="border-border/50 bg-background grid min-w-[10rem] gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl">
+      <div className="font-medium">{point.label}</div>
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-muted-foreground">{xKey.replace(/_/g, ' ')}</span>
+        <span className="text-foreground font-mono font-medium tabular-nums">
+          {formatValue(point.x)}
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-muted-foreground">{yKey.replace(/_/g, ' ')}</span>
+        <span className="text-foreground font-mono font-medium tabular-nums">
+          {formatValue(point.y)}
+        </span>
+      </div>
     </div>
   )
 }
