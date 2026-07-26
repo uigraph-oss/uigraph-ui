@@ -11,12 +11,9 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { CalendarDays, UserRound } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  ML_STUDIO_EXPERIMENT_RUNS,
-  ML_VERSION_EVALUATIONS,
-} from '../../api/ml-studio'
+import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { MetricTrendChart } from '../metric-chart'
@@ -24,6 +21,31 @@ import { MetricSelect } from '../metric-select'
 import { Panel } from '../panel'
 
 const limitOptions = ['5', '10', '25', '50', 'all']
+
+function VersionMetricsLoader({
+  versionId,
+  onLoad,
+}: {
+  versionId: string
+  onLoad: (versionId: string, metrics: Record<string, number>) => void
+}) {
+  const orgId = useCurrentOrganization()?.id
+  const { data } = useQuery(ML_VERSION_EVALUATIONS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !versionId,
+    variables: { orgId: orgId!, versionId },
+  })
+  const latest = data?.mlVersionEvaluations?.[0]
+
+  useEffect(() => {
+    if (!latest) {
+      return
+    }
+    onLoad(versionId, (latest.metrics ?? {}) as Record<string, number>)
+  }, [latest, onLoad, versionId])
+
+  return null
+}
 
 export function ModelMetricsTab() {
   const { selectedVersion, versions, setVersionId } = useModelContext()
@@ -46,17 +68,14 @@ export function ModelMetricsTab() {
     variables: { orgId: orgId!, versionId: selectedVersion?.id ?? '' },
   })
 
-  const runsQuery = useQuery(ML_STUDIO_EXPERIMENT_RUNS, {
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId || !projectId,
-    variables: { orgId: orgId!, projectId: projectId ?? '' },
-  })
+  const [versionMetrics, setVersionMetrics] = useState<
+    Record<string, Record<string, number>>
+  >({})
 
-  const runMetricsById = new Map(
-    (runsQuery.data?.mlRuns ?? []).map((run) => [
-      run.id,
-      (run.metrics ?? {}) as Record<string, number>,
-    ])
+  const handleVersionMetrics = useCallback(
+    (versionId: string, metrics: Record<string, number>) =>
+      setVersionMetrics((current) => ({ ...current, [versionId]: metrics })),
+    []
   )
 
   const allVersionPoints = [...versions]
@@ -64,10 +83,9 @@ export function ModelMetricsTab() {
     .map((version) => ({
       id: version.id,
       label: `v${version.version}`,
-      metrics: version.runId
-        ? (runMetricsById.get(version.runId) ?? {})
-        : ({} as Record<string, number>),
+      metrics: versionMetrics[version.id] ?? {},
     }))
+    .filter((point) => Object.keys(point.metrics).length > 0)
   const versionPoints =
     versionLimit === 'all'
       ? allVersionPoints
@@ -123,6 +141,14 @@ export function ModelMetricsTab() {
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6">
+      {versions.map((version) => (
+        <VersionMetricsLoader
+          key={version.id}
+          versionId={version.id}
+          onLoad={handleVersionMetrics}
+        />
+      ))}
+
       {latest && scalars.length > 0 && (
         <Panel
           title="Metrics"
@@ -217,10 +243,10 @@ export function ModelMetricsTab() {
         </Panel>
       )}
 
-      {allVersionPoints.length > 1 && versionMetricKeys.length > 0 && (
+      {versions.length > 1 && (
         <Panel
           title="Metrics across versions"
-          description="How each metric compares across versions of this model, from the run that produced each version."
+          description="How each metric compares across versions of this model, using the latest evaluation of each version."
           action={
             <div className="flex items-center gap-3">
               <MetricSelect
@@ -253,18 +279,24 @@ export function ModelMetricsTab() {
             </div>
           }
         >
-          <MetricTrendChart
-            data={versionChartData}
-            metricKeys={visibleVersionMetricKeys}
-            className="aspect-[3/1] w-full"
-            onLabelClick={(label) => {
-              const version = versionPoints.find((v) => v.label === label)
-              if (!version) {
-                return
-              }
-              void setVersionId(version.id)
-            }}
-          />
+          {versionMetricKeys.length > 0 ? (
+            <MetricTrendChart
+              data={versionChartData}
+              metricKeys={visibleVersionMetricKeys}
+              className="aspect-[3/1] w-full"
+              onLabelClick={(label) => {
+                const version = versionPoints.find((v) => v.label === label)
+                if (!version) {
+                  return
+                }
+                void setVersionId(version.id)
+              }}
+            />
+          ) : (
+            <p className="text-sm text-[#586378]">
+              No evaluation metrics recorded for the versions of this model yet.
+            </p>
+          )}
         </Panel>
       )}
 
