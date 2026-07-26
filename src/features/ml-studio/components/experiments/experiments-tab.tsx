@@ -3,6 +3,7 @@
 import { MLflowIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
+import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -50,6 +51,7 @@ export function ExperimentsTab() {
   })
   const experiments = experimentsQuery.data?.mlExperiments ?? []
   const allRuns = runsQuery.data?.mlRuns ?? []
+  const loading = experimentsQuery.loading
 
   const [deleteExperiment] = useMutation(DELETE_ML_EXPERIMENT, {
     refetchQueries: ['MlStudioExperiments'],
@@ -84,140 +86,168 @@ export function ExperimentsTab() {
         </Button>
       </div>
 
-      <div className="border-stock bg-card overflow-hidden rounded-xl border">
-        <Table className="table-fixed [&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="w-44">Source</TableHead>
-              <TableHead className="w-28">Status</TableHead>
-              <TableHead className="w-20">Runs</TableHead>
-              <TableHead className="w-48">Latest result</TableHead>
-              <TableHead className="w-36">Last activity</TableHead>
-              <TableHead className="w-12" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {experiments.map((exp) => {
-              const runs = allRuns.filter((r) => r.experimentId === exp.id)
-              const latestRun = runs[runs.length - 1]
-              const metrics = (latestRun?.metrics ?? {}) as Record<
-                string,
-                number
-              >
-              const primaryMetric = Object.keys(metrics)[0]
-              const isManual = exp.source === 'manual'
-              const experiment: Experiment = {
-                id: exp.id,
-                projectId: exp.projectId ?? undefined,
-                name: exp.name,
-                description: exp.description,
-                status: exp.status as Experiment['status'],
-                tags: exp.tags,
-                startedAt: exp.startedAt ?? '',
-                source: exp.source as Experiment['source'],
-              }
-              return (
-                <TableRow
-                  key={exp.id}
-                  className="cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/dashboard/ml-studio/projects/${projectId}/experiments/${exp.id}`
-                    )
-                  }
+      {loading && experiments.length === 0 && (
+        <SectionLoader label="Loading experiments..." />
+      )}
+
+      {!loading && experiments.length === 0 && (
+        <div className="border-stock flex flex-col items-center gap-3 rounded-[28px] border border-dashed px-6 py-16 text-center">
+          <p className="text-sm font-medium text-[#F4F7FC]">
+            No experiments yet
+          </p>
+          <p className="max-w-sm text-sm text-[#828DA3]">
+            Create an experiment to track runs, metrics and datasets, or sync
+            one from your ML source.
+          </p>
+          <Button
+            className="mt-1"
+            onClick={() => {
+              setEditingExperiment(null)
+              setModalOpen(true)
+            }}
+          >
+            <PlusIcon />
+            Create your first experiment
+          </Button>
+        </div>
+      )}
+
+      {experiments.length > 0 && (
+        <div className="border-stock bg-card overflow-hidden rounded-xl border">
+          <Table className="table-fixed [&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead className="w-44">Source</TableHead>
+                <TableHead className="w-28">Status</TableHead>
+                <TableHead className="w-20">Runs</TableHead>
+                <TableHead className="w-48">Latest result</TableHead>
+                <TableHead className="w-36">Last activity</TableHead>
+                <TableHead className="w-12" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {experiments.map((exp) => {
+                const runs = allRuns.filter((r) => r.experimentId === exp.id)
+                const latestRun = runs[runs.length - 1]
+                const metrics = (latestRun?.metrics ?? {}) as Record<
+                  string,
+                  number
                 >
-                  <TableCell>
-                    <div className="truncate font-medium text-[#F4F7FC]">
-                      {exp.name}
-                    </div>
-                    <div className="truncate text-sm text-[#828DA3]">
-                      {exp.description}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {isManual && <MlUser identifier={exp.createdBy} />}
-                    {!isManual && (
-                      <span className="flex items-center gap-2 text-[#F4F7FC]">
-                        <MLflowIcon className="size-5" />
-                        MLflow
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge value={exp.status} />
-                  </TableCell>
-                  <TableCell className="text-[#828DA3]">
-                    {runs.length}
-                  </TableCell>
-                  <TableCell className="text-[#F4F7FC]">
-                    {primaryMetric ? (
-                      <>
-                        <div className="truncate">
-                          {formatMetric(metrics[primaryMetric])}
-                        </div>
-                        <div className="truncate text-xs text-[#586378]">
-                          {primaryMetric.replace(/_/g, ' ')}
-                        </div>
-                      </>
-                    ) : (
-                      '—'
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm text-[#828DA3]">
-                    {exp.startedAt
-                      ? new Date(exp.startedAt).toLocaleDateString()
-                      : '—'}
-                  </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    {isManual && (
-                      <DropdownMenu
-                        open={openMenuId === exp.id}
-                        onOpenChange={(o) => setOpenMenuId(o ? exp.id : null)}
-                      >
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <EllipsisVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="bg-[#141925]"
+                const primaryMetric = Object.keys(metrics)[0]
+                const isManual = exp.source === 'manual'
+                const experiment: Experiment = {
+                  id: exp.id,
+                  projectId: exp.projectId ?? undefined,
+                  name: exp.name,
+                  description: exp.description,
+                  status: exp.status as Experiment['status'],
+                  tags: exp.tags,
+                  startedAt: exp.startedAt ?? '',
+                  source: exp.source as Experiment['source'],
+                }
+                return (
+                  <TableRow
+                    key={exp.id}
+                    className="cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `/dashboard/ml-studio/projects/${projectId}/experiments/${exp.id}`
+                      )
+                    }
+                  >
+                    <TableCell>
+                      <div className="truncate font-medium text-[#F4F7FC]">
+                        {exp.name}
+                      </div>
+                      <div className="truncate text-sm text-[#828DA3]">
+                        {exp.description}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {isManual && <MlUser identifier={exp.createdBy} />}
+                      {!isManual && (
+                        <span className="flex items-center gap-2 text-[#F4F7FC]">
+                          <MLflowIcon className="size-5" />
+                          MLflow
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge value={exp.status} />
+                    </TableCell>
+                    <TableCell className="text-[#828DA3]">
+                      {runs.length}
+                    </TableCell>
+                    <TableCell className="text-[#F4F7FC]">
+                      {primaryMetric ? (
+                        <>
+                          <div className="truncate">
+                            {formatMetric(metrics[primaryMetric])}
+                          </div>
+                          <div className="truncate text-xs text-[#586378]">
+                            {primaryMetric.replace(/_/g, ' ')}
+                          </div>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-[#828DA3]">
+                      {exp.startedAt
+                        ? new Date(exp.startedAt).toLocaleDateString()
+                        : '—'}
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      {isManual && (
+                        <DropdownMenu
+                          open={openMenuId === exp.id}
+                          onOpenChange={(o) => setOpenMenuId(o ? exp.id : null)}
                         >
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setOpenMenuId(null)
-                              setEditingExperiment(experiment)
-                              setModalOpen(true)
-                            }}
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="bg-[#141925]"
                           >
-                            <Pencil className="h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setOpenMenuId(null)
-                              setDeletingExperiment(experiment)
-                            }}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="stroke-destructive h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                setEditingExperiment(experiment)
+                                setModalOpen(true)
+                              }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                setDeletingExperiment(experiment)
+                              }}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="stroke-destructive h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {projectId && (
         <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>

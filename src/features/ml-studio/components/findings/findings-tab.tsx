@@ -1,6 +1,7 @@
 'use client'
 
 import { BetterDialogProvider } from '@/components/better-dialog'
+import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -23,7 +24,7 @@ export function FindingsTab() {
   const navigate = useNavigate()
   const { projectId } = useParams<{ projectId: string }>()
   const orgId = useCurrentOrganization()?.id
-  const { data } = useQuery(ML_STUDIO_FINDINGS, {
+  const { data, loading } = useQuery(ML_STUDIO_FINDINGS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId || !projectId,
     variables: { orgId: orgId!, projectId },
@@ -50,46 +51,66 @@ export function FindingsTab() {
         </Button>
       </div>
 
-      <div className="border-stock bg-card overflow-hidden rounded-xl border">
-        <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Evidence</TableHead>
-              <TableHead>Supports</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {findings.map((f) => (
-              <TableRow
-                key={f.id}
-                className="cursor-pointer"
-                onClick={() =>
-                  navigate(
-                    `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
-                  )
-                }
-              >
-                <TableCell>
-                  <div className="font-medium text-[#F4F7FC]">{f.title}</div>
-                  <div className="line-clamp-1 text-sm text-[#828DA3]">
-                    {f.summary}
-                  </div>
-                </TableCell>
-                <TableCell className="text-[#828DA3]">
-                  {f.runIds.length} {f.runIds.length === 1 ? 'run' : 'runs'}
-                </TableCell>
-                <TableCell>
-                  <ModelVersionLink
-                    modelId={f.modelId}
-                    versionId={f.versionId ?? undefined}
-                  />
-                </TableCell>
+      {loading && findings.length === 0 && (
+        <SectionLoader label="Loading findings..." />
+      )}
+
+      {!loading && findings.length === 0 && (
+        <div className="border-stock flex flex-col items-center gap-3 rounded-[28px] border border-dashed px-6 py-16 text-center">
+          <p className="text-sm font-medium text-[#F4F7FC]">No findings yet</p>
+          <p className="max-w-sm text-sm text-[#828DA3]">
+            Record what you learned from your experiment runs and link it to the
+            model version it supports.
+          </p>
+          <Button className="mt-1" onClick={() => setModalOpen(true)}>
+            <PlusIcon />
+            Create your first finding
+          </Button>
+        </div>
+      )}
+
+      {findings.length > 0 && (
+        <div className="border-stock bg-card overflow-hidden rounded-xl border">
+          <Table className="[&_td]:px-4 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-4">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Evidence</TableHead>
+                <TableHead>Supports</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {findings.map((f) => (
+                <TableRow
+                  key={f.id}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`
+                    )
+                  }
+                >
+                  <TableCell>
+                    <div className="font-medium text-[#F4F7FC]">{f.title}</div>
+                    <div className="line-clamp-1 text-sm text-[#828DA3]">
+                      {f.summary}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-[#828DA3]">
+                    {f.runIds.length} {f.runIds.length === 1 ? 'run' : 'runs'}
+                  </TableCell>
+                  <TableCell>
+                    <ModelVersionLink
+                      modelId={f.modelId}
+                      versionId={f.versionId ?? undefined}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
         <FindingModal
