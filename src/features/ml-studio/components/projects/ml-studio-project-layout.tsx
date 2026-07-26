@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { URLPatternPolyfill } from '@/utils/polyfill'
 import { useQuery } from '@apollo/client'
+import { BoxesIcon, FlaskConicalIcon, LightbulbIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import {
   Navigate,
@@ -23,9 +24,17 @@ import {
 } from '../../api/ml-studio'
 import { ProjectProvider, useProject } from '../../contexts/project-context'
 
-const modelsTab = { id: 'models', label: 'Models' } as const
-const experimentsTab = { id: 'experiments', label: 'Experiments' } as const
-const findingsTab = { id: 'findings', label: 'Findings' } as const
+const modelsTab = { id: 'models', label: 'Models', icon: BoxesIcon } as const
+const experimentsTab = {
+  id: 'experiments',
+  label: 'Experiments',
+  icon: FlaskConicalIcon,
+} as const
+const findingsTab = {
+  id: 'findings',
+  label: 'Findings',
+  icon: LightbulbIcon,
+} as const
 
 const tabURLPattern = new URLPatternPolyfill({
   pathname: '/dashboard/ml-studio/projects/:projectId/:tab{/*}?',
@@ -179,7 +188,7 @@ function ProjectShell() {
                 key={tab.id}
                 variant="ghost"
                 className={cn(
-                  'h-11 rounded-none bg-transparent px-8 text-[#828DA3] hover:bg-transparent',
+                  'h-11 rounded-none bg-transparent px-6! text-[#828DA3] hover:bg-transparent',
                   activeTab === tab.id &&
                     'text-[#F4F7FC] shadow-[inset_0_-2px_0_0_var(--color-primary)]'
                 )}
@@ -190,6 +199,7 @@ function ProjectShell() {
                   )
                 }
               >
+                <tab.icon />
                 {tab.label}
               </Button>
             ))}

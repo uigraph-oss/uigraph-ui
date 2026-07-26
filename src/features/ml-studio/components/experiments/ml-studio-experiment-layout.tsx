@@ -5,7 +5,14 @@ import { Button } from '@/components/ui/button'
 import { DashboardHeader } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
-import { ArrowLeftIcon } from 'lucide-react'
+import {
+  ArrowLeftIcon,
+  ChartLineIcon,
+  ClipboardCheckIcon,
+  DatabaseIcon,
+  LayoutDashboardIcon,
+  PlayIcon,
+} from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
@@ -13,11 +20,11 @@ import { useProject } from '../../contexts/project-context'
 import { StatusBadge } from '../status-badge'
 
 const experimentTabs = [
-  { id: '', label: 'Overview' },
-  { id: 'runs', label: 'Training Runs' },
-  { id: 'evaluations', label: 'Evaluation Runs' },
-  { id: 'datasets', label: 'Datasets' },
-  { id: 'metrics', label: 'Metrics' },
+  { id: '', label: 'Overview', icon: LayoutDashboardIcon },
+  { id: 'runs', label: 'Training Runs', icon: PlayIcon },
+  { id: 'evaluations', label: 'Evaluation Runs', icon: ClipboardCheckIcon },
+  { id: 'datasets', label: 'Datasets', icon: DatabaseIcon },
+  { id: 'metrics', label: 'Metrics', icon: ChartLineIcon },
 ] as const
 
 const tabURLPattern = new URLPatternPolyfill({
@@ -82,7 +89,7 @@ export function MlStudioExperimentLayout({
               key={tab.id}
               variant="ghost"
               className={cn(
-                'h-auto items-end rounded-none bg-transparent px-8 pt-0 pb-3 text-[#828DA3] hover:bg-transparent',
+                'h-auto items-center rounded-none bg-transparent px-6! pt-0 pb-3 text-[#828DA3] hover:bg-transparent',
                 activeTab === tab.id &&
                   'text-[#F4F7FC] shadow-[inset_0_-2px_0_0_var(--color-primary)]'
               )}
@@ -93,6 +100,7 @@ export function MlStudioExperimentLayout({
                 )
               }
             >
+              <tab.icon />
               {tab.label}
             </Button>
           ))}

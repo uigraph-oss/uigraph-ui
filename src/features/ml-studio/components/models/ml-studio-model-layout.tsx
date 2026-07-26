@@ -20,7 +20,15 @@ import { DashboardHeader } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
 import { useMutation } from '@apollo/client'
-import { ArrowLeftIcon, ChevronDownIcon } from 'lucide-react'
+import {
+  ArrowLeftIcon,
+  ChartLineIcon,
+  ChevronDownIcon,
+  ClipboardCheckIcon,
+  ClockIcon,
+  LayoutDashboardIcon,
+  PackageIcon,
+} from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CREATE_ML_VERSION_DEPLOYMENT_UPDATE } from '../../api/ml-studio'
@@ -30,11 +38,11 @@ import { deploymentTransitions } from '../../deployment-transitions'
 import { StatusBadge } from '../status-badge'
 
 const modelTabs = [
-  { id: '', label: 'Overview' },
-  { id: 'metrics', label: 'Metrics' },
-  { id: 'evaluations', label: 'Evaluations' },
-  { id: 'artifacts', label: 'Artifacts' },
-  { id: 'timeline', label: 'Timeline' },
+  { id: '', label: 'Overview', icon: LayoutDashboardIcon },
+  { id: 'metrics', label: 'Metrics', icon: ChartLineIcon },
+  { id: 'evaluations', label: 'Evaluations', icon: ClipboardCheckIcon },
+  { id: 'artifacts', label: 'Artifacts', icon: PackageIcon },
+  { id: 'timeline', label: 'Timeline', icon: ClockIcon },
 ] as const
 
 const tabURLPattern = new URLPatternPolyfill({
@@ -206,7 +214,7 @@ export function MlStudioModelLayout({
               key={tab.id}
               variant="ghost"
               className={cn(
-                'h-auto items-end rounded-none bg-transparent px-8 pt-0 pb-3 text-[#828DA3] hover:bg-transparent',
+                'h-auto items-center rounded-none bg-transparent px-6! pt-0 pb-3 text-[#828DA3] hover:bg-transparent',
                 activeTab === tab.id &&
                   'text-[#F4F7FC] shadow-[inset_0_-2px_0_0_var(--color-primary)]'
               )}
@@ -217,6 +225,7 @@ export function MlStudioModelLayout({
                 )
               }
             >
+              <tab.icon />
               {tab.label}
             </Button>
           ))}
