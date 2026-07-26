@@ -146,6 +146,8 @@ type Documents = {
     "\n  mutation CreateMlVersionDeploymentUpdate(\n    $orgId: ID!\n    $versionId: ID!\n    $toStatus: String!\n  ) {\n    createMlVersionDeploymentUpdate(\n      orgId: $orgId\n      versionId: $versionId\n      toStatus: $toStatus\n    ) {\n      id\n      versionId\n      fromStatus\n      toStatus\n      changedBy\n      changedAt\n    }\n  }\n": typeof types.CreateMlVersionDeploymentUpdateDocument,
     "\n  mutation CreateMlProject($orgId: ID!, $input: CreateMlProjectInput!) {\n    createMlProject(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateMlProjectDocument,
     "\n  mutation UpdateMlProject(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlProjectInput!\n  ) {\n    updateMlProject(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMlProjectDocument,
+    "\n  mutation UpdateMlModelInfo(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlModelInfoInput!\n  ) {\n    updateMlModelInfo(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMlModelInfoDocument,
+    "\n  mutation DeleteMlModel($orgId: ID!, $id: ID!) {\n    deleteMlModel(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteMlModelDocument,
     "\n  mutation DeleteMlProject($orgId: ID!, $id: ID!) {\n    deleteMlProject(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteMlProjectDocument,
     "\n  mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {\n    createMlFinding(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateMlFindingDocument,
     "\n  mutation UpdateMlFinding(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlFindingInput!\n  ) {\n    updateMlFinding(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMlFindingDocument,
@@ -383,6 +385,8 @@ const documents: Documents = {
     "\n  mutation CreateMlVersionDeploymentUpdate(\n    $orgId: ID!\n    $versionId: ID!\n    $toStatus: String!\n  ) {\n    createMlVersionDeploymentUpdate(\n      orgId: $orgId\n      versionId: $versionId\n      toStatus: $toStatus\n    ) {\n      id\n      versionId\n      fromStatus\n      toStatus\n      changedBy\n      changedAt\n    }\n  }\n": types.CreateMlVersionDeploymentUpdateDocument,
     "\n  mutation CreateMlProject($orgId: ID!, $input: CreateMlProjectInput!) {\n    createMlProject(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": types.CreateMlProjectDocument,
     "\n  mutation UpdateMlProject(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlProjectInput!\n  ) {\n    updateMlProject(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMlProjectDocument,
+    "\n  mutation UpdateMlModelInfo(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlModelInfoInput!\n  ) {\n    updateMlModelInfo(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMlModelInfoDocument,
+    "\n  mutation DeleteMlModel($orgId: ID!, $id: ID!) {\n    deleteMlModel(orgId: $orgId, id: $id)\n  }\n": types.DeleteMlModelDocument,
     "\n  mutation DeleteMlProject($orgId: ID!, $id: ID!) {\n    deleteMlProject(orgId: $orgId, id: $id)\n  }\n": types.DeleteMlProjectDocument,
     "\n  mutation CreateMlFinding($orgId: ID!, $input: CreateMlFindingInput!) {\n    createMlFinding(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": types.CreateMlFindingDocument,
     "\n  mutation UpdateMlFinding(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlFindingInput!\n  ) {\n    updateMlFinding(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMlFindingDocument,
@@ -1030,6 +1034,14 @@ export function graphql(source: "\n  mutation CreateMlProject($orgId: ID!, $inpu
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateMlProject(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlProjectInput!\n  ) {\n    updateMlProject(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMlProject(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlProjectInput!\n  ) {\n    updateMlProject(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMlModelInfo(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlModelInfoInput!\n  ) {\n    updateMlModelInfo(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMlModelInfo(\n    $orgId: ID!\n    $id: ID!\n    $input: UpdateMlModelInfoInput!\n  ) {\n    updateMlModelInfo(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMlModel($orgId: ID!, $id: ID!) {\n    deleteMlModel(orgId: $orgId, id: $id)\n  }\n"): (typeof documents)["\n  mutation DeleteMlModel($orgId: ID!, $id: ID!) {\n    deleteMlModel(orgId: $orgId, id: $id)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

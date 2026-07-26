@@ -504,6 +504,24 @@ export const UPDATE_ML_PROJECT = graphql(`
   }
 `)
 
+export const UPDATE_ML_MODEL_INFO = graphql(`
+  mutation UpdateMlModelInfo(
+    $orgId: ID!
+    $id: ID!
+    $input: UpdateMlModelInfoInput!
+  ) {
+    updateMlModelInfo(orgId: $orgId, id: $id, input: $input) {
+      id
+    }
+  }
+`)
+
+export const DELETE_ML_MODEL = graphql(`
+  mutation DeleteMlModel($orgId: ID!, $id: ID!) {
+    deleteMlModel(orgId: $orgId, id: $id)
+  }
+`)
+
 export const DELETE_ML_PROJECT = graphql(`
   mutation DeleteMlProject($orgId: ID!, $id: ID!) {
     deleteMlProject(orgId: $orgId, id: $id)

@@ -15,7 +15,8 @@ import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { CREATE_ML_MODEL } from '../../api/ml-studio'
+import { CREATE_ML_MODEL, UPDATE_ML_MODEL_INFO } from '../../api/ml-studio'
+import type { Model } from '../../types'
 import { FormField, FormGrid } from '../form-field'
 
 const fieldClassName =
@@ -24,21 +25,30 @@ const fieldClassName =
 export function ModelModal({
   onClose,
   projectId,
+  model,
 }: {
   onClose: () => void
   projectId: string
+  model?: Model | null
 }) {
   const orgId = useCurrentOrganization()?.id
   const [createModel] = useMutation(CREATE_ML_MODEL, {
     refetchQueries: ['MlStudioModels'],
     awaitRefetchQueries: true,
   })
+  const [updateModelInfo] = useMutation(UPDATE_ML_MODEL_INFO, {
+    refetchQueries: ['MlStudioModels', 'MlStudioModel'],
+    awaitRefetchQueries: true,
+  })
+  const isEdit = !!model
 
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [domain, setDomain] = useState('')
-  const [problemType, setProblemType] = useState('other')
-  const [tags, setTags] = useState<string[]>([])
+  const [name, setName] = useState(model?.name ?? '')
+  const [description, setDescription] = useState(model?.description ?? '')
+  const [domain, setDomain] = useState(model?.domain ?? '')
+  const [problemType, setProblemType] = useState<string>(
+    model?.problemType ?? 'other'
+  )
+  const [tags, setTags] = useState<string[]>(model?.tags ?? [])
   const [saving, setSaving] = useState(false)
 
   async function submit() {
@@ -47,19 +57,35 @@ export function ModelModal({
     }
     setSaving(true)
     try {
-      await createModel({
-        variables: {
-          orgId,
-          input: {
-            projectId,
-            name: name.trim(),
-            description,
-            domain,
-            problemType,
-            tags,
+      if (model) {
+        await updateModelInfo({
+          variables: {
+            orgId,
+            id: model.id,
+            input: {
+              name: name.trim(),
+              description,
+              domain,
+              problemType,
+              tags,
+            },
           },
-        },
-      })
+        })
+      } else {
+        await createModel({
+          variables: {
+            orgId,
+            input: {
+              projectId,
+              name: name.trim(),
+              description,
+              domain,
+              problemType,
+              tags,
+            },
+          },
+        })
+      }
       onClose()
     } finally {
       setSaving(false)
@@ -68,10 +94,14 @@ export function ModelModal({
 
   return (
     <BetterDialogContent
-      title="New Model"
-      description="Register a model in the studio. You can add versions and experiments after."
+      title={isEdit ? 'Edit model' : 'New Model'}
+      description={
+        isEdit
+          ? 'Update this manually registered model.'
+          : 'Register a model in the studio. You can add versions and experiments after.'
+      }
       footerCancel
-      footerSubmit="Create model"
+      footerSubmit={isEdit ? 'Save changes' : 'Create model'}
       footerSubmitLoading={saving}
       onFooterSubmitClick={submit}
     >
