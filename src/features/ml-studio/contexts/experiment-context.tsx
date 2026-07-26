@@ -37,6 +37,7 @@ export const [ExperimentContextProvider, useExperimentContext] = createContext(
         description: e.description,
         status: e.status as Experiment['status'],
         startedAt: e.startedAt ?? '',
+        source: e.source as Experiment['source'],
       }
     }, [experimentQuery.data?.mlExperiment])
 
@@ -56,6 +57,7 @@ export const [ExperimentContextProvider, useExperimentContext] = createContext(
           series: (r.series ?? {}) as Record<string, MetricPoint[]>,
           datasetId: r.datasetId ?? undefined,
           artifactIds: [],
+          source: r.source as Run['source'],
           updatedAt: r.updatedAt ?? undefined,
           syncedAt: r.syncedAt ?? undefined,
         })),

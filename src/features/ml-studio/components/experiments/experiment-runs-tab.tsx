@@ -1,9 +1,16 @@
 'use client'
 
+import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -21,18 +28,29 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
-import { GitCompareIcon, Search } from 'lucide-react'
+import {
+  EllipsisVertical,
+  GitCompareIcon,
+  Pencil,
+  PlusIcon,
+  Search,
+  Trash2,
+} from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ML_STUDIO_EXPERIMENT_RUNS_PAGE } from '../../api/ml-studio'
+import {
+  DELETE_ML_RUN,
+  ML_STUDIO_EXPERIMENT_RUNS_PAGE,
+} from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric } from '../../format'
 import type { MetricPoint, Run } from '../../types'
 import { MetricSparkline } from '../metric-sparkline'
 import { StatusBadge } from '../status-badge'
 import { RunComparisonDialog } from './run-comparison-dialog'
+import { RunModal } from './run-modal'
 
 export function ExperimentRunsTab() {
   const { experiment } = useExperimentContext()
@@ -46,6 +64,15 @@ export function ExperimentRunsTab() {
   const [search, setSearch] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [currentPage, setCurrentPage] = useState(1)
+  const [runModalOpen, setRunModalOpen] = useState(false)
+  const [editingRun, setEditingRun] = useState<Run | null>(null)
+  const [deletingRun, setDeletingRun] = useState<Run | null>(null)
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+
+  const [deleteRun] = useMutation(DELETE_ML_RUN, {
+    refetchQueries: ['MlStudioExperimentRuns', 'MlStudioExperimentRunsPage'],
+    awaitRefetchQueries: true,
+  })
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -87,6 +114,7 @@ export function ExperimentRunsTab() {
         series: (r.series ?? {}) as Record<string, MetricPoint[]>,
         datasetId: r.datasetId ?? undefined,
         artifactIds: [],
+        source: r.source as Run['source'],
         updatedAt: r.updatedAt ?? undefined,
         syncedAt: r.syncedAt ?? undefined,
       })),
@@ -113,15 +141,27 @@ export function ExperimentRunsTab() {
             Every run recorded in this experiment.
           </p>
         </div>
-        <Button
-          preset="outline"
-          className="h-10"
-          disabled={selected.length < 2}
-          onClick={() => setComparing(true)}
-        >
-          <GitCompareIcon />
-          Compare ({selected.length})
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            preset="outline"
+            className="h-10"
+            disabled={selected.length < 2}
+            onClick={() => setComparing(true)}
+          >
+            <GitCompareIcon />
+            Compare ({selected.length})
+          </Button>
+          <Button
+            className="h-10"
+            onClick={() => {
+              setEditingRun(null)
+              setRunModalOpen(true)
+            }}
+          >
+            <PlusIcon />
+            New Run
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-[12px] border border-[#2A3242]">
@@ -170,13 +210,14 @@ export function ExperimentRunsTab() {
                 <TableHead>Loss trend</TableHead>
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
+                <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {runs.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={8}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {runsQuery.loading ? 'Loading runs…' : 'No runs found.'}
@@ -234,6 +275,49 @@ export function ExperimentRunsTab() {
                           })
                         : '—'}
                     </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      {run.source === 'manual' && (
+                        <DropdownMenu
+                          open={openMenuId === run.id}
+                          onOpenChange={(o) => setOpenMenuId(o ? run.id : null)}
+                        >
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="bg-[#141925]"
+                          >
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                setEditingRun(run)
+                                setRunModalOpen(true)
+                              }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                setDeletingRun(run)
+                              }}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="stroke-destructive h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -265,6 +349,30 @@ export function ExperimentRunsTab() {
           onToggleRun={toggle}
         />
       </BetterDialogProvider>
+
+      <RunModal
+        open={runModalOpen}
+        onOpenChange={setRunModalOpen}
+        experimentId={experiment.id}
+        run={editingRun}
+      />
+
+      <BetterDeleteConfirmationModal
+        open={!!deletingRun}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingRun(null)
+          }
+        }}
+        title="Delete run?"
+        description="This will permanently remove this run and its recorded parameters and metrics."
+        onConfirm={async () => {
+          if (!orgId || !deletingRun) {
+            return
+          }
+          await deleteRun({ variables: { orgId, id: deletingRun.id } })
+        }}
+      />
     </div>
   )
 }

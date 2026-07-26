@@ -51,6 +51,7 @@ export const ML_STUDIO_MODEL = graphql(`
       ethicalConsiderations
       caveats
       productionVersionId
+      origin
       createdAt
       updatedAt
     }
@@ -74,6 +75,7 @@ export const ML_STUDIO_MODELS = graphql(`
       ethicalConsiderations
       caveats
       productionVersionId
+      origin
       createdAt
       updatedAt
     }
@@ -157,6 +159,7 @@ export const ML_STUDIO_EXPERIMENT = graphql(`
       description
       status
       startedAt
+      source
     }
   }
 `)
@@ -170,6 +173,7 @@ export const ML_STUDIO_EXPERIMENTS = graphql(`
       description
       status
       startedAt
+      source
     }
   }
 `)
@@ -189,6 +193,7 @@ export const ML_STUDIO_RUN = graphql(`
       metrics
       datasetId
       series
+      source
       updatedAt
       syncedAt
     }
@@ -210,6 +215,7 @@ export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
       metrics
       datasetId
       series
+      source
       updatedAt
       syncedAt
     }
@@ -247,6 +253,7 @@ export const ML_STUDIO_EXPERIMENT_RUNS_PAGE = graphql(`
         metrics
         datasetId
         series
+        source
         updatedAt
         syncedAt
       }
@@ -269,6 +276,7 @@ export const ML_STUDIO_RUNS = graphql(`
       metrics
       datasetId
       series
+      source
       updatedAt
       syncedAt
     }
@@ -325,6 +333,8 @@ export const ML_STUDIO_DATASET = graphql(`
         type
         description
       }
+      tags
+      origin
     }
   }
 `)
@@ -345,6 +355,8 @@ export const ML_STUDIO_DATASETS = graphql(`
         type
         description
       }
+      tags
+      origin
     }
   }
 `)
@@ -376,6 +388,14 @@ export const ML_STUDIO_FINDINGS = graphql(`
       summary
       description
       runIds
+    }
+  }
+`)
+
+export const CREATE_ML_MODEL = graphql(`
+  mutation CreateMlModel($orgId: ID!, $input: CreateMlModelInput!) {
+    createMlModel(orgId: $orgId, input: $input) {
+      id
     }
   }
 `)
@@ -496,5 +516,87 @@ export const UPDATE_ML_FINDING = graphql(`
 export const DELETE_ML_FINDING = graphql(`
   mutation DeleteMlFinding($orgId: ID!, $id: ID!) {
     deleteMlFinding(orgId: $orgId, id: $id)
+  }
+`)
+
+export const CREATE_ML_EXPERIMENT = graphql(`
+  mutation CreateMlExperiment($orgId: ID!, $input: CreateMlExperimentInput!) {
+    createMlExperiment(orgId: $orgId, input: $input) {
+      id
+    }
+  }
+`)
+
+export const UPDATE_ML_EXPERIMENT = graphql(`
+  mutation UpdateMlExperiment(
+    $orgId: ID!
+    $id: ID!
+    $input: UpdateMlExperimentInput!
+  ) {
+    updateMlExperiment(orgId: $orgId, id: $id, input: $input) {
+      id
+    }
+  }
+`)
+
+export const DELETE_ML_EXPERIMENT = graphql(`
+  mutation DeleteMlExperiment($orgId: ID!, $id: ID!) {
+    deleteMlExperiment(orgId: $orgId, id: $id)
+  }
+`)
+
+export const CREATE_ML_RUN = graphql(`
+  mutation CreateMlRun(
+    $orgId: ID!
+    $experimentId: ID!
+    $input: CreateMlRunInput!
+  ) {
+    createMlRun(orgId: $orgId, experimentId: $experimentId, input: $input) {
+      id
+    }
+  }
+`)
+
+export const UPDATE_ML_RUN = graphql(`
+  mutation UpdateMlRun($orgId: ID!, $id: ID!, $input: UpdateMlRunInput!) {
+    updateMlRun(orgId: $orgId, id: $id, input: $input) {
+      id
+    }
+  }
+`)
+
+export const DELETE_ML_RUN = graphql(`
+  mutation DeleteMlRun($orgId: ID!, $id: ID!) {
+    deleteMlRun(orgId: $orgId, id: $id)
+  }
+`)
+
+export const CREATE_ML_DATASET = graphql(`
+  mutation CreateMlDataset(
+    $orgId: ID!
+    $experimentId: ID!
+    $input: CreateMlDatasetInput!
+  ) {
+    createMlDataset(orgId: $orgId, experimentId: $experimentId, input: $input) {
+      id
+    }
+  }
+`)
+
+export const UPDATE_ML_DATASET = graphql(`
+  mutation UpdateMlDataset(
+    $orgId: ID!
+    $id: ID!
+    $input: UpdateMlDatasetInput!
+  ) {
+    updateMlDataset(orgId: $orgId, id: $id, input: $input) {
+      id
+    }
+  }
+`)
+
+export const DELETE_ML_DATASET = graphql(`
+  mutation DeleteMlDataset($orgId: ID!, $id: ID!) {
+    deleteMlDataset(orgId: $orgId, id: $id)
   }
 `)
