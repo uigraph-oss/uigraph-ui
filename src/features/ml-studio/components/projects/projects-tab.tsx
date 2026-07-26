@@ -138,8 +138,6 @@ function ProjectCard({
     runCount: project.stats?.runCount ?? 0,
   })
   const updatedDate = project.updatedAt ? new Date(project.updatedAt) : null
-  // Synced projects mirror their ML source, so only manual ones can be changed here
-  const isManual = !project.sourceType
 
   return (
     <div className="group relative">
@@ -226,33 +224,31 @@ function ProjectCard({
       </Link>
 
       {/* ··· menu — appears on hover */}
-      {isManual && (
-        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              size="icon"
-              variant="ghost"
-              className={cn(
-                'absolute top-4 right-3 h-6 w-6 rounded-md bg-[#1E2533]/90 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#1E2533]',
-                isDropdownOpen && 'opacity-100'
-              )}
-            >
-              <MoreVerticalIcon className="h-3.5 w-3.5 text-[#828DA3]" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => setIsDeleteModalOpen(true)}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size="icon"
+            variant="ghost"
+            className={cn(
+              'absolute top-4 right-3 h-6 w-6 rounded-md bg-[#1E2533]/90 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-[#1E2533]',
+              isDropdownOpen && 'opacity-100'
+            )}
+          >
+            <MoreVerticalIcon className="h-3.5 w-3.5 text-[#828DA3]" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <BetterDialogProvider
         open={isEditModalOpen}
