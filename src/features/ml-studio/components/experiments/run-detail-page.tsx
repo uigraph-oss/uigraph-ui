@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import {
   ArrowLeftIcon,
@@ -19,16 +20,22 @@ import {
   DatabaseIcon,
   DownloadIcon,
   PackageIcon,
+  PencilIcon,
   SlidersHorizontalIcon,
+  Trash2Icon,
 } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
+  DELETE_ML_RUN,
   ML_STUDIO_DATASET,
   ML_STUDIO_RUN,
   ML_STUDIO_RUN_ARTIFACTS,
 } from '../../api/ml-studio'
+import type { MetricPoint, Run } from '../../types'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
+import { RunModal } from './run-modal'
 
 export function RunDetailPage() {
   const { runId } = useParams<{
@@ -36,6 +43,8 @@ export function RunDetailPage() {
   }>()
   const navigate = useNavigate()
   const orgId = useCurrentOrganization()?.id
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const runQuery = useQuery(ML_STUDIO_RUN, {
     fetchPolicy: 'cache-and-network',
@@ -43,6 +52,11 @@ export function RunDetailPage() {
     variables: { orgId: orgId!, id: runId! },
   })
   const run = runQuery.data?.mlRun
+
+  const [deleteRun] = useMutation(DELETE_ML_RUN, {
+    refetchQueries: ['MlStudioExperimentRuns', 'MlStudioExperimentRunsPage'],
+    awaitRefetchQueries: true,
+  })
 
   const artifactsQuery = useQuery(ML_STUDIO_RUN_ARTIFACTS, {
     fetchPolicy: 'cache-and-network',
@@ -65,6 +79,25 @@ export function RunDetailPage() {
   const parameters = (run.parameters ?? {}) as Record<string, unknown>
   const metrics = (run.metrics ?? {}) as Record<string, number>
 
+  const runForModal: Run = {
+    id: run.id,
+    experimentId: run.experimentId,
+    name: run.name,
+    status: run.status as Run['status'],
+    startedAt: run.startedAt ?? '',
+    endedAt: run.endedAt ?? undefined,
+    duration: run.duration,
+    notes: run.notes,
+    parameters: (run.parameters ?? {}) as Record<string, string | number>,
+    metrics: (run.metrics ?? {}) as Record<string, number>,
+    series: (run.series ?? {}) as Record<string, MetricPoint[]>,
+    datasetId: run.datasetId ?? undefined,
+    artifactIds: [],
+    source: run.source as Run['source'],
+    updatedAt: run.updatedAt ?? undefined,
+    syncedAt: run.syncedAt ?? undefined,
+  }
+
   return (
     <div className="flex flex-col gap-5 p-6">
       <div className="flex items-start justify-between gap-4">
@@ -75,10 +108,28 @@ export function RunDetailPage() {
           </div>
           <p className="mt-1 text-sm text-[#586378]">{run.notes}</p>
         </div>
-        <Button preset="outline" onClick={() => navigate(-1)}>
-          <ArrowLeftIcon />
-          Go Back
-        </Button>
+        <div className="flex items-center gap-2">
+          {run.source === 'manual' && (
+            <>
+              <Button preset="outline" onClick={() => setEditOpen(true)}>
+                <PencilIcon />
+                Edit
+              </Button>
+              <Button
+                preset="outline"
+                className="bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30 hover:text-destructive"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2Icon />
+                Delete
+              </Button>
+            </>
+          )}
+          <Button preset="outline" onClick={() => navigate(-1)}>
+            <ArrowLeftIcon />
+            Go Back
+          </Button>
+        </div>
       </div>
 
       <Panel>
@@ -265,6 +316,27 @@ export function RunDetailPage() {
           </p>
         )}
       </Panel>
+
+      <RunModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        experimentId={run.experimentId}
+        run={runForModal}
+      />
+
+      <BetterDeleteConfirmationModal
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete run?"
+        description="This will permanently remove this run and its recorded parameters and metrics."
+        onConfirm={async () => {
+          if (!orgId) {
+            return
+          }
+          await deleteRun({ variables: { orgId, id: run.id } })
+          void navigate(-1)
+        }}
+      />
     </div>
   )
 }

@@ -124,7 +124,13 @@ export function ModelsTab() {
         })}
       </div>
 
-      <ModelModal open={modalOpen} onOpenChange={setModalOpen} />
+      {projectId && (
+        <ModelModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          projectId={projectId}
+        />
+      )}
     </div>
   )
 }

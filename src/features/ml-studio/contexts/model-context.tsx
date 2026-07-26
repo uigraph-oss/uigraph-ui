@@ -56,6 +56,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
         createdAt: m.createdAt ?? '',
         updatedAt: m.updatedAt ?? '',
         productionVersionId: m.productionVersionId ?? undefined,
+        origin: m.origin as Model['origin'],
       }
     }, [modelQuery.data?.mlModel])
 
@@ -121,6 +122,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
         series: (r.series ?? {}) as Record<string, MetricPoint[]>,
         datasetId: r.datasetId ?? undefined,
         artifactIds: [],
+        source: r.source as Run['source'],
       }
     }, [runQuery.data?.mlRun])
 
@@ -142,6 +144,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
         description: e.description,
         status: e.status as Experiment['status'],
         startedAt: e.startedAt ?? '',
+        source: e.source as Experiment['source'],
       }
     }, [experimentQuery.data?.mlExperiment])
 

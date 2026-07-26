@@ -35,6 +35,7 @@ export type Model = {
   createdAt: string
   updatedAt: string
   productionVersionId?: string
+  origin: ExperimentSource
 }
 
 export type VersionStage = 'candidate' | 'staging' | 'production' | 'retired'
@@ -60,6 +61,8 @@ export type VersionDeploymentUpdate = {
 
 export type ExperimentStatus = 'active' | 'concluded' | 'archived'
 
+export type ExperimentSource = 'mlflow' | 'manual'
+
 export type Experiment = {
   id: string
   projectId?: string
@@ -67,6 +70,7 @@ export type Experiment = {
   description: string
   status: ExperimentStatus
   startedAt: string
+  source: ExperimentSource
 }
 
 export type RunStatus = 'running' | 'completed' | 'failed' | 'cancelled'
@@ -90,6 +94,7 @@ export type Run = {
   series: Record<string, MetricPoint[]>
   datasetId?: string
   artifactIds: string[]
+  source: ExperimentSource
   updatedAt?: string
   syncedAt?: string
 }
@@ -133,6 +138,8 @@ export type Dataset = {
   context: DatasetContext
   rowCount: number
   schema: SchemaField[]
+  tags?: Record<string, string>
+  origin: ExperimentSource
 }
 
 export type DeploymentStatus =
