@@ -69,6 +69,7 @@ export type Experiment = {
   name: string
   description: string
   status: ExperimentStatus
+  tags: string[]
   startedAt: string
   source: ExperimentSource
 }

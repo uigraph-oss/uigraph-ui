@@ -142,6 +142,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
         name: e.name,
         description: e.description,
         status: e.status as Experiment['status'],
+        tags: e.tags,
         startedAt: e.startedAt ?? '',
         source: e.source as Experiment['source'],
       }

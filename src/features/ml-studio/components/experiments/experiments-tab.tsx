@@ -113,6 +113,7 @@ export function ExperimentsTab() {
                 name: exp.name,
                 description: exp.description,
                 status: exp.status as Experiment['status'],
+                tags: exp.tags,
                 startedAt: exp.startedAt ?? '',
                 source: exp.source as Experiment['source'],
               }

@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { TagInput } from '@/features/component-meta/components/tag-input'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,6 +32,7 @@ const experimentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string(),
   status: z.enum(['active', 'concluded', 'archived']),
+  tags: z.array(z.string()),
   startedAt: z.string(),
 })
 
@@ -39,6 +42,7 @@ const emptyValues: ExperimentFormValues = {
   name: '',
   description: '',
   status: 'active',
+  tags: [],
   startedAt: '',
 }
 
@@ -61,6 +65,7 @@ export function ExperimentModal({
     awaitRefetchQueries: true,
   })
   const isEdit = !!experiment
+  const isSynced = experiment?.source === 'mlflow'
 
   const form = useForm<ExperimentFormValues>({
     resolver: zodResolver(experimentSchema),
@@ -69,6 +74,7 @@ export function ExperimentModal({
           name: experiment.name,
           description: experiment.description,
           status: experiment.status,
+          tags: experiment.tags,
           startedAt: experiment.startedAt
             ? experiment.startedAt.slice(0, 10)
             : '',
@@ -84,7 +90,11 @@ export function ExperimentModal({
     const startedAt = values.startedAt
       ? new Date(values.startedAt).toISOString()
       : null
-    if (experiment) {
+    if (experiment && isSynced) {
+      await updateExperiment({
+        variables: { orgId, id: experiment.id, input: { tags: values.tags } },
+      })
+    } else if (experiment) {
       await updateExperiment({
         variables: {
           orgId,
@@ -93,6 +103,7 @@ export function ExperimentModal({
             name: values.name,
             description: values.description,
             status: values.status,
+            tags: values.tags,
             startedAt,
           },
         },
@@ -106,6 +117,7 @@ export function ExperimentModal({
             name: values.name,
             description: values.description,
             status: values.status,
+            tags: values.tags,
             startedAt,
           },
         },
@@ -117,7 +129,11 @@ export function ExperimentModal({
   return (
     <BetterDialogContent
       title={isEdit ? 'Edit experiment' : 'New experiment'}
-      description="Report an experiment you ran outside of MLflow sync."
+      description={
+        isSynced
+          ? 'This experiment is synced from MLflow, so only its tags can be edited here.'
+          : 'Report an experiment you ran outside of MLflow sync.'
+      }
       footerCancel
       footerSubmit={isEdit ? 'Save changes' : 'Create experiment'}
       footerSubmitLoading={formState.isSubmitting}
@@ -134,6 +150,7 @@ export function ExperimentModal({
                 <FormControl>
                   <Input
                     placeholder="Two-tower retrieval v3"
+                    disabled={isSynced}
                     className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                     {...field}
                   />
@@ -152,6 +169,7 @@ export function ExperimentModal({
                 <FormControl>
                   <Textarea
                     placeholder="What is this experiment testing?"
+                    disabled={isSynced}
                     className="min-h-[6.75rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none"
                     {...field}
                   />
@@ -169,7 +187,11 @@ export function ExperimentModal({
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isSynced}
+                    >
                       <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
@@ -194,6 +216,7 @@ export function ExperimentModal({
                   <FormControl>
                     <Input
                       type="date"
+                      disabled={isSynced}
                       className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                       {...field}
                     />
@@ -203,6 +226,26 @@ export function ExperimentModal({
               )}
             />
           </div>
+
+          <FormField
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <ComponentMetaThemeProvider theme="modal">
+                    <TagInput
+                      placeholder="fraud, unsupervised, baseline"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </ComponentMetaThemeProvider>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </form>
       </Form>
     </BetterDialogContent>

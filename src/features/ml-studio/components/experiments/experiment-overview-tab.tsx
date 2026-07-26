@@ -1,5 +1,7 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -10,13 +12,15 @@ import {
 } from '@/components/ui/table'
 import { useNow } from '@/hooks/use-now'
 import { format, formatDistanceToNow } from 'date-fns'
-import { ActivityIcon, GaugeIcon, TrophyIcon } from 'lucide-react'
+import { ActivityIcon, GaugeIcon, PencilIcon, TrophyIcon } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import type { RunStatus } from '../../types'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
+import { ExperimentModal } from './experiment-modal'
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -42,6 +46,7 @@ export function ExperimentOverviewTab() {
   const now = useNow()
   const { experiment, runs } = useExperimentContext()
   const { projectId } = useParams<{ projectId: string }>()
+  const [editOpen, setEditOpen] = useState(false)
 
   const statusCounts = runs.reduce<Record<string, number>>((acc, run) => {
     acc[run.status] = (acc[run.status] ?? 0) + 1
@@ -80,16 +85,39 @@ export function ExperimentOverviewTab() {
   return (
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
       <Panel className="md:col-span-2">
-        {experiment.description && (
+        <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
               About
             </div>
             <p className="mt-1 text-sm leading-relaxed text-[#828DA3]">
-              {experiment.description}
+              {experiment.description || '—'}
             </p>
           </div>
-        )}
+          <Button preset="outline" onClick={() => setEditOpen(true)}>
+            <PencilIcon />
+            Edit
+          </Button>
+        </div>
+        <div className="min-w-0">
+          <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
+            Tags
+          </div>
+          {experiment.tags.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {experiment.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="border-stock rounded-md border px-2 py-1 text-xs text-[#828DA3]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-1 text-sm text-[#586378]">No tags yet.</p>
+          )}
+        </div>
         <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-4">
           <Stat
             label="Started"
@@ -222,6 +250,16 @@ export function ExperimentOverviewTab() {
           </p>
         )}
       </Panel>
+
+      {projectId && (
+        <BetterDialogProvider open={editOpen} onOpenChange={setEditOpen}>
+          <ExperimentModal
+            onClose={() => setEditOpen(false)}
+            experiment={experiment}
+            projectId={projectId}
+          />
+        </BetterDialogProvider>
+      )}
     </div>
   )
 }
