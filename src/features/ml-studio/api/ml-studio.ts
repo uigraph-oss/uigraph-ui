@@ -124,6 +124,32 @@ export const ML_STUDIO_MODEL_VERSION = graphql(`
   }
 `)
 
+export const ML_VERSION_EVALUATIONS = graphql(`
+  query MlVersionEvaluations($orgId: ID!, $versionId: ID!) {
+    mlVersionEvaluations(orgId: $orgId, versionId: $versionId) {
+      id
+      versionId
+      datasetId
+      name
+      type
+      description
+      summary
+      evaluatedAt
+      evaluator
+      parameters
+      metrics {
+        id
+        name
+        value
+        unit
+        direction
+        category
+        measuredAt
+      }
+    }
+  }
+`)
+
 export const ML_VERSION_DEPLOYMENT_UPDATES = graphql(`
   query MlVersionDeploymentUpdates($orgId: ID!, $versionId: ID!) {
     mlVersionDeploymentUpdates(orgId: $orgId, versionId: $versionId) {

@@ -32,6 +32,7 @@ import { StatusBadge } from '../status-badge'
 const modelTabs = [
   { id: '', label: 'Overview' },
   { id: 'metrics', label: 'Metrics' },
+  { id: 'evaluations', label: 'Evaluations' },
   { id: 'artifacts', label: 'Artifacts' },
   { id: 'timeline', label: 'Timeline' },
 ] as const
