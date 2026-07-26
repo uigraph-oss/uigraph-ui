@@ -105,6 +105,7 @@ export const ML_STUDIO_MODEL_VERSIONS = graphql(`
       description
       deploymentStatus
       runId
+      source
       createdAt
     }
   }
@@ -548,6 +549,32 @@ export const CREATE_ML_VERSION_DEPLOYMENT_UPDATE = graphql(`
       toStatus
       changedBy
       changedAt
+    }
+  }
+`)
+
+export const SET_ML_MODEL_VERSION_RUN = graphql(`
+  mutation SetMlModelVersionRun($orgId: ID!, $versionId: ID!, $runId: ID) {
+    setMlModelVersionRun(orgId: $orgId, versionId: $versionId, runId: $runId) {
+      id
+      runId
+    }
+  }
+`)
+
+export const LINK_ML_VERSION_EVALUATIONS = graphql(`
+  mutation LinkMlVersionEvaluations(
+    $orgId: ID!
+    $versionId: ID!
+    $evaluationIds: [ID!]!
+  ) {
+    linkMlVersionEvaluations(
+      orgId: $orgId
+      versionId: $versionId
+      evaluationIds: $evaluationIds
+    ) {
+      id
+      versionId
     }
   }
 `)

@@ -65,6 +65,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
             deploymentStatus:
               v.deploymentStatus as ModelVersion['deploymentStatus'],
             runId: v.runId ?? undefined,
+            source: v.source as ModelVersion['source'],
             createdAt: v.createdAt ?? '',
           }))
           .sort((a, b) => Number(b.version) - Number(a.version)),

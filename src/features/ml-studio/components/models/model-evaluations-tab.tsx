@@ -1,6 +1,8 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -12,13 +14,16 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ML_VERSION_EVALUATIONS } from '../../api/ml-studio'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
+import { LinkEvaluationsDialog } from './link-evaluations-dialog'
 
 export function ModelEvaluationsTab() {
   const { selectedVersion } = useModelContext()
+  const [linkOpen, setLinkOpen] = useState(false)
   const orgId = useCurrentOrganization()?.id
   const { projectId, modelId } = useParams<{
     projectId: string
@@ -46,13 +51,20 @@ export function ModelEvaluationsTab() {
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-[#F4F7FC]">Evaluations</h2>
-        <p className="text-sm text-[#828DA3]">
-          {selectedVersion
-            ? `Every evaluation recorded for version ${selectedVersion.version}.`
-            : 'Every evaluation recorded for this version.'}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold text-[#F4F7FC]">Evaluations</h2>
+          <p className="text-sm text-[#828DA3]">
+            {selectedVersion
+              ? `Every evaluation recorded for version ${selectedVersion.version}.`
+              : 'Every evaluation recorded for this version.'}
+          </p>
+        </div>
+        {selectedVersion && (
+          <Button preset="outline" onClick={() => setLinkOpen(true)}>
+            Link Evaluations
+          </Button>
+        )}
       </div>
 
       <div className="rounded-[12px] border border-[#2A3242]">
@@ -161,6 +173,15 @@ export function ModelEvaluationsTab() {
         <span className="font-medium text-[#F4F7FC]">{evaluations.length}</span>{' '}
         evaluations
       </div>
+
+      {selectedVersion && (
+        <BetterDialogProvider open={linkOpen} onOpenChange={setLinkOpen}>
+          <LinkEvaluationsDialog
+            onClose={() => setLinkOpen(false)}
+            versionId={selectedVersion.id}
+          />
+        </BetterDialogProvider>
+      )}
     </div>
   )
 }

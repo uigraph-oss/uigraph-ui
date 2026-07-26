@@ -1,0 +1,243 @@
+'use client'
+
+import { BetterDialogContent } from '@/components/better-dialog'
+import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { cn } from '@/lib/utils'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation, useQuery } from '@apollo/client'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { useState } from 'react'
+import {
+  ML_STUDIO_EXPERIMENTS,
+  ML_STUDIO_EXPERIMENT_RUNS,
+  ML_STUDIO_PROJECTS,
+  SET_ML_MODEL_VERSION_RUN,
+} from '../../api/ml-studio'
+import { FormField } from '../form-field'
+import { StatusBadge } from '../status-badge'
+
+const triggerClassName =
+  'text-foreground/80 h-[56px] w-full rounded-[16px] border-[#2A3242] bg-transparent px-6'
+
+export function LinkRunDialog({
+  onClose,
+  versionId,
+  runId,
+  experimentId,
+  projectId,
+}: {
+  onClose: () => void
+  versionId: string
+  runId?: string
+  experimentId?: string
+  projectId?: string
+}) {
+  const orgId = useCurrentOrganization()?.id
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId ?? '')
+  const [selectedExperimentId, setSelectedExperimentId] = useState(
+    experimentId ?? ''
+  )
+  const [selectedRunId, setSelectedRunId] = useState(runId ?? '')
+  const [runOpen, setRunOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const projectsQuery = useQuery(ML_STUDIO_PROJECTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const experimentsQuery = useQuery(ML_STUDIO_EXPERIMENTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !selectedProjectId,
+    variables: { orgId: orgId!, projectId: selectedProjectId },
+  })
+  const runsQuery = useQuery(ML_STUDIO_EXPERIMENT_RUNS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !selectedExperimentId,
+    variables: { orgId: orgId!, experimentId: selectedExperimentId },
+  })
+
+  const projects = projectsQuery.data?.mlProjects ?? []
+  const experiments = experimentsQuery.data?.mlExperiments ?? []
+  const runs = runsQuery.data?.mlRuns ?? []
+  const selectedRun = runs.find((r) => r.id === selectedRunId)
+
+  const [setVersionRun] = useMutation(SET_ML_MODEL_VERSION_RUN, {
+    refetchQueries: ['MlStudioModelVersions'],
+    awaitRefetchQueries: true,
+  })
+
+  function pickProject(id: string) {
+    setSelectedProjectId(id)
+    setSelectedExperimentId('')
+    setSelectedRunId('')
+  }
+
+  function pickExperiment(id: string) {
+    setSelectedExperimentId(id)
+    setSelectedRunId('')
+  }
+
+  async function save(nextRunId: string | null) {
+    if (!orgId) {
+      return
+    }
+    setSaving(true)
+    try {
+      await setVersionRun({
+        variables: { orgId, versionId, runId: nextRunId },
+      })
+      onClose()
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function submit() {
+    if (!selectedRunId) {
+      return
+    }
+    await save(selectedRunId)
+  }
+
+  return (
+    <BetterDialogContent
+      title={runId ? 'Change training run' : 'Link training run'}
+      description="Pick the run this version was trained from."
+      footerCancel
+      footerSubmit={runId ? 'Save' : 'Link run'}
+      footerSubmitLoading={saving}
+      onFooterSubmitClick={submit}
+    >
+      <div className="flex flex-col gap-5">
+        <FormField label="Project">
+          <Select value={selectedProjectId} onValueChange={pickProject}>
+            <SelectTrigger className={triggerClassName}>
+              <SelectValue placeholder="Select a project" />
+            </SelectTrigger>
+            <SelectContent>
+              {projects.map((project) => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FormField>
+
+        <FormField label="Experiment">
+          <Select
+            value={selectedExperimentId}
+            onValueChange={pickExperiment}
+            disabled={!selectedProjectId}
+          >
+            <SelectTrigger className={triggerClassName}>
+              <SelectValue
+                placeholder={
+                  selectedProjectId
+                    ? 'Select an experiment'
+                    : 'Select a project first'
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {experiments.map((experiment) => (
+                <SelectItem key={experiment.id} value={experiment.id}>
+                  {experiment.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FormField>
+
+        <FormField label="Training run">
+          <Popover open={runOpen} onOpenChange={setRunOpen}>
+            <PopoverTrigger asChild disabled={!selectedExperimentId}>
+              <button
+                type="button"
+                className="flex min-h-[56px] w-full items-center justify-between gap-2 rounded-[16px] border border-[#2A3242] bg-transparent px-6 py-2 text-left text-sm focus:outline-none disabled:opacity-50"
+              >
+                {selectedRun ? (
+                  <span className="flex-1 text-[#F4F7FC]">
+                    {selectedRun.name}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground flex-1">
+                    {selectedExperimentId
+                      ? 'Select a training run'
+                      : 'Select an experiment first'}
+                  </span>
+                )}
+                <ChevronsUpDown className="text-muted-foreground size-4 shrink-0 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-(--radix-popover-trigger-width) p-0"
+              align="start"
+            >
+              <Command>
+                <CommandInput placeholder="Search runs by id or name..." />
+                <CommandList>
+                  <CommandEmpty>No runs found.</CommandEmpty>
+                  <CommandGroup heading="Runs">
+                    {runs.map((run) => (
+                      <CommandItem
+                        key={run.id}
+                        value={`${run.name} ${run.id}`}
+                        onSelect={() => {
+                          setSelectedRunId(run.id)
+                          setRunOpen(false)
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            'size-4',
+                            selectedRunId === run.id
+                              ? 'opacity-100'
+                              : 'opacity-0'
+                          )}
+                        />
+                        <span className="flex-1">{run.name}</span>
+                        <StatusBadge value={run.status} />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </FormField>
+
+        {runId && (
+          <Button
+            preset="ghost"
+            className="self-start"
+            onClick={() => save(null)}
+          >
+            Unlink current run
+          </Button>
+        )}
+      </div>
+    </BetterDialogContent>
+  )
+}

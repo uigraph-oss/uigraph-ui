@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -12,11 +13,13 @@ import {
 import { useNow } from '@/hooks/use-now'
 import { format, formatDistanceToNow } from 'date-fns'
 import { BarChart3, FlaskConical, SlidersHorizontal } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import { Panel } from '../panel'
 import { DeploymentHistory } from './deployment-history'
+import { LinkRunDialog } from './link-run-dialog'
 import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
@@ -24,6 +27,7 @@ export function ModelOverviewTab() {
   const { selectedVersion, selectedRun, selectedRunExperiment } =
     useModelContext()
   const navigate = useNavigate()
+  const [linkRunOpen, setLinkRunOpen] = useState(false)
 
   const latestRun = selectedRun
   const runExperiment = selectedRunExperiment
@@ -48,63 +52,88 @@ export function ModelOverviewTab() {
     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
       <ModelCard />
 
-      <Panel
-        title="Metrics"
-        icon={<BarChart3 className="size-4" />}
-        action={lastUpdated}
-      >
-        {metrics.length > 0 ? (
-          <div className="grid grid-cols-2 gap-x-8 gap-y-5">
-            {metrics.map(([key, value]) => (
-              <div key={key}>
-                <div className="text-2xl font-bold text-[#F4F7FC]">
-                  {formatMetric(value)}
-                </div>
-                <div className="mt-1 text-sm text-[#828DA3]">
-                  {key.replace(/_/g, ' ')}
-                </div>
-              </div>
-            ))}
+      {!latestRun && (
+        <div className="border-stock bg-card flex items-center gap-4 rounded-xl border p-4 md:col-span-2">
+          <div className="border-stock flex size-10 shrink-0 items-center justify-center rounded-lg border bg-[#0F1523] text-[#828DA3]">
+            <FlaskConical className="size-5" />
           </div>
-        ) : (
-          <p className="text-sm text-[#586378]">
-            No metrics recorded for this version.
-          </p>
-        )}
-      </Panel>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-[#F4F7FC]">
+              No training run linked
+            </span>
+            <span className="text-sm text-[#828DA3]">
+              Link a run to see metrics and parameters for this version.
+            </span>
+          </div>
+          {selectedVersion && (
+            <Button
+              preset="outline"
+              className="ml-auto"
+              onClick={() => setLinkRunOpen(true)}
+            >
+              Link Training Run
+            </Button>
+          )}
+        </div>
+      )}
 
-      <Panel
-        title="Parameters"
-        icon={<SlidersHorizontal className="size-4" />}
-        action={lastUpdated}
-      >
-        {parameters.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Parameter</TableHead>
-                <TableHead>Value</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {parameters.map(([key, value]) => (
-                <TableRow key={key}>
-                  <TableCell className="text-[#828DA3]">{key}</TableCell>
-                  <TableCell className="font-mono text-[#F4F7FC]">
-                    {String(value)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <p className="text-sm text-[#586378]">No parameters recorded.</p>
-        )}
-      </Panel>
+      {latestRun && (
+        <>
+          <Panel
+            title="Metrics"
+            icon={<BarChart3 className="size-4" />}
+            action={lastUpdated}
+          >
+            {metrics.length > 0 ? (
+              <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+                {metrics.map(([key, value]) => (
+                  <div key={key}>
+                    <div className="text-2xl font-bold text-[#F4F7FC]">
+                      {formatMetric(value)}
+                    </div>
+                    <div className="mt-1 text-sm text-[#828DA3]">
+                      {key.replace(/_/g, ' ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[#586378]">
+                No metrics recorded for this version.
+              </p>
+            )}
+          </Panel>
 
-      <div className="border-stock bg-card flex items-center gap-4 rounded-xl border p-4 md:col-span-2">
-        {latestRun ? (
-          <>
+          <Panel
+            title="Parameters"
+            icon={<SlidersHorizontal className="size-4" />}
+            action={lastUpdated}
+          >
+            {parameters.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Parameter</TableHead>
+                    <TableHead>Value</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {parameters.map(([key, value]) => (
+                    <TableRow key={key}>
+                      <TableCell className="text-[#828DA3]">{key}</TableCell>
+                      <TableCell className="font-mono text-[#F4F7FC]">
+                        {String(value)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-[#586378]">No parameters recorded.</p>
+            )}
+          </Panel>
+
+          <div className="border-stock bg-card flex items-center gap-4 rounded-xl border p-4 md:col-span-2">
             <div className="border-stock flex size-10 shrink-0 items-center justify-center rounded-lg border bg-[#0F1523] text-[#828DA3]">
               <FlaskConical className="size-5" />
             </div>
@@ -135,22 +164,33 @@ export function ModelOverviewTab() {
                 </span>
               </div>
             </div>
-            <Button
-              preset="outline"
-              className="ml-auto"
-              onClick={() => navigate(runLink)}
-            >
-              Go To Training Run
-            </Button>
-          </>
-        ) : (
-          <p className="text-sm text-[#586378]">
-            No run is associated with this version.
-          </p>
-        )}
-      </div>
+            <div className="ml-auto flex items-center gap-2">
+              {selectedVersion && (
+                <Button preset="ghost" onClick={() => setLinkRunOpen(true)}>
+                  Change run
+                </Button>
+              )}
+              <Button preset="outline" onClick={() => navigate(runLink)}>
+                Go To Training Run
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
 
       {selectedVersion && <DeploymentHistory versionId={selectedVersion.id} />}
+
+      {selectedVersion && (
+        <BetterDialogProvider open={linkRunOpen} onOpenChange={setLinkRunOpen}>
+          <LinkRunDialog
+            onClose={() => setLinkRunOpen(false)}
+            versionId={selectedVersion.id}
+            runId={selectedVersion.runId}
+            experimentId={latestRun?.experimentId}
+            projectId={runExperiment?.projectId}
+          />
+        </BetterDialogProvider>
+      )}
     </div>
   )
 }

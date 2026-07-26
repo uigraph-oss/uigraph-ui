@@ -47,6 +47,7 @@ export type ModelVersion = {
   description: string
   deploymentStatus: VersionStage
   runId?: string
+  source: 'mlflow' | 'manual'
   createdAt: string
 }
 
