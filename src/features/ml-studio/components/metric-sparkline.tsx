@@ -12,7 +12,7 @@ export function MetricSparkline({
   height?: number
 }) {
   if (points.length === 0) {
-    return <span className="text-xs text-[#586378]">—</span>
+    return <span className="text-xs text-[#828DA3]">—</span>
   }
 
   const values = points.map((p) => p.value)

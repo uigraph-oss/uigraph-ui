@@ -122,8 +122,13 @@ export function ExperimentRunsTab() {
     [pageData?.runs]
   )
 
-  const primaryMetric = Object.keys(runs[0]?.metrics ?? {})[0] ?? ''
-  const primaryLabel = primaryMetric.replace(/_/g, ' ')
+  const primaryMetric =
+    Object.keys(
+      runs.find((r) => Object.keys(r.metrics).length > 0)?.metrics ?? {}
+    )[0] ?? ''
+  const primaryLabel = primaryMetric
+    ? primaryMetric.replace(/_/g, ' ')
+    : 'Metric'
   const selectedRuns = runs.filter((r) => selected.includes(r.id))
   const totalPages = Math.max(1, Math.ceil(total / rowsPerPage))
 
@@ -207,7 +212,7 @@ export function ExperimentRunsTab() {
                 <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>{primaryLabel}</TableHead>
+                <TableHead className="capitalize">{primaryLabel}</TableHead>
                 <TableHead>Loss trend</TableHead>
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
@@ -252,7 +257,14 @@ export function ExperimentRunsTab() {
                     <TableCell>
                       <StatusBadge value={run.status} />
                     </TableCell>
-                    <TableCell className="text-[#F4F7FC]">
+                    <TableCell
+                      className={
+                        primaryMetric &&
+                        run.metrics[primaryMetric] !== undefined
+                          ? 'text-[#F4F7FC]'
+                          : 'text-xs text-[#828DA3]'
+                      }
+                    >
                       {primaryMetric && run.metrics[primaryMetric] !== undefined
                         ? formatMetric(run.metrics[primaryMetric])
                         : '—'}
@@ -263,11 +275,21 @@ export function ExperimentRunsTab() {
                         color="#F5A623"
                       />
                     </TableCell>
-                    <TableCell className="text-sm text-[#828DA3]">
+                    <TableCell
+                      className={
+                        formatRunDuration(run, now) === '—'
+                          ? 'text-xs text-[#828DA3]'
+                          : 'text-sm text-[#828DA3]'
+                      }
+                    >
                       {formatRunDuration(run, now)}
                     </TableCell>
                     <TableCell
-                      className="text-sm text-[#828DA3]"
+                      className={
+                        run.syncedAt
+                          ? 'text-sm text-[#828DA3]'
+                          : 'text-xs text-[#828DA3]'
+                      }
                       title={run.syncedAt ?? undefined}
                     >
                       {run.syncedAt
