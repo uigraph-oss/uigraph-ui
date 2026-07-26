@@ -14,6 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ML_EXPERIMENT_EVALUATIONS } from '../../api/ml-studio'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { MetricTrendChart } from '../metric-chart'
+import { MetricSelect } from '../metric-select'
 import { Panel } from '../panel'
 
 const limitOptions = ['5', '10', '25', '50', 'all']
@@ -25,6 +26,10 @@ export function ExperimentMetricsTab() {
   const navigate = useNavigate()
   const [limit, setLimit] = useState('25')
   const [evaluationLimit, setEvaluationLimit] = useState('25')
+  const [hiddenRunMetrics, setHiddenRunMetrics] = useState<string[]>([])
+  const [hiddenEvaluationMetrics, setHiddenEvaluationMetrics] = useState<
+    string[]
+  >([])
 
   const evaluationsQuery = useQuery(ML_EXPERIMENT_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
@@ -48,6 +53,10 @@ export function ExperimentMetricsTab() {
     })
     return row
   })
+
+  const visibleMetricKeys = metricKeys.filter(
+    (k) => !hiddenRunMetrics.includes(k)
+  )
 
   const allEvaluations = [
     ...(evaluationsQuery.data?.mlExperimentEvaluations ?? []),
@@ -74,29 +83,48 @@ export function ExperimentMetricsTab() {
     return row
   })
 
+  const visibleEvaluationMetricKeys = evaluationMetricKeys.filter(
+    (k) => !hiddenEvaluationMetrics.includes(k)
+  )
+
   return (
     <div className="flex flex-col gap-5 p-6">
       <Panel
         title="Scalar metrics by run"
         description="Final metric values compared across runs in this experiment."
         action={
-          <Select value={limit} onValueChange={setLimit}>
-            <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-44 rounded-[0.80315625rem] bg-transparent px-4">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {limitOptions.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option === 'all' ? 'All runs' : `Last ${option} runs`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-3">
+            <MetricSelect
+              metricKeys={metricKeys}
+              hiddenKeys={hiddenRunMetrics}
+              onToggle={(key) =>
+                setHiddenRunMetrics((hidden) =>
+                  hidden.includes(key)
+                    ? hidden.filter((k) => k !== key)
+                    : [...hidden, key]
+                )
+              }
+              onShowAll={() => setHiddenRunMetrics([])}
+              onHideAll={() => setHiddenRunMetrics(metricKeys)}
+            />
+            <Select value={limit} onValueChange={setLimit}>
+              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-44 rounded-[0.80315625rem] bg-transparent px-4">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {limitOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option === 'all' ? 'All runs' : `Last ${option} runs`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         }
       >
         <MetricTrendChart
           data={barData}
-          metricKeys={metricKeys}
+          metricKeys={visibleMetricKeys}
           className="aspect-[3/1] w-full"
           onLabelClick={(label) => {
             const run = visibleRuns.find((r) => r.name === label)
@@ -114,25 +142,45 @@ export function ExperimentMetricsTab() {
           title="Metrics across evaluations"
           description="How each metric trends across evaluations in this experiment."
           action={
-            <Select value={evaluationLimit} onValueChange={setEvaluationLimit}>
-              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {limitOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option === 'all'
-                      ? 'All evaluations'
-                      : `Last ${option} evaluations`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <MetricSelect
+                metricKeys={evaluationMetricKeys}
+                hiddenKeys={hiddenEvaluationMetrics}
+                onToggle={(key) =>
+                  setHiddenEvaluationMetrics((hidden) =>
+                    hidden.includes(key)
+                      ? hidden.filter((k) => k !== key)
+                      : [...hidden, key]
+                  )
+                }
+                onShowAll={() => setHiddenEvaluationMetrics([])}
+                onHideAll={() =>
+                  setHiddenEvaluationMetrics(evaluationMetricKeys)
+                }
+              />
+              <Select
+                value={evaluationLimit}
+                onValueChange={setEvaluationLimit}
+              >
+                <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {limitOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option === 'all'
+                        ? 'All evaluations'
+                        : `Last ${option} evaluations`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           }
         >
           <MetricTrendChart
             data={evaluationData}
-            metricKeys={evaluationMetricKeys}
+            metricKeys={visibleEvaluationMetricKeys}
             className="aspect-[3/1] w-full"
             onLabelClick={(label) => {
               const evaluation = visibleEvaluations.find(

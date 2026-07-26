@@ -20,6 +20,7 @@ import {
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { MetricTrendChart } from '../metric-chart'
+import { MetricSelect } from '../metric-select'
 import { Panel } from '../panel'
 
 const limitOptions = ['5', '10', '25', '50', 'all']
@@ -34,6 +35,10 @@ export function ModelMetricsTab() {
   const navigate = useNavigate()
   const [limit, setLimit] = useState('25')
   const [versionLimit, setVersionLimit] = useState('25')
+  const [hiddenEvaluationMetrics, setHiddenEvaluationMetrics] = useState<
+    string[]
+  >([])
+  const [hiddenVersionMetrics, setHiddenVersionMetrics] = useState<string[]>([])
 
   const evaluationsQuery = useQuery(ML_VERSION_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
@@ -106,6 +111,13 @@ export function ModelMetricsTab() {
     return row
   })
 
+  const visibleMetricKeys = metricKeys.filter(
+    (k) => !hiddenEvaluationMetrics.includes(k)
+  )
+  const visibleVersionMetricKeys = versionMetricKeys.filter(
+    (k) => !hiddenVersionMetrics.includes(k)
+  )
+
   const latest = allEvaluations[allEvaluations.length - 1]
   const scalars = latest ? Object.entries(latest.metrics) : []
 
@@ -157,25 +169,40 @@ export function ModelMetricsTab() {
           title="Metrics across evaluations"
           description="How each metric trends across evaluations of this version."
           action={
-            <Select value={limit} onValueChange={setLimit}>
-              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {limitOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option === 'all'
-                      ? 'All evaluations'
-                      : `Last ${option} evaluations`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <MetricSelect
+                metricKeys={metricKeys}
+                hiddenKeys={hiddenEvaluationMetrics}
+                onToggle={(key) =>
+                  setHiddenEvaluationMetrics((hidden) =>
+                    hidden.includes(key)
+                      ? hidden.filter((k) => k !== key)
+                      : [...hidden, key]
+                  )
+                }
+                onShowAll={() => setHiddenEvaluationMetrics([])}
+                onHideAll={() => setHiddenEvaluationMetrics(metricKeys)}
+              />
+              <Select value={limit} onValueChange={setLimit}>
+                <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {limitOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option === 'all'
+                        ? 'All evaluations'
+                        : `Last ${option} evaluations`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           }
         >
           <MetricTrendChart
             data={chartData}
-            metricKeys={metricKeys}
+            metricKeys={visibleMetricKeys}
             className="aspect-[3/1] w-full"
             onLabelClick={(label) => {
               const evaluation = evaluations.find((e) => e.name === label)
@@ -195,25 +222,40 @@ export function ModelMetricsTab() {
           title="Metrics across versions"
           description="How each metric compares across versions of this model, from the run that produced each version."
           action={
-            <Select value={versionLimit} onValueChange={setVersionLimit}>
-              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {limitOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option === 'all'
-                      ? 'All versions'
-                      : `Last ${option} versions`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <MetricSelect
+                metricKeys={versionMetricKeys}
+                hiddenKeys={hiddenVersionMetrics}
+                onToggle={(key) =>
+                  setHiddenVersionMetrics((hidden) =>
+                    hidden.includes(key)
+                      ? hidden.filter((k) => k !== key)
+                      : [...hidden, key]
+                  )
+                }
+                onShowAll={() => setHiddenVersionMetrics([])}
+                onHideAll={() => setHiddenVersionMetrics(versionMetricKeys)}
+              />
+              <Select value={versionLimit} onValueChange={setVersionLimit}>
+                <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {limitOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option === 'all'
+                        ? 'All versions'
+                        : `Last ${option} versions`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           }
         >
           <MetricTrendChart
             data={versionChartData}
-            metricKeys={versionMetricKeys}
+            metricKeys={visibleVersionMetricKeys}
             className="aspect-[3/1] w-full"
             onLabelClick={(label) => {
               const version = versionPoints.find((v) => v.label === label)

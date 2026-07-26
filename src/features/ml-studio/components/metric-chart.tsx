@@ -44,6 +44,19 @@ function ClickableTick({
   )
 }
 
+function formatValue(value: number) {
+  if (!Number.isFinite(value)) {
+    return '—'
+  }
+  if (value !== 0 && (Math.abs(value) >= 1e6 || Math.abs(value) < 1e-4)) {
+    return value.toExponential(3)
+  }
+  if (Number.isInteger(value)) {
+    return String(value)
+  }
+  return Number(value.toPrecision(4)).toString()
+}
+
 export function MetricTrendChart({
   data,
   metricKeys,
@@ -62,37 +75,117 @@ export function MetricTrendChart({
     ])
   )
 
+  const ranges = new Map(
+    metricKeys.map((k) => {
+      const values = data
+        .map((row) => Number(row[k]))
+        .filter((value) => Number.isFinite(value))
+      return [k, { min: Math.min(...values), max: Math.max(...values) }]
+    })
+  )
+
+  const magnitudes = metricKeys
+    .map((k) => {
+      const range = ranges.get(k)!
+      return Math.max(Math.abs(range.min), Math.abs(range.max))
+    })
+    .filter((magnitude) => magnitude > 0)
+
+  const scaled =
+    magnitudes.length > 1 &&
+    Math.max(...magnitudes) / Math.min(...magnitudes) > 100
+
+  const chartData = scaled
+    ? data.map((row) => {
+        const scaledRow: Record<string, string | number> = {
+          label: row.label,
+        }
+        metricKeys.forEach((k) => {
+          const range = ranges.get(k)!
+          const value = Number(row[k])
+          scaledRow[k] =
+            range.max === range.min
+              ? 0.5
+              : (value - range.min) / (range.max - range.min)
+          scaledRow[`${k}__raw`] = value
+        })
+        return scaledRow
+      })
+    : data
+
   return (
-    <ChartContainer config={config} className={className}>
-      <LineChart data={data} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
-        <CartesianGrid vertical={false} stroke="#2A3242" />
-        <XAxis
-          dataKey="label"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={12}
-          tick={
-            onLabelClick ? (
-              <ClickableTick onLabelClick={onLabelClick} />
-            ) : undefined
-          }
-        />
-        <YAxis tickLine={false} axisLine={false} width={40} />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        {metricKeys.map((k) => (
-          <Line
-            key={k}
-            dataKey={k}
-            type="monotone"
-            stroke={`var(--color-${k})`}
-            strokeWidth={2}
-            dot={{ r: 3 }}
-            activeDot={{ r: 5 }}
+    <div className="flex flex-col gap-2">
+      {scaled && (
+        <p className="text-xs text-[#586378]">
+          Metrics have very different ranges, so each line is scaled to its own
+          minimum and maximum. Hover a point to see the real values.
+        </p>
+      )}
+      <ChartContainer config={config} className={className}>
+        <LineChart
+          data={chartData}
+          margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+        >
+          <CartesianGrid vertical={false} stroke="#2A3242" />
+          <XAxis
+            dataKey="label"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={12}
+            tick={
+              onLabelClick ? (
+                <ClickableTick onLabelClick={onLabelClick} />
+              ) : undefined
+            }
           />
-        ))}
-      </LineChart>
-    </ChartContainer>
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            width={40}
+            domain={scaled ? [-0.1, 1.1] : undefined}
+            tick={scaled ? false : undefined}
+          />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, name, item) => (
+                  <>
+                    <div
+                      className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div className="flex flex-1 items-center justify-between gap-4 leading-none">
+                      <span className="text-muted-foreground">
+                        {config[name as string]?.label ?? name}
+                      </span>
+                      <span className="text-foreground font-mono font-medium tabular-nums">
+                        {formatValue(
+                          scaled
+                            ? Number(item.payload[`${name as string}__raw`])
+                            : Number(value)
+                        )}
+                      </span>
+                    </div>
+                  </>
+                )}
+              />
+            }
+          />
+          <ChartLegend content={<ChartLegendContent />} />
+          {metricKeys.map((k) => (
+            <Line
+              key={k}
+              dataKey={k}
+              type="monotone"
+              stroke={`var(--color-${k})`}
+              strokeWidth={2}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
+            />
+          ))}
+        </LineChart>
+      </ChartContainer>
+    </div>
   )
 }
 
