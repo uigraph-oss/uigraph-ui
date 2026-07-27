@@ -6,7 +6,9 @@ import { Fragment, ReactNode, useEffect, useRef, useState } from 'react'
 export function useBetterTabs<
   T extends (BetterTabsListItem & { label: ReactNode })[],
 >(items: T, defaultTab?: string) {
-  const [activeTab, setActiveTab] = useState<string>(defaultTab || items[0].id)
+  const [activeTab, setActiveTab] = useState<string>(
+    defaultTab || items[0]?.id || ''
+  )
 
   const control = new TabController(items, activeTab, setActiveTab)
   return [control, activeTab, setActiveTab] as const

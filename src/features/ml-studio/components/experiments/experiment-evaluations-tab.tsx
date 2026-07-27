@@ -5,6 +5,7 @@ import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,18 +33,23 @@ import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import {
   EllipsisVertical,
+  GitCompareIcon,
   Pencil,
   PlusIcon,
   Search,
   Trash2,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   DELETE_ML_EVALUATION,
   ML_EXPERIMENT_EVALUATIONS_PAGE,
 } from '../../api/evaluations'
 import { formatMetric } from '../../format'
+import {
+  EvaluationComparisonDialog,
+  type ComparableEvaluation,
+} from './evaluation-comparison-dialog'
 import { EvaluationModal, type EditableEvaluation } from './evaluation-modal'
 
 export function ExperimentEvaluationsTab() {
@@ -54,6 +60,8 @@ export function ExperimentEvaluationsTab() {
   }>()
   const navigate = useNavigate()
 
+  const [selected, setSelected] = useState<string[]>([])
+  const [comparing, setComparing] = useState(false)
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -108,6 +116,31 @@ export function ExperimentEvaluationsTab() {
     ? primaryMetric.replace(/_/g, ' ')
     : 'Metric'
 
+  const comparableEvaluations: ComparableEvaluation[] = useMemo(
+    () =>
+      (pageData?.evaluations ?? []).map((e) => ({
+        id: e.id,
+        name: e.name,
+        type: e.type,
+        modelName: e.modelName,
+        version: e.version,
+        startedAt: e.startedAt,
+        endedAt: e.endedAt ?? null,
+        parameters: (e.parameters ?? {}) as Record<string, string | number>,
+        metrics: (e.metrics ?? {}) as Record<string, number>,
+      })),
+    [pageData?.evaluations]
+  )
+  const selectedEvaluations = comparableEvaluations.filter((e) =>
+    selected.includes(e.id)
+  )
+
+  function toggle(id: string) {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
+  }
+
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between gap-4">
@@ -119,15 +152,27 @@ export function ExperimentEvaluationsTab() {
             Every evaluation run recorded in this experiment.
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setEditingEvaluation(null)
-            setModalOpen(true)
-          }}
-        >
-          <PlusIcon />
-          New Evaluation
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            preset="outline"
+            className="h-10"
+            disabled={selected.length < 2}
+            onClick={() => setComparing(true)}
+          >
+            <GitCompareIcon />
+            Compare ({selected.length})
+          </Button>
+          <Button
+            className="h-10"
+            onClick={() => {
+              setEditingEvaluation(null)
+              setModalOpen(true)
+            }}
+          >
+            <PlusIcon />
+            New Evaluation
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-[12px] border border-[#2A3242]">
@@ -169,6 +214,7 @@ export function ExperimentEvaluationsTab() {
           <Table className="[&_td]:px-6 [&_td]:py-3.5 [&_th]:h-12 [&_th]:px-6">
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
                 <TableHead>Model / Version</TableHead>
                 <TableHead>Type</TableHead>
@@ -181,7 +227,7 @@ export function ExperimentEvaluationsTab() {
               {evaluations.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {evaluationsQuery.loading
@@ -223,6 +269,13 @@ export function ExperimentEvaluationsTab() {
                       className="cursor-pointer"
                       onClick={() => navigate(href)}
                     >
+                      <TableCell>
+                        <Checkbox
+                          checked={selected.includes(evaluation.id)}
+                          onCheckedChange={() => toggle(evaluation.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </TableCell>
                       <TableCell className="hover:text-primary font-medium text-[#F4F7FC]">
                         {evaluation.name}
                       </TableCell>
@@ -322,6 +375,18 @@ export function ExperimentEvaluationsTab() {
           totalPages={totalPages}
         />
       </div>
+
+      <BetterDialogProvider
+        open={comparing}
+        onOpenChange={setComparing}
+        className="[--width:72rem]"
+      >
+        <EvaluationComparisonDialog
+          evaluations={selectedEvaluations}
+          availableEvaluations={comparableEvaluations}
+          onToggleEvaluation={toggle}
+        />
+      </BetterDialogProvider>
 
       {experimentId && projectId && (
         <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
