@@ -4,6 +4,7 @@ import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ExperimentEvaluationMetrics } from './experiment-evaluation-metrics'
+import { ExperimentEvaluationsTable } from './experiment-evaluations-table'
 import { ExperimentRunMetrics } from './experiment-run-metrics'
 
 export function ExperimentMetricsTab() {
@@ -35,7 +36,12 @@ export function ExperimentMetricsTab() {
       <BetterTabController control={viewTabs} />
 
       {view === 'runs' && <ExperimentRunMetrics />}
-      {view === 'evaluations' && <ExperimentEvaluationMetrics />}
+      {view === 'evaluations' && (
+        <>
+          <ExperimentEvaluationsTable />
+          <ExperimentEvaluationMetrics />
+        </>
+      )}
     </div>
   )
 }

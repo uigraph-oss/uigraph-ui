@@ -12,6 +12,7 @@ export const ML_STUDIO_EXPERIMENT = graphql(`
       createdAt
       source
       createdBy
+      updatedBy
     }
   }
 `)
@@ -28,6 +29,7 @@ export const ML_STUDIO_EXPERIMENTS = graphql(`
       createdAt
       source
       createdBy
+      updatedBy
     }
   }
 `)

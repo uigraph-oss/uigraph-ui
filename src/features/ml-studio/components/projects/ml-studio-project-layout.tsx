@@ -150,7 +150,7 @@ function ProjectShell() {
   }
   if (isExperimentEvaluationDetail) {
     crumbs.push({
-      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}/evaluations`,
+      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}/metrics?view=evaluations`,
       label: experimentQuery.data?.mlExperiment?.name ?? 'Experiment',
     })
     crumbs.push({
@@ -160,7 +160,7 @@ function ProjectShell() {
   }
   if (isModelEvaluationDetail) {
     crumbs.push({
-      to: `/dashboard/ml-studio/projects/${projectId}/models/${modelEvaluationMatch!.modelId}/evaluations`,
+      to: `/dashboard/ml-studio/projects/${projectId}/models/${modelEvaluationMatch!.modelId}/metrics?view=evaluations`,
       label: modelQuery.data?.mlModel?.name ?? 'Model',
     })
     crumbs.push({

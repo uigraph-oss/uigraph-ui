@@ -37,6 +37,8 @@ export const [ExperimentContextProvider, useExperimentContext] = createContext(
         tags: e.tags,
         createdAt: e.createdAt ?? '',
         source: e.source as Experiment['source'],
+        createdBy: e.createdBy ?? undefined,
+        updatedBy: e.updatedBy ?? undefined,
       }
     }, [experimentQuery.data?.mlExperiment])
 

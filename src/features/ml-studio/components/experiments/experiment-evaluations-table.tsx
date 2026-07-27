@@ -52,7 +52,7 @@ import {
 } from './evaluation-comparison-dialog'
 import { EvaluationModal, type EditableEvaluation } from './evaluation-modal'
 
-export function ExperimentEvaluationsTab() {
+export function ExperimentEvaluationsTable() {
   const orgId = useCurrentOrganization()?.id
   const { projectId, experimentId } = useParams<{
     projectId: string
@@ -142,7 +142,7 @@ export function ExperimentEvaluationsTab() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-[#F4F7FC]">

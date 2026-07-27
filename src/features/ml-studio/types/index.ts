@@ -62,6 +62,7 @@ export type Experiment = {
   createdAt: string
   source: ExperimentSource
   createdBy?: string
+  updatedBy?: string
 }
 
 export type RunStatus = 'running' | 'completed' | 'failed' | 'cancelled'

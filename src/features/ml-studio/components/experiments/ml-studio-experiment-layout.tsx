@@ -8,7 +8,6 @@ import { URLPatternPolyfill } from '@/utils/polyfill'
 import {
   ArrowLeftIcon,
   ChartLineIcon,
-  ClipboardCheckIcon,
   DatabaseIcon,
   LayoutDashboardIcon,
   PlayIcon,
@@ -22,7 +21,6 @@ import { StatusBadge } from '../status-badge'
 const experimentTabs = [
   { id: '', label: 'Overview', icon: LayoutDashboardIcon },
   { id: 'runs', label: 'Training Runs', icon: PlayIcon },
-  { id: 'evaluations', label: 'Evaluation Runs', icon: ClipboardCheckIcon },
   { id: 'datasets', label: 'Datasets', icon: DatabaseIcon },
   { id: 'metrics', label: 'Metrics', icon: ChartLineIcon },
 ] as const

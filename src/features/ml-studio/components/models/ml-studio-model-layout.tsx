@@ -16,7 +16,6 @@ import { URLPatternPolyfill } from '@/utils/polyfill'
 import {
   ArrowLeftIcon,
   ChartLineIcon,
-  ClipboardCheckIcon,
   ClockIcon,
   LayoutDashboardIcon,
   PackageIcon,
@@ -29,7 +28,6 @@ import { useProject } from '../../contexts/project-context'
 const modelTabs = [
   { id: '', label: 'Overview', icon: LayoutDashboardIcon },
   { id: 'metrics', label: 'Metrics', icon: ChartLineIcon },
-  { id: 'evaluations', label: 'Evaluations', icon: ClipboardCheckIcon },
   { id: 'artifacts', label: 'Artifacts', icon: PackageIcon },
   { id: 'timeline', label: 'Timeline', icon: ClockIcon },
 ] as const

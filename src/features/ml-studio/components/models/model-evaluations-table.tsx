@@ -31,7 +31,7 @@ import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
 import { LinkEvaluationsDialog } from './link-evaluations-dialog'
 
-export function ModelEvaluationsTab() {
+export function ModelEvaluationsTable() {
   const { selectedVersion } = useModelContext()
   const [linkOpen, setLinkOpen] = useState(false)
   const orgId = useCurrentOrganization()?.id
@@ -89,14 +89,16 @@ export function ModelEvaluationsTab() {
     : 'Metric'
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-[#F4F7FC]">Evaluations</h2>
+          <h2 className="text-lg font-semibold text-[#F4F7FC]">
+            Evaluation Runs
+          </h2>
           <p className="text-sm text-[#828DA3]">
             {selectedVersion
-              ? `Every evaluation recorded for version ${selectedVersion.version}.`
-              : 'Every evaluation recorded for this version.'}
+              ? `Every evaluation run recorded for version ${selectedVersion.version}.`
+              : 'Every evaluation run recorded for this version.'}
           </p>
         </div>
         {selectedVersion && (
@@ -163,7 +165,7 @@ export function ModelEvaluationsTab() {
                       ? 'No version selected.'
                       : evaluationsQuery.loading
                         ? 'Loading evaluations…'
-                        : 'No evaluations recorded for this version.'}
+                        : 'No evaluation runs recorded for this version.'}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -224,7 +226,7 @@ export function ModelEvaluationsTab() {
       <div className="mt-2 flex items-center justify-between">
         <div className="text-muted-foreground text-sm">
           Total <span className="font-medium text-[#F4F7FC]">{total}</span>{' '}
-          evaluations
+          evaluation runs
         </div>
 
         <FunctionalPagination

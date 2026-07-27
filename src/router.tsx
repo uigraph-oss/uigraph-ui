@@ -73,11 +73,6 @@ const ModelMetricsTab = lazy(() =>
     (mod) => ({ default: mod.ModelMetricsTab })
   )
 )
-const ModelEvaluationsTab = lazy(() =>
-  import('@/features/ml-studio/components/models/model-evaluations-tab').then(
-    (mod) => ({ default: mod.ModelEvaluationsTab })
-  )
-)
 const EvaluationDetailPage = lazy(() =>
   import('@/features/ml-studio/components/models/evaluation-detail-page').then(
     (mod) => ({ default: mod.EvaluationDetailPage })
@@ -111,11 +106,6 @@ const ExperimentOverviewTab = lazy(() =>
 const ExperimentRunsTab = lazy(() =>
   import('@/features/ml-studio/components/experiments/experiment-runs-tab').then(
     (mod) => ({ default: mod.ExperimentRunsTab })
-  )
-)
-const ExperimentEvaluationsTab = lazy(() =>
-  import('@/features/ml-studio/components/experiments/experiment-evaluations-tab').then(
-    (mod) => ({ default: mod.ExperimentEvaluationsTab })
   )
 )
 const ExperimentDatasetsTab = lazy(() =>
@@ -520,7 +510,10 @@ export function AppRoutes() {
           >
             <Route index element={<ModelOverviewTab />} />
             <Route path="metrics" element={<ModelMetricsTab />} />
-            <Route path="evaluations" element={<ModelEvaluationsTab />} />
+            <Route
+              path="evaluations"
+              element={<Navigate to="../metrics?view=evaluations" replace />}
+            />
             <Route path="artifacts" element={<ModelArtifactsTab />} />
             <Route path="timeline" element={<ModelTimelineTab />} />
           </Route>
@@ -531,7 +524,10 @@ export function AppRoutes() {
           >
             <Route index element={<ExperimentOverviewTab />} />
             <Route path="runs" element={<ExperimentRunsTab />} />
-            <Route path="evaluations" element={<ExperimentEvaluationsTab />} />
+            <Route
+              path="evaluations"
+              element={<Navigate to="../metrics?view=evaluations" replace />}
+            />
             <Route path="datasets" element={<ExperimentDatasetsTab />} />
             <Route path="metrics" element={<ExperimentMetricsTab />} />
           </Route>

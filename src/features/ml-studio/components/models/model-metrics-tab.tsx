@@ -4,6 +4,7 @@ import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ModelEvaluationMetrics } from './model-evaluation-metrics'
+import { ModelEvaluationsTable } from './model-evaluations-table'
 import { ModelTrainingRunMetrics } from './model-training-run-metrics'
 import { ModelVersionMetrics } from './model-version-metrics'
 
@@ -40,7 +41,12 @@ export function ModelMetricsTab() {
       {view === 'run' && (
         <ModelTrainingRunMetrics onOpenTab={viewTabs.setActiveTab} />
       )}
-      {view === 'evaluations' && <ModelEvaluationMetrics />}
+      {view === 'evaluations' && (
+        <>
+          <ModelEvaluationsTable />
+          <ModelEvaluationMetrics />
+        </>
+      )}
       {view === 'versions' && <ModelVersionMetrics />}
     </div>
   )

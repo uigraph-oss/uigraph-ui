@@ -27,17 +27,18 @@ import {
   PencilIcon,
   TrophyIcon,
 } from 'lucide-react'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ML_EXPERIMENT_EVALUATIONS } from '../../api/evaluations'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import type { RunStatus } from '../../types'
+import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
 import { ExperimentModal } from './experiment-modal'
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0 py-1">
       <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
@@ -170,7 +171,7 @@ export function ExperimentOverviewTab() {
             <p className="mt-1 text-sm text-[#586378]">No tags yet.</p>
           )}
         </div>
-        <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-5">
+        <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-6">
           <Stat
             label="Created"
             value={
@@ -191,6 +192,10 @@ export function ExperimentOverviewTab() {
                   })
                 : '—'
             }
+          />
+          <Stat
+            label="Updated by"
+            value={<MlUser identifier={experiment.updatedBy} />}
           />
         </div>
       </Panel>
