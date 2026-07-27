@@ -43,10 +43,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DELETE_ML_RUN, ML_STUDIO_EXPERIMENT_RUNS_PAGE } from '../../api/runs'
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { formatRunDuration } from '../../format'
+import { formatMetric, formatRunDuration } from '../../format'
 import { useMetricColumns } from '../../hooks/use-metric-columns'
 import type { Run } from '../../types'
-import { MetricChips } from '../metric-chips'
 import { MetricColumnsSelect } from '../metric-columns-select'
 import { StatusBadge } from '../status-badge'
 import { RunComparisonDialog } from './run-comparison-dialog'
@@ -225,7 +224,11 @@ export function ExperimentRunsTab() {
                 <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Metrics</TableHead>
+                {metricColumns.columns.map((key) => (
+                  <TableHead key={key} className="capitalize">
+                    {key.replace(/_/g, ' ')}
+                  </TableHead>
+                ))}
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
                 <TableHead className="w-12" />
@@ -235,7 +238,7 @@ export function ExperimentRunsTab() {
               {runs.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={6 + metricColumns.columns.length}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {runsQuery.loading ? 'Loading runs…' : 'No runs found.'}
@@ -265,12 +268,20 @@ export function ExperimentRunsTab() {
                     <TableCell>
                       <StatusBadge value={run.status} />
                     </TableCell>
-                    <TableCell>
-                      <MetricChips
-                        metrics={run.metrics}
-                        columns={metricColumns.columns}
-                      />
-                    </TableCell>
+                    {metricColumns.columns.map((key) => (
+                      <TableCell
+                        key={key}
+                        className={
+                          run.metrics[key] !== undefined
+                            ? 'text-[#F4F7FC]'
+                            : 'text-xs text-[#828DA3]'
+                        }
+                      >
+                        {run.metrics[key] !== undefined
+                          ? formatMetric(run.metrics[key])
+                          : '—'}
+                      </TableCell>
+                    ))}
                     <TableCell
                       className={
                         formatRunDuration(run, now) === '—'
