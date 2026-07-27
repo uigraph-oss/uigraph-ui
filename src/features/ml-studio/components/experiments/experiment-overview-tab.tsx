@@ -238,10 +238,12 @@ export function ExperimentOverviewTab() {
               {experiment.description || '—'}
             </p>
           </div>
-          <Button preset="outline" onClick={() => setEditOpen(true)}>
-            <PencilIcon />
-            Edit
-          </Button>
+          {experiment.source === 'manual' && (
+            <Button preset="outline" onClick={() => setEditOpen(true)}>
+              <PencilIcon />
+              Edit
+            </Button>
+          )}
         </div>
         <div className="min-w-0">
           <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">

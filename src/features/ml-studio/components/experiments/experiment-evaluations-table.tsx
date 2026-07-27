@@ -46,6 +46,7 @@ import {
   ML_EXPERIMENT_EVALUATIONS,
   ML_EXPERIMENT_EVALUATIONS_PAGE,
 } from '../../api/evaluations'
+import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric } from '../../format'
 import { useMetricColumns } from '../../hooks/use-metric-columns'
 import { MetricColumnsSelect } from '../metric-columns-select'
@@ -62,6 +63,7 @@ export function ExperimentEvaluationsTable() {
     experimentId: string
   }>()
   const navigate = useNavigate()
+  const { experiment } = useExperimentContext()
 
   const [selected, setSelected] = useState<string[]>([])
   const [comparing, setComparing] = useState(false)
@@ -177,16 +179,18 @@ export function ExperimentEvaluationsTable() {
             <GitCompareIcon />
             Compare ({selected.length})
           </Button>
-          <Button
-            className="h-10"
-            onClick={() => {
-              setEditingEvaluation(null)
-              setModalOpen(true)
-            }}
-          >
-            <PlusIcon />
-            New Evaluation
-          </Button>
+          {experiment.source === 'manual' && (
+            <Button
+              className="h-10"
+              onClick={() => {
+                setEditingEvaluation(null)
+                setModalOpen(true)
+              }}
+            >
+              <PlusIcon />
+              New Evaluation
+            </Button>
+          )}
         </div>
       </div>
 

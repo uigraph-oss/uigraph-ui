@@ -263,16 +263,18 @@ export function RunDetailPage() {
         title="Artifacts"
         icon={<PackageIcon size={16} />}
         action={
-          <Button
-            preset="outline"
-            onClick={() => {
-              setEditingArtifact(null)
-              setArtifactOpen(true)
-            }}
-          >
-            <PlusIcon />
-            Add artifact
-          </Button>
+          run.source === 'manual' && (
+            <Button
+              preset="outline"
+              onClick={() => {
+                setEditingArtifact(null)
+                setArtifactOpen(true)
+              }}
+            >
+              <PlusIcon />
+              Add artifact
+            </Button>
+          )
         }
       >
         {artifacts.length > 0 ? (
@@ -328,7 +330,7 @@ export function RunDetailPage() {
                         <div className="flex items-center gap-1">
                           <Button
                             preset="outline"
-                            size="icon"
+                            className="size-8 rounded-[0.6rem] p-0 has-[>svg]:px-0 [&_svg]:size-4"
                             onClick={() => {
                               setEditingArtifact(toArtifact(a))
                               setArtifactOpen(true)
@@ -338,8 +340,7 @@ export function RunDetailPage() {
                           </Button>
                           <Button
                             preset="outline"
-                            size="icon"
-                            className="bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30 hover:text-destructive"
+                            className="bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30 hover:text-destructive size-8 rounded-[0.6rem] p-0 has-[>svg]:px-0 [&_svg]:size-4"
                             onClick={() => setDeletingArtifact(toArtifact(a))}
                           >
                             <Trash2Icon />

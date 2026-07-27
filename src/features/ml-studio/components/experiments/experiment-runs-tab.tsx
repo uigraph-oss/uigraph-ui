@@ -162,16 +162,18 @@ export function ExperimentRunsTab() {
             <GitCompareIcon />
             Compare ({selected.length})
           </Button>
-          <Button
-            className="h-10"
-            onClick={() => {
-              setEditingRun(null)
-              setRunModalOpen(true)
-            }}
-          >
-            <PlusIcon />
-            New Run
-          </Button>
+          {experiment.source === 'manual' && (
+            <Button
+              className="h-10"
+              onClick={() => {
+                setEditingRun(null)
+                setRunModalOpen(true)
+              }}
+            >
+              <PlusIcon />
+              New Run
+            </Button>
+          )}
         </div>
       </div>
 

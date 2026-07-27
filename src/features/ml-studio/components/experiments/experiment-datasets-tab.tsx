@@ -28,7 +28,7 @@ import type { Dataset } from '../../types'
 import { DatasetModal } from './dataset-modal'
 
 export function ExperimentDatasetsTab() {
-  const { experimentId } = useExperimentContext()
+  const { experiment, experimentId } = useExperimentContext()
   const orgId = useCurrentOrganization()?.id
 
   const datasetsQuery = useQuery(ML_STUDIO_DATASETS, {
@@ -57,15 +57,17 @@ export function ExperimentDatasetsTab() {
             Datasets logged to this experiment.
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setEditingDataset(null)
-            setModalOpen(true)
-          }}
-        >
-          <PlusIcon />
-          New Dataset
-        </Button>
+        {experiment.source === 'manual' && (
+          <Button
+            onClick={() => {
+              setEditingDataset(null)
+              setModalOpen(true)
+            }}
+          >
+            <PlusIcon />
+            New Dataset
+          </Button>
+        )}
       </div>
 
       {datasets.length > 0 ? (
