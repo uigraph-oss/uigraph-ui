@@ -293,7 +293,7 @@ export function RunModal({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
-  const { control, handleSubmit, formState, setValue, watch } = form
+  const { control, handleSubmit, formState, setValue, watch, trigger } = form
   const [durationInput, setDurationInput] = useState<string | null>(null)
 
   const startMs = Date.parse(watch('startedAt'))
@@ -305,13 +305,40 @@ export function RunModal({
       : ''
   const durationValue = durationInput ?? derivedDuration
 
+  function onStartedAtChange(value: string) {
+    setDurationInput(null)
+    setValue('startedAt', value, { shouldValidate: true, shouldDirty: true })
+    const nextStartMs = Date.parse(value)
+    if (
+      Number.isFinite(nextStartMs) &&
+      Number.isFinite(startMs) &&
+      Number.isFinite(endMs) &&
+      endMs >= startMs
+    ) {
+      setValue(
+        'endedAt',
+        format(new Date(nextStartMs + (endMs - startMs)), "yyyy-MM-dd'T'HH:mm"),
+        { shouldValidate: true, shouldDirty: true }
+      )
+      return
+    }
+    void trigger('endedAt')
+  }
+
+  function onEndedAtChange(value: string) {
+    setDurationInput(null)
+    setValue('endedAt', value, { shouldValidate: true, shouldDirty: true })
+    void trigger('startedAt')
+  }
+
   function onDurationChange(value: string) {
     setDurationInput(value)
     if (!Number.isFinite(startMs)) {
       return
     }
     if (value.trim() === '') {
-      setValue('endedAt', '', { shouldValidate: true })
+      setValue('endedAt', '', { shouldValidate: true, shouldDirty: true })
+      void trigger('startedAt')
       return
     }
     const minutes = Number(value)
@@ -321,8 +348,9 @@ export function RunModal({
     setValue(
       'endedAt',
       format(new Date(startMs + minutes * 60000), "yyyy-MM-dd'T'HH:mm"),
-      { shouldValidate: true }
+      { shouldValidate: true, shouldDirty: true }
     )
+    void trigger('startedAt')
   }
 
   async function onSubmit(values: RunFormValues) {
@@ -404,17 +432,19 @@ export function RunModal({
             )}
           />
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 items-start gap-4">
             <FormField
               control={control}
               name="startedAt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Started at</FormLabel>
+                  <FormLabel className="whitespace-nowrap">
+                    Started at
+                  </FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={onStartedAtChange}
                       onBlur={field.onBlur}
                       className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                     />
@@ -429,11 +459,11 @@ export function RunModal({
               name="endedAt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ended at (optional)</FormLabel>
+                  <FormLabel className="whitespace-nowrap">Ended at</FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={onEndedAtChange}
                       onBlur={field.onBlur}
                       className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                     />
@@ -444,7 +474,9 @@ export function RunModal({
             />
 
             <FormItem>
-              <FormLabel>Duration (min)</FormLabel>
+              <FormLabel className="whitespace-nowrap">
+                Duration (min)
+              </FormLabel>
               {durationDisabled ? (
                 <Tooltip>
                   <TooltipTrigger asChild>

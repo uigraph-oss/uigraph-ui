@@ -24,6 +24,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { toDateTimeLocal } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { format } from 'date-fns'
 import { PlusIcon, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm, type Control } from 'react-hook-form'
 import { z } from 'zod'
@@ -329,7 +330,34 @@ export function EvaluationModal({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
-  const { control, handleSubmit, formState } = form
+  const { control, handleSubmit, formState, setValue, watch, trigger } = form
+
+  const startMs = Date.parse(watch('startedAt'))
+  const endMs = Date.parse(watch('endedAt'))
+
+  function onStartedAtChange(value: string) {
+    setValue('startedAt', value, { shouldValidate: true, shouldDirty: true })
+    const nextStartMs = Date.parse(value)
+    if (
+      Number.isFinite(nextStartMs) &&
+      Number.isFinite(startMs) &&
+      Number.isFinite(endMs) &&
+      endMs >= startMs
+    ) {
+      setValue(
+        'endedAt',
+        format(new Date(nextStartMs + (endMs - startMs)), "yyyy-MM-dd'T'HH:mm"),
+        { shouldValidate: true, shouldDirty: true }
+      )
+      return
+    }
+    void trigger('endedAt')
+  }
+
+  function onEndedAtChange(value: string) {
+    setValue('endedAt', value, { shouldValidate: true, shouldDirty: true })
+    void trigger('startedAt')
+  }
 
   async function onSubmit(values: EvaluationFormValues) {
     if (!orgId) {
@@ -469,7 +497,7 @@ export function EvaluationModal({
                 <FormControl>
                   <DateTimePicker
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={onStartedAtChange}
                     onBlur={field.onBlur}
                     className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   />
@@ -484,11 +512,11 @@ export function EvaluationModal({
             name="endedAt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ended at (optional)</FormLabel>
+                <FormLabel>Ended at</FormLabel>
                 <FormControl>
                   <DateTimePicker
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={onEndedAtChange}
                     onBlur={field.onBlur}
                     className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
                   />
