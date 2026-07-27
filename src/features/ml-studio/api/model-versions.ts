@@ -29,6 +29,48 @@ export const ML_STUDIO_MODEL_VERSIONS = graphql(`
   }
 `)
 
+export const ML_MODEL_VERSIONS_EXPLORE = graphql(`
+  query MlModelVersionsExplore(
+    $orgId: ID!
+    $teamId: ID
+    $projectId: ID
+    $modelId: ID
+    $search: String
+    $limit: Int
+    $offset: Int
+  ) {
+    mlModelVersionsExplore(
+      orgId: $orgId
+      teamId: $teamId
+      projectId: $projectId
+      modelId: $modelId
+      search: $search
+      limit: $limit
+      offset: $offset
+    ) {
+      items {
+        id
+        version
+        description
+        deploymentStatus
+        model {
+          id
+          name
+        }
+        project {
+          id
+          name
+        }
+        team {
+          id
+          name
+        }
+      }
+      total
+    }
+  }
+`)
+
 export const ML_STUDIO_MODEL_VERSION = graphql(`
   query MlStudioModelVersion($orgId: ID!, $id: ID!) {
     mlModelVersion(orgId: $orgId, id: $id) {
