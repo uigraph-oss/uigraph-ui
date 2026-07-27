@@ -30,7 +30,6 @@ import {
   ML_STUDIO_EXPERIMENTS,
 } from '../../api/experiments'
 import { ML_STUDIO_EXPERIMENT_RUNS } from '../../api/runs'
-import { formatMetric } from '../../format'
 import type { Experiment } from '../../types'
 import { MlUser } from '../ml-user'
 import { StatusBadge } from '../status-badge'
@@ -121,22 +120,15 @@ export function ExperimentsTab() {
                 <TableHead>Name</TableHead>
                 <TableHead className="w-44">Source</TableHead>
                 <TableHead className="w-28">Status</TableHead>
-                <TableHead className="w-20">Runs</TableHead>
-                <TableHead className="w-48">Latest result</TableHead>
-                <TableHead className="w-36">Created</TableHead>
                 <TableHead className="w-56">Tags</TableHead>
+                <TableHead className="w-20">Runs</TableHead>
+                <TableHead className="w-36">Created</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {experiments.map((exp) => {
                 const runs = allRuns.filter((r) => r.experimentId === exp.id)
-                const latestRun = runs[runs.length - 1]
-                const metrics = (latestRun?.metrics ?? {}) as Record<
-                  string,
-                  number
-                >
-                const primaryMetric = Object.keys(metrics)[0]
                 const isManual = exp.source === 'manual'
                 const experiment: Experiment = {
                   id: exp.id,
@@ -178,28 +170,6 @@ export function ExperimentsTab() {
                     <TableCell>
                       <StatusBadge value={exp.status} />
                     </TableCell>
-                    <TableCell className="text-[#828DA3]">
-                      {runs.length}
-                    </TableCell>
-                    <TableCell className="text-[#F4F7FC]">
-                      {primaryMetric ? (
-                        <>
-                          <div className="truncate">
-                            {formatMetric(metrics[primaryMetric])}
-                          </div>
-                          <div className="truncate text-xs text-[#586378]">
-                            {primaryMetric.replace(/_/g, ' ')}
-                          </div>
-                        </>
-                      ) : (
-                        '—'
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm text-[#828DA3]">
-                      {exp.createdAt
-                        ? new Date(exp.createdAt).toLocaleDateString()
-                        : '—'}
-                    </TableCell>
                     <TableCell>
                       {exp.tags.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">
@@ -215,6 +185,14 @@ export function ExperimentsTab() {
                       ) : (
                         <span className="text-xs text-[#828DA3]">—</span>
                       )}
+                    </TableCell>
+                    <TableCell className="text-[#828DA3]">
+                      {runs.length}
+                    </TableCell>
+                    <TableCell className="text-sm text-[#828DA3]">
+                      {exp.createdAt
+                        ? new Date(exp.createdAt).toLocaleDateString()
+                        : '—'}
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       {isManual && (
