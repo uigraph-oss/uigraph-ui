@@ -71,7 +71,7 @@ export type Experiment = {
   description: string
   status: ExperimentStatus
   tags: string[]
-  startedAt: string
+  createdAt: string
   source: ExperimentSource
   createdBy?: string
 }
@@ -84,7 +84,7 @@ export type Run = {
   name: string
   status: RunStatus
   startedAt: string
-  endedAt: string
+  endedAt: string | null
   notes: string
   parameters: Record<string, string | number>
   metrics: Record<string, number>

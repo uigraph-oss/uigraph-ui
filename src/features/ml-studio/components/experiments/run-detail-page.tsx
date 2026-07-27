@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -42,6 +43,7 @@ export function RunDetailPage() {
   }>()
   const navigate = useNavigate()
   const orgId = useCurrentOrganization()?.id
+  const now = useNow()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
@@ -84,7 +86,7 @@ export function RunDetailPage() {
     name: run.name,
     status: run.status as Run['status'],
     startedAt: run.startedAt ?? '',
-    endedAt: run.endedAt ?? undefined,
+    endedAt: run.endedAt ?? null,
     notes: run.notes,
     parameters: (run.parameters ?? {}) as Record<string, string | number>,
     metrics: (run.metrics ?? {}) as Record<string, number>,
@@ -138,7 +140,7 @@ export function RunDetailPage() {
             {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
           </InfoRow>
           <InfoRow label="Training duration">
-            {formatRunDuration(runForModal)}
+            {formatRunDuration(runForModal, now)}
           </InfoRow>
           <InfoRow label="Updated at">
             {run.updatedAt ? (

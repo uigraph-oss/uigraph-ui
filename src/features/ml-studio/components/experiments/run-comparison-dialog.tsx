@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { useNow } from '@/hooks/use-now'
 import { formatDistanceToNow } from 'date-fns'
 import {
   ChartColumnIcon,
@@ -36,6 +37,7 @@ export function RunComparisonDialog({
   availableRuns: Run[]
   onToggleRun: (id: string) => void
 }) {
+  const now = useNow()
   const metricKeys = Array.from(
     new Set(runs.flatMap((r) => Object.keys(r.metrics)))
   )
@@ -59,7 +61,7 @@ export function RunComparisonDialog({
     .map((r) => ({ name: r.name, value: Number(r.parameters[activeParam]) }))
 
   const durationData = runs.flatMap((r) => {
-    const durationMS = runDurationMS(r.startedAt, r.endedAt)
+    const durationMS = runDurationMS(r.startedAt, r.endedAt, r.status, now)
     if (durationMS === null) return []
     return [{ name: r.name, value: durationMS / 1000 }]
   })
@@ -132,7 +134,7 @@ export function RunComparisonDialog({
                       })}`
                     : '—'}
                 </span>
-                <span>{formatRunDuration(r)}</span>
+                <span>{formatRunDuration(r, now)}</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="inline-flex">

@@ -108,7 +108,7 @@ const runSchema = z
       .max(100, 'Name must be 100 characters or fewer'),
     status: z.enum(['running', 'completed', 'failed', 'cancelled']),
     startedAt: z.string().min(1, 'Start time is required'),
-    endedAt: z.string().min(1, 'End time is required'),
+    endedAt: z.string(),
     notes: z.string().max(2000, 'Notes must be 2000 characters or fewer'),
     parameters: parametersSchema,
     metrics: metricsSchema,
@@ -152,7 +152,7 @@ function emptyValues(): RunFormValues {
     name: '',
     status: 'completed',
     startedAt: now,
-    endedAt: now,
+    endedAt: '',
     notes: '',
     parameters: [],
     metrics: [],
@@ -284,7 +284,7 @@ export function RunModal({
           name: run.name,
           status: run.status,
           startedAt: toDateTimeLocal(new Date(run.startedAt)),
-          endedAt: toDateTimeLocal(new Date(run.endedAt)),
+          endedAt: run.endedAt ? toDateTimeLocal(new Date(run.endedAt)) : '',
           notes: run.notes,
           parameters: toRows(run.parameters),
           metrics: toRows(run.metrics),
@@ -333,7 +333,8 @@ export function RunModal({
       name: values.name.trim(),
       status: values.status,
       startedAt: new Date(values.startedAt).toISOString(),
-      endedAt: new Date(values.endedAt).toISOString(),
+      endedAt:
+        values.endedAt === '' ? null : new Date(values.endedAt).toISOString(),
       notes: values.notes,
       parameters: toNumberMap(values.parameters),
       metrics: toNumberMap(values.metrics),
@@ -428,7 +429,7 @@ export function RunModal({
               name="endedAt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ended at</FormLabel>
+                  <FormLabel>Ended at (optional)</FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}

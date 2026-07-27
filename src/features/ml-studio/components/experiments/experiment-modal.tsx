@@ -36,7 +36,6 @@ const experimentSchema = z.object({
   description: z.string(),
   status: z.enum(['active', 'concluded', 'archived']),
   tags: z.array(z.string()),
-  startedAt: z.string(),
 })
 
 type ExperimentFormValues = z.infer<typeof experimentSchema>
@@ -46,7 +45,6 @@ const emptyValues: ExperimentFormValues = {
   description: '',
   status: 'active',
   tags: [],
-  startedAt: '',
 }
 
 export function ExperimentModal({
@@ -78,9 +76,6 @@ export function ExperimentModal({
           description: experiment.description,
           status: experiment.status,
           tags: experiment.tags,
-          startedAt: experiment.startedAt
-            ? experiment.startedAt.slice(0, 10)
-            : '',
         }
       : emptyValues,
   })
@@ -90,9 +85,6 @@ export function ExperimentModal({
     if (!orgId) {
       return
     }
-    const startedAt = values.startedAt
-      ? new Date(values.startedAt).toISOString()
-      : null
     if (experiment && isSynced) {
       await updateExperiment({
         variables: { orgId, id: experiment.id, input: { tags: values.tags } },
@@ -107,7 +99,6 @@ export function ExperimentModal({
             description: values.description,
             status: values.status,
             tags: values.tags,
-            startedAt,
           },
         },
       })
@@ -121,7 +112,6 @@ export function ExperimentModal({
             description: values.description,
             status: values.status,
             tags: values.tags,
-            startedAt,
           },
         },
       })
@@ -204,25 +194,6 @@ export function ExperimentModal({
                         <SelectItem value="archived">Archived</SelectItem>
                       </SelectContent>
                     </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={control}
-              name="startedAt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Started on</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      disabled={isSynced}
-                      className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                      {...field}
-                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

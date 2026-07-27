@@ -122,7 +122,7 @@ export function ExperimentsTab() {
                 <TableHead className="w-28">Status</TableHead>
                 <TableHead className="w-20">Runs</TableHead>
                 <TableHead className="w-48">Latest result</TableHead>
-                <TableHead className="w-36">Last activity</TableHead>
+                <TableHead className="w-36">Created</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
@@ -143,7 +143,7 @@ export function ExperimentsTab() {
                   description: exp.description,
                   status: exp.status as Experiment['status'],
                   tags: exp.tags,
-                  startedAt: exp.startedAt ?? '',
+                  createdAt: exp.createdAt ?? '',
                   source: exp.source as Experiment['source'],
                 }
                 return (
@@ -194,8 +194,8 @@ export function ExperimentsTab() {
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-[#828DA3]">
-                      {exp.startedAt
-                        ? new Date(exp.startedAt).toLocaleDateString()
+                      {exp.createdAt
+                        ? new Date(exp.createdAt).toLocaleDateString()
                         : '—'}
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>

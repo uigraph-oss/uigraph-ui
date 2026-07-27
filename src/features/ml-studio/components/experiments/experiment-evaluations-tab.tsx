@@ -206,7 +206,7 @@ export function ExperimentEvaluationsTab() {
                     description: evaluation.description,
                     summary: evaluation.summary,
                     startedAt: evaluation.startedAt,
-                    endedAt: evaluation.endedAt,
+                    endedAt: evaluation.endedAt ?? null,
                     parameters: evaluation.parameters as Record<
                       string,
                       unknown

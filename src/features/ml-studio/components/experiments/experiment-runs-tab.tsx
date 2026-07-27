@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
@@ -53,6 +54,7 @@ export function ExperimentRunsTab() {
   const orgId = useCurrentOrganization()?.id
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
+  const now = useNow()
 
   const [selected, setSelected] = useState<string[]>([])
   const [comparing, setComparing] = useState(false)
@@ -102,7 +104,7 @@ export function ExperimentRunsTab() {
         name: r.name,
         status: r.status as Run['status'],
         startedAt: r.startedAt,
-        endedAt: r.endedAt,
+        endedAt: r.endedAt ?? null,
         notes: r.notes,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
@@ -263,12 +265,12 @@ export function ExperimentRunsTab() {
                     </TableCell>
                     <TableCell
                       className={
-                        formatRunDuration(run) === '—'
+                        formatRunDuration(run, now) === '—'
                           ? 'text-xs text-[#828DA3]'
                           : 'text-sm text-[#828DA3]'
                       }
                     >
-                      {formatRunDuration(run)}
+                      {formatRunDuration(run, now)}
                     </TableCell>
                     <TableCell
                       className={

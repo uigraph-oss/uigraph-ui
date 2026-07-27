@@ -23,7 +23,6 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { ML_STUDIO_DATASET } from '../../api/datasets'
 import { ML_EVALUATION } from '../../api/evaluations'
-import { runDurationMS } from '../../format'
 import { InfoRow, Panel } from '../panel'
 
 export function EvaluationDetailPage() {
@@ -63,9 +62,13 @@ export function EvaluationDetailPage() {
   const parameters = Object.entries(
     (evaluation.parameters ?? {}) as Record<string, string | number>
   )
-  const durationMS = runDurationMS(evaluation.startedAt, evaluation.endedAt)
+  const durationMS = evaluation.endedAt
+    ? Date.parse(evaluation.endedAt) - Date.parse(evaluation.startedAt)
+    : null
   const duration =
-    durationMS === null ? '—' : formatToHumanReadableMS(durationMS)
+    durationMS === null || durationMS < 0
+      ? '—'
+      : formatToHumanReadableMS(durationMS)
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -95,7 +98,9 @@ export function EvaluationDetailPage() {
             {format(new Date(evaluation.startedAt), 'PPpp')}
           </InfoRow>
           <InfoRow label="Ended at">
-            {format(new Date(evaluation.endedAt), 'PPpp')}
+            {evaluation.endedAt
+              ? format(new Date(evaluation.endedAt), 'PPpp')
+              : '—'}
           </InfoRow>
           <InfoRow label="Duration">{duration}</InfoRow>
           <InfoRow label="Evaluated">

@@ -114,7 +114,7 @@ const evaluationSchema = z
     versionId: z.string().min(1, 'Model version is required'),
     datasetId: z.string(),
     startedAt: z.string().min(1, 'Start time is required'),
-    endedAt: z.string().min(1, 'End time is required'),
+    endedAt: z.string(),
     description: z
       .string()
       .max(2000, 'Description must be 2000 characters or fewer'),
@@ -162,7 +162,7 @@ export type EditableEvaluation = {
   description: string
   summary: string
   startedAt: string
-  endedAt: string
+  endedAt: string | null
   parameters?: Record<string, unknown> | null
   metrics?: Record<string, unknown> | null
 }
@@ -175,7 +175,7 @@ function emptyValues(): EvaluationFormValues {
     versionId: '',
     datasetId: '',
     startedAt: now,
-    endedAt: now,
+    endedAt: '',
     description: '',
     summary: '',
     parameters: [],
@@ -317,7 +317,9 @@ export function EvaluationModal({
           versionId: evaluation.versionId,
           datasetId: evaluation.datasetId ?? '',
           startedAt: toDateTimeLocal(new Date(evaluation.startedAt)),
-          endedAt: toDateTimeLocal(new Date(evaluation.endedAt)),
+          endedAt: evaluation.endedAt
+            ? toDateTimeLocal(new Date(evaluation.endedAt))
+            : '',
           description: evaluation.description,
           summary: evaluation.summary,
           parameters: toRows(evaluation.parameters),
@@ -340,7 +342,8 @@ export function EvaluationModal({
       description: values.description,
       summary: values.summary,
       startedAt: new Date(values.startedAt).toISOString(),
-      endedAt: new Date(values.endedAt).toISOString(),
+      endedAt:
+        values.endedAt === '' ? null : new Date(values.endedAt).toISOString(),
       parameters: toNumberMap(values.parameters),
       metrics: toNumberMap(values.metrics),
     }
@@ -481,7 +484,7 @@ export function EvaluationModal({
             name="endedAt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ended at</FormLabel>
+                <FormLabel>Ended at (optional)</FormLabel>
                 <FormControl>
                   <DateTimePicker
                     value={field.value}

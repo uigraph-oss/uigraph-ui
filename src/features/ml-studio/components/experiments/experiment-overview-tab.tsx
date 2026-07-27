@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -70,6 +71,7 @@ export function ExperimentOverviewTab() {
     experimentId: string
   }>()
   const orgId = useCurrentOrganization()?.id
+  const now = useNow()
   const [editOpen, setEditOpen] = useState(false)
   const [selectedMetric, setSelectedMetric] = useState('')
 
@@ -128,7 +130,7 @@ export function ExperimentOverviewTab() {
     .at(0)
 
   const lastActivityAt = runs
-    .flatMap((r) => [r.endedAt, r.startedAt])
+    .flatMap((r) => (r.endedAt ? [r.endedAt, r.startedAt] : [r.startedAt]))
     .sort()
     .at(-1)
 
@@ -170,8 +172,12 @@ export function ExperimentOverviewTab() {
         </div>
         <div className="grid grid-cols-2 items-center gap-x-12 gap-y-4 sm:grid-cols-5">
           <Stat
-            label="Started"
-            value={format(new Date(experiment.startedAt), 'PP')}
+            label="Created"
+            value={
+              experiment.createdAt
+                ? format(new Date(experiment.createdAt), 'PP')
+                : '—'
+            }
           />
           <Stat label="Total runs" value={String(runs.length)} />
           <Stat label="Evaluations" value={String(evaluations.length)} />
@@ -331,7 +337,7 @@ export function ExperimentOverviewTab() {
                     {formatMetric(run.metrics[primaryMetric])}
                   </TableCell>
                   <TableCell className="text-sm text-[#828DA3]">
-                    {formatRunDuration(run)}
+                    {formatRunDuration(run, now)}
                   </TableCell>
                 </TableRow>
               ))}

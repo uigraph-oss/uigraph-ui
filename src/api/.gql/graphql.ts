@@ -439,7 +439,7 @@ export type CreateMlDeploymentInput = {
 export type CreateMlEvaluationInput = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  endedAt: Scalars['Time']['input'];
+  endedAt?: InputMaybe<Scalars['Time']['input']>;
   evaluator?: InputMaybe<Scalars['String']['input']>;
   metrics?: InputMaybe<Scalars['JSON']['input']>;
   name: Scalars['String']['input'];
@@ -454,7 +454,6 @@ export type CreateMlExperimentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
-  startedAt?: InputMaybe<Scalars['Time']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -487,7 +486,7 @@ export type CreateMlProjectInput = {
 
 export type CreateMlRunInput = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
-  endedAt: Scalars['Time']['input'];
+  endedAt?: InputMaybe<Scalars['Time']['input']>;
   metrics?: InputMaybe<Scalars['JSON']['input']>;
   name: Scalars['String']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
@@ -1177,7 +1176,7 @@ export type MlEvaluation = {
   createdBy?: Maybe<Scalars['ID']['output']>;
   datasetId?: Maybe<Scalars['ID']['output']>;
   description: Scalars['String']['output'];
-  endedAt: Scalars['Time']['output'];
+  endedAt?: Maybe<Scalars['Time']['output']>;
   evaluator: Scalars['String']['output'];
   experimentId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
@@ -1199,13 +1198,13 @@ export type MlEvaluationPage = {
 };
 
 export type MlExperiment = {
+  createdAt?: Maybe<Scalars['Time']['output']>;
   createdBy?: Maybe<Scalars['ID']['output']>;
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   projectId?: Maybe<Scalars['ID']['output']>;
   source: Scalars['String']['output'];
-  startedAt?: Maybe<Scalars['Time']['output']>;
   status: Scalars['String']['output'];
   tags: Array<Scalars['String']['output']>;
 };
@@ -1294,7 +1293,7 @@ export type MlProjectStats = {
 
 export type MlRun = {
   datasetId?: Maybe<Scalars['ID']['output']>;
-  endedAt: Scalars['Time']['output'];
+  endedAt?: Maybe<Scalars['Time']['output']>;
   experimentId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   metrics: Scalars['JSON']['output'];
@@ -3938,7 +3937,7 @@ export type UpdateMlDeploymentInput = {
 export type UpdateMlEvaluationInput = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  endedAt: Scalars['Time']['input'];
+  endedAt?: InputMaybe<Scalars['Time']['input']>;
   evaluator?: InputMaybe<Scalars['String']['input']>;
   metrics?: InputMaybe<Scalars['JSON']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -3952,7 +3951,6 @@ export type UpdateMlExperimentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   projectId?: InputMaybe<Scalars['ID']['input']>;
-  startedAt?: InputMaybe<Scalars['Time']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -3983,7 +3981,7 @@ export type UpdateMlProjectInput = {
 
 export type UpdateMlRunInput = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
-  endedAt: Scalars['Time']['input'];
+  endedAt?: InputMaybe<Scalars['Time']['input']>;
   metrics?: InputMaybe<Scalars['JSON']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
@@ -5204,7 +5202,7 @@ export type MlStudioEvaluationsQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioEvaluationsQuery = { mlEvaluations: { total: number, evaluations: Array<{ id: string, name: string, type: string, experimentId: string, modelName: string, version: string, startedAt: string, endedAt: string }> } };
+export type MlStudioEvaluationsQuery = { mlEvaluations: { total: number, evaluations: Array<{ id: string, name: string, type: string, experimentId: string, modelName: string, version: string, startedAt: string, endedAt?: string | null }> } };
 
 export type MlVersionEvaluationsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5212,7 +5210,7 @@ export type MlVersionEvaluationsQueryVariables = Exact<{
 }>;
 
 
-export type MlVersionEvaluationsQuery = { mlVersionEvaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt: string, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> };
+export type MlVersionEvaluationsQuery = { mlVersionEvaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt?: string | null, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> };
 
 export type MlExperimentEvaluationsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5220,7 +5218,7 @@ export type MlExperimentEvaluationsQueryVariables = Exact<{
 }>;
 
 
-export type MlExperimentEvaluationsQuery = { mlExperimentEvaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt: string, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> };
+export type MlExperimentEvaluationsQuery = { mlExperimentEvaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt?: string | null, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> };
 
 export type MlVersionEvaluationsPageQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5231,7 +5229,7 @@ export type MlVersionEvaluationsPageQueryVariables = Exact<{
 }>;
 
 
-export type MlVersionEvaluationsPageQuery = { mlVersionEvaluationsPage: { total: number, evaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt: string, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> } };
+export type MlVersionEvaluationsPageQuery = { mlVersionEvaluationsPage: { total: number, evaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt?: string | null, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> } };
 
 export type MlExperimentEvaluationsPageQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5242,7 +5240,7 @@ export type MlExperimentEvaluationsPageQueryVariables = Exact<{
 }>;
 
 
-export type MlExperimentEvaluationsPageQuery = { mlExperimentEvaluationsPage: { total: number, evaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt: string, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> } };
+export type MlExperimentEvaluationsPageQuery = { mlExperimentEvaluationsPage: { total: number, evaluations: Array<{ id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt?: string | null, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown }> } };
 
 export type MlEvaluationQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5250,7 +5248,7 @@ export type MlEvaluationQueryVariables = Exact<{
 }>;
 
 
-export type MlEvaluationQuery = { mlEvaluation: { id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt: string, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown } };
+export type MlEvaluationQuery = { mlEvaluation: { id: string, versionId: string, experimentId: string, modelName: string, version: string, datasetId?: string | null, name: string, type: string, description: string, summary: string, startedAt: string, endedAt?: string | null, source: string, createdBy?: string | null, parameters: unknown, metrics: unknown } };
 
 export type CreateMlEvaluationMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5293,7 +5291,7 @@ export type MlStudioExperimentQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioExperimentQuery = { mlExperiment: { id: string, projectId?: string | null, name: string, description: string, status: string, tags: Array<string>, startedAt?: string | null, source: string, createdBy?: string | null } };
+export type MlStudioExperimentQuery = { mlExperiment: { id: string, projectId?: string | null, name: string, description: string, status: string, tags: Array<string>, createdAt?: string | null, source: string, createdBy?: string | null } };
 
 export type MlStudioExperimentsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5301,7 +5299,7 @@ export type MlStudioExperimentsQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioExperimentsQuery = { mlExperiments: Array<{ id: string, projectId?: string | null, name: string, description: string, status: string, tags: Array<string>, startedAt?: string | null, source: string, createdBy?: string | null }> };
+export type MlStudioExperimentsQuery = { mlExperiments: Array<{ id: string, projectId?: string | null, name: string, description: string, status: string, tags: Array<string>, createdAt?: string | null, source: string, createdBy?: string | null }> };
 
 export type CreateMlExperimentMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5510,14 +5508,14 @@ export type MlStudioRunQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioRunQuery = { mlRun: { id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null } };
+export type MlStudioRunQuery = { mlRun: { id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt?: string | null, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null } };
 
 export type MlStudioRunsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
 }>;
 
 
-export type MlStudioRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
+export type MlStudioRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt?: string | null, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
 
 export type MlStudioExperimentRunsQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5526,7 +5524,7 @@ export type MlStudioExperimentRunsQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioExperimentRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
+export type MlStudioExperimentRunsQuery = { mlRuns: Array<{ id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt?: string | null, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null }> };
 
 export type MlStudioExperimentRunsPageQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -5538,7 +5536,7 @@ export type MlStudioExperimentRunsPageQueryVariables = Exact<{
 }>;
 
 
-export type MlStudioExperimentRunsPageQuery = { mlRunsPage: { total: number, runs: Array<{ id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt: string, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null }> } };
+export type MlStudioExperimentRunsPageQuery = { mlRunsPage: { total: number, runs: Array<{ id: string, experimentId: string, name: string, status: string, startedAt: string, endedAt?: string | null, notes: string, parameters: unknown, metrics: unknown, datasetId?: string | null, source: string, updatedAt?: string | null, syncedAt?: string | null }> } };
 
 export type CreateMlRunMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -6450,8 +6448,8 @@ export const CreateMlEvaluationDocument = {"kind":"Document","definitions":[{"ki
 export const UpdateMlEvaluationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMlEvaluation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMlEvaluationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMlEvaluation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateMlEvaluationMutation, UpdateMlEvaluationMutationVariables>;
 export const DeleteMlEvaluationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMlEvaluation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMlEvaluation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMlEvaluationMutation, DeleteMlEvaluationMutationVariables>;
 export const LinkMlVersionEvaluationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LinkMlVersionEvaluations"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"evaluationIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkMlVersionEvaluations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"versionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}}},{"kind":"Argument","name":{"kind":"Name","value":"evaluationIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"evaluationIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"versionId"}}]}}]}}]} as unknown as DocumentNode<LinkMlVersionEvaluationsMutation, LinkMlVersionEvaluationsMutationVariables>;
-export const MlStudioExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"projectId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]}}]} as unknown as DocumentNode<MlStudioExperimentQuery, MlStudioExperimentQueryVariables>;
-export const MlStudioExperimentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioExperiments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlExperiments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"projectId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"projectId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]}}]} as unknown as DocumentNode<MlStudioExperimentsQuery, MlStudioExperimentsQueryVariables>;
+export const MlStudioExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"projectId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]}}]} as unknown as DocumentNode<MlStudioExperimentQuery, MlStudioExperimentQueryVariables>;
+export const MlStudioExperimentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MlStudioExperiments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mlExperiments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"projectId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"projectId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]}}]} as unknown as DocumentNode<MlStudioExperimentsQuery, MlStudioExperimentsQueryVariables>;
 export const CreateMlExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMlExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMlExperimentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMlExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateMlExperimentMutation, CreateMlExperimentMutationVariables>;
 export const UpdateMlExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMlExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMlExperimentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMlExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateMlExperimentMutation, UpdateMlExperimentMutationVariables>;
 export const DeleteMlExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMlExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMlExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMlExperimentMutation, DeleteMlExperimentMutationVariables>;

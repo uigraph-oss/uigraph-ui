@@ -9,7 +9,7 @@ export const ML_STUDIO_EXPERIMENT = graphql(`
       description
       status
       tags
-      startedAt
+      createdAt
       source
       createdBy
     }
@@ -25,7 +25,7 @@ export const ML_STUDIO_EXPERIMENTS = graphql(`
       description
       status
       tags
-      startedAt
+      createdAt
       source
       createdBy
     }
