@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { format } from 'date-fns'
-import { PlusIcon } from 'lucide-react'
+import { PencilRulerIcon, PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -94,9 +94,11 @@ function getMonogram(name: string) {
   return name.substring(0, 2).toUpperCase()
 }
 
-function getSourceLabel(sourceType: string): string {
+function getSourceLabel(sourceType?: string | null): string {
+  if (!sourceType) return 'Manual'
   const key = sourceType.toLowerCase()
   if (key === 'mlflow') return 'MLflow'
+  if (key === 'manual') return 'Manual'
   return sourceType.charAt(0).toUpperCase() + sourceType.slice(1)
 }
 
@@ -104,12 +106,12 @@ function SourceIcon({
   sourceType,
   className,
 }: {
-  sourceType: string
+  sourceType?: string | null
   className?: string
 }) {
-  if (sourceType.toLowerCase() === 'mlflow')
+  if (sourceType && sourceType.toLowerCase() === 'mlflow')
     return <MLflowIcon className={className} />
-  return null
+  return <PencilRulerIcon className={className} />
 }
 
 type Project = MlStudioProjectsQuery['mlProjects'][number]
@@ -160,15 +162,13 @@ function ProjectCard({
               <h3 className="truncate text-[14px] leading-5 font-semibold tracking-[-0.01em] text-[#F4F7FC]">
                 {project.name}
               </h3>
-              {project.sourceType && (
-                <p className="mt-[3px] flex items-center gap-1.5 truncate text-[11px] text-[#828DA3]">
-                  <SourceIcon
-                    sourceType={project.sourceType}
-                    className="mb-0.5 size-3 shrink-0"
-                  />
-                  {getSourceLabel(project.sourceType)}
-                </p>
-              )}
+              <p className="mt-[3px] flex items-center gap-1.5 truncate text-[11px] text-[#828DA3]">
+                <SourceIcon
+                  sourceType={project.sourceType}
+                  className="mb-0.5 size-3 shrink-0"
+                />
+                {getSourceLabel(project.sourceType)}
+              </p>
             </div>
           </div>
 
