@@ -12,7 +12,12 @@ import {
 } from '@/components/ui/table'
 import { useNow } from '@/hooks/use-now'
 import { format, formatDistanceToNow } from 'date-fns'
-import { BarChart3, FlaskConical, SlidersHorizontal } from 'lucide-react'
+import {
+  ArrowUpRight,
+  BarChart3,
+  FlaskConical,
+  SlidersHorizontal,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useModelContext } from '../../contexts/model-context'
@@ -171,6 +176,7 @@ export function ModelOverviewTab() {
               )}
               <Button preset="outline" onClick={() => navigate(runLink)}>
                 Go To Training Run
+                <ArrowUpRight className="ml-1 h-4 w-4" />
               </Button>
             </div>
           </div>

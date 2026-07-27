@@ -12,7 +12,7 @@ import {
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
-import { DownloadIcon } from 'lucide-react'
+import { ArrowUpRight, DownloadIcon } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/artifacts'
 import { useModelContext } from '../../contexts/model-context'
@@ -59,6 +59,7 @@ export function ModelArtifactsTab() {
           latestRun && (
             <Button preset="outline" onClick={() => navigate(runLink)}>
               Go To Training Run
+              <ArrowUpRight className="ml-1 h-4 w-4" />
             </Button>
           )
         }
