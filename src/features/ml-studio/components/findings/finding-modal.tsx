@@ -19,12 +19,14 @@ import { z } from 'zod'
 import { CREATE_ML_FINDING, UPDATE_ML_FINDING } from '../../api/findings'
 import type { Finding } from '../../types'
 import { ModelVersionSelect } from '../model-version-select'
+import { EvidenceEvaluationsSelect } from './evidence-evaluations-select'
 import { EvidenceRunsSelect } from './evidence-runs-select'
 
 const findingSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string(),
   runIds: z.array(z.string()),
+  evaluationIds: z.array(z.string()),
   modelId: z.string().min(1, 'Model is required'),
   versionId: z.string(),
 })
@@ -35,6 +37,7 @@ const emptyValues: FindingFormValues = {
   title: '',
   description: '',
   runIds: [],
+  evaluationIds: [],
   modelId: '',
   versionId: '',
 }
@@ -66,6 +69,7 @@ export function FindingModal({
           title: finding.title,
           description: finding.description,
           runIds: finding.runIds,
+          evaluationIds: finding.evaluationIds,
           modelId: finding.modelId,
           versionId: finding.versionId ?? '',
         }
@@ -87,6 +91,7 @@ export function FindingModal({
             title: values.title,
             description: values.description,
             runIds: values.runIds,
+            evaluationIds: values.evaluationIds,
           },
         },
       })
@@ -100,6 +105,7 @@ export function FindingModal({
             title: values.title,
             description: values.description,
             runIds: values.runIds,
+            evaluationIds: values.evaluationIds,
           },
         },
       })
@@ -159,9 +165,26 @@ export function FindingModal({
             name="runIds"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Evidence</FormLabel>
+                <FormLabel>Evidence Runs</FormLabel>
                 <FormControl>
                   <EvidenceRunsSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="evaluationIds"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Evidence Evaluations</FormLabel>
+                <FormControl>
+                  <EvidenceEvaluationsSelect
                     value={field.value}
                     onChange={field.onChange}
                   />

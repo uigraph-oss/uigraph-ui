@@ -75,6 +75,7 @@ export function FindingsTab() {
               modelId={f.modelId}
               versionId={f.versionId ?? undefined}
               runIds={f.runIds}
+              evaluationIds={f.evaluationIds}
               onClick={() =>
                 navigate(
                   `/dashboard/ml-studio/projects/${projectId}/findings/${f.id}`

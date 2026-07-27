@@ -162,4 +162,5 @@ export type Finding = {
   summary: string
   description: string
   runIds: string[]
+  evaluationIds: string[]
 }

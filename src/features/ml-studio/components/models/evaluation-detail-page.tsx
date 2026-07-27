@@ -98,7 +98,6 @@ export function EvaluationDetailPage() {
                 })
               : '—'}
           </InfoRow>
-          <InfoRow label="Evaluator">{evaluation.evaluator || '—'}</InfoRow>
           <InfoRow label="Dataset">{dataset?.name ?? '—'}</InfoRow>
         </div>
       </Panel>

@@ -16,6 +16,7 @@ import { useQuery } from '@apollo/client'
 import { Pencil } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ML_EVALUATION } from '../../api/evaluations'
 import { ML_STUDIO_EXPERIMENT } from '../../api/experiments'
 import { ML_STUDIO_FINDINGS } from '../../api/findings'
 import { ML_STUDIO_MODEL_VERSION } from '../../api/model-versions'
@@ -63,6 +64,7 @@ export function FindingDetailPage() {
   const model = modelQuery.data?.mlModel
   const version = versionQuery.data?.mlModelVersion
   const runCount = finding.runIds.length
+  const evaluationCount = finding.evaluationIds.length
   const modelBase = `/dashboard/ml-studio/projects/${model?.projectId}/models/${finding.modelId}`
 
   const findingForModal: Finding = {
@@ -73,6 +75,7 @@ export function FindingDetailPage() {
     summary: finding.summary,
     description: finding.description,
     runIds: finding.runIds,
+    evaluationIds: finding.evaluationIds,
   }
 
   return (
@@ -97,7 +100,8 @@ export function FindingDetailPage() {
             </Link>
             <span className="text-[#3A4256]">•</span>
             <span>
-              {runCount} {runCount === 1 ? 'run' : 'runs'} of evidence
+              {runCount} {runCount === 1 ? 'run' : 'runs'} · {evaluationCount}{' '}
+              {evaluationCount === 1 ? 'evaluation' : 'evaluations'} of evidence
             </span>
           </div>
         </div>
@@ -120,7 +124,7 @@ export function FindingDetailPage() {
       )}
 
       <div className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold text-[#F4F7FC]">Evidence</h3>
+        <h3 className="text-sm font-semibold text-[#F4F7FC]">Evidence Runs</h3>
         {runCount > 0 ? (
           <div className="border-stock overflow-hidden rounded-xl border">
             <Table className="[&_td]:px-4 [&_td]:py-3 [&_th]:h-11 [&_th]:px-4">
@@ -140,6 +144,35 @@ export function FindingDetailPage() {
           </div>
         ) : (
           <p className="text-sm text-[#586378]">No runs linked yet.</p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <h3 className="text-sm font-semibold text-[#F4F7FC]">
+          Evidence Evaluations
+        </h3>
+        {evaluationCount > 0 ? (
+          <div className="border-stock overflow-hidden rounded-xl border">
+            <Table className="[&_td]:px-4 [&_td]:py-3 [&_th]:h-11 [&_th]:px-4">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Evaluation</TableHead>
+                  <TableHead>Model · Version</TableHead>
+                  <TableHead>Experiment</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {finding.evaluationIds.map((evaluationId) => (
+                  <EvidenceEvaluationRow
+                    key={evaluationId}
+                    evaluationId={evaluationId}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <p className="text-sm text-[#586378]">No evaluations linked yet.</p>
         )}
       </div>
 
@@ -202,6 +235,68 @@ function EvidenceRunRow({ runId }: { runId: string }) {
             className="hover:text-primary text-[#828DA3]"
           >
             {runExperiment.name}
+          </Link>
+        ) : (
+          <span className="text-[#586378]">Unknown</span>
+        )}
+      </TableCell>
+    </TableRow>
+  )
+}
+
+function EvidenceEvaluationRow({ evaluationId }: { evaluationId: string }) {
+  const orgId = useCurrentOrganization()?.id
+
+  const evaluationQuery = useQuery(ML_EVALUATION, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !evaluationId,
+    variables: { orgId: orgId!, id: evaluationId },
+  })
+  const evaluation = evaluationQuery.data?.mlEvaluation
+
+  const experimentQuery = useQuery(ML_STUDIO_EXPERIMENT, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !evaluation?.experimentId,
+    variables: { orgId: orgId!, id: evaluation?.experimentId ?? '' },
+  })
+  const evaluationExperiment = experimentQuery.data?.mlExperiment
+
+  const experimentBase = `/dashboard/ml-studio/projects/${evaluationExperiment?.projectId}/experiments/${evaluation?.experimentId}`
+
+  return (
+    <TableRow>
+      <TableCell>
+        {evaluation && (
+          <Link
+            to={`${experimentBase}/evaluations/${evaluation.id}`}
+            className="hover:text-primary font-medium text-[#F4F7FC]"
+          >
+            {evaluation.name}
+          </Link>
+        )}
+        {!evaluation && evaluationQuery.loading && (
+          <Skeleton className="h-5 w-32" />
+        )}
+        {!evaluation && !evaluationQuery.loading && (
+          <span className="text-[#586378]">Deleted evaluation</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {evaluation ? (
+          <span className="text-[#828DA3]">
+            {evaluation.modelName} · {evaluation.version}
+          </span>
+        ) : (
+          <span className="text-[#586378]">—</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {evaluationExperiment ? (
+          <Link
+            to={experimentBase}
+            className="hover:text-primary text-[#828DA3]"
+          >
+            {evaluationExperiment.name}
           </Link>
         ) : (
           <span className="text-[#586378]">Unknown</span>

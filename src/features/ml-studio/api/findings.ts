@@ -10,6 +10,7 @@ export const ML_STUDIO_FINDINGS = graphql(`
       summary
       description
       runIds
+      evaluationIds
       createdAt
       createdByActor {
         id

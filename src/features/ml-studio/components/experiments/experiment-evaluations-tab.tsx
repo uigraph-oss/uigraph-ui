@@ -1,7 +1,16 @@
 'use client'
 
+import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -19,13 +28,23 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
-import { Search } from 'lucide-react'
+import {
+  EllipsisVertical,
+  Pencil,
+  PlusIcon,
+  Search,
+  Trash2,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ML_EXPERIMENT_EVALUATIONS_PAGE } from '../../api/evaluations'
+import {
+  DELETE_ML_EVALUATION,
+  ML_EXPERIMENT_EVALUATIONS_PAGE,
+} from '../../api/evaluations'
 import { formatMetric } from '../../format'
+import { EvaluationModal, type EditableEvaluation } from './evaluation-modal'
 
 export function ExperimentEvaluationsTab() {
   const orgId = useCurrentOrganization()?.id
@@ -39,6 +58,17 @@ export function ExperimentEvaluationsTab() {
   const [search, setSearch] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [currentPage, setCurrentPage] = useState(1)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingEvaluation, setEditingEvaluation] =
+    useState<EditableEvaluation | null>(null)
+  const [deletingEvaluation, setDeletingEvaluation] =
+    useState<EditableEvaluation | null>(null)
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+
+  const [deleteEvaluation] = useMutation(DELETE_ML_EVALUATION, {
+    refetchQueries: ['MlExperimentEvaluations', 'MlExperimentEvaluationsPage'],
+    awaitRefetchQueries: true,
+  })
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -80,13 +110,24 @@ export function ExperimentEvaluationsTab() {
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-[#F4F7FC]">
-          Evaluation Runs
-        </h2>
-        <p className="text-sm text-[#828DA3]">
-          Every evaluation run recorded in this experiment.
-        </p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold text-[#F4F7FC]">
+            Evaluation Runs
+          </h2>
+          <p className="text-sm text-[#828DA3]">
+            Every evaluation run recorded in this experiment.
+          </p>
+        </div>
+        <Button
+          onClick={() => {
+            setEditingEvaluation(null)
+            setModalOpen(true)
+          }}
+        >
+          <PlusIcon />
+          New Evaluation
+        </Button>
       </div>
 
       <div className="rounded-[12px] border border-[#2A3242]">
@@ -133,13 +174,14 @@ export function ExperimentEvaluationsTab() {
                 <TableHead>Type</TableHead>
                 <TableHead className="capitalize">{primaryLabel}</TableHead>
                 <TableHead>Evaluated</TableHead>
+                <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {evaluations.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {evaluationsQuery.loading
@@ -154,6 +196,25 @@ export function ExperimentEvaluationsTab() {
                     number
                   >
                   const href = `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}/evaluations/${evaluation.id}`
+                  const isManual = evaluation.source === 'manual'
+                  const editable: EditableEvaluation = {
+                    id: evaluation.id,
+                    versionId: evaluation.versionId,
+                    datasetId: evaluation.datasetId,
+                    name: evaluation.name,
+                    type: evaluation.type,
+                    description: evaluation.description,
+                    summary: evaluation.summary,
+                    evaluatedAt: evaluation.evaluatedAt,
+                    parameters: evaluation.parameters as Record<
+                      string,
+                      unknown
+                    > | null,
+                    metrics: evaluation.metrics as Record<
+                      string,
+                      unknown
+                    > | null,
+                  }
 
                   return (
                     <TableRow
@@ -210,6 +271,51 @@ export function ExperimentEvaluationsTab() {
                             )
                           : '—'}
                       </TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        {isManual && (
+                          <DropdownMenu
+                            open={openMenuId === evaluation.id}
+                            onOpenChange={(o) =>
+                              setOpenMenuId(o ? evaluation.id : null)
+                            }
+                          >
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <EllipsisVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="bg-[#141925]"
+                            >
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setOpenMenuId(null)
+                                  setEditingEvaluation(editable)
+                                  setModalOpen(true)
+                                }}
+                              >
+                                <Pencil className="h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setOpenMenuId(null)
+                                  setDeletingEvaluation(editable)
+                                }}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="stroke-destructive h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </TableCell>
                     </TableRow>
                   )
                 })
@@ -231,6 +337,36 @@ export function ExperimentEvaluationsTab() {
           totalPages={totalPages}
         />
       </div>
+
+      {experimentId && projectId && (
+        <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
+          <EvaluationModal
+            onClose={() => setModalOpen(false)}
+            experimentId={experimentId}
+            projectId={projectId}
+            evaluation={editingEvaluation}
+          />
+        </BetterDialogProvider>
+      )}
+
+      <BetterDeleteConfirmationModal
+        open={!!deletingEvaluation}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingEvaluation(null)
+          }
+        }}
+        title="Delete evaluation run?"
+        description="This will permanently remove this evaluation run from the experiment."
+        onConfirm={async () => {
+          if (!orgId || !deletingEvaluation) {
+            return
+          }
+          await deleteEvaluation({
+            variables: { orgId, id: deletingEvaluation.id },
+          })
+        }}
+      />
     </div>
   )
 }

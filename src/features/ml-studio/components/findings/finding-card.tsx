@@ -14,12 +14,14 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { format } from 'date-fns'
 import {
+  ClipboardCheckIcon,
   EllipsisVertical,
   FlaskConicalIcon,
   Pencil,
   Trash2,
 } from 'lucide-react'
 import { useState } from 'react'
+import { ML_EVALUATION } from '../../api/evaluations'
 import { DELETE_ML_FINDING } from '../../api/findings'
 import { ML_STUDIO_MODEL_VERSION } from '../../api/model-versions'
 import { ML_STUDIO_MODEL } from '../../api/models'
@@ -37,6 +39,7 @@ export function FindingCard({
   modelId,
   versionId,
   runIds,
+  evaluationIds,
   onClick,
 }: {
   id: string
@@ -48,6 +51,7 @@ export function FindingCard({
   modelId: string
   versionId?: string
   runIds: string[]
+  evaluationIds: string[]
   onClick: () => void
 }) {
   const orgId = useCurrentOrganization()?.id
@@ -68,6 +72,7 @@ export function FindingCard({
     summary,
     description,
     runIds,
+    evaluationIds,
   }
 
   const modelQuery = useQuery(ML_STUDIO_MODEL, {
@@ -176,6 +181,21 @@ export function FindingCard({
           ))}
         </div>
       )}
+
+      {evaluationIds.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span className="flex items-center gap-1.5 text-sm text-[#586378]">
+            <ClipboardCheckIcon className="size-4" />
+            Evidence Evaluations:
+          </span>
+          {evaluationIds.map((evaluationId) => (
+            <EvaluationEvidenceChip
+              key={evaluationId}
+              evaluationId={evaluationId}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -205,6 +225,35 @@ function EvidenceChip({ runId }: { runId: string }) {
   return (
     <span className="border-stock rounded-lg border px-2.5 py-1 font-mono text-xs text-[#828DA3]">
       {run.name}
+    </span>
+  )
+}
+
+function EvaluationEvidenceChip({ evaluationId }: { evaluationId: string }) {
+  const orgId = useCurrentOrganization()?.id
+
+  const evaluationQuery = useQuery(ML_EVALUATION, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !evaluationId,
+    variables: { orgId: orgId!, id: evaluationId },
+  })
+  const evaluation = evaluationQuery.data?.mlEvaluation
+
+  if (!evaluation && evaluationQuery.loading) {
+    return <Skeleton className="h-[26px] w-28 rounded-lg" />
+  }
+
+  if (!evaluation) {
+    return (
+      <span className="border-stock rounded-lg border px-2.5 py-1 font-mono text-xs text-[#586378]">
+        Deleted evaluation
+      </span>
+    )
+  }
+
+  return (
+    <span className="border-stock rounded-lg border px-2.5 py-1 font-mono text-xs text-[#828DA3]">
+      {evaluation.name}
     </span>
   )
 }
