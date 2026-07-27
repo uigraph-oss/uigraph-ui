@@ -203,14 +203,6 @@ export function ExperimentEvaluationsTable() {
           </div>
 
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <MetricColumnsSelect
-              options={metricColumns.options}
-              columns={metricColumns.columns}
-              onToggle={metricColumns.toggle}
-              onSelectAll={metricColumns.selectAll}
-              onClear={metricColumns.clear}
-              onReset={metricColumns.reset}
-            />
             <span>Show per page:</span>
             <Select
               value={String(rowsPerPage)}
@@ -247,7 +239,16 @@ export function ExperimentEvaluationsTable() {
                   </TableHead>
                 ))}
                 <TableHead>Evaluated</TableHead>
-                <TableHead className="w-12" />
+                <TableHead className="w-12 !px-2 text-center">
+                  <MetricColumnsSelect
+                    options={metricColumns.options}
+                    columns={metricColumns.columns}
+                    onToggle={metricColumns.toggle}
+                    onSelectAll={metricColumns.selectAll}
+                    onClear={metricColumns.clear}
+                    onReset={metricColumns.reset}
+                  />
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -339,7 +340,10 @@ export function ExperimentEvaluationsTable() {
                           addSuffix: true,
                         })}
                       </TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
+                      <TableCell
+                        className="w-12 !px-2 text-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {isManual && (
                           <DropdownMenu
                             open={openMenuId === evaluation.id}

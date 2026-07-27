@@ -8,7 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Columns3, ListChecks, ListX, RotateCcw } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { ListChecks, ListX, MoreHorizontal, RotateCcw } from 'lucide-react'
 
 export function MetricColumnsSelect({
   options,
@@ -27,18 +32,22 @@ export function MetricColumnsSelect({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="border-stock text-foreground/80 h-12 justify-between gap-2 rounded-[12px] bg-transparent px-4 font-normal"
-        >
-          <Columns3 className="h-4 w-4 opacity-70" />
-          Columns
-          <span className="text-muted-foreground text-xs">
-            {columns.length}
-          </span>
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="left" sideOffset={8}>
+          Configure columns
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuContent
         align="end"
         className="max-h-80 w-64 overflow-y-auto"

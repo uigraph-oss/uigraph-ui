@@ -139,14 +139,6 @@ export function ModelEvaluationsTable() {
           </div>
 
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <MetricColumnsSelect
-              options={metricColumns.options}
-              columns={metricColumns.columns}
-              onToggle={metricColumns.toggle}
-              onSelectAll={metricColumns.selectAll}
-              onClear={metricColumns.clear}
-              onReset={metricColumns.reset}
-            />
             <span>Show per page:</span>
             <Select
               value={String(rowsPerPage)}
@@ -181,13 +173,23 @@ export function ModelEvaluationsTable() {
                   </TableHead>
                 ))}
                 <TableHead>Evaluated</TableHead>
+                <TableHead className="w-12 !px-2 text-center">
+                  <MetricColumnsSelect
+                    options={metricColumns.options}
+                    columns={metricColumns.columns}
+                    onToggle={metricColumns.toggle}
+                    onSelectAll={metricColumns.selectAll}
+                    onClear={metricColumns.clear}
+                    onReset={metricColumns.reset}
+                  />
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {evaluations.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={3 + metricColumns.columns.length}
+                    colSpan={4 + metricColumns.columns.length}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {!selectedVersion
@@ -246,6 +248,7 @@ export function ModelEvaluationsTable() {
                           addSuffix: true,
                         })}
                       </TableCell>
+                      <TableCell className="w-12 !px-2" />
                     </TableRow>
                   )
                 })
