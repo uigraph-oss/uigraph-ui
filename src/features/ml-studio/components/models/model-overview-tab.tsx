@@ -79,7 +79,7 @@ export function ModelOverviewTab() {
       {latestRun && (
         <>
           <Panel
-            title="Metrics"
+            title="Training metrics"
             icon={<BarChart3 className="size-4" />}
             action={lastUpdated}
           >
@@ -104,7 +104,7 @@ export function ModelOverviewTab() {
           </Panel>
 
           <Panel
-            title="Parameters"
+            title="Training parameters"
             icon={<SlidersHorizontal className="size-4" />}
             action={lastUpdated}
           >

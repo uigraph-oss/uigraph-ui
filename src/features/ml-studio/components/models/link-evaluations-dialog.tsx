@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -46,12 +47,18 @@ export function LinkEvaluationsDialog({
   versionId: string
 }) {
   const orgId = useCurrentOrganization()?.id
+  const [selectedTeamId, setSelectedTeamId] = useState('')
   const [selectedProjectId, setSelectedProjectId] = useState('')
   const [selectedExperimentId, setSelectedExperimentId] = useState('')
   const [selected, setSelected] = useState<{ id: string; name: string }[]>([])
   const [evaluationsOpen, setEvaluationsOpen] = useState(false)
   const [saving, setSaving] = useState(false)
 
+  const teamsQuery = useQuery(TEAMS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
   const projectsQuery = useQuery(ML_STUDIO_PROJECTS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -68,12 +75,21 @@ export function LinkEvaluationsDialog({
     variables: { orgId: orgId!, experimentId: selectedExperimentId },
   })
 
-  const projects = projectsQuery.data?.mlProjects ?? []
+  const teams = teamsQuery.data?.teams ?? []
+  const projects = (projectsQuery.data?.mlProjects ?? []).filter(
+    (p) => p.teamId === selectedTeamId && p.type === 'training'
+  )
   const experiments = experimentsQuery.data?.mlExperiments ?? []
   const allEvaluations = evaluationsQuery.data?.mlExperimentEvaluations ?? []
   const evaluations = allEvaluations.filter((e) => e.versionId !== versionId)
 
-  const noProjects = !projectsQuery.loading && projects.length === 0
+  const allSelected =
+    evaluations.length > 0 &&
+    evaluations.every((e) => selected.some((s) => s.id === e.id))
+
+  const noTeams = !teamsQuery.loading && teams.length === 0
+  const noProjects =
+    !!selectedTeamId && !projectsQuery.loading && projects.length === 0
   const noExperiments =
     !!selectedProjectId && !experimentsQuery.loading && experiments.length === 0
   const noEvaluations =
@@ -85,6 +101,12 @@ export function LinkEvaluationsDialog({
     refetchQueries: ['MlVersionEvaluations', 'MlVersionEvaluationsPage'],
     awaitRefetchQueries: true,
   })
+
+  function pickTeam(id: string) {
+    setSelectedTeamId(id)
+    setSelectedProjectId('')
+    setSelectedExperimentId('')
+  }
 
   function pickProject(id: string) {
     setSelectedProjectId(id)
@@ -101,6 +123,19 @@ export function LinkEvaluationsDialog({
       return
     }
     setSelected([...selected, { id: evaluation.id, name: evaluation.name }])
+  }
+
+  function toggleAll() {
+    if (allSelected) {
+      setSelected(
+        selected.filter((s) => !evaluations.some((e) => e.id === s.id))
+      )
+      return
+    }
+    const missing = evaluations
+      .filter((e) => !selected.some((s) => s.id === e.id))
+      .map((e) => ({ id: e.id, name: e.name }))
+    setSelected([...selected, ...missing])
   }
 
   function remove(evaluationId: string) {
@@ -140,10 +175,38 @@ export function LinkEvaluationsDialog({
       onFooterSubmitClick={submit}
     >
       <div className="flex flex-col gap-5">
-        <FormField label="Project">
-          <Select value={selectedProjectId} onValueChange={pickProject}>
+        <FormField label="Team">
+          <Select value={selectedTeamId} onValueChange={pickTeam}>
             <SelectTrigger className={triggerClassName}>
-              <SelectValue placeholder="Select a project" />
+              <SelectValue placeholder="Select a team" />
+            </SelectTrigger>
+            <SelectContent>
+              {teams.map((team) => (
+                <SelectItem key={team.id} value={team.id}>
+                  {team.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {noTeams && (
+            <p className="text-destructive text-xs">
+              No teams found in this organization.
+            </p>
+          )}
+        </FormField>
+
+        <FormField label="Project">
+          <Select
+            value={selectedProjectId}
+            onValueChange={pickProject}
+            disabled={!selectedTeamId}
+          >
+            <SelectTrigger className={triggerClassName}>
+              <SelectValue
+                placeholder={
+                  selectedTeamId ? 'Select a project' : 'Select a team first'
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               {projects.map((project) => (
@@ -155,7 +218,7 @@ export function LinkEvaluationsDialog({
           </Select>
           {noProjects && (
             <p className="text-destructive text-xs">
-              No projects found in this organization.
+              No training projects found in this team.
             </p>
           )}
         </FormField>
@@ -192,7 +255,7 @@ export function LinkEvaluationsDialog({
 
         <FormField
           label="Evaluations"
-          hint="Pick as many as you like — switch project or experiment to keep adding. An evaluation belongs to one version, so linking moves it from the version it is on now."
+          hint="Pick as many as you like — switch team, project or experiment to keep adding. An evaluation belongs to one version, so linking moves it from the version it is on now."
         >
           <Popover open={evaluationsOpen} onOpenChange={setEvaluationsOpen}>
             <PopoverTrigger asChild disabled={!selectedExperimentId}>
@@ -245,10 +308,23 @@ export function LinkEvaluationsDialog({
               onWheel={(e) => e.stopPropagation()}
             >
               <Command>
-                <CommandInput placeholder="Search evaluations..." />
+                <div className="relative">
+                  <CommandInput placeholder="Search evaluations..." />
+                  {evaluations.length > 0 && (
+                    <button
+                      type="button"
+                      className="absolute top-0 right-3 flex h-9 items-center text-xs font-medium text-[#828DA3] hover:text-[#F4F7FC]"
+                      onClick={toggleAll}
+                    >
+                      {allSelected
+                        ? `Clear all (${evaluations.length})`
+                        : `Select all (${evaluations.length})`}
+                    </button>
+                  )}
+                </div>
                 <CommandList>
                   <CommandEmpty>No evaluations found.</CommandEmpty>
-                  <CommandGroup heading="Evaluations">
+                  <CommandGroup>
                     {evaluations.map((evaluation) => (
                       <CommandItem
                         key={evaluation.id}
