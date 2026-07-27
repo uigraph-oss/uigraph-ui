@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { toDateTimeLocal } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusIcon, Trash2 } from 'lucide-react'
@@ -111,7 +112,8 @@ const evaluationSchema = z
     type: z.enum(EVALUATION_TYPES),
     versionId: z.string().min(1, 'Model version is required'),
     datasetId: z.string(),
-    evaluatedAt: z.string(),
+    startedAt: z.string().min(1, 'Start time is required'),
+    endedAt: z.string().min(1, 'End time is required'),
     description: z
       .string()
       .max(2000, 'Description must be 2000 characters or fewer'),
@@ -120,14 +122,30 @@ const evaluationSchema = z
     metrics: metricsSchema,
   })
   .superRefine((values, ctx) => {
-    if (
-      values.evaluatedAt !== '' &&
-      Number.isNaN(Date.parse(values.evaluatedAt))
-    ) {
+    if (values.startedAt !== '' && Number.isNaN(Date.parse(values.startedAt))) {
       ctx.addIssue({
         code: 'custom',
         message: 'Enter a valid date and time',
-        path: ['evaluatedAt'],
+        path: ['startedAt'],
+      })
+    }
+    if (values.endedAt !== '' && Number.isNaN(Date.parse(values.endedAt))) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Enter a valid date and time',
+        path: ['endedAt'],
+      })
+      return
+    }
+    if (
+      values.startedAt !== '' &&
+      values.endedAt !== '' &&
+      Date.parse(values.endedAt) < Date.parse(values.startedAt)
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'End time must be after the start time',
+        path: ['endedAt'],
       })
     }
   })
@@ -142,21 +160,26 @@ export type EditableEvaluation = {
   type: string
   description: string
   summary: string
-  evaluatedAt?: string | null
+  startedAt: string
+  endedAt: string
   parameters?: Record<string, unknown> | null
   metrics?: Record<string, unknown> | null
 }
 
-const emptyValues: EvaluationFormValues = {
-  name: '',
-  type: 'Offline Benchmark',
-  versionId: '',
-  datasetId: '',
-  evaluatedAt: '',
-  description: '',
-  summary: '',
-  parameters: [],
-  metrics: [],
+function emptyValues(): EvaluationFormValues {
+  const now = toDateTimeLocal(new Date())
+  return {
+    name: '',
+    type: 'Offline Benchmark',
+    versionId: '',
+    datasetId: '',
+    startedAt: now,
+    endedAt: now,
+    description: '',
+    summary: '',
+    parameters: [],
+    metrics: [],
+  }
 }
 
 function toRows(values?: Record<string, unknown> | null) {
@@ -292,15 +315,14 @@ export function EvaluationModal({
           type: evaluation.type as EvaluationFormValues['type'],
           versionId: evaluation.versionId,
           datasetId: evaluation.datasetId ?? '',
-          evaluatedAt: evaluation.evaluatedAt
-            ? evaluation.evaluatedAt.slice(0, 16)
-            : '',
+          startedAt: toDateTimeLocal(new Date(evaluation.startedAt)),
+          endedAt: toDateTimeLocal(new Date(evaluation.endedAt)),
           description: evaluation.description,
           summary: evaluation.summary,
           parameters: toRows(evaluation.parameters),
           metrics: toRows(evaluation.metrics),
         }
-      : emptyValues,
+      : emptyValues(),
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -316,9 +338,8 @@ export function EvaluationModal({
       datasetId: values.datasetId === '' ? null : values.datasetId,
       description: values.description,
       summary: values.summary,
-      evaluatedAt: values.evaluatedAt
-        ? new Date(values.evaluatedAt).toISOString()
-        : null,
+      startedAt: new Date(values.startedAt).toISOString(),
+      endedAt: new Date(values.endedAt).toISOString(),
       parameters: toNumberMap(values.parameters),
       metrics: toNumberMap(values.metrics),
     }
@@ -437,10 +458,28 @@ export function EvaluationModal({
 
           <FormField
             control={control}
-            name="evaluatedAt"
+            name="startedAt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Evaluated at</FormLabel>
+                <FormLabel>Started at</FormLabel>
+                <FormControl>
+                  <Input
+                    type="datetime-local"
+                    className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="endedAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ended at</FormLabel>
                 <FormControl>
                   <Input
                     type="datetime-local"

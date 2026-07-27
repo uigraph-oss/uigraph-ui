@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -38,7 +37,6 @@ import { StatusBadge } from '../status-badge'
 import { RunModal } from './run-modal'
 
 export function RunDetailPage() {
-  const now = useNow()
   const { runId } = useParams<{
     runId: string
   }>()
@@ -140,7 +138,7 @@ export function RunDetailPage() {
             {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
           </InfoRow>
           <InfoRow label="Training duration">
-            {formatRunDuration(runForModal, now)}
+            {formatRunDuration(runForModal)}
           </InfoRow>
           <InfoRow label="Updated at">
             {run.updatedAt ? (

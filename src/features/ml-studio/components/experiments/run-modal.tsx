@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { toDateTimeLocal } from '@/utils/time'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
@@ -105,8 +106,8 @@ const runSchema = z
       .min(1, 'Name is required')
       .max(100, 'Name must be 100 characters or fewer'),
     status: z.enum(['running', 'completed', 'failed', 'cancelled']),
-    startedAt: z.string(),
-    endedAt: z.string(),
+    startedAt: z.string().min(1, 'Start time is required'),
+    endedAt: z.string().min(1, 'End time is required'),
     notes: z.string().max(2000, 'Notes must be 2000 characters or fewer'),
     parameters: parametersSchema,
     metrics: metricsSchema,
@@ -131,11 +132,6 @@ const runSchema = z
       return
     }
     if (values.startedAt === '') {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Set a start time first',
-        path: ['startedAt'],
-      })
       return
     }
     if (Date.parse(values.endedAt) < Date.parse(values.startedAt)) {
@@ -149,14 +145,17 @@ const runSchema = z
 
 type RunFormValues = z.infer<typeof runSchema>
 
-const emptyValues: RunFormValues = {
-  name: '',
-  status: 'completed',
-  startedAt: '',
-  endedAt: '',
-  notes: '',
-  parameters: [],
-  metrics: [],
+function emptyValues(): RunFormValues {
+  const now = toDateTimeLocal(new Date())
+  return {
+    name: '',
+    status: 'completed',
+    startedAt: now,
+    endedAt: now,
+    notes: '',
+    parameters: [],
+    metrics: [],
+  }
 }
 
 function toRows(values?: Record<string, string | number>) {
@@ -283,13 +282,13 @@ export function RunModal({
       ? {
           name: run.name,
           status: run.status,
-          startedAt: run.startedAt ? run.startedAt.slice(0, 16) : '',
-          endedAt: run.endedAt ? run.endedAt.slice(0, 16) : '',
+          startedAt: toDateTimeLocal(new Date(run.startedAt)),
+          endedAt: toDateTimeLocal(new Date(run.endedAt)),
           notes: run.notes,
           parameters: toRows(run.parameters),
           metrics: toRows(run.metrics),
         }
-      : emptyValues,
+      : emptyValues(),
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -332,10 +331,8 @@ export function RunModal({
     const input = {
       name: values.name.trim(),
       status: values.status,
-      startedAt: values.startedAt
-        ? new Date(values.startedAt).toISOString()
-        : null,
-      endedAt: values.endedAt ? new Date(values.endedAt).toISOString() : null,
+      startedAt: new Date(values.startedAt).toISOString(),
+      endedAt: new Date(values.endedAt).toISOString(),
       notes: values.notes,
       parameters: toNumberMap(values.parameters),
       metrics: toNumberMap(values.metrics),

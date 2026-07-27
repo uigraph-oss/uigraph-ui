@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -65,7 +64,6 @@ const runStatusLabels: Record<RunStatus, string> = {
 }
 
 export function ExperimentOverviewTab() {
-  const now = useNow()
   const { experiment, runs } = useExperimentContext()
   const { projectId, experimentId } = useParams<{
     projectId: string
@@ -121,23 +119,16 @@ export function ExperimentOverviewTab() {
   )
 
   const latestEvaluation = evaluations
-    .flatMap((evaluation) =>
-      evaluation.evaluatedAt
-        ? [
-            {
-              id: evaluation.id,
-              name: evaluation.name,
-              evaluatedAt: evaluation.evaluatedAt,
-            },
-          ]
-        : []
-    )
-    .sort((a, b) => b.evaluatedAt.localeCompare(a.evaluatedAt))
+    .map((evaluation) => ({
+      id: evaluation.id,
+      name: evaluation.name,
+      startedAt: evaluation.startedAt,
+    }))
+    .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
     .at(0)
 
   const lastActivityAt = runs
     .flatMap((r) => [r.endedAt, r.startedAt])
-    .filter((t): t is string => Boolean(t))
     .sort()
     .at(-1)
 
@@ -256,7 +247,7 @@ export function ExperimentOverviewTab() {
               </Link>
               <span>
                 ·{' '}
-                {formatDistanceToNow(new Date(latestEvaluation.evaluatedAt), {
+                {formatDistanceToNow(new Date(latestEvaluation.startedAt), {
                   addSuffix: true,
                 })}
               </span>
@@ -340,7 +331,7 @@ export function ExperimentOverviewTab() {
                     {formatMetric(run.metrics[primaryMetric])}
                   </TableCell>
                   <TableCell className="text-sm text-[#828DA3]">
-                    {formatRunDuration(run, now)}
+                    {formatRunDuration(run)}
                   </TableCell>
                 </TableRow>
               ))}

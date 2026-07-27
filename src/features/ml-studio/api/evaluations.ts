@@ -14,7 +14,8 @@ export const ML_STUDIO_EVALUATIONS = graphql(`
         experimentId
         modelName
         version
-        evaluatedAt
+        startedAt
+        endedAt
       }
       total
     }
@@ -34,7 +35,8 @@ export const ML_VERSION_EVALUATIONS = graphql(`
       type
       description
       summary
-      evaluatedAt
+      startedAt
+      endedAt
       source
       createdBy
       parameters
@@ -56,7 +58,8 @@ export const ML_EXPERIMENT_EVALUATIONS = graphql(`
       type
       description
       summary
-      evaluatedAt
+      startedAt
+      endedAt
       source
       createdBy
       parameters
@@ -92,7 +95,8 @@ export const ML_VERSION_EVALUATIONS_PAGE = graphql(`
         type
         description
         summary
-        evaluatedAt
+        startedAt
+        endedAt
         source
         createdBy
         parameters
@@ -129,7 +133,8 @@ export const ML_EXPERIMENT_EVALUATIONS_PAGE = graphql(`
         type
         description
         summary
-        evaluatedAt
+        startedAt
+        endedAt
         source
         createdBy
         parameters
@@ -152,7 +157,8 @@ export const ML_EVALUATION = graphql(`
       type
       description
       summary
-      evaluatedAt
+      startedAt
+      endedAt
       source
       createdBy
       parameters

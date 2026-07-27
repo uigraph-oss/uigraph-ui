@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useNow } from '@/hooks/use-now'
 import { format, formatDistanceToNow } from 'date-fns'
 import { BarChart3, FlaskConical, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
@@ -23,7 +22,6 @@ import { LinkRunDialog } from './link-run-dialog'
 import { ModelCard } from './model-card'
 
 export function ModelOverviewTab() {
-  const now = useNow()
   const { selectedVersion, selectedRun, selectedRunExperiment } =
     useModelContext()
   const navigate = useNavigate()
@@ -159,9 +157,7 @@ export function ModelOverviewTab() {
                   <span>In progress</span>
                 )}
                 <span className="text-[#586378]">·</span>
-                <span>
-                  Training duration {formatRunDuration(latestRun, now)}
-                </span>
+                <span>Training duration {formatRunDuration(latestRun)}</span>
               </div>
             </div>
             <div className="ml-auto flex items-center gap-2">

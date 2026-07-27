@@ -1,3 +1,8 @@
+export function toDateTimeLocal(date: Date): string {
+  const offset = date.getTimezoneOffset() * 60_000
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16)
+}
+
 export function formatToHumanReadableMS(ms: number): string {
   if (ms <= 0) return '0ms'
   if (ms < 1000) return `${ms}ms`

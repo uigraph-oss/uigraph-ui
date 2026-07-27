@@ -84,7 +84,7 @@ export type Run = {
   name: string
   status: RunStatus
   startedAt: string
-  endedAt?: string
+  endedAt: string
   notes: string
   parameters: Record<string, string | number>
   metrics: Record<string, number>

@@ -205,7 +205,8 @@ export function ExperimentEvaluationsTab() {
                     type: evaluation.type,
                     description: evaluation.description,
                     summary: evaluation.summary,
-                    evaluatedAt: evaluation.evaluatedAt,
+                    startedAt: evaluation.startedAt,
+                    endedAt: evaluation.endedAt,
                     parameters: evaluation.parameters as Record<
                       string,
                       unknown
@@ -253,23 +254,12 @@ export function ExperimentEvaluationsTab() {
                           : '—'}
                       </TableCell>
                       <TableCell
-                        className={
-                          evaluation.evaluatedAt
-                            ? 'text-sm text-[#828DA3]'
-                            : 'text-xs text-[#828DA3]'
-                        }
-                        title={
-                          evaluation.evaluatedAt
-                            ? format(new Date(evaluation.evaluatedAt), 'PPpp')
-                            : undefined
-                        }
+                        className="text-sm text-[#828DA3]"
+                        title={format(new Date(evaluation.startedAt), 'PPpp')}
                       >
-                        {evaluation.evaluatedAt
-                          ? formatDistanceToNow(
-                              new Date(evaluation.evaluatedAt),
-                              { addSuffix: true }
-                            )
-                          : '—'}
+                        {formatDistanceToNow(new Date(evaluation.startedAt), {
+                          addSuffix: true,
+                        })}
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         {isManual && (

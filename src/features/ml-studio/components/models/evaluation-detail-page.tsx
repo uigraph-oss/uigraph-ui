@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { formatToHumanReadableMS } from '@/utils/time'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import {
@@ -22,6 +23,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { ML_STUDIO_DATASET } from '../../api/datasets'
 import { ML_EVALUATION } from '../../api/evaluations'
+import { runDurationMS } from '../../format'
 import { InfoRow, Panel } from '../panel'
 
 export function EvaluationDetailPage() {
@@ -61,6 +63,9 @@ export function EvaluationDetailPage() {
   const parameters = Object.entries(
     (evaluation.parameters ?? {}) as Record<string, string | number>
   )
+  const durationMS = runDurationMS(evaluation.startedAt, evaluation.endedAt)
+  const duration =
+    durationMS === null ? '—' : formatToHumanReadableMS(durationMS)
 
   return (
     <div className="flex flex-col gap-5 p-6">
@@ -86,17 +91,17 @@ export function EvaluationDetailPage() {
 
       <Panel>
         <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          <InfoRow label="Evaluated at">
-            {evaluation.evaluatedAt
-              ? format(new Date(evaluation.evaluatedAt), 'PPpp')
-              : '—'}
+          <InfoRow label="Started at">
+            {format(new Date(evaluation.startedAt), 'PPpp')}
           </InfoRow>
+          <InfoRow label="Ended at">
+            {format(new Date(evaluation.endedAt), 'PPpp')}
+          </InfoRow>
+          <InfoRow label="Duration">{duration}</InfoRow>
           <InfoRow label="Evaluated">
-            {evaluation.evaluatedAt
-              ? formatDistanceToNow(new Date(evaluation.evaluatedAt), {
-                  addSuffix: true,
-                })
-              : '—'}
+            {formatDistanceToNow(new Date(evaluation.startedAt), {
+              addSuffix: true,
+            })}
           </InfoRow>
           <InfoRow label="Dataset">{dataset?.name ?? '—'}</InfoRow>
         </div>

@@ -27,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useNow } from '@/hooks/use-now'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
@@ -50,7 +49,6 @@ import { RunComparisonDialog } from './run-comparison-dialog'
 import { RunModal } from './run-modal'
 
 export function ExperimentRunsTab() {
-  const now = useNow()
   const { experiment } = useExperimentContext()
   const orgId = useCurrentOrganization()?.id
   const { projectId } = useParams<{ projectId: string }>()
@@ -103,8 +101,8 @@ export function ExperimentRunsTab() {
         experimentId: r.experimentId,
         name: r.name,
         status: r.status as Run['status'],
-        startedAt: r.startedAt ?? '',
-        endedAt: r.endedAt ?? undefined,
+        startedAt: r.startedAt,
+        endedAt: r.endedAt,
         notes: r.notes,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
@@ -265,12 +263,12 @@ export function ExperimentRunsTab() {
                     </TableCell>
                     <TableCell
                       className={
-                        formatRunDuration(run, now) === '—'
+                        formatRunDuration(run) === '—'
                           ? 'text-xs text-[#828DA3]'
                           : 'text-sm text-[#828DA3]'
                       }
                     >
-                      {formatRunDuration(run, now)}
+                      {formatRunDuration(run)}
                     </TableCell>
                     <TableCell
                       className={

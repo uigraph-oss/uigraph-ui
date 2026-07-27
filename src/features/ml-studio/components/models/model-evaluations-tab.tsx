@@ -205,23 +205,12 @@ export function ModelEvaluationsTab() {
                           : '—'}
                       </TableCell>
                       <TableCell
-                        className={
-                          evaluation.evaluatedAt
-                            ? 'text-sm text-[#828DA3]'
-                            : 'text-xs text-[#828DA3]'
-                        }
-                        title={
-                          evaluation.evaluatedAt
-                            ? format(new Date(evaluation.evaluatedAt), 'PPpp')
-                            : undefined
-                        }
+                        className="text-sm text-[#828DA3]"
+                        title={format(new Date(evaluation.startedAt), 'PPpp')}
                       >
-                        {evaluation.evaluatedAt
-                          ? formatDistanceToNow(
-                              new Date(evaluation.evaluatedAt),
-                              { addSuffix: true }
-                            )
-                          : '—'}
+                        {formatDistanceToNow(new Date(evaluation.startedAt), {
+                          addSuffix: true,
+                        })}
                       </TableCell>
                     </TableRow>
                   )
