@@ -3,7 +3,7 @@
 import { useLocalStorage } from '@/hooks/use-localstorage'
 import { useMemo } from 'react'
 
-export type MetricTableKind = 'ml_run' | 'ml_evaluation'
+export type MetricTableKind = 'ml_run' | 'ml_evaluation' | 'ml_leaderboard'
 
 const DEFAULT_COLUMN_COUNT = 3
 

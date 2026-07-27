@@ -3,13 +3,6 @@
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
   Table,
   TableBody,
   TableCell,
@@ -23,6 +16,9 @@ import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import {
   ActivityIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronsUpDownIcon,
   ClipboardCheckIcon,
   PencilIcon,
   TrophyIcon,
@@ -31,11 +27,12 @@ import { type ReactNode, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ML_EXPERIMENT_EVALUATIONS } from '../../api/evaluations'
 import { useExperimentContext } from '../../contexts/experiment-context'
-import { formatMetric, formatRunDuration } from '../../format'
-import type { RunStatus } from '../../types'
+import { formatMetric, formatRunDuration, runDurationMS } from '../../format'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
+import type { Run, RunStatus } from '../../types'
+import { MetricColumnsSelect } from '../metric-columns-select'
 import { MlUser } from '../ml-user'
 import { Panel } from '../panel'
-import { StatusBadge } from '../status-badge'
 import { ExperimentModal } from './experiment-modal'
 
 function Stat({ label, value }: { label: string; value: ReactNode }) {
@@ -58,6 +55,47 @@ const evaluationTypeLabels: Record<string, string> = {
   'Production Monitoring': 'Monitoring',
 }
 
+function defaultDirection(key: string): 'asc' | 'desc' {
+  if (key === 'duration') {
+    return 'asc'
+  }
+  if (/loss|error|mae|mse|rmse|perplexity/i.test(key)) {
+    return 'asc'
+  }
+  return 'desc'
+}
+
+function SortableHead({
+  label,
+  active,
+  direction,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  direction: 'asc' | 'desc'
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center gap-1 transition-colors hover:text-[#F4F7FC]"
+    >
+      <span className="truncate capitalize">{label}</span>
+      {active && direction === 'asc' && (
+        <ArrowUpIcon className="size-3.5 shrink-0" />
+      )}
+      {active && direction === 'desc' && (
+        <ArrowDownIcon className="size-3.5 shrink-0" />
+      )}
+      {!active && (
+        <ChevronsUpDownIcon className="size-3.5 shrink-0 text-[#3A4256]" />
+      )}
+    </button>
+  )
+}
+
 const runStatusLabels: Record<RunStatus, string> = {
   completed: 'Completed',
   running: 'Running',
@@ -74,7 +112,10 @@ export function ExperimentOverviewTab() {
   const orgId = useCurrentOrganization()?.id
   const now = useNow()
   const [editOpen, setEditOpen] = useState(false)
-  const [selectedMetric, setSelectedMetric] = useState('')
+  const [sort, setSort] = useState<{
+    key: string
+    direction: 'asc' | 'desc'
+  } | null>(null)
 
   const evaluationsQuery = useQuery(ML_EXPERIMENT_EVALUATIONS, {
     fetchPolicy: 'cache-and-network',
@@ -88,26 +129,76 @@ export function ExperimentOverviewTab() {
     return acc
   }, {})
 
-  const trackedMetrics = [
-    ...new Set(runs.flatMap((run) => Object.keys(run.metrics))),
-  ]
-  const primaryMetric = trackedMetrics.includes(selectedMetric)
-    ? selectedMetric
-    : (trackedMetrics[0] ?? '')
-  const primaryLabel = primaryMetric.replace(/_/g, ' ')
-  const lowerIsBetter = /loss|error|mae|mse|rmse|perplexity/i.test(
-    primaryMetric
+  const metricCoverage = runs.reduce<Record<string, number>>((acc, run) => {
+    for (const metric of Object.keys(run.metrics)) {
+      acc[metric] = (acc[metric] ?? 0) + 1
+    }
+    return acc
+  }, {})
+
+  const trackedMetrics = Object.keys(metricCoverage).sort((a, b) => {
+    if (metricCoverage[b] !== metricCoverage[a]) {
+      return metricCoverage[b] - metricCoverage[a]
+    }
+    return a.localeCompare(b)
+  })
+  const metricColumns = useMetricColumns('ml_leaderboard', trackedMetrics)
+  const leaderboardMetrics = trackedMetrics.filter((metric) =>
+    metricColumns.columns.includes(metric)
   )
 
+  const sortKey =
+    sort && (sort.key === 'duration' || leaderboardMetrics.includes(sort.key))
+      ? sort.key
+      : (leaderboardMetrics[0] ?? 'duration')
+  const sortLabel =
+    sortKey === 'duration' ? 'duration' : sortKey.replace(/_/g, ' ')
+  const sortDirection =
+    sort?.key === sortKey ? sort.direction : defaultDirection(sortKey)
+
+  function sortValue(run: Run) {
+    if (sortKey === 'duration') {
+      return runDurationMS(run.startedAt, run.endedAt, run.status, now)
+    }
+    if (sortKey in run.metrics) {
+      return run.metrics[sortKey]
+    }
+    return null
+  }
+
   const scoredRuns = runs
-    .filter((r) => primaryMetric in r.metrics)
-    .sort((a, b) =>
-      lowerIsBetter
-        ? a.metrics[primaryMetric] - b.metrics[primaryMetric]
-        : b.metrics[primaryMetric] - a.metrics[primaryMetric]
-    )
+    .filter((r) => r.status === 'completed')
+    .sort((a, b) => {
+      const aValue = sortValue(a)
+      const bValue = sortValue(b)
+      if (aValue === null && bValue === null) {
+        return 0
+      }
+      if (aValue === null) {
+        return 1
+      }
+      if (bValue === null) {
+        return -1
+      }
+      if (sortDirection === 'asc') {
+        return aValue - bValue
+      }
+      return bValue - aValue
+    })
   const leadingRun = scoredRuns[0]
   const topRuns = scoredRuns.slice(0, 5)
+
+  function toggleSort(key: string) {
+    if (key !== sortKey) {
+      setSort({ key, direction: defaultDirection(key) })
+      return
+    }
+    if (sortDirection === 'asc') {
+      setSort({ key, direction: 'desc' })
+      return
+    }
+    setSort({ key, direction: 'asc' })
+  }
 
   const latestRun = [...runs]
     .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
@@ -291,43 +382,52 @@ export function ExperimentOverviewTab() {
         icon={<TrophyIcon size={16} />}
         description={
           leadingRun
-            ? `Top runs ranked by ${primaryLabel}.`
-            : 'Runs ranked once metrics are recorded.'
+            ? `Top completed runs ranked by ${sortLabel}.`
+            : 'Completed runs ranked once metrics are recorded.'
         }
         className="md:col-span-2"
-        action={
-          trackedMetrics.length > 0 ? (
-            <Select value={primaryMetric} onValueChange={setSelectedMetric}>
-              <SelectTrigger className="border-stock text-foreground/80 h-[2.7938125rem] w-48 rounded-[0.80315625rem] bg-transparent px-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {trackedMetrics.map((metric) => (
-                  <SelectItem key={metric} value={metric}>
-                    {metric.replace(/_/g, ' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : undefined
-        }
       >
         {topRuns.length > 0 ? (
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">#</TableHead>
-                <TableHead>Run</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>{primaryLabel}</TableHead>
-                <TableHead>Duration</TableHead>
+                <TableHead className="w-[30%]">Run</TableHead>
+                {leaderboardMetrics.map((metric) => (
+                  <TableHead key={metric}>
+                    <SortableHead
+                      label={metric.replace(/_/g, ' ')}
+                      active={metric === sortKey}
+                      direction={sortDirection}
+                      onClick={() => toggleSort(metric)}
+                    />
+                  </TableHead>
+                ))}
+                <TableHead className="w-32">
+                  <SortableHead
+                    label="Duration"
+                    active={sortKey === 'duration'}
+                    direction={sortDirection}
+                    onClick={() => toggleSort('duration')}
+                  />
+                </TableHead>
+                <TableHead className="w-12 !px-2 text-center">
+                  <MetricColumnsSelect
+                    options={metricColumns.options}
+                    columns={metricColumns.columns}
+                    onToggle={metricColumns.toggle}
+                    onSelectAll={metricColumns.selectAll}
+                    onClear={metricColumns.clear}
+                    onReset={metricColumns.reset}
+                  />
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {topRuns.map((run, index) => (
                 <TableRow key={run.id}>
                   <TableCell className="text-[#586378]">{index + 1}</TableCell>
-                  <TableCell>
+                  <TableCell className="truncate">
                     <Link
                       to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${run.id}`}
                       className="hover:text-primary font-medium text-[#F4F7FC]"
@@ -335,23 +435,38 @@ export function ExperimentOverviewTab() {
                       {run.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    <StatusBadge value={run.status} />
-                  </TableCell>
-                  <TableCell className="text-[#F4F7FC]">
-                    {formatMetric(run.metrics[primaryMetric])}
-                  </TableCell>
-                  <TableCell className="text-sm text-[#828DA3]">
+                  {leaderboardMetrics.map((metric) => (
+                    <TableCell
+                      key={metric}
+                      className={
+                        metric === sortKey
+                          ? 'truncate text-[#F4F7FC]'
+                          : 'truncate text-[#828DA3]'
+                      }
+                    >
+                      {metric in run.metrics ? (
+                        formatMetric(run.metrics[metric])
+                      ) : (
+                        <span className="text-[#586378]">—</span>
+                      )}
+                    </TableCell>
+                  ))}
+                  <TableCell
+                    className={
+                      sortKey === 'duration'
+                        ? 'text-sm text-[#F4F7FC]'
+                        : 'text-sm text-[#828DA3]'
+                    }
+                  >
                     {formatRunDuration(run, now)}
                   </TableCell>
+                  <TableCell />
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         ) : (
-          <p className="text-sm text-[#586378]">
-            No runs with recorded metrics yet.
-          </p>
+          <p className="text-sm text-[#586378]">No completed runs yet.</p>
         )}
       </Panel>
 
