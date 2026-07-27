@@ -57,6 +57,9 @@ export const ML_MODEL_VERSIONS_EXPLORE = graphql(`
         createdByActor {
           id
           name
+          email
+          type
+          avatarUrl
         }
         model {
           id

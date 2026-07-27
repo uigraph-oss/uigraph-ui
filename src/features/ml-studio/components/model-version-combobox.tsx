@@ -1,5 +1,6 @@
 'use client'
 
+import { ActorAvatar } from '@/components/actor-avatar'
 import {
   Command,
   CommandEmpty,
@@ -196,6 +197,7 @@ export function ModelVersionCombobox({
                   {modelItems.map((item) => (
                     <CommandItem
                       key={item.id}
+                      className="items-start py-2"
                       value={item.id}
                       onSelect={() => {
                         onChange(item.id)
@@ -205,37 +207,41 @@ export function ModelVersionCombobox({
                     >
                       <Check
                         className={cn(
-                          'size-4',
+                          'mt-0.5 size-4 shrink-0',
                           value === item.id ? 'opacity-100' : 'opacity-0'
                         )}
                       />
-                      <div className="flex flex-1 flex-col">
-                        <span>v{item.version}</span>
+                      <ActorAvatar
+                        actor={item.createdByActor}
+                        className="mt-0.5 size-6 shrink-0"
+                      />
+                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <span className="text-[#F4F7FC]">v{item.version}</span>
+                        <span className="flex items-center gap-1.5 text-xs text-[#586378]">
+                          {item.createdByActor?.name && (
+                            <span className="max-w-[180px] truncate">
+                              {item.createdByActor.name}
+                            </span>
+                          )}
+                          {item.createdByActor?.name && item.createdAt && (
+                            <span className="text-[#3A4256]">·</span>
+                          )}
+                          {item.createdAt && (
+                            <span
+                              title={format(new Date(item.createdAt), 'PPpp')}
+                            >
+                              {formatDistanceToNow(new Date(item.createdAt), {
+                                addSuffix: true,
+                              })}
+                            </span>
+                          )}
+                        </span>
                         {item.description && (
-                          <span className="text-muted-foreground line-clamp-1 text-xs">
+                          <span className="line-clamp-1 text-xs text-[#586378]">
                             {item.description}
                           </span>
                         )}
                       </div>
-                      <span className="flex shrink-0 items-center gap-1.5 text-xs text-[#586378]">
-                        {item.createdByActor?.name && (
-                          <span className="max-w-[140px] truncate">
-                            {item.createdByActor.name}
-                          </span>
-                        )}
-                        {item.createdByActor?.name && item.createdAt && (
-                          <span className="text-[#3A4256]">·</span>
-                        )}
-                        {item.createdAt && (
-                          <span
-                            title={format(new Date(item.createdAt), 'PPpp')}
-                          >
-                            {formatDistanceToNow(new Date(item.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        )}
-                      </span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
