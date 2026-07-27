@@ -14,7 +14,9 @@ import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -31,6 +33,7 @@ import {
   UPDATE_ML_EVALUATION,
 } from '../../api/evaluations'
 import { ML_STUDIO_MODEL_VERSIONS } from '../../api/model-versions'
+import { ML_STUDIO_MODELS } from '../../api/models'
 
 const EVALUATION_TYPES = [
   'Offline Benchmark',
@@ -273,6 +276,12 @@ export function EvaluationModal({
   })
   const versions = versionsQuery.data?.mlModelVersions ?? []
 
+  const modelsQuery = useQuery(ML_STUDIO_MODELS, {
+    skip: !orgId,
+    variables: { orgId: orgId!, projectId },
+  })
+  const models = modelsQuery.data?.mlModels ?? []
+
   const datasetsQuery = useQuery(ML_STUDIO_DATASETS, {
     skip: !orgId || !experimentId,
     variables: { orgId: orgId!, experimentId },
@@ -403,33 +412,63 @@ export function EvaluationModal({
           <FormField
             control={control}
             name="versionId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Model version</FormLabel>
-                <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={isEdit}
-                  >
-                    <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
-                      <SelectValue placeholder="Select a model version" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {versions.map((version) => (
-                        <SelectItem key={version.id} value={version.id}>
-                          v{version.version}
-                          {version.description
-                            ? ` — ${version.description}`
-                            : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const selectedVersion = versions.find((v) => v.id === field.value)
+              const selectedModel = models.find(
+                (m) => m.id === selectedVersion?.modelId
+              )
+              const selectedVersionLabel = selectedVersion
+                ? `${selectedModel?.name ?? 'Unknown model'} · v${selectedVersion.version}`
+                : undefined
+              return (
+                <FormItem>
+                  <FormLabel>Model version</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isEdit}
+                    >
+                      <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
+                        <SelectValue placeholder="Select a model version">
+                          {selectedVersionLabel}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {models.map((model) => {
+                          const modelVersions = versions.filter(
+                            (v) => v.modelId === model.id
+                          )
+                          if (modelVersions.length === 0) {
+                            return null
+                          }
+                          return (
+                            <SelectGroup key={model.id}>
+                              <SelectLabel className="text-xs font-semibold text-[#828DA3]">
+                                {model.name}
+                              </SelectLabel>
+                              {modelVersions.map((version) => (
+                                <SelectItem
+                                  key={version.id}
+                                  value={version.id}
+                                  className="pl-8"
+                                >
+                                  v{version.version}
+                                  {version.description
+                                    ? ` — ${version.description}`
+                                    : ''}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
           />
 
           <FormField
