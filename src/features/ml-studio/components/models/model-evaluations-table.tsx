@@ -31,8 +31,8 @@ import {
   ML_VERSION_EVALUATIONS_PAGE,
 } from '../../api/evaluations'
 import { useModelContext } from '../../contexts/model-context'
-import { formatMetric } from '../../format'
 import { useMetricColumns } from '../../hooks/use-metric-columns'
+import { MetricChips } from '../metric-chips'
 import { MetricColumnsSelect } from '../metric-columns-select'
 import { LinkEvaluationsDialog } from './link-evaluations-dialog'
 
@@ -175,11 +175,7 @@ export function ModelEvaluationsTable() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
-                {metricColumns.columns.map((key) => (
-                  <TableHead key={key} className="capitalize">
-                    {key.replace(/_/g, ' ')}
-                  </TableHead>
-                ))}
+                <TableHead>Metrics</TableHead>
                 <TableHead>Evaluated</TableHead>
               </TableRow>
             </TableHeader>
@@ -187,7 +183,7 @@ export function ModelEvaluationsTable() {
               {evaluations.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={3 + metricColumns.columns.length}
+                    colSpan={4}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {!selectedVersion
@@ -224,20 +220,12 @@ export function ModelEvaluationsTable() {
                           {evaluation.type}
                         </Badge>
                       </TableCell>
-                      {metricColumns.columns.map((key) => (
-                        <TableCell
-                          key={key}
-                          className={
-                            metrics[key] !== undefined
-                              ? 'text-[#F4F7FC]'
-                              : 'text-xs text-[#828DA3]'
-                          }
-                        >
-                          {metrics[key] !== undefined
-                            ? formatMetric(metrics[key])
-                            : '—'}
-                        </TableCell>
-                      ))}
+                      <TableCell>
+                        <MetricChips
+                          metrics={metrics}
+                          columns={metricColumns.columns}
+                        />
+                      </TableCell>
                       <TableCell
                         className="text-sm text-[#828DA3]"
                         title={format(new Date(evaluation.startedAt), 'PPpp')}

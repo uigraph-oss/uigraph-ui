@@ -1,9 +1,7 @@
 'use client'
 
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useMutation, useQuery } from '@apollo/client'
+import { useLocalStorage } from '@/hooks/use-localstorage'
 import { useMemo } from 'react'
-import { ML_METRIC_COLUMNS, SET_ML_METRIC_COLUMNS } from '../api/metric-columns'
 
 export type MetricTableKind = 'ml_run' | 'ml_evaluation'
 
@@ -13,26 +11,11 @@ export function useMetricColumns(
   tableKind: MetricTableKind,
   availableKeys: string[]
 ) {
-  const orgId = useCurrentOrganization()?.id
-
-  const columnsQuery = useQuery(ML_METRIC_COLUMNS, {
-    fetchPolicy: 'cache-and-network',
-    skip: !orgId,
-    variables: { orgId: orgId!, tableKind },
-  })
-
-  const [setMetricColumns, setMetricColumnsState] = useMutation(
-    SET_ML_METRIC_COLUMNS,
-    {
-      refetchQueries: ['MlMetricColumns'],
-      awaitRefetchQueries: true,
-    }
+  const [stored, setStored] = useLocalStorage<string[] | null>(
+    `ml-metric-columns:${tableKind}`,
+    null
   )
 
-  const data =
-    columnsQuery.data?.mlMetricColumns ??
-    columnsQuery.previousData?.mlMetricColumns
-  const stored = data?.metricKeys ?? null
   const isDefaulting = stored === null
 
   const columns = useMemo(() => {
@@ -45,29 +28,24 @@ export function useMetricColumns(
     return [...availableKeys, ...extras]
   }, [availableKeys, columns])
 
-  function save(keys: string[] | null) {
-    if (!orgId) return
-    void setMetricColumns({ variables: { orgId, tableKind, metricKeys: keys } })
-  }
-
   function toggle(key: string) {
     if (columns.includes(key)) {
-      save(columns.filter((existing) => existing !== key))
+      setStored(columns.filter((existing) => existing !== key))
       return
     }
-    save([...columns, key])
+    setStored([...columns, key])
   }
 
   function selectAll() {
-    save(options)
+    setStored(options)
   }
 
   function clear() {
-    save([])
+    setStored([])
   }
 
   function reset() {
-    save(null)
+    setStored(null)
   }
 
   return {
@@ -78,6 +56,5 @@ export function useMetricColumns(
     selectAll,
     clear,
     reset,
-    saving: setMetricColumnsState.loading,
   }
 }
