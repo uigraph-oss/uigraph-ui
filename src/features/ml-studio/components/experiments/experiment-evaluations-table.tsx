@@ -231,7 +231,7 @@ export function ExperimentEvaluationsTable() {
               <TableRow>
                 <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
-                <TableHead>Model / Version</TableHead>
+                <TableHead>Model</TableHead>
                 <TableHead>Tags</TableHead>
                 {metricColumns.columns.map((key) => (
                   <TableHead key={key} className="capitalize">

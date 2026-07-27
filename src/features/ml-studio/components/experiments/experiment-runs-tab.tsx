@@ -218,6 +218,7 @@ export function ExperimentRunsTab() {
                 <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Tags</TableHead>
                 {metricColumns.columns.map((key) => (
                   <TableHead key={key} className="capitalize">
                     {key.replace(/_/g, ' ')}
@@ -225,7 +226,6 @@ export function ExperimentRunsTab() {
                 ))}
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
-                <TableHead>Tags</TableHead>
                 <TableHead className="w-12 !px-2 text-center">
                   <MetricColumnsSelect
                     options={metricColumns.options}
@@ -272,6 +272,22 @@ export function ExperimentRunsTab() {
                     <TableCell>
                       <StatusBadge value={run.status} />
                     </TableCell>
+                    <TableCell>
+                      {run.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {run.tags.map((tag) => (
+                            <Badge
+                              key={tag}
+                              className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[#828DA3]">—</span>
+                      )}
+                    </TableCell>
                     {metricColumns.columns.map((key) => (
                       <TableCell
                         key={key}
@@ -308,22 +324,6 @@ export function ExperimentRunsTab() {
                             addSuffix: true,
                           })
                         : '—'}
-                    </TableCell>
-                    <TableCell>
-                      {run.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {run.tags.map((tag) => (
-                            <Badge
-                              key={tag}
-                              className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-[#828DA3]">—</span>
-                      )}
                     </TableCell>
                     <TableCell
                       className="w-12 !px-2 text-center"
