@@ -88,6 +88,7 @@ export function RunDetailPage() {
     startedAt: run.startedAt ?? '',
     endedAt: run.endedAt ?? null,
     notes: run.notes,
+    tags: run.tags,
     parameters: (run.parameters ?? {}) as Record<string, string | number>,
     metrics: (run.metrics ?? {}) as Record<string, number>,
     datasetId: run.datasetId ?? undefined,
@@ -106,6 +107,18 @@ export function RunDetailPage() {
             <StatusBadge value={run.status} />
           </div>
           <p className="mt-1 text-sm text-[#586378]">{run.notes}</p>
+          {run.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {run.tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {run.source === 'manual' && (

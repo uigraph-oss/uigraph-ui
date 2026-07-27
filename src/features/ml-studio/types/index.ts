@@ -75,6 +75,7 @@ export type Run = {
   startedAt: string
   endedAt: string | null
   notes: string
+  tags: string[]
   parameters: Record<string, string | number>
   metrics: Record<string, number>
   datasetId?: string
@@ -123,7 +124,7 @@ export type Dataset = {
   context: DatasetContext
   rowCount: number
   schema: SchemaField[]
-  tags?: Record<string, string>
+  tags: string[]
   origin: ExperimentSource
 }
 

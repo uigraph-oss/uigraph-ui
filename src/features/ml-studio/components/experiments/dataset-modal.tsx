@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { TagInput } from '@/features/component-meta/components/tag-input'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,6 +34,7 @@ const datasetSchema = z.object({
   context: z.enum(['training', 'evaluation']),
   rowCount: z.string(),
   digest: z.string(),
+  tags: z.array(z.string()),
 })
 
 type DatasetFormValues = z.infer<typeof datasetSchema>
@@ -43,6 +46,7 @@ const emptyValues: DatasetFormValues = {
   context: 'training',
   rowCount: '',
   digest: '',
+  tags: [],
 }
 
 export function DatasetModal({
@@ -75,6 +79,7 @@ export function DatasetModal({
           context: dataset.context,
           rowCount: dataset.rowCount ? String(dataset.rowCount) : '',
           digest: dataset.digest,
+          tags: dataset.tags,
         }
       : emptyValues,
   })
@@ -92,6 +97,7 @@ export function DatasetModal({
       context: values.context,
       rowCount: rowCount !== null && !Number.isNaN(rowCount) ? rowCount : null,
       digest: values.digest,
+      tags: values.tags,
     }
     if (dataset) {
       await updateDataset({
@@ -232,6 +238,26 @@ export function DatasetModal({
               )}
             />
           </div>
+
+          <FormField
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <ComponentMetaThemeProvider theme="modal">
+                    <TagInput
+                      placeholder="tabular, pii-free, v2"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </ComponentMetaThemeProvider>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </form>
       </Form>
     </BetterDialogContent>

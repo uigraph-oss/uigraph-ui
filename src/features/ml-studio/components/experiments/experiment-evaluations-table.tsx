@@ -281,6 +281,7 @@ export function ExperimentEvaluationsTable() {
                     summary: evaluation.summary,
                     startedAt: evaluation.startedAt,
                     endedAt: evaluation.endedAt ?? null,
+                    tags: evaluation.tags,
                     parameters: evaluation.parameters as Record<
                       string,
                       unknown

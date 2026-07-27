@@ -85,6 +85,18 @@ export function EvaluationDetailPage() {
           <p className="mt-1 text-sm text-[#586378]">
             {evaluation.summary || evaluation.description}
           </p>
+          {evaluation.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {evaluation.tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
         <Button preset="outline" onClick={() => navigate(-1)}>
           <ArrowLeftIcon />

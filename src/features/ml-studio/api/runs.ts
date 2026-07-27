@@ -10,6 +10,7 @@ export const ML_STUDIO_RUN = graphql(`
       startedAt
       endedAt
       notes
+      tags
       parameters
       metrics
       datasetId
@@ -30,6 +31,7 @@ export const ML_STUDIO_RUNS = graphql(`
       startedAt
       endedAt
       notes
+      tags
       parameters
       metrics
       datasetId
@@ -50,6 +52,7 @@ export const ML_STUDIO_EXPERIMENT_RUNS = graphql(`
       startedAt
       endedAt
       notes
+      tags
       parameters
       metrics
       datasetId
@@ -86,6 +89,7 @@ export const ML_STUDIO_EXPERIMENT_RUNS_PAGE = graphql(`
         startedAt
         endedAt
         notes
+        tags
         parameters
         metrics
         datasetId

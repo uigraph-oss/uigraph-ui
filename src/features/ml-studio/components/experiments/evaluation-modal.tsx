@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { TagInput } from '@/features/component-meta/components/tag-input'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { toDateTimeLocal } from '@/utils/time'
 import { useMutation, useQuery } from '@apollo/client'
@@ -120,6 +122,7 @@ const evaluationSchema = z
       .string()
       .max(2000, 'Description must be 2000 characters or fewer'),
     summary: z.string().max(2000, 'Summary must be 2000 characters or fewer'),
+    tags: z.array(z.string()),
     parameters: parametersSchema,
     metrics: metricsSchema,
   })
@@ -164,6 +167,7 @@ export type EditableEvaluation = {
   summary: string
   startedAt: string
   endedAt: string | null
+  tags: string[]
   parameters?: Record<string, unknown> | null
   metrics?: Record<string, unknown> | null
 }
@@ -179,6 +183,7 @@ function emptyValues(): EvaluationFormValues {
     endedAt: '',
     description: '',
     summary: '',
+    tags: [],
     parameters: [],
     metrics: [],
   }
@@ -323,6 +328,7 @@ export function EvaluationModal({
             : '',
           description: evaluation.description,
           summary: evaluation.summary,
+          tags: evaluation.tags,
           parameters: toRows(evaluation.parameters),
           metrics: toRows(evaluation.metrics),
         }
@@ -369,6 +375,7 @@ export function EvaluationModal({
       datasetId: values.datasetId === '' ? null : values.datasetId,
       description: values.description,
       summary: values.summary,
+      tags: values.tags,
       startedAt: new Date(values.startedAt).toISOString(),
       endedAt:
         values.endedAt === '' ? null : new Date(values.endedAt).toISOString(),
@@ -556,6 +563,26 @@ export function EvaluationModal({
                     className="min-h-[5rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none"
                     {...field}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <ComponentMetaThemeProvider theme="modal">
+                    <TagInput
+                      placeholder="benchmark, offline, v2"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </ComponentMetaThemeProvider>
                 </FormControl>
                 <FormMessage />
               </FormItem>

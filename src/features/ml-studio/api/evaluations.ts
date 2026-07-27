@@ -16,6 +16,7 @@ export const ML_STUDIO_EVALUATIONS = graphql(`
         version
         startedAt
         endedAt
+        tags
         metrics
       }
       total
@@ -38,6 +39,7 @@ export const ML_VERSION_EVALUATIONS = graphql(`
       summary
       startedAt
       endedAt
+      tags
       source
       createdBy
       parameters
@@ -61,6 +63,7 @@ export const ML_EXPERIMENT_EVALUATIONS = graphql(`
       summary
       startedAt
       endedAt
+      tags
       source
       createdBy
       parameters
@@ -98,6 +101,7 @@ export const ML_VERSION_EVALUATIONS_PAGE = graphql(`
         summary
         startedAt
         endedAt
+        tags
         source
         createdBy
         parameters
@@ -136,6 +140,7 @@ export const ML_EXPERIMENT_EVALUATIONS_PAGE = graphql(`
         summary
         startedAt
         endedAt
+        tags
         source
         createdBy
         parameters
@@ -160,6 +165,7 @@ export const ML_EVALUATION = graphql(`
       summary
       startedAt
       endedAt
+      tags
       source
       createdBy
       parameters

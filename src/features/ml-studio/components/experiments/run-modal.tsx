@@ -25,6 +25,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { TagInput } from '@/features/component-meta/components/tag-input'
+import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { toDateTimeLocal } from '@/utils/time'
 import { useMutation } from '@apollo/client'
@@ -110,6 +112,7 @@ const runSchema = z
     startedAt: z.string().min(1, 'Start time is required'),
     endedAt: z.string(),
     notes: z.string().max(2000, 'Notes must be 2000 characters or fewer'),
+    tags: z.array(z.string()),
     parameters: parametersSchema,
     metrics: metricsSchema,
   })
@@ -154,6 +157,7 @@ function emptyValues(): RunFormValues {
     startedAt: now,
     endedAt: '',
     notes: '',
+    tags: [],
     parameters: [],
     metrics: [],
   }
@@ -286,6 +290,7 @@ export function RunModal({
           startedAt: toDateTimeLocal(new Date(run.startedAt)),
           endedAt: run.endedAt ? toDateTimeLocal(new Date(run.endedAt)) : '',
           notes: run.notes,
+          tags: run.tags,
           parameters: toRows(run.parameters),
           metrics: toRows(run.metrics),
         }
@@ -364,6 +369,7 @@ export function RunModal({
       endedAt:
         values.endedAt === '' ? null : new Date(values.endedAt).toISOString(),
       notes: values.notes,
+      tags: values.tags,
       parameters: toNumberMap(values.parameters),
       metrics: toNumberMap(values.metrics),
     }
@@ -517,6 +523,26 @@ export function RunModal({
                     className="min-h-[5rem] w-full resize-none rounded-[16px] border border-[#2A3242] bg-transparent p-6 text-sm leading-normal focus:outline-none"
                     {...field}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <ComponentMetaThemeProvider theme="modal">
+                    <TagInput
+                      placeholder="sweep, baseline, gpu"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </ComponentMetaThemeProvider>
                 </FormControl>
                 <FormMessage />
               </FormItem>

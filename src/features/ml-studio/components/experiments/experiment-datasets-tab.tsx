@@ -95,6 +95,7 @@ export function ExperimentDatasetsTab() {
                   context: d.context as Dataset['context'],
                   rowCount: d.rowCount,
                   schema: d.schema,
+                  tags: d.tags,
                   origin: d.origin as Dataset['origin'],
                 }
                 return (
@@ -103,6 +104,18 @@ export function ExperimentDatasetsTab() {
                       <div className="truncate font-medium text-[#F4F7FC]">
                         {d.name}
                       </div>
+                      {d.tags.length > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {d.tags.map((tag) => (
+                            <Badge
+                              key={tag}
+                              className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3] capitalize">

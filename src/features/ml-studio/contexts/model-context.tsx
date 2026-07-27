@@ -107,6 +107,7 @@ export const [ModelContextProvider, useModelContext] = createContext(
         startedAt: r.startedAt,
         endedAt: r.endedAt ?? null,
         notes: r.notes,
+        tags: r.tags,
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
         datasetId: r.datasetId ?? undefined,
