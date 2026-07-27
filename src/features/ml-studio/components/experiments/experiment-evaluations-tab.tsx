@@ -343,7 +343,6 @@ export function ExperimentEvaluationsTab() {
           <EvaluationModal
             onClose={() => setModalOpen(false)}
             experimentId={experimentId}
-            projectId={projectId}
             evaluation={editingEvaluation}
           />
         </BetterDialogProvider>

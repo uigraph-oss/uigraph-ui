@@ -14,9 +14,7 @@ import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -32,8 +30,7 @@ import {
   CREATE_ML_EVALUATION,
   UPDATE_ML_EVALUATION,
 } from '../../api/evaluations'
-import { ML_STUDIO_MODEL_VERSIONS } from '../../api/model-versions'
-import { ML_STUDIO_MODELS } from '../../api/models'
+import { ModelVersionCombobox } from '../model-version-combobox'
 
 const EVALUATION_TYPES = [
   'Offline Benchmark',
@@ -259,28 +256,14 @@ function KeyValueFields({
 export function EvaluationModal({
   onClose,
   experimentId,
-  projectId,
   evaluation,
 }: {
   onClose: () => void
   experimentId: string
-  projectId: string
   evaluation?: EditableEvaluation | null
 }) {
   const orgId = useCurrentOrganization()?.id
   const isEdit = !!evaluation
-
-  const versionsQuery = useQuery(ML_STUDIO_MODEL_VERSIONS, {
-    skip: !orgId,
-    variables: { orgId: orgId!, projectId },
-  })
-  const versions = versionsQuery.data?.mlModelVersions ?? []
-
-  const modelsQuery = useQuery(ML_STUDIO_MODELS, {
-    skip: !orgId,
-    variables: { orgId: orgId!, projectId },
-  })
-  const models = modelsQuery.data?.mlModels ?? []
 
   const datasetsQuery = useQuery(ML_STUDIO_DATASETS, {
     skip: !orgId || !experimentId,
@@ -412,63 +395,19 @@ export function EvaluationModal({
           <FormField
             control={control}
             name="versionId"
-            render={({ field }) => {
-              const selectedVersion = versions.find((v) => v.id === field.value)
-              const selectedModel = models.find(
-                (m) => m.id === selectedVersion?.modelId
-              )
-              const selectedVersionLabel = selectedVersion
-                ? `${selectedModel?.name ?? 'Unknown model'} · v${selectedVersion.version}`
-                : undefined
-              return (
-                <FormItem>
-                  <FormLabel>Model version</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={isEdit}
-                    >
-                      <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
-                        <SelectValue placeholder="Select a model version">
-                          {selectedVersionLabel}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {models.map((model) => {
-                          const modelVersions = versions.filter(
-                            (v) => v.modelId === model.id
-                          )
-                          if (modelVersions.length === 0) {
-                            return null
-                          }
-                          return (
-                            <SelectGroup key={model.id}>
-                              <SelectLabel className="text-xs font-semibold text-[#828DA3]">
-                                {model.name}
-                              </SelectLabel>
-                              {modelVersions.map((version) => (
-                                <SelectItem
-                                  key={version.id}
-                                  value={version.id}
-                                  className="pl-8"
-                                >
-                                  v{version.version}
-                                  {version.description
-                                    ? ` — ${version.description}`
-                                    : ''}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          )
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )
-            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Model version</FormLabel>
+                <FormControl>
+                  <ModelVersionCombobox
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={isEdit}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           <FormField
