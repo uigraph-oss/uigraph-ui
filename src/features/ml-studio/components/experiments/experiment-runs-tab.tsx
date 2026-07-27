@@ -3,6 +3,7 @@
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -224,6 +225,7 @@ export function ExperimentRunsTab() {
                 ))}
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
+                <TableHead>Tags</TableHead>
                 <TableHead className="w-12 !px-2 text-center">
                   <MetricColumnsSelect
                     options={metricColumns.options}
@@ -240,7 +242,7 @@ export function ExperimentRunsTab() {
               {runs.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6 + metricColumns.columns.length}
+                    colSpan={7 + metricColumns.columns.length}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {runsQuery.loading ? 'Loading runs…' : 'No runs found.'}
@@ -306,6 +308,22 @@ export function ExperimentRunsTab() {
                             addSuffix: true,
                           })
                         : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {run.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {run.tags.map((tag) => (
+                            <Badge
+                              key={tag}
+                              className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[#828DA3]">—</span>
+                      )}
                     </TableCell>
                     <TableCell
                       className="w-12 !px-2 text-center"

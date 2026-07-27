@@ -232,7 +232,7 @@ export function ExperimentEvaluationsTable() {
                 <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
                 <TableHead>Model / Version</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>Tags</TableHead>
                 {metricColumns.columns.map((key) => (
                   <TableHead key={key} className="capitalize">
                     {key.replace(/_/g, ' ')}
@@ -315,9 +315,20 @@ export function ExperimentEvaluationsTable() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]">
-                          {evaluation.type}
-                        </Badge>
+                        {evaluation.tags.length > 0 ? (
+                          <div className="flex flex-wrap gap-1.5">
+                            {evaluation.tags.map((tag) => (
+                              <Badge
+                                key={tag}
+                                className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-[#828DA3]">—</span>
+                        )}
                       </TableCell>
                       {metricColumns.columns.map((key) => (
                         <TableCell

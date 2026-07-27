@@ -4,6 +4,7 @@ import { MLflowIcon } from '@/assets/svgs'
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -123,6 +124,7 @@ export function ExperimentsTab() {
                 <TableHead className="w-20">Runs</TableHead>
                 <TableHead className="w-48">Latest result</TableHead>
                 <TableHead className="w-36">Created</TableHead>
+                <TableHead className="w-56">Tags</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
@@ -197,6 +199,22 @@ export function ExperimentsTab() {
                       {exp.createdAt
                         ? new Date(exp.createdAt).toLocaleDateString()
                         : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {exp.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {exp.tags.map((tag) => (
+                            <Badge
+                              key={tag}
+                              className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[#828DA3]">—</span>
+                      )}
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       {isManual && (
