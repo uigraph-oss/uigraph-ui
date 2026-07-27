@@ -305,7 +305,6 @@ function DependencyEdge({
     targetPosition,
   })
 
-  const hard = data?.hard ?? false
   const showDetails = data?.showDetails ?? true
   const Icon = typeIcon(data?.edgeType)
   const hasTooltip = Boolean(data?.edgeType)

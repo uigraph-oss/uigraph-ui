@@ -33,7 +33,113 @@ const ServiceLayout = lazy(() =>
     default: mod.ServiceLayout,
   }))
 )
-
+const MlStudioLayout = lazy(() =>
+  import('@/routes/ml-studio-layout').then((mod) => ({
+    default: mod.MlStudioLayout,
+  }))
+)
+const MlStudioRootLayout = lazy(() =>
+  import('@/features/ml-studio/components/ml-studio-root-layout').then(
+    (mod) => ({ default: mod.MlStudioRootLayout })
+  )
+)
+const ProjectsTab = lazy(() =>
+  import('@/features/ml-studio/components/projects/projects-tab').then(
+    (mod) => ({ default: mod.ProjectsTab })
+  )
+)
+const MlStudioProjectLayout = lazy(() =>
+  import('@/features/ml-studio/components/projects/ml-studio-project-layout').then(
+    (mod) => ({ default: mod.MlStudioProjectLayout })
+  )
+)
+const ProjectIndexRedirect = lazy(() =>
+  import('@/features/ml-studio/components/projects/ml-studio-project-layout').then(
+    (mod) => ({ default: mod.ProjectIndexRedirect })
+  )
+)
+const ModelsTab = lazy(() =>
+  import('@/features/ml-studio/components/models/ml-studio-models-page').then(
+    (mod) => ({ default: mod.ModelsTab })
+  )
+)
+const ModelOverviewTab = lazy(() =>
+  import('@/features/ml-studio/components/models/model-overview-tab').then(
+    (mod) => ({ default: mod.ModelOverviewTab })
+  )
+)
+const ModelMetricsTab = lazy(() =>
+  import('@/features/ml-studio/components/models/model-metrics-tab').then(
+    (mod) => ({ default: mod.ModelMetricsTab })
+  )
+)
+const EvaluationDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/models/evaluation-detail-page').then(
+    (mod) => ({ default: mod.EvaluationDetailPage })
+  )
+)
+const ModelArtifactsTab = lazy(() =>
+  import('@/features/ml-studio/components/models/model-artifacts-tab').then(
+    (mod) => ({ default: mod.ModelArtifactsTab })
+  )
+)
+const ModelTimelineTab = lazy(() =>
+  import('@/features/ml-studio/components/models/model-timeline-tab').then(
+    (mod) => ({ default: mod.ModelTimelineTab })
+  )
+)
+const ExperimentsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiments-tab').then(
+    (mod) => ({ default: mod.ExperimentsTab })
+  )
+)
+const MlStudioExperimentRouteLayout = lazy(() =>
+  import('@/routes/ml-studio-experiment-layout').then((mod) => ({
+    default: mod.MlStudioExperimentRouteLayout,
+  }))
+)
+const ExperimentOverviewTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-overview-tab').then(
+    (mod) => ({ default: mod.ExperimentOverviewTab })
+  )
+)
+const ExperimentRunsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-runs-tab').then(
+    (mod) => ({ default: mod.ExperimentRunsTab })
+  )
+)
+const ExperimentDatasetsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-datasets-tab').then(
+    (mod) => ({ default: mod.ExperimentDatasetsTab })
+  )
+)
+const ExperimentEvaluationsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-evaluations-table').then(
+    (mod) => ({ default: mod.ExperimentEvaluationsTable })
+  )
+)
+const ExperimentMetricsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-metrics-tab').then(
+    (mod) => ({ default: mod.ExperimentMetricsTab })
+  )
+)
+const RunDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/experiments/run-detail-page').then(
+    (mod) => ({ default: mod.RunDetailPage })
+  )
+)
+const FindingsTab = lazy(() =>
+  import('@/features/ml-studio/components/findings/findings-tab').then(
+    (mod) => ({
+      default: mod.FindingsTab,
+    })
+  )
+)
+const FindingDetailPage = lazy(() =>
+  import('@/features/ml-studio/components/findings/finding-detail-page').then(
+    (mod) => ({ default: mod.FindingDetailPage })
+  )
+)
 const SignInForm = lazy(() =>
   import('@/features/auth/sign-in-form').then((mod) => ({
     default: mod.SignInForm,
@@ -374,6 +480,58 @@ export function AppRoutes() {
               path="tests/run/:testRunId"
               element={<TestRunExecutionPage />}
             />
+          </Route>
+
+          <Route path="/dashboard/ml-studio" element={<MlStudioRootLayout />}>
+            <Route index element={<ProjectsTab />} />
+          </Route>
+
+          <Route
+            path="/dashboard/ml-studio/projects/:projectId"
+            element={<MlStudioProjectLayout />}
+          >
+            <Route index element={<ProjectIndexRedirect />} />
+            <Route path="models" element={<ModelsTab />} />
+            <Route path="experiments" element={<ExperimentsTab />} />
+            <Route
+              path="experiments/:experimentId/runs/:runId"
+              element={<RunDetailPage />}
+            />
+            <Route
+              path="experiments/:experimentId/evaluations/:evaluationId"
+              element={<EvaluationDetailPage />}
+            />
+            <Route
+              path="models/:modelId/evaluations/:evaluationId"
+              element={<EvaluationDetailPage />}
+            />
+            <Route path="findings" element={<FindingsTab />} />
+            <Route path="findings/:findingId" element={<FindingDetailPage />} />
+          </Route>
+
+          <Route
+            path="/dashboard/ml-studio/projects/:projectId/models/:modelId"
+            element={<MlStudioLayout />}
+          >
+            <Route index element={<ModelOverviewTab />} />
+            <Route path="metrics" element={<ModelMetricsTab />} />
+            <Route
+              path="evaluations"
+              element={<Navigate to="../metrics?view=evaluations" replace />}
+            />
+            <Route path="artifacts" element={<ModelArtifactsTab />} />
+            <Route path="timeline" element={<ModelTimelineTab />} />
+          </Route>
+
+          <Route
+            path="/dashboard/ml-studio/projects/:projectId/experiments/:experimentId"
+            element={<MlStudioExperimentRouteLayout />}
+          >
+            <Route index element={<ExperimentOverviewTab />} />
+            <Route path="runs" element={<ExperimentRunsTab />} />
+            <Route path="evaluations" element={<ExperimentEvaluationsTab />} />
+            <Route path="datasets" element={<ExperimentDatasetsTab />} />
+            <Route path="metrics" element={<ExperimentMetricsTab />} />
           </Route>
 
           <Route

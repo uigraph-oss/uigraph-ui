@@ -1,0 +1,195 @@
+'use client'
+
+import { BetterDialogContent } from '@/components/better-dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation } from '@apollo/client'
+import { useState } from 'react'
+import { UPDATE_ML_MODEL } from '../../api/models'
+import { Model } from '../../types'
+
+export function ModelCardEditModal({
+  model,
+  onClose,
+}: {
+  model: Model
+  onClose: () => void
+}) {
+  const orgId = useCurrentOrganization()?.id
+  const [updateModel] = useMutation(UPDATE_ML_MODEL, {
+    refetchQueries: ['MlStudioModel', 'MlStudioModels'],
+    awaitRefetchQueries: true,
+  })
+
+  const [domain, setDomain] = useState(model.domain)
+  const [problemType, setProblemType] = useState<string>(model.problemType)
+  const [license, setLicense] = useState(model.license)
+  const [references, setReferences] = useState(model.references.join('\n'))
+  const [intendedUse, setIntendedUse] = useState(model.intendedUse)
+  const [limitations, setLimitations] = useState(model.limitations)
+  const [considerations, setConsiderations] = useState(model.considerations)
+  const [recommendations, setRecommendations] = useState(model.recommendations)
+  const [saving, setSaving] = useState(false)
+
+  async function submit() {
+    if (!orgId) {
+      return
+    }
+    setSaving(true)
+    try {
+      await updateModel({
+        variables: {
+          orgId,
+          id: model.id,
+          domain,
+          problemType,
+          license,
+          references: references
+            .split('\n')
+            .map((r) => r.trim())
+            .filter(Boolean),
+          intendedUse,
+          limitations,
+          considerations,
+          recommendations,
+        },
+      })
+      onClose()
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <BetterDialogContent
+      title="Edit model card"
+      description="Document how this model should be understood and used."
+      footerCancel
+      footerSubmit="Save changes"
+      footerSubmitLoading={saving}
+      onFooterSubmitClick={submit}
+    >
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              Problem type
+            </Label>
+            <Select value={problemType} onValueChange={setProblemType}>
+              <SelectTrigger className="h-[56px] w-full rounded-[16px] border border-[#2A3242] bg-transparent px-6 text-sm">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="classification">Classification</SelectItem>
+                <SelectItem value="regression">Regression</SelectItem>
+                <SelectItem value="ranking">Ranking</SelectItem>
+                <SelectItem value="generation">Generation</SelectItem>
+                <SelectItem value="embedding">Embedding</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              Domain
+            </Label>
+            <Input
+              placeholder="Recommendations"
+              autoComplete="off"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-foreground text-sm font-medium">
+              License
+            </Label>
+            <Input
+              placeholder="Apache-2.0"
+              autoComplete="off"
+              className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6"
+              value={license}
+              onChange={(e) => setLicense(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-foreground text-sm font-medium">
+            Intended use
+          </Label>
+          <Textarea
+            placeholder="Who should use this model and for what?"
+            className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
+            value={intendedUse}
+            onChange={(e) => setIntendedUse(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-foreground text-sm font-medium">
+            Limitations
+          </Label>
+          <Textarea
+            placeholder="Where does this model fail or fall out of scope?"
+            className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
+            value={limitations}
+            onChange={(e) => setLimitations(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-foreground text-sm font-medium">
+            Considerations
+          </Label>
+          <Textarea
+            placeholder="Risks, sensitive data, fairness concerns."
+            className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
+            value={considerations}
+            onChange={(e) => setConsiderations(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-foreground text-sm font-medium">
+            Recommendations
+          </Label>
+          <Textarea
+            placeholder="Guidance for responsible use."
+            className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
+            value={recommendations}
+            onChange={(e) => setRecommendations(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-foreground text-sm font-medium">
+            References
+          </Label>
+          <p className="text-sm text-[#828DA3]">
+            One link or citation per line
+          </p>
+          <Textarea
+            placeholder={'https://docs.internal/model\nSmith et al. 2024'}
+            className="min-h-[98px] resize-none rounded-[16px] border border-[#2A3242] bg-transparent px-4 py-3"
+            value={references}
+            onChange={(e) => setReferences(e.target.value)}
+          />
+        </div>
+      </div>
+    </BetterDialogContent>
+  )
+}

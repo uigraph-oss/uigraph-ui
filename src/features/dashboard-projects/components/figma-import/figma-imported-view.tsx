@@ -1,4 +1,4 @@
-import { SimpleModalContent, SimpleModalFooter } from '@/components'
+import { BasicModalContent, BasicModalFooter } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { uploadFile } from '@/features/uploads/api/uploads'
@@ -63,7 +63,7 @@ export function FigmaImportedView({
 
   return (
     <>
-      <SimpleModalContent hasFooter className="space-y-4 pb-4">
+      <BasicModalContent hasFooter className="space-y-4 pb-4">
         <h3 className="text-foreground text-lg font-semibold">
           {importedInfo.name}
         </h3>
@@ -75,9 +75,9 @@ export function FigmaImportedView({
             className="border-stock w-full rounded-lg border shadow-lg"
           />
         )}
-      </SimpleModalContent>
+      </BasicModalContent>
 
-      <SimpleModalFooter>
+      <BasicModalFooter>
         <Button
           onClick={() => setImportedInfo(null)}
           preset="outline"
@@ -94,7 +94,7 @@ export function FigmaImportedView({
           {isCreatingPage && <SuperCircleLoader />}
           Import as Frame
         </Button>
-      </SimpleModalFooter>
+      </BasicModalFooter>
     </>
   )
 }

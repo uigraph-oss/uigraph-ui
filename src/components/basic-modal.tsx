@@ -10,27 +10,27 @@ import { ComponentProps, ReactNode } from 'react'
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog'
 import { CrossButton } from './cross-button'
 
-export type SimpleModalBaseProps = {
+export type BasicModalBaseProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   children: ReactNode
   className?: string
 }
 
-export type SimpleModalProps = SimpleModalBaseProps & {
+export type BasicModalProps = BasicModalBaseProps & {
   title: ReactNode
   footer?: ReactNode
   description?: ReactNode
   contentClassName?: string
 }
 
-export function SimpleModalBase({
+export function BasicModalBase({
   open,
   onOpenChange,
 
   children,
   className,
-}: SimpleModalBaseProps) {
+}: BasicModalBaseProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -50,7 +50,7 @@ export function SimpleModalBase({
   )
 }
 
-export function SimpleModalContent({
+export function BasicModalContent({
   children,
   className,
   hasFooter,
@@ -70,7 +70,7 @@ export function SimpleModalContent({
   )
 }
 
-export function SimpleModalHeader({
+export function BasicModalHeader({
   title,
   description,
   className,
@@ -97,7 +97,7 @@ export function SimpleModalHeader({
   )
 }
 
-export function SimpleModalFooter({
+export function BasicModalFooter({
   children,
   className,
   ...props
@@ -115,7 +115,7 @@ export function SimpleModalFooter({
   )
 }
 
-export function SimpleModal({
+export function BasicModal({
   title,
   description,
   contentClassName,
@@ -124,16 +124,16 @@ export function SimpleModal({
   children,
 
   ...props
-}: SimpleModalProps) {
+}: BasicModalProps) {
   return (
-    <SimpleModalBase {...props}>
-      <SimpleModalHeader title={title} description={description} />
+    <BasicModalBase {...props}>
+      <BasicModalHeader title={title} description={description} />
 
-      <SimpleModalContent hasFooter={!!footer} className={contentClassName}>
+      <BasicModalContent hasFooter={!!footer} className={contentClassName}>
         {children}
-      </SimpleModalContent>
+      </BasicModalContent>
 
-      {footer && <SimpleModalFooter>{footer}</SimpleModalFooter>}
-    </SimpleModalBase>
+      {footer && <BasicModalFooter>{footer}</BasicModalFooter>}
+    </BasicModalBase>
   )
 }

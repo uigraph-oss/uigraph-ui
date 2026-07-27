@@ -5,6 +5,7 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { ReactNode } from 'react'
 import { AiOutlineTeam } from 'react-icons/ai'
 import {
+  GoBeaker,
   GoGitCompare,
   GoGraph,
   GoOrganization,
@@ -39,6 +40,12 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/services',
     label: 'Services',
     icon: <GoStack />,
+    nested: true,
+  },
+  {
+    id: '/dashboard/ml-studio',
+    label: 'ML Studio',
+    icon: <GoBeaker />,
     nested: true,
   },
   {

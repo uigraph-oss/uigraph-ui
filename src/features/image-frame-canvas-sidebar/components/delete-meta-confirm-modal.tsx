@@ -1,7 +1,7 @@
 'use client'
 
 import deleteImg from '@/assets/images/delete-02.png'
-import { SimpleModalBase } from '@/components'
+import { BasicModalBase } from '@/components'
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -21,7 +21,7 @@ export function DeletePointMetaConfirmationModal({
   const [isLoading, setIsLoading] = useState(false)
 
   return (
-    <SimpleModalBase
+    <BasicModalBase
       open={open}
       onOpenChange={onOpenChange}
       className={'!max-w-[463px]'}
@@ -60,6 +60,6 @@ export function DeletePointMetaConfirmationModal({
           </Button>
         </div>
       </div>
-    </SimpleModalBase>
+    </BasicModalBase>
   )
 }

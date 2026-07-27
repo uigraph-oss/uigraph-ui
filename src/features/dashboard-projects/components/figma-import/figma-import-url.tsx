@@ -1,4 +1,4 @@
-import { SimpleModalContent } from '@/components'
+import { BasicModalContent } from '@/components'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -73,7 +73,7 @@ export function FigmaImportUrl({
 
   return (
     <>
-      <SimpleModalContent className="space-y-5">
+      <BasicModalContent className="space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="bg-success h-2 w-2 rounded-full"></div>
@@ -119,7 +119,7 @@ export function FigmaImportUrl({
             {isLoading ? 'Importing...' : 'Import from Figma'}
           </Button>
         </div>
-      </SimpleModalContent>
+      </BasicModalContent>
     </>
   )
 }

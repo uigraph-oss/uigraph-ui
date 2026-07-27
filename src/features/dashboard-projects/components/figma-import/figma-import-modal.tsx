@@ -1,7 +1,7 @@
 import {
-  SimpleModalBase,
-  SimpleModalContent,
-  SimpleModalHeader,
+  BasicModalBase,
+  BasicModalContent,
+  BasicModalHeader,
 } from '@/components'
 import { FigmaImportUrl } from './figma-import-url'
 import { FigmaOAuth } from './figma-oauth'
@@ -12,14 +12,14 @@ function FigmaImportModalContent({ exitModal }: { exitModal: () => void }) {
 
   if (isAuthLoading) {
     return (
-      <SimpleModalContent>
+      <BasicModalContent>
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2"></div>
             <p className="text-paragraph">Connecting to Figma...</p>
           </div>
         </div>
-      </SimpleModalContent>
+      </BasicModalContent>
     )
   }
 
@@ -36,13 +36,13 @@ export function FigmaImportModal({
   onOpenChange: (open: boolean) => void
 }) {
   return (
-    <SimpleModalBase open={open} onOpenChange={onOpenChange}>
-      <SimpleModalHeader
+    <BasicModalBase open={open} onOpenChange={onOpenChange}>
+      <BasicModalHeader
         title="Import from Figma"
         description="Connect your Figma account to start importing designs."
       />
 
       <FigmaImportModalContent exitModal={() => onOpenChange(false)} />
-    </SimpleModalBase>
+    </BasicModalBase>
   )
 }

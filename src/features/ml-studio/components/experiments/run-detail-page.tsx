@@ -1,0 +1,473 @@
+'use client'
+
+import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { BetterDialogProvider } from '@/components/better-dialog'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { useNow } from '@/hooks/use-now'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useMutation, useQuery } from '@apollo/client'
+import { format, formatDistanceToNow } from 'date-fns'
+import {
+  ArrowLeftIcon,
+  ChartLineIcon,
+  DatabaseIcon,
+  DownloadIcon,
+  PackageIcon,
+  PencilIcon,
+  PlusIcon,
+  SlidersHorizontalIcon,
+  Trash2Icon,
+} from 'lucide-react'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import {
+  DELETE_ML_ARTIFACT,
+  ML_STUDIO_RUN_ARTIFACTS,
+} from '../../api/artifacts'
+import { ML_STUDIO_DATASET } from '../../api/datasets'
+import { DELETE_ML_RUN, ML_STUDIO_RUN } from '../../api/runs'
+import { formatRunDuration } from '../../format'
+import type { Artifact, Run } from '../../types'
+import { InfoRow, Panel } from '../panel'
+import { StatusBadge } from '../status-badge'
+import { ArtifactModal } from './artifact-modal'
+import { RunModal } from './run-modal'
+
+function toArtifact(a: {
+  id: string
+  runId: string
+  name: string
+  type: string
+  uri: string
+  downloadUri: string
+  size: string
+  format: string
+  source: string
+  mimeType: string
+  sizeBytes?: number | null
+  updatedAt?: string | null
+  syncedAt?: string | null
+}): Artifact {
+  return {
+    id: a.id,
+    runId: a.runId,
+    name: a.name,
+    type: a.type,
+    uri: a.uri,
+    downloadUri: a.downloadUri,
+    size: a.size,
+    format: a.format,
+    source: a.source as Artifact['source'],
+    mimeType: a.mimeType,
+    sizeBytes: a.sizeBytes,
+    updatedAt: a.updatedAt ?? undefined,
+    syncedAt: a.syncedAt ?? undefined,
+  }
+}
+
+export function RunDetailPage() {
+  const { runId } = useParams<{
+    runId: string
+  }>()
+  const navigate = useNavigate()
+  const orgId = useCurrentOrganization()?.id
+  const now = useNow()
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [artifactOpen, setArtifactOpen] = useState(false)
+  const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null)
+  const [deletingArtifact, setDeletingArtifact] = useState<Artifact | null>(
+    null
+  )
+
+  const runQuery = useQuery(ML_STUDIO_RUN, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, id: runId! },
+  })
+  const run = runQuery.data?.mlRun
+
+  const [deleteRun] = useMutation(DELETE_ML_RUN, {
+    refetchQueries: ['MlStudioExperimentRuns', 'MlStudioExperimentRunsPage'],
+    awaitRefetchQueries: true,
+  })
+
+  const artifactsQuery = useQuery(ML_STUDIO_RUN_ARTIFACTS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !runId,
+    variables: { orgId: orgId!, runId },
+  })
+  const artifacts = artifactsQuery.data?.mlArtifacts ?? []
+
+  const [deleteArtifact] = useMutation(DELETE_ML_ARTIFACT, {
+    refetchQueries: ['MlStudioRunArtifacts', 'MlStudioArtifacts'],
+    awaitRefetchQueries: true,
+  })
+
+  const datasetQuery = useQuery(ML_STUDIO_DATASET, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !run?.datasetId,
+    variables: { orgId: orgId!, id: run?.datasetId ?? '' },
+  })
+  const dataset = run?.datasetId ? datasetQuery.data?.mlDataset : undefined
+
+  if (!run) {
+    return <div className="p-6 text-[#828DA3]">Run not found.</div>
+  }
+
+  const parameters = (run.parameters ?? {}) as Record<string, unknown>
+  const metrics = (run.metrics ?? {}) as Record<string, number>
+
+  const runForModal: Run = {
+    id: run.id,
+    experimentId: run.experimentId,
+    name: run.name,
+    status: run.status as Run['status'],
+    startedAt: run.startedAt ?? '',
+    endedAt: run.endedAt ?? null,
+    notes: run.notes,
+    tags: run.tags,
+    parameters: (run.parameters ?? {}) as Record<string, string | number>,
+    metrics: (run.metrics ?? {}) as Record<string, number>,
+    datasetId: run.datasetId ?? undefined,
+    source: run.source as Run['source'],
+    updatedAt: run.updatedAt ?? undefined,
+    syncedAt: run.syncedAt ?? undefined,
+  }
+
+  return (
+    <div className="flex flex-col gap-5 p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-[#F4F7FC]">{run.name}</h2>
+            <StatusBadge value={run.status} />
+          </div>
+          <p className="mt-1 text-sm text-[#586378]">{run.notes}</p>
+          {run.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {run.tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {run.source === 'manual' && (
+            <>
+              <Button preset="outline" onClick={() => setEditOpen(true)}>
+                <PencilIcon />
+                Edit
+              </Button>
+              <Button
+                preset="outline"
+                className="bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30 hover:text-destructive"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2Icon />
+                Delete
+              </Button>
+            </>
+          )}
+          <Button preset="outline" onClick={() => navigate(-1)}>
+            <ArrowLeftIcon />
+            Go Back
+          </Button>
+        </div>
+      </div>
+
+      <Panel>
+        <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+          <InfoRow label="Started at">
+            {run.startedAt ? format(new Date(run.startedAt), 'PPpp') : '—'}
+          </InfoRow>
+          <InfoRow label="Completed at">
+            {run.endedAt ? format(new Date(run.endedAt), 'PPpp') : '—'}
+          </InfoRow>
+          <InfoRow label="Training duration">
+            {formatRunDuration(runForModal, now)}
+          </InfoRow>
+          <InfoRow label="Updated at">
+            {run.updatedAt ? (
+              <span title={format(new Date(run.updatedAt), 'PPpp')}>
+                {formatDistanceToNow(new Date(run.updatedAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            ) : (
+              '—'
+            )}
+          </InfoRow>
+        </div>
+      </Panel>
+
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <Panel title="Parameters" icon={<SlidersHorizontalIcon size={16} />}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Parameter</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(parameters).map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell className="text-[#828DA3]">{key}</TableCell>
+                  <TableCell className="font-mono text-[#F4F7FC]">
+                    {String(value)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Panel>
+
+        <Panel title="Metrics" icon={<ChartLineIcon size={16} />}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Metric</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(metrics).map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell className="text-[#828DA3]">{key}</TableCell>
+                  <TableCell className="font-mono text-[#F4F7FC]">
+                    {value}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Panel>
+      </div>
+
+      <Panel
+        title="Artifacts"
+        icon={<PackageIcon size={16} />}
+        action={
+          run.source === 'manual' && (
+            <Button
+              preset="outline"
+              onClick={() => {
+                setEditingArtifact(null)
+                setArtifactOpen(true)
+              }}
+            >
+              <PlusIcon />
+              Add artifact
+            </Button>
+          )
+        }
+      >
+        {artifacts.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Format</TableHead>
+                <TableHead>Size</TableHead>
+                <TableHead>Synced</TableHead>
+                <TableHead></TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {artifacts.map((a) => {
+                return (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium text-[#F4F7FC]">
+                      {a.name}
+                    </TableCell>
+                    <TableCell className="text-[#828DA3]">{a.type}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.format}</TableCell>
+                    <TableCell className="text-[#828DA3]">{a.size}</TableCell>
+                    <TableCell
+                      className="text-sm text-[#828DA3]"
+                      title={a.syncedAt ?? undefined}
+                    >
+                      {a.syncedAt
+                        ? formatDistanceToNow(new Date(a.syncedAt), {
+                            addSuffix: true,
+                          })
+                        : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {a.downloadUri ? (
+                        <a
+                          href={a.downloadUri}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[#B4BECE] hover:text-[#F4F7FC]"
+                        >
+                          <DownloadIcon size={14} />
+                          Download
+                        </a>
+                      ) : (
+                        <span className="text-[#586378]">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {a.source === 'manual' && (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            preset="outline"
+                            className="size-8 rounded-[0.6rem] p-0 has-[>svg]:px-0 [&_svg]:size-4"
+                            onClick={() => {
+                              setEditingArtifact(toArtifact(a))
+                              setArtifactOpen(true)
+                            }}
+                          >
+                            <PencilIcon />
+                          </Button>
+                          <Button
+                            preset="outline"
+                            className="bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30 hover:text-destructive size-8 rounded-[0.6rem] p-0 has-[>svg]:px-0 [&_svg]:size-4"
+                            onClick={() => setDeletingArtifact(toArtifact(a))}
+                          >
+                            <Trash2Icon />
+                          </Button>
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="text-sm text-[#586378]">No artifacts attached.</p>
+        )}
+      </Panel>
+
+      <Panel title="Input dataset" icon={<DatabaseIcon size={16} />}>
+        {dataset ? (
+          <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+              <InfoRow label="Context">
+                <Badge className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3] capitalize">
+                  {dataset.context}
+                </Badge>
+              </InfoRow>
+              <InfoRow label="Name">{dataset.name}</InfoRow>
+              <InfoRow label="Source">
+                <span className="font-mono text-xs text-[#586378]">
+                  {dataset.source}
+                </span>
+              </InfoRow>
+              <InfoRow label="Source type">{dataset.sourceType}</InfoRow>
+              <InfoRow label="Rows">
+                {dataset.rowCount.toLocaleString()}
+              </InfoRow>
+              <InfoRow label="Digest">
+                <span className="font-mono text-xs text-[#586378]">
+                  {dataset.digest}
+                </span>
+              </InfoRow>
+            </div>
+
+            {dataset.schema.length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Field</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Description</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {dataset.schema.map((field) => (
+                    <TableRow key={field.name}>
+                      <TableCell className="font-mono text-[#F4F7FC]">
+                        {field.name}
+                      </TableCell>
+                      <TableCell className="font-mono text-[#828DA3]">
+                        {field.type}
+                      </TableCell>
+                      <TableCell className="text-[#828DA3]">
+                        {field.description}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-[#586378]">
+            No input dataset logged for this run.
+          </p>
+        )}
+      </Panel>
+
+      <BetterDialogProvider open={editOpen} onOpenChange={setEditOpen}>
+        <RunModal
+          onClose={() => setEditOpen(false)}
+          experimentId={run.experimentId}
+          run={runForModal}
+        />
+      </BetterDialogProvider>
+
+      <BetterDialogProvider open={artifactOpen} onOpenChange={setArtifactOpen}>
+        <ArtifactModal
+          key={editingArtifact?.id ?? 'new'}
+          onClose={() => setArtifactOpen(false)}
+          runId={run.id}
+          artifact={editingArtifact}
+        />
+      </BetterDialogProvider>
+
+      <BetterDeleteConfirmationModal
+        open={!!deletingArtifact}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingArtifact(null)
+          }
+        }}
+        title="Delete artifact?"
+        description="This will permanently remove this artifact from the run."
+        onConfirm={async () => {
+          if (!orgId || !deletingArtifact) {
+            return
+          }
+          await deleteArtifact({
+            variables: { orgId, id: deletingArtifact.id },
+          })
+          setDeletingArtifact(null)
+        }}
+      />
+
+      <BetterDeleteConfirmationModal
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete run?"
+        description="This will permanently remove this run and its recorded parameters and metrics."
+        onConfirm={async () => {
+          if (!orgId) {
+            return
+          }
+          await deleteRun({ variables: { orgId, id: run.id } })
+          void navigate(-1)
+        }}
+      />
+    </div>
+  )
+}

@@ -1,1 +1,1 @@
-export * from './simple-modal'
+export * from './basic-modal'
