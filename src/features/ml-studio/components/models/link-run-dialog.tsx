@@ -27,12 +27,14 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ML_STUDIO_EXPERIMENTS } from '../../api/experiments'
 import { SET_ML_MODEL_VERSION_RUN } from '../../api/model-versions'
 import { ML_STUDIO_PROJECTS } from '../../api/projects'
 import { ML_STUDIO_EXPERIMENT_RUNS } from '../../api/runs'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
 import { FormField } from '../form-field'
+import { MetricChips } from '../metric-chips'
 import { StatusBadge } from '../status-badge'
 
 const triggerClassName =
@@ -85,7 +87,23 @@ export function LinkRunDialog({
   const teams = teamsQuery.data?.teams ?? []
   const allProjects = projectsQuery.data?.mlProjects ?? []
   const experiments = experimentsQuery.data?.mlExperiments ?? []
-  const runs = runsQuery.data?.mlRuns ?? []
+  const runs = useMemo(() => runsQuery.data?.mlRuns ?? [], [runsQuery.data])
+
+  const availableMetricKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const run of runs) {
+      for (const key of Object.keys(
+        (run.metrics ?? {}) as Record<string, number>
+      )) {
+        if (!keys.includes(key)) {
+          keys.push(key)
+        }
+      }
+    }
+    return keys
+  }, [runs])
+
+  const metricColumns = useMetricColumns('ml_run', availableMetricKeys)
   const selectedRun = runs.find((r) => r.id === selectedRunId)
 
   const preselectedTeamId =
@@ -285,6 +303,12 @@ export function LinkRunDialog({
                           )}
                         />
                         <span className="flex-1">{run.name}</span>
+                        <MetricChips
+                          metrics={
+                            (run.metrics ?? {}) as Record<string, number>
+                          }
+                          columns={metricColumns.columns}
+                        />
                         <StatusBadge value={run.status} />
                       </CommandItem>
                     ))}

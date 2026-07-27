@@ -21,6 +21,8 @@ import { Check, ChevronsUpDown, Plus, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { ML_STUDIO_EXPERIMENTS } from '../../api/experiments'
 import { ML_STUDIO_RUNS } from '../../api/runs'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
+import { MetricChips } from '../metric-chips'
 import { StatusBadge } from '../status-badge'
 
 export function EvidenceRunsSelect({
@@ -42,6 +44,22 @@ export function EvidenceRunsSelect({
     variables: { orgId: orgId! },
   })
   const runs = useMemo(() => runsQuery.data?.mlRuns ?? [], [runsQuery.data])
+
+  const availableMetricKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const run of runs) {
+      for (const key of Object.keys(
+        (run.metrics ?? {}) as Record<string, number>
+      )) {
+        if (!keys.includes(key)) {
+          keys.push(key)
+        }
+      }
+    }
+    return keys
+  }, [runs])
+
+  const metricColumns = useMetricColumns('ml_run', availableMetricKeys)
   const experiments = useMemo(
     () => experimentsQuery.data?.mlExperiments ?? [],
     [experimentsQuery.data]
@@ -188,6 +206,10 @@ export function EvidenceRunsSelect({
                           </span>
                         )}
                       </div>
+                      <MetricChips
+                        metrics={(run.metrics ?? {}) as Record<string, number>}
+                        columns={metricColumns.columns}
+                      />
                       <StatusBadge value={run.status} />
                     </CommandItem>
                   )

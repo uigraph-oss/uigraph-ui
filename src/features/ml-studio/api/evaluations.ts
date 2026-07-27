@@ -16,6 +16,7 @@ export const ML_STUDIO_EVALUATIONS = graphql(`
         version
         startedAt
         endedAt
+        metrics
       }
       total
     }

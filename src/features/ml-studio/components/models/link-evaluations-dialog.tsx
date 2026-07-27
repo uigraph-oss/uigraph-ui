@@ -27,14 +27,16 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   LINK_ML_VERSION_EVALUATIONS,
   ML_EXPERIMENT_EVALUATIONS,
 } from '../../api/evaluations'
 import { ML_STUDIO_EXPERIMENTS } from '../../api/experiments'
 import { ML_STUDIO_PROJECTS } from '../../api/projects'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
 import { FormField } from '../form-field'
+import { MetricChips } from '../metric-chips'
 
 const triggerClassName =
   'text-foreground/80 h-[56px] w-full rounded-[16px] border-[#2A3242] bg-transparent px-6'
@@ -80,8 +82,27 @@ export function LinkEvaluationsDialog({
     (p) => p.teamId === selectedTeamId && p.type === 'training'
   )
   const experiments = experimentsQuery.data?.mlExperiments ?? []
-  const allEvaluations = evaluationsQuery.data?.mlExperimentEvaluations ?? []
+  const allEvaluations = useMemo(
+    () => evaluationsQuery.data?.mlExperimentEvaluations ?? [],
+    [evaluationsQuery.data]
+  )
   const evaluations = allEvaluations.filter((e) => e.versionId !== versionId)
+
+  const availableMetricKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const evaluation of allEvaluations) {
+      for (const key of Object.keys(
+        (evaluation.metrics ?? {}) as Record<string, number>
+      )) {
+        if (!keys.includes(key)) {
+          keys.push(key)
+        }
+      }
+    }
+    return keys
+  }, [allEvaluations])
+
+  const metricColumns = useMetricColumns('ml_evaluation', availableMetricKeys)
 
   const allSelected =
     evaluations.length > 0 &&
@@ -346,6 +367,12 @@ export function LinkEvaluationsDialog({
                             {evaluation.version}
                           </span>
                         </div>
+                        <MetricChips
+                          metrics={
+                            (evaluation.metrics ?? {}) as Record<string, number>
+                          }
+                          columns={metricColumns.columns}
+                        />
                       </CommandItem>
                     ))}
                   </CommandGroup>

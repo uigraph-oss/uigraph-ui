@@ -44,13 +44,15 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { DELETE_ML_RUN, ML_STUDIO_EXPERIMENT_RUNS_PAGE } from '../../api/runs'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
 import type { Run } from '../../types'
+import { MetricColumnsSelect } from '../metric-columns-select'
 import { StatusBadge } from '../status-badge'
 import { RunComparisonDialog } from './run-comparison-dialog'
 import { RunModal } from './run-modal'
 
 export function ExperimentRunsTab() {
-  const { experiment } = useExperimentContext()
+  const { experiment, runs: allRuns } = useExperimentContext()
   const orgId = useCurrentOrganization()?.id
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
@@ -117,13 +119,20 @@ export function ExperimentRunsTab() {
     [pageData?.runs]
   )
 
-  const primaryMetric =
-    Object.keys(
-      runs.find((r) => Object.keys(r.metrics).length > 0)?.metrics ?? {}
-    )[0] ?? ''
-  const primaryLabel = primaryMetric
-    ? primaryMetric.replace(/_/g, ' ')
-    : 'Metric'
+  const availableMetricKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const run of allRuns) {
+      for (const key of Object.keys(run.metrics)) {
+        if (!keys.includes(key)) {
+          keys.push(key)
+        }
+      }
+    }
+    return keys
+  }, [allRuns])
+
+  const metricColumns = useMetricColumns('ml_run', availableMetricKeys)
+
   const selectedRuns = runs.filter((r) => selected.includes(r.id))
   const totalPages = Math.max(1, Math.ceil(total / rowsPerPage))
 
@@ -178,6 +187,14 @@ export function ExperimentRunsTab() {
           </div>
 
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
+            <MetricColumnsSelect
+              options={metricColumns.options}
+              columns={metricColumns.columns}
+              onToggle={metricColumns.toggle}
+              onSelectAll={metricColumns.selectAll}
+              onClear={metricColumns.clear}
+              onReset={metricColumns.reset}
+            />
             <span>Show per page:</span>
             <Select
               value={String(rowsPerPage)}
@@ -207,7 +224,11 @@ export function ExperimentRunsTab() {
                 <TableHead className="w-10" />
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="capitalize">{primaryLabel}</TableHead>
+                {metricColumns.columns.map((key) => (
+                  <TableHead key={key} className="capitalize">
+                    {key.replace(/_/g, ' ')}
+                  </TableHead>
+                ))}
                 <TableHead>Duration</TableHead>
                 <TableHead>Synced</TableHead>
                 <TableHead className="w-12" />
@@ -217,7 +238,7 @@ export function ExperimentRunsTab() {
               {runs.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={5 + metricColumns.columns.length}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {runsQuery.loading ? 'Loading runs…' : 'No runs found.'}
@@ -247,18 +268,20 @@ export function ExperimentRunsTab() {
                     <TableCell>
                       <StatusBadge value={run.status} />
                     </TableCell>
-                    <TableCell
-                      className={
-                        primaryMetric &&
-                        run.metrics[primaryMetric] !== undefined
-                          ? 'text-[#F4F7FC]'
-                          : 'text-xs text-[#828DA3]'
-                      }
-                    >
-                      {primaryMetric && run.metrics[primaryMetric] !== undefined
-                        ? formatMetric(run.metrics[primaryMetric])
-                        : '—'}
-                    </TableCell>
+                    {metricColumns.columns.map((key) => (
+                      <TableCell
+                        key={key}
+                        className={
+                          run.metrics[key] !== undefined
+                            ? 'text-[#F4F7FC]'
+                            : 'text-xs text-[#828DA3]'
+                        }
+                      >
+                        {run.metrics[key] !== undefined
+                          ? formatMetric(run.metrics[key])
+                          : '—'}
+                      </TableCell>
+                    ))}
                     <TableCell
                       className={
                         formatRunDuration(run, now) === '—'

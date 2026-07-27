@@ -75,7 +75,10 @@ export function MlStudioModelLayout({
             <h1 className="text-xl font-semibold text-[#F4F7FC]">
               {model.name}
             </h1>
-            <Badge className="border-stock gap-1.5 rounded-md border bg-[#1E2533] px-2.5 py-1 text-[0.78125rem] text-[#828DA3] [&>svg]:size-3.5">
+            <Badge
+              className="gap-1.5 rounded-md border-none px-2.5 py-1 text-[0.78125rem] font-medium [&>svg]:size-3.5"
+              style={{ backgroundColor: '#2563EB1F', color: '#2563EB' }}
+            >
               <BoxIcon />
               Model
             </Badge>

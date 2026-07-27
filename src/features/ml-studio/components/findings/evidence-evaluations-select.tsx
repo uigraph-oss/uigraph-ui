@@ -20,6 +20,8 @@ import { useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { ML_STUDIO_EVALUATIONS } from '../../api/evaluations'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
+import { MetricChips } from '../metric-chips'
 
 export function EvidenceEvaluationsSelect({
   value,
@@ -39,6 +41,22 @@ export function EvidenceEvaluationsSelect({
     [evaluationsQuery.data]
   )
   const [open, setOpen] = useState(false)
+
+  const availableMetricKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const evaluation of evaluations) {
+      for (const key of Object.keys(
+        (evaluation.metrics ?? {}) as Record<string, number>
+      )) {
+        if (!keys.includes(key)) {
+          keys.push(key)
+        }
+      }
+    }
+    return keys
+  }, [evaluations])
+
+  const metricColumns = useMetricColumns('ml_evaluation', availableMetricKeys)
 
   const evaluationById = useMemo(() => {
     const map: Record<string, (typeof evaluations)[number]> = {}
@@ -138,6 +156,12 @@ export function EvidenceEvaluationsSelect({
                           {evaluation.modelName} · {evaluation.version}
                         </span>
                       </div>
+                      <MetricChips
+                        metrics={
+                          (evaluation.metrics ?? {}) as Record<string, number>
+                        }
+                        columns={metricColumns.columns}
+                      />
                       <Badge variant="secondary">{evaluation.type}</Badge>
                     </CommandItem>
                   )

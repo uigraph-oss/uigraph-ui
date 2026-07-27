@@ -24,11 +24,16 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
 import { Link2Icon, Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ML_VERSION_EVALUATIONS_PAGE } from '../../api/evaluations'
+import {
+  ML_VERSION_EVALUATIONS,
+  ML_VERSION_EVALUATIONS_PAGE,
+} from '../../api/evaluations'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric } from '../../format'
+import { useMetricColumns } from '../../hooks/use-metric-columns'
+import { MetricColumnsSelect } from '../metric-columns-select'
 import { LinkEvaluationsDialog } from './link-evaluations-dialog'
 
 export function ModelEvaluationsTable() {
@@ -77,16 +82,28 @@ export function ModelEvaluationsTable() {
   const total = pageData?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / rowsPerPage))
 
-  const primaryMetric =
-    Object.keys(
-      (evaluations.find(
-        (e) =>
-          Object.keys((e.metrics ?? {}) as Record<string, number>).length > 0
-      )?.metrics as Record<string, number> | undefined) ?? {}
-    )[0] ?? ''
-  const primaryLabel = primaryMetric
-    ? primaryMetric.replace(/_/g, ' ')
-    : 'Metric'
+  const allEvaluationsQuery = useQuery(ML_VERSION_EVALUATIONS, {
+    fetchPolicy: 'cache-and-network',
+    skip: !orgId || !selectedVersion?.id,
+    variables: { orgId: orgId!, versionId: selectedVersion?.id ?? '' },
+  })
+
+  const availableMetricKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const evaluation of allEvaluationsQuery.data?.mlVersionEvaluations ??
+      []) {
+      for (const key of Object.keys(
+        (evaluation.metrics ?? {}) as Record<string, number>
+      )) {
+        if (!keys.includes(key)) {
+          keys.push(key)
+        }
+      }
+    }
+    return keys
+  }, [allEvaluationsQuery.data?.mlVersionEvaluations])
+
+  const metricColumns = useMetricColumns('ml_evaluation', availableMetricKeys)
 
   return (
     <div className="flex flex-col gap-4">
@@ -122,6 +139,14 @@ export function ModelEvaluationsTable() {
           </div>
 
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
+            <MetricColumnsSelect
+              options={metricColumns.options}
+              columns={metricColumns.columns}
+              onToggle={metricColumns.toggle}
+              onSelectAll={metricColumns.selectAll}
+              onClear={metricColumns.clear}
+              onReset={metricColumns.reset}
+            />
             <span>Show per page:</span>
             <Select
               value={String(rowsPerPage)}
@@ -150,7 +175,11 @@ export function ModelEvaluationsTable() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead className="capitalize">{primaryLabel}</TableHead>
+                {metricColumns.columns.map((key) => (
+                  <TableHead key={key} className="capitalize">
+                    {key.replace(/_/g, ' ')}
+                  </TableHead>
+                ))}
                 <TableHead>Evaluated</TableHead>
               </TableRow>
             </TableHeader>
@@ -158,7 +187,7 @@ export function ModelEvaluationsTable() {
               {evaluations.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={4}
+                    colSpan={3 + metricColumns.columns.length}
                     className="py-10 text-center text-sm text-[#828DA3]"
                   >
                     {!selectedVersion
@@ -195,17 +224,20 @@ export function ModelEvaluationsTable() {
                           {evaluation.type}
                         </Badge>
                       </TableCell>
-                      <TableCell
-                        className={
-                          primaryMetric && metrics[primaryMetric] !== undefined
-                            ? 'text-[#F4F7FC]'
-                            : 'text-xs text-[#828DA3]'
-                        }
-                      >
-                        {primaryMetric && metrics[primaryMetric] !== undefined
-                          ? formatMetric(metrics[primaryMetric])
-                          : '—'}
-                      </TableCell>
+                      {metricColumns.columns.map((key) => (
+                        <TableCell
+                          key={key}
+                          className={
+                            metrics[key] !== undefined
+                              ? 'text-[#F4F7FC]'
+                              : 'text-xs text-[#828DA3]'
+                          }
+                        >
+                          {metrics[key] !== undefined
+                            ? formatMetric(metrics[key])
+                            : '—'}
+                        </TableCell>
+                      ))}
                       <TableCell
                         className="text-sm text-[#828DA3]"
                         title={format(new Date(evaluation.startedAt), 'PPpp')}
