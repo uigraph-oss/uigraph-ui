@@ -35,11 +35,17 @@ import { ML_STUDIO_MODEL } from '../api/models'
 export function ModelVersionCombobox({
   value,
   onChange,
+  onModelChange,
   disabled,
+  projectId,
+  lockedModelId,
 }: {
   value: string
   onChange: (versionId: string) => void
+  onModelChange?: (modelId: string) => void
   disabled?: boolean
+  projectId?: string
+  lockedModelId?: string
 }) {
   const orgId = useCurrentOrganization()?.id
   const [open, setOpen] = useState(false)
@@ -64,6 +70,8 @@ export function ModelVersionCombobox({
     variables: {
       orgId: orgId!,
       teamId: teamId === 'all' ? undefined : teamId,
+      projectId,
+      modelId: lockedModelId,
       search: search || undefined,
       limit: 50,
     },
@@ -181,6 +189,7 @@ export function ModelVersionCombobox({
                       value={item.id}
                       onSelect={() => {
                         onChange(item.id)
+                        onModelChange?.(item.model.id)
                         setOpen(false)
                       }}
                     >

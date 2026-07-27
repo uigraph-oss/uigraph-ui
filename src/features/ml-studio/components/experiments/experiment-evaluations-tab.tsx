@@ -38,7 +38,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   DELETE_ML_EVALUATION,
   ML_EXPERIMENT_EVALUATIONS_PAGE,
@@ -223,13 +223,8 @@ export function ExperimentEvaluationsTab() {
                       className="cursor-pointer"
                       onClick={() => navigate(href)}
                     >
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Link
-                          to={href}
-                          className="hover:text-primary font-medium text-[#F4F7FC]"
-                        >
-                          {evaluation.name}
-                        </Link>
+                      <TableCell className="hover:text-primary font-medium text-[#F4F7FC]">
+                        {evaluation.name}
                       </TableCell>
                       <TableCell className="text-sm text-[#828DA3]">
                         {evaluation.modelName}{' '}

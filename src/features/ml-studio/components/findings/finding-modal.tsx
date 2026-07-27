@@ -18,7 +18,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { CREATE_ML_FINDING, UPDATE_ML_FINDING } from '../../api/findings'
 import type { Finding } from '../../types'
-import { ModelVersionSelect } from '../model-version-select'
+import { ModelVersionCombobox } from '../model-version-combobox'
 import { EvidenceEvaluationsSelect } from './evidence-evaluations-select'
 import { EvidenceRunsSelect } from './evidence-runs-select'
 
@@ -28,7 +28,7 @@ const findingSchema = z.object({
   runIds: z.array(z.string()),
   evaluationIds: z.array(z.string()),
   modelId: z.string().min(1, 'Model is required'),
-  versionId: z.string(),
+  versionId: z.string().min(1, 'Model version is required'),
 })
 
 type FindingFormValues = z.infer<typeof findingSchema>
@@ -75,7 +75,7 @@ export function FindingModal({
         }
       : emptyValues,
   })
-  const { control, handleSubmit, formState, watch, setValue } = form
+  const { control, handleSubmit, formState, setValue } = form
 
   async function onSubmit(values: FindingFormValues) {
     if (!orgId) {
@@ -87,7 +87,7 @@ export function FindingModal({
           orgId,
           id: finding.id,
           input: {
-            versionId: values.versionId || null,
+            versionId: values.versionId,
             title: values.title,
             description: values.description,
             runIds: values.runIds,
@@ -101,7 +101,7 @@ export function FindingModal({
           orgId,
           input: {
             modelId: values.modelId,
-            versionId: values.versionId || null,
+            versionId: values.versionId,
             title: values.title,
             description: values.description,
             runIds: values.runIds,
@@ -196,16 +196,15 @@ export function FindingModal({
 
           <FormField
             control={control}
-            name="modelId"
+            name="versionId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Which model version does this support?</FormLabel>
                 <FormControl>
-                  <ModelVersionSelect
-                    modelId={field.value}
-                    versionId={watch('versionId')}
-                    onModelChange={field.onChange}
-                    onVersionChange={(value) => setValue('versionId', value)}
+                  <ModelVersionCombobox
+                    value={field.value}
+                    onChange={field.onChange}
+                    onModelChange={(value) => setValue('modelId', value)}
                     lockedModelId={isEdit ? finding?.modelId : undefined}
                     projectId={projectId}
                   />

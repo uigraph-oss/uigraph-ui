@@ -40,7 +40,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { DELETE_ML_RUN, ML_STUDIO_EXPERIMENT_RUNS_PAGE } from '../../api/runs'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { formatMetric, formatRunDuration } from '../../format'
@@ -234,19 +234,15 @@ export function ExperimentRunsTab() {
                       )
                     }
                   >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell>
                       <Checkbox
                         checked={selected.includes(run.id)}
                         onCheckedChange={() => toggle(run.id)}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Link
-                        to={`/dashboard/ml-studio/projects/${projectId}/experiments/${experiment.id}/runs/${run.id}`}
-                        className="hover:text-primary font-medium text-[#F4F7FC]"
-                      >
-                        {run.name}
-                      </Link>
+                    <TableCell className="hover:text-primary font-medium text-[#F4F7FC]">
+                      {run.name}
                     </TableCell>
                     <TableCell>
                       <StatusBadge value={run.status} />
