@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
 import {
   ArrowLeftIcon,
+  BoxIcon,
   ChartLineIcon,
   ClockIcon,
   LayoutDashboardIcon,
@@ -74,6 +75,10 @@ export function MlStudioModelLayout({
             <h1 className="text-xl font-semibold text-[#F4F7FC]">
               {model.name}
             </h1>
+            <Badge className="border-stock gap-1.5 rounded-md border bg-[#1E2533] px-2.5 py-1 text-[0.78125rem] text-[#828DA3] [&>svg]:size-3.5">
+              <BoxIcon />
+              Model
+            </Badge>
           </div>
 
           <div className="flex items-center gap-2">

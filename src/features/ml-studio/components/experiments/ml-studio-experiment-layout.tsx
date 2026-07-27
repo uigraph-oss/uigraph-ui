@@ -1,6 +1,7 @@
 'use client'
 
 import { GridScrollBody } from '@/components/grid-scroll-body'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DashboardHeader } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
@@ -9,6 +10,7 @@ import {
   ArrowLeftIcon,
   ChartLineIcon,
   DatabaseIcon,
+  FlaskConicalIcon,
   LayoutDashboardIcon,
   PlayIcon,
 } from 'lucide-react'
@@ -16,7 +18,6 @@ import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useExperimentContext } from '../../contexts/experiment-context'
 import { useProject } from '../../contexts/project-context'
-import { StatusBadge } from '../status-badge'
 
 const experimentTabs = [
   { id: '', label: 'Overview', icon: LayoutDashboardIcon },
@@ -67,7 +68,10 @@ export function MlStudioExperimentLayout({
             <h1 className="text-xl font-semibold text-[#F4F7FC]">
               {experiment.name}
             </h1>
-            <StatusBadge value={experiment.status} />
+            <Badge className="border-stock gap-1.5 rounded-md border bg-[#1E2533] px-2.5 py-1 text-[0.78125rem] text-[#828DA3] [&>svg]:size-3.5">
+              <FlaskConicalIcon />
+              Experiment
+            </Badge>
           </div>
 
           <Button
