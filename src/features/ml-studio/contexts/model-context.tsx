@@ -111,7 +111,6 @@ export const [ModelContextProvider, useModelContext] = createContext(
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
         datasetId: r.datasetId ?? undefined,
-        artifactIds: [],
         source: r.source as Run['source'],
       }
     }, [runQuery.data?.mlRun])

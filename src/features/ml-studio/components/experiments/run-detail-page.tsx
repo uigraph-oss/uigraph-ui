@@ -23,19 +23,56 @@ import {
   DownloadIcon,
   PackageIcon,
   PencilIcon,
+  PlusIcon,
   SlidersHorizontalIcon,
   Trash2Icon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ML_STUDIO_RUN_ARTIFACTS } from '../../api/artifacts'
+import {
+  DELETE_ML_ARTIFACT,
+  ML_STUDIO_RUN_ARTIFACTS,
+} from '../../api/artifacts'
 import { ML_STUDIO_DATASET } from '../../api/datasets'
 import { DELETE_ML_RUN, ML_STUDIO_RUN } from '../../api/runs'
 import { formatRunDuration } from '../../format'
-import type { Run } from '../../types'
+import type { Artifact, Run } from '../../types'
 import { InfoRow, Panel } from '../panel'
 import { StatusBadge } from '../status-badge'
+import { ArtifactModal } from './artifact-modal'
 import { RunModal } from './run-modal'
+
+function toArtifact(a: {
+  id: string
+  runId: string
+  name: string
+  type: string
+  uri: string
+  downloadUri: string
+  size: string
+  format: string
+  source: string
+  mimeType: string
+  sizeBytes?: number | null
+  updatedAt?: string | null
+  syncedAt?: string | null
+}): Artifact {
+  return {
+    id: a.id,
+    runId: a.runId,
+    name: a.name,
+    type: a.type,
+    uri: a.uri,
+    downloadUri: a.downloadUri,
+    size: a.size,
+    format: a.format,
+    source: a.source as Artifact['source'],
+    mimeType: a.mimeType,
+    sizeBytes: a.sizeBytes,
+    updatedAt: a.updatedAt ?? undefined,
+    syncedAt: a.syncedAt ?? undefined,
+  }
+}
 
 export function RunDetailPage() {
   const { runId } = useParams<{
@@ -46,6 +83,11 @@ export function RunDetailPage() {
   const now = useNow()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [artifactOpen, setArtifactOpen] = useState(false)
+  const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null)
+  const [deletingArtifact, setDeletingArtifact] = useState<Artifact | null>(
+    null
+  )
 
   const runQuery = useQuery(ML_STUDIO_RUN, {
     fetchPolicy: 'cache-and-network',
@@ -65,6 +107,11 @@ export function RunDetailPage() {
     variables: { orgId: orgId!, runId },
   })
   const artifacts = artifactsQuery.data?.mlArtifacts ?? []
+
+  const [deleteArtifact] = useMutation(DELETE_ML_ARTIFACT, {
+    refetchQueries: ['MlStudioRunArtifacts', 'MlStudioArtifacts'],
+    awaitRefetchQueries: true,
+  })
 
   const datasetQuery = useQuery(ML_STUDIO_DATASET, {
     fetchPolicy: 'cache-and-network',
@@ -92,7 +139,6 @@ export function RunDetailPage() {
     parameters: (run.parameters ?? {}) as Record<string, string | number>,
     metrics: (run.metrics ?? {}) as Record<string, number>,
     datasetId: run.datasetId ?? undefined,
-    artifactIds: [],
     source: run.source as Run['source'],
     updatedAt: run.updatedAt ?? undefined,
     syncedAt: run.syncedAt ?? undefined,
@@ -213,7 +259,22 @@ export function RunDetailPage() {
         </Panel>
       </div>
 
-      <Panel title="Artifacts" icon={<PackageIcon size={16} />}>
+      <Panel
+        title="Artifacts"
+        icon={<PackageIcon size={16} />}
+        action={
+          <Button
+            preset="outline"
+            onClick={() => {
+              setEditingArtifact(null)
+              setArtifactOpen(true)
+            }}
+          >
+            <PlusIcon />
+            Add artifact
+          </Button>
+        }
+      >
         {artifacts.length > 0 ? (
           <Table>
             <TableHeader>
@@ -223,6 +284,7 @@ export function RunDetailPage() {
                 <TableHead>Format</TableHead>
                 <TableHead>Size</TableHead>
                 <TableHead>Synced</TableHead>
+                <TableHead></TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -259,6 +321,30 @@ export function RunDetailPage() {
                         </a>
                       ) : (
                         <span className="text-[#586378]">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {a.source === 'manual' && (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            preset="outline"
+                            size="icon"
+                            onClick={() => {
+                              setEditingArtifact(toArtifact(a))
+                              setArtifactOpen(true)
+                            }}
+                          >
+                            <PencilIcon />
+                          </Button>
+                          <Button
+                            preset="outline"
+                            size="icon"
+                            className="bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30 hover:text-destructive"
+                            onClick={() => setDeletingArtifact(toArtifact(a))}
+                          >
+                            <Trash2Icon />
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
@@ -338,6 +424,35 @@ export function RunDetailPage() {
           run={runForModal}
         />
       </BetterDialogProvider>
+
+      <BetterDialogProvider open={artifactOpen} onOpenChange={setArtifactOpen}>
+        <ArtifactModal
+          key={editingArtifact?.id ?? 'new'}
+          onClose={() => setArtifactOpen(false)}
+          runId={run.id}
+          artifact={editingArtifact}
+        />
+      </BetterDialogProvider>
+
+      <BetterDeleteConfirmationModal
+        open={!!deletingArtifact}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingArtifact(null)
+          }
+        }}
+        title="Delete artifact?"
+        description="This will permanently remove this artifact from the run."
+        onConfirm={async () => {
+          if (!orgId || !deletingArtifact) {
+            return
+          }
+          await deleteArtifact({
+            variables: { orgId, id: deletingArtifact.id },
+          })
+          setDeletingArtifact(null)
+        }}
+      />
 
       <BetterDeleteConfirmationModal
         open={deleteOpen}

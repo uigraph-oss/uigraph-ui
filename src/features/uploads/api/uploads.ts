@@ -46,13 +46,15 @@ export function useAssetUrls(
 export async function putToPresigned(
   prepare: () => Promise<{ assetId?: string; uploadUrl?: string }>,
   file: File,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
+  signal?: AbortSignal
 ): Promise<string> {
   const { assetId, uploadUrl } = await prepare()
   if (!assetId || !uploadUrl) throw new Error('Failed to get upload URL')
 
   await axios.put(uploadUrl, file, {
     headers: { 'Content-Type': file.type },
+    signal,
     onUploadProgress: onProgress
       ? (event) => {
           if (event.total) {
@@ -68,7 +70,8 @@ export async function putToPresigned(
 export async function uploadFile(
   orgId: string,
   file: File,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
+  signal?: AbortSignal
 ): Promise<string> {
   return putToPresigned(
     async () => {
@@ -82,6 +85,7 @@ export async function uploadFile(
       }
     },
     file,
-    onProgress
+    onProgress,
+    signal
   )
 }

@@ -79,29 +79,25 @@ export type Run = {
   parameters: Record<string, string | number>
   metrics: Record<string, number>
   datasetId?: string
-  artifactIds: string[]
   source: ExperimentSource
   updatedAt?: string
   syncedAt?: string
 }
 
-export type ArtifactType =
-  | 'Model checkpoint'
-  | 'Confusion matrix'
-  | 'Notebook'
-  | 'Plot'
-  | 'ONNX'
-  | 'GGUF'
+export type ArtifactSource = 'mlflow' | 'manual'
 
 export type Artifact = {
   id: string
   runId: string
   name: string
-  type: ArtifactType
+  type: string
   uri: string
   downloadUri: string
   size: string
   format: string
+  source: ArtifactSource
+  mimeType: string
+  sizeBytes?: number | null
   updatedAt?: string
   syncedAt?: string
 }

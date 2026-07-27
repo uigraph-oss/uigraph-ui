@@ -113,7 +113,6 @@ export function ExperimentRunsTab() {
         parameters: (r.parameters ?? {}) as Record<string, string | number>,
         metrics: (r.metrics ?? {}) as Record<string, number>,
         datasetId: r.datasetId ?? undefined,
-        artifactIds: [],
         source: r.source as Run['source'],
         updatedAt: r.updatedAt ?? undefined,
         syncedAt: r.syncedAt ?? undefined,
