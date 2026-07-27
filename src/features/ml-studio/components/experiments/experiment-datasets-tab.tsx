@@ -82,7 +82,7 @@ export function ExperimentDatasetsTab() {
                 <TableHead className="w-40">Digest</TableHead>
                 <TableHead className="w-24">Rows</TableHead>
                 <TableHead className="w-56">Tags</TableHead>
-                <TableHead className="w-12" />
+                <TableHead className="w-12 !px-2" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,7 +141,7 @@ export function ExperimentDatasetsTab() {
                         <span className="text-xs text-[#828DA3]">—</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-12 !px-2 text-center">
                       {isManual && (
                         <DropdownMenu
                           open={openMenuId === d.id}

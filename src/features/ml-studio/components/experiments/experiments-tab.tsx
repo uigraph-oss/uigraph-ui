@@ -123,7 +123,7 @@ export function ExperimentsTab() {
                 <TableHead className="w-56">Tags</TableHead>
                 <TableHead className="w-20">Runs</TableHead>
                 <TableHead className="w-36">Created</TableHead>
-                <TableHead className="w-12" />
+                <TableHead className="w-12 !px-2" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,7 +194,10 @@ export function ExperimentsTab() {
                         ? new Date(exp.createdAt).toLocaleDateString()
                         : '—'}
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell
+                      className="w-12 !px-2 text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {isManual && (
                         <DropdownMenu
                           open={openMenuId === exp.id}
