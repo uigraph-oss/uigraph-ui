@@ -113,6 +113,11 @@ const ExperimentDatasetsTab = lazy(() =>
     (mod) => ({ default: mod.ExperimentDatasetsTab })
   )
 )
+const ExperimentEvaluationsTab = lazy(() =>
+  import('@/features/ml-studio/components/experiments/experiment-evaluations-table').then(
+    (mod) => ({ default: mod.ExperimentEvaluationsTable })
+  )
+)
 const ExperimentMetricsTab = lazy(() =>
   import('@/features/ml-studio/components/experiments/experiment-metrics-tab').then(
     (mod) => ({ default: mod.ExperimentMetricsTab })
@@ -524,10 +529,7 @@ export function AppRoutes() {
           >
             <Route index element={<ExperimentOverviewTab />} />
             <Route path="runs" element={<ExperimentRunsTab />} />
-            <Route
-              path="evaluations"
-              element={<Navigate to="../metrics?view=evaluations" replace />}
-            />
+            <Route path="evaluations" element={<ExperimentEvaluationsTab />} />
             <Route path="datasets" element={<ExperimentDatasetsTab />} />
             <Route path="metrics" element={<ExperimentMetricsTab />} />
           </Route>

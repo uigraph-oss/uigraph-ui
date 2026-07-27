@@ -150,7 +150,7 @@ function ProjectShell() {
   }
   if (isExperimentEvaluationDetail) {
     crumbs.push({
-      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}/metrics?view=evaluations`,
+      to: `/dashboard/ml-studio/projects/${projectId}/experiments/${experimentId}/evaluations`,
       label: experimentQuery.data?.mlExperiment?.name ?? 'Experiment',
     })
     crumbs.push({
