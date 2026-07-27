@@ -4,12 +4,6 @@ import { GridScrollBody } from '@/components/grid-scroll-body'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -19,11 +13,9 @@ import {
 import { DashboardHeader } from '@/features/dashboard'
 import { cn } from '@/lib/utils'
 import { URLPatternPolyfill } from '@/utils/polyfill'
-import { useMutation } from '@apollo/client'
 import {
   ArrowLeftIcon,
   ChartLineIcon,
-  ChevronDownIcon,
   ClipboardCheckIcon,
   ClockIcon,
   LayoutDashboardIcon,
@@ -31,11 +23,8 @@ import {
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { CREATE_ML_VERSION_DEPLOYMENT_UPDATE } from '../../api/deployments'
 import { useModelContext } from '../../contexts/model-context'
 import { useProject } from '../../contexts/project-context'
-import { deploymentTransitions } from '../../deployment-transitions'
-import { StatusBadge } from '../status-badge'
 
 const modelTabs = [
   { id: '', label: 'Overview', icon: LayoutDashboardIcon },
@@ -54,26 +43,9 @@ export function MlStudioModelLayout({
 }: {
   children: React.ReactNode
 }) {
-  const {
-    model,
-    versions,
-    latestVersionId,
-    selectedVersionId,
-    selectedVersion,
-    setVersionId,
-  } = useModelContext()
-  const { orgId, project } = useProject()
-  const [createVersionDeploymentUpdate] = useMutation(
-    CREATE_ML_VERSION_DEPLOYMENT_UPDATE,
-    {
-      refetchQueries: [
-        'MlStudioModelVersions',
-        'MlVersionDeploymentUpdates',
-        'MlStudioDeploymentUpdates',
-      ],
-      awaitRefetchQueries: true,
-    }
-  )
+  const { model, versions, latestVersionId, selectedVersionId, setVersionId } =
+    useModelContext()
+  const { project } = useProject()
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -104,78 +76,9 @@ export function MlStudioModelLayout({
             <h1 className="text-xl font-semibold text-[#F4F7FC]">
               {model.name}
             </h1>
-            {selectedVersion && (
-              <StatusBadge value={selectedVersion.deploymentStatus} />
-            )}
           </div>
 
           <div className="flex items-center gap-2">
-            {selectedVersion &&
-              (() => {
-                const transitions =
-                  deploymentTransitions[selectedVersion.deploymentStatus]
-                const primary = transitions[0]
-                const rest = transitions.slice(1)
-                return (
-                  <div className="flex items-center">
-                    <Button
-                      preset="outline"
-                      className={cn(
-                        primary.accent,
-                        rest.length > 0 && 'rounded-r-none border-r-0'
-                      )}
-                      onClick={() =>
-                        void createVersionDeploymentUpdate({
-                          variables: {
-                            orgId: orgId!,
-                            versionId: selectedVersion.id,
-                            toStatus: primary.to,
-                          },
-                        })
-                      }
-                    >
-                      <primary.icon />
-                      {primary.label}
-                    </Button>
-                    {rest.length > 0 && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            preset="outline"
-                            aria-label="More deployment actions"
-                            className={cn(
-                              primary.accent,
-                              'rounded-l-none px-3'
-                            )}
-                          >
-                            <ChevronDownIcon />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {rest.map((t) => (
-                            <DropdownMenuItem
-                              key={t.to}
-                              className={t.accentItem}
-                              onClick={() =>
-                                void createVersionDeploymentUpdate({
-                                  variables: {
-                                    orgId: orgId!,
-                                    versionId: selectedVersion.id,
-                                    toStatus: t.to,
-                                  },
-                                })
-                              }
-                            >
-                              <t.icon className={t.iconColor} />
-                              {t.label}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
-                )
-              })()}
             <Select
               value={selectedVersionId}
               onValueChange={(value) => void setVersionId(value)}

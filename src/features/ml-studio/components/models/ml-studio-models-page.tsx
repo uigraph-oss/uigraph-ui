@@ -54,7 +54,7 @@ export function ModelsTab() {
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-[#F4F7FC]">Models</h2>
           <p className="text-sm text-[#828DA3]">
-            Model registry — every registered model and its production version.
+            Model registry — every registered model and its latest version.
           </p>
         </div>
         <Button
@@ -78,8 +78,8 @@ export function ModelsTab() {
         <div className="border-stock flex flex-col items-center gap-3 rounded-[28px] border border-dashed px-6 py-16 text-center">
           <p className="text-sm font-medium text-[#F4F7FC]">No models yet</p>
           <p className="max-w-sm text-sm text-[#828DA3]">
-            Register a model to track its versions, evaluations and production
-            deployments, or sync one from your ML source.
+            Register a model to track its versions and evaluations, or sync one
+            from your ML source.
           </p>
           <Button
             className="mt-1"
@@ -98,9 +98,10 @@ export function ModelsTab() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {models.map((model) => {
             const modelVersions = versions.filter((v) => v.modelId === model.id)
-            const prod =
-              modelVersions.find((v) => v.id === model.productionVersionId) ??
-              modelVersions.find((v) => v.deploymentStatus === 'production')
+            const latest = [...modelVersions].sort(
+              (a, b) =>
+                +new Date(b.createdAt ?? 0) - +new Date(a.createdAt ?? 0)
+            )[0]
 
             const kind =
               model.problemType.charAt(0).toUpperCase() +
@@ -206,20 +207,20 @@ export function ModelsTab() {
                 <div className="border-stock mt-auto flex items-end justify-between gap-3 border-t pt-4">
                   <div className="min-w-0">
                     <div className="text-[0.65rem] tracking-wide text-[#586378] uppercase">
-                      Production version
+                      Latest version
                     </div>
                     <div className="mt-1 flex items-center gap-1.5">
                       <span
                         className={`size-1.5 shrink-0 rounded-full ${
-                          prod ? 'bg-emerald-400' : 'bg-[#586378]'
+                          latest ? 'bg-emerald-400' : 'bg-[#586378]'
                         }`}
                       />
                       <span
                         className={`truncate text-sm font-medium ${
-                          prod ? 'text-[#F4F7FC]' : 'text-[#586378]'
+                          latest ? 'text-[#F4F7FC]' : 'text-[#586378]'
                         }`}
                       >
-                        {prod ? prod.version : 'Not deployed'}
+                        {latest ? latest.version : 'No versions'}
                       </span>
                     </div>
                   </div>
@@ -261,7 +262,7 @@ export function ModelsTab() {
           }
         }}
         title="Delete model?"
-        description="This will permanently remove this model from the registry. Its versions and deployments will stay recorded but unlinked in listings."
+        description="This will permanently remove this model from the registry. Its versions will stay recorded but unlinked in listings."
         onConfirm={async () => {
           if (!orgId || !deletingModel) {
             return

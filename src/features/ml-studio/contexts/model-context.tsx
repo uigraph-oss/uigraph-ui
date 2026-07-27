@@ -60,8 +60,6 @@ export const [ModelContextProvider, useModelContext] = createContext(
             modelId: v.modelId,
             version: v.version,
             description: v.description,
-            deploymentStatus:
-              v.deploymentStatus as ModelVersion['deploymentStatus'],
             runId: v.runId ?? undefined,
             source: v.source as ModelVersion['source'],
             createdAt: v.createdAt ?? '',

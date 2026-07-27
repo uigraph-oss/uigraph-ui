@@ -38,26 +38,14 @@ export type Model = {
   origin: ExperimentSource
 }
 
-export type VersionStage = 'candidate' | 'staging' | 'production' | 'retired'
-
 export type ModelVersion = {
   id: string
   modelId: string
   version: string
   description: string
-  deploymentStatus: VersionStage
   runId?: string
   source: 'mlflow' | 'manual'
   createdAt: string
-}
-
-export type VersionDeploymentUpdate = {
-  id: string
-  versionId: string
-  fromStatus?: VersionStage
-  toStatus: VersionStage
-  changedBy: string
-  changedAt: string
 }
 
 export type ExperimentStatus = 'active' | 'concluded' | 'archived'
@@ -136,22 +124,6 @@ export type Dataset = {
   schema: SchemaField[]
   tags?: Record<string, string>
   origin: ExperimentSource
-}
-
-export type DeploymentStatus =
-  'live' | 'rolling-out' | 'rolled-back' | 'stopped'
-
-export type Deployment = {
-  id: string
-  modelId: string
-  versionId: string
-  name: string
-  environment: string
-  status: DeploymentStatus
-  endpoint: string
-  region: string
-  deployedAt: string
-  rolledBackAt?: string
 }
 
 export type Finding = {

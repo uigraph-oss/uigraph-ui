@@ -18,7 +18,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useModelContext } from '../../contexts/model-context'
 import { formatMetric, formatRunDuration } from '../../format'
 import { Panel } from '../panel'
-import { DeploymentHistory } from './deployment-history'
 import { LinkRunDialog } from './link-run-dialog'
 import { ModelCard } from './model-card'
 
@@ -177,8 +176,6 @@ export function ModelOverviewTab() {
           </div>
         </>
       )}
-
-      {selectedVersion && <DeploymentHistory versionId={selectedVersion.id} />}
 
       {selectedVersion && (
         <BetterDialogProvider open={linkRunOpen} onOpenChange={setLinkRunOpen}>
