@@ -2,6 +2,7 @@
 
 import { BetterDialogContent } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
+import { DateTimePicker } from '@/components/ui/date-time-picker'
 import {
   Form,
   FormControl,
@@ -463,10 +464,11 @@ export function EvaluationModal({
               <FormItem>
                 <FormLabel>Started at</FormLabel>
                 <FormControl>
-                  <Input
-                    type="datetime-local"
+                  <DateTimePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -481,10 +483,11 @@ export function EvaluationModal({
               <FormItem>
                 <FormLabel>Ended at</FormLabel>
                 <FormControl>
-                  <Input
-                    type="datetime-local"
+                  <DateTimePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     className="h-[56px] rounded-[16px] border border-[#2A3242] bg-transparent px-6 focus:outline-none"
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
