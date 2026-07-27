@@ -45,11 +45,9 @@ const emptyValues: FindingFormValues = {
 export function FindingModal({
   onClose,
   finding,
-  projectId,
 }: {
   onClose: () => void
   finding?: Finding | null
-  projectId?: string
 }) {
   const orgId = useCurrentOrganization()?.id
   const [createFinding] = useMutation(CREATE_ML_FINDING, {
@@ -206,7 +204,6 @@ export function FindingModal({
                     onChange={field.onChange}
                     onModelChange={(value) => setValue('modelId', value)}
                     lockedModelId={isEdit ? finding?.modelId : undefined}
-                    projectId={projectId}
                   />
                 </FormControl>
                 <FormMessage />

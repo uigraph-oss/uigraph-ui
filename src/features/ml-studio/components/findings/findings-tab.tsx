@@ -87,10 +87,7 @@ export function FindingsTab() {
       )}
 
       <BetterDialogProvider open={modalOpen} onOpenChange={setModalOpen}>
-        <FindingModal
-          onClose={() => setModalOpen(false)}
-          projectId={projectId}
-        />
+        <FindingModal onClose={() => setModalOpen(false)} />
       </BetterDialogProvider>
     </div>
   )

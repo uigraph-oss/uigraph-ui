@@ -141,28 +141,43 @@ export function EvidenceEvaluationsSelect({
                   return (
                     <CommandItem
                       key={evaluation.id}
+                      className="items-start"
                       value={`${evaluation.name} ${evaluation.id}`}
                       onSelect={() => toggle(evaluation.id)}
                     >
                       <Check
                         className={cn(
-                          'size-4',
+                          'mt-0.5 size-4 shrink-0',
                           selected ? 'opacity-100' : 'opacity-0'
                         )}
                       />
-                      <div className="flex flex-1 flex-col">
-                        <span>{evaluation.name}</span>
-                        <span className="text-muted-foreground text-xs">
-                          {evaluation.modelName} · {evaluation.version}
-                        </span>
+                      <div className="flex min-w-0 flex-1 flex-col gap-1">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="truncate">{evaluation.name}</span>
+                          <Badge
+                            variant="secondary"
+                            className="ml-auto shrink-0 whitespace-nowrap"
+                          >
+                            {evaluation.type}
+                          </Badge>
+                        </div>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="text-muted-foreground truncate text-xs">
+                            {evaluation.modelName} · {evaluation.version}
+                          </span>
+                          <div className="ml-auto overflow-hidden">
+                            <MetricChips
+                              metrics={
+                                (evaluation.metrics ?? {}) as Record<
+                                  string,
+                                  number
+                                >
+                              }
+                              columns={metricColumns.columns.slice(0, 2)}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <MetricChips
-                        metrics={
-                          (evaluation.metrics ?? {}) as Record<string, number>
-                        }
-                        columns={metricColumns.columns}
-                      />
-                      <Badge variant="secondary">{evaluation.type}</Badge>
                     </CommandItem>
                   )
                 })}

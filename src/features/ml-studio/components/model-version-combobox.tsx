@@ -24,6 +24,7 @@ import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
+import { format, formatDistanceToNow } from 'date-fns'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -39,14 +40,12 @@ export function ModelVersionCombobox({
   onChange,
   onModelChange,
   disabled,
-  projectId,
   lockedModelId,
 }: {
   value: string
   onChange: (versionId: string) => void
   onModelChange?: (modelId: string) => void
   disabled?: boolean
-  projectId?: string
   lockedModelId?: string
 }) {
   const orgId = useCurrentOrganization()?.id
@@ -82,7 +81,6 @@ export function ModelVersionCombobox({
     variables: {
       orgId: orgId!,
       teamId: teamId === 'all' ? undefined : teamId,
-      projectId,
       modelId: lockedModelId,
       search: search || undefined,
       limit: 50,
@@ -219,6 +217,25 @@ export function ModelVersionCombobox({
                           </span>
                         )}
                       </div>
+                      <span className="flex shrink-0 items-center gap-1.5 text-xs text-[#586378]">
+                        {item.createdByActor?.name && (
+                          <span className="max-w-[140px] truncate">
+                            {item.createdByActor.name}
+                          </span>
+                        )}
+                        {item.createdByActor?.name && item.createdAt && (
+                          <span className="text-[#3A4256]">·</span>
+                        )}
+                        {item.createdAt && (
+                          <span
+                            title={format(new Date(item.createdAt), 'PPpp')}
+                          >
+                            {formatDistanceToNow(new Date(item.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        )}
+                      </span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

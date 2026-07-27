@@ -53,6 +53,11 @@ export const ML_MODEL_VERSIONS_EXPLORE = graphql(`
         version
         description
         deploymentStatus
+        createdAt
+        createdByActor {
+          id
+          name
+        }
         model {
           id
           name
