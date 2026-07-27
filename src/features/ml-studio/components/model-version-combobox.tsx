@@ -26,11 +26,13 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   ML_MODEL_VERSIONS_EXPLORE,
   ML_STUDIO_MODEL_VERSION,
 } from '../api/model-versions'
 import { ML_STUDIO_MODEL } from '../api/models'
+import { ML_STUDIO_PROJECTS } from '../api/projects'
 
 export function ModelVersionCombobox({
   value,
@@ -48,8 +50,9 @@ export function ModelVersionCombobox({
   lockedModelId?: string
 }) {
   const orgId = useCurrentOrganization()?.id
+  const { projectId: routeProjectId } = useParams<{ projectId: string }>()
   const [open, setOpen] = useState(false)
-  const [teamId, setTeamId] = useState('all')
+  const [pickedTeamId, setPickedTeamId] = useState('')
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
 
@@ -63,6 +66,15 @@ export function ModelVersionCombobox({
     variables: { orgId: orgId! },
   })
   const teams = teamsQuery.data?.teams ?? []
+
+  const projectsQuery = useQuery(ML_STUDIO_PROJECTS, {
+    skip: !orgId,
+    variables: { orgId: orgId! },
+  })
+  const routeTeamId =
+    (projectsQuery.data?.mlProjects ?? []).find((p) => p.id === routeProjectId)
+      ?.teamId ?? ''
+  const teamId = pickedTeamId !== '' ? pickedTeamId : routeTeamId || 'all'
 
   const exploreQuery = useQuery(ML_MODEL_VERSIONS_EXPLORE, {
     fetchPolicy: 'cache-and-network',
@@ -138,7 +150,7 @@ export function ModelVersionCombobox({
               onValueChange={setSearchInput}
               placeholder="Search models and versions..."
             />
-            <Select value={teamId} onValueChange={setTeamId}>
+            <Select value={teamId} onValueChange={setPickedTeamId}>
               <SelectTrigger className="border-stock h-9 w-[160px] shrink-0 rounded-[10px] bg-transparent text-sm">
                 <SelectValue />
               </SelectTrigger>

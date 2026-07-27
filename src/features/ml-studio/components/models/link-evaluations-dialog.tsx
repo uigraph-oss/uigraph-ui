@@ -28,6 +28,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   LINK_ML_VERSION_EVALUATIONS,
   ML_EXPERIMENT_EVALUATIONS,
@@ -49,8 +50,9 @@ export function LinkEvaluationsDialog({
   versionId: string
 }) {
   const orgId = useCurrentOrganization()?.id
-  const [selectedTeamId, setSelectedTeamId] = useState('')
-  const [selectedProjectId, setSelectedProjectId] = useState('')
+  const { projectId: routeProjectId } = useParams<{ projectId: string }>()
+  const [pickedTeamId, setPickedTeamId] = useState('')
+  const [pickedProjectId, setPickedProjectId] = useState('')
   const [selectedExperimentId, setSelectedExperimentId] = useState('')
   const [selected, setSelected] = useState<{ id: string; name: string }[]>([])
   const [evaluationsOpen, setEvaluationsOpen] = useState(false)
@@ -66,6 +68,23 @@ export function LinkEvaluationsDialog({
     skip: !orgId,
     variables: { orgId: orgId! },
   })
+  const teams = teamsQuery.data?.teams ?? []
+  const allProjects = projectsQuery.data?.mlProjects ?? []
+
+  const routeProject = allProjects.find((p) => p.id === routeProjectId)
+  const selectedTeamId =
+    pickedTeamId !== '' ? pickedTeamId : (routeProject?.teamId ?? '')
+  const preselectedProjectId =
+    routeProject?.type === 'training' && routeProject.teamId === selectedTeamId
+      ? routeProject.id
+      : ''
+  const selectedProjectId =
+    pickedProjectId !== '' ? pickedProjectId : preselectedProjectId
+
+  const projects = allProjects.filter(
+    (p) => p.teamId === selectedTeamId && p.type === 'training'
+  )
+
   const experimentsQuery = useQuery(ML_STUDIO_EXPERIMENTS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId || !selectedProjectId,
@@ -77,10 +96,6 @@ export function LinkEvaluationsDialog({
     variables: { orgId: orgId!, experimentId: selectedExperimentId },
   })
 
-  const teams = teamsQuery.data?.teams ?? []
-  const projects = (projectsQuery.data?.mlProjects ?? []).filter(
-    (p) => p.teamId === selectedTeamId && p.type === 'training'
-  )
   const experiments = experimentsQuery.data?.mlExperiments ?? []
   const allEvaluations = useMemo(
     () => evaluationsQuery.data?.mlExperimentEvaluations ?? [],
@@ -124,13 +139,13 @@ export function LinkEvaluationsDialog({
   })
 
   function pickTeam(id: string) {
-    setSelectedTeamId(id)
-    setSelectedProjectId('')
+    setPickedTeamId(id)
+    setPickedProjectId('')
     setSelectedExperimentId('')
   }
 
   function pickProject(id: string) {
-    setSelectedProjectId(id)
+    setPickedProjectId(id)
     setSelectedExperimentId('')
   }
 
