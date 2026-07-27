@@ -81,11 +81,17 @@ const numberValueSchema = z
   .regex(NUMBER_PATTERN, NUMBER_MESSAGE)
   .refine((value) => Number.isFinite(Number(value)), NUMBER_MESSAGE)
 
+const parameterValueSchema = z
+  .string()
+  .trim()
+  .min(1, 'Value is required')
+  .max(200, 'Value must be 200 characters or fewer')
+
 const parametersSchema = z
   .array(
     z.object({
       key: keySchema,
-      value: numberValueSchema,
+      value: parameterValueSchema,
     })
   )
   .max(50, 'At most 50 parameters')
@@ -181,6 +187,19 @@ function toNumberMap(rows: { key: string; value: string }[]) {
   return out
 }
 
+function toParameterMap(rows: { key: string; value: string }[]) {
+  const out: Record<string, string | number> = {}
+  for (const row of rows) {
+    const value = row.value.trim()
+    if (NUMBER_PATTERN.test(value) && Number.isFinite(Number(value))) {
+      out[row.key.trim()] = Number(value)
+      continue
+    }
+    out[row.key.trim()] = value
+  }
+  return out
+}
+
 function KeyValueFields({
   name,
   control,
@@ -224,7 +243,7 @@ function KeyValueFields({
                 <FormControl>
                   <Input
                     placeholder={valuePlaceholder}
-                    inputMode="decimal"
+                    inputMode={name === 'metrics' ? 'decimal' : 'text'}
                     className="h-11 rounded-[12px] border-[#2A3242] bg-transparent"
                     {...valueField}
                   />
@@ -370,7 +389,7 @@ export function RunModal({
         values.endedAt === '' ? null : new Date(values.endedAt).toISOString(),
       notes: values.notes,
       tags: values.tags,
-      parameters: toNumberMap(values.parameters),
+      parameters: toParameterMap(values.parameters),
       metrics: toNumberMap(values.metrics),
     }
     if (run) {
