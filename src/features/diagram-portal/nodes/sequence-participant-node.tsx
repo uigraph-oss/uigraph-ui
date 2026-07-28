@@ -1,14 +1,6 @@
 import { buildMetaData } from '@uigraph/sdk'
-import {
-  Handle,
-  Node,
-  NodeProps,
-  Position,
-  useEdges,
-  useNodes,
-  useReactFlow,
-} from '@xyflow/react'
-import { Fragment, useMemo, useRef } from 'react'
+import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
+import { Fragment, useRef } from 'react'
 import {
   DEFAULT_CONFIG,
   getRowY,
@@ -49,8 +41,6 @@ export function SequenceParticipantNode({
   data,
 }: NodeProps<TSequenceParticipantNode>) {
   const { updateNodeData } = useReactFlow()
-  const nodes = useNodes()
-  const edges = useEdges()
   const inputRef = useRef<HTMLInputElement>(null)
   const config = {
     ...DEFAULT_CONFIG,
@@ -75,68 +65,20 @@ export function SequenceParticipantNode({
   const explicitRowYs = data.rowYs
   const explicitActivations = data.activations
 
-  const { activations, rowCount } = useMemo(() => {
-    // A mermaid import states its own geometry: rows aren't a uniform grid
-    // once block frames add label space between them, and activation bars come
-    // from `activate`/`+`/`-` statements rather than from wherever message
-    // boxes happen to sit. Only fall back to inferring both from the edges
-    // when the diagram was authored in the canvas and says nothing.
-    if (explicitRowYs) {
-      const half = config.rowHeight * ACTIVATION_PADDING_RATIO
-      return {
-        activations: (explicitActivations ?? []).map((activation) => ({
-          top: (explicitRowYs[activation.startRow] ?? 0) - half,
-          bottom: (explicitRowYs[activation.endRow] ?? 0) + half,
-        })),
-        rowCount: explicitRowYs.length,
-      }
-    }
+  // A bar means the participant is activated — `activate`/`deactivate` or the
+  // `+`/`-` arrow shorthand — never merely that a message touches the lifeline
+  // here. A diagram that never activates anyone draws no bars at all.
+  const activationPadding = config.rowHeight * ACTIVATION_PADDING_RATIO
+  const activations = (explicitActivations ?? []).map((activation) => ({
+    top:
+      (explicitRowYs?.[activation.startRow] ??
+        getRowY(activation.startRow, config)) - activationPadding,
+    bottom:
+      (explicitRowYs?.[activation.endRow] ??
+        getRowY(activation.endRow, config)) + activationPadding,
+  }))
 
-    const connectedEdges = edges.filter(
-      (e) => e.source === id || e.target === id
-    )
-    const messageNodeIds = new Set(
-      connectedEdges
-        .flatMap((e) => [e.source, e.target])
-        .filter((nid) => nid.startsWith('message-'))
-    )
-    const selfY = nodes.find((n) => n.id === id)?.position.y ?? 0
-    const centers = nodes
-      .filter((n) => messageNodeIds.has(n.id))
-      .map(
-        (n) => n.position.y + (n.height ?? config.messageNodeHeight) / 2 - selfY
-      )
-      .sort((a, b) => a - b)
-    const half = config.rowHeight * ACTIVATION_PADDING_RATIO
-    const activations: Array<{ top: number; bottom: number }> = []
-    centers.forEach((center) => {
-      const last = activations[activations.length - 1]
-      if (last && center - half <= last.bottom) {
-        last.bottom = center + half
-        return
-      }
-      activations.push({ top: center - half, bottom: center + half })
-    })
-    const maxRow =
-      centers.length > 0
-        ? Math.round(
-            (centers[centers.length - 1] - config.headerHeight) /
-              config.rowHeight
-          )
-        : 0
-    const rowCount = centers.length > 0 ? maxRow + 2 : (dataRowCount ?? 1)
-    return { activations, rowCount }
-  }, [
-    edges,
-    nodes,
-    id,
-    config.headerHeight,
-    config.rowHeight,
-    config.messageNodeHeight,
-    dataRowCount,
-    explicitRowYs,
-    explicitActivations,
-  ])
+  const rowCount = explicitRowYs?.length ?? dataRowCount ?? 1
 
   const totalHeight =
     data.lifelineHeight ?? config.headerHeight + rowCount * config.rowHeight
