@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { buildMetaData, SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
-import { Node, useNodesInitialized } from '@xyflow/react'
+import { Node } from '@xyflow/react'
 import { useState } from 'react'
 import {
   LuArrowRight,
@@ -23,10 +23,7 @@ import {
   LuTrash2,
   LuX,
 } from 'react-icons/lu'
-import { toast } from 'sonner'
-import * as icons from '../components/icons'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
-import { beautifyDiagram } from '../helpers/beautify-diagram'
 import { beautifySequenceDiagram } from '../helpers/beautify-sequence-diagram'
 import {
   createMessage,
@@ -45,8 +42,6 @@ function fieldValue(node: Node, componentFieldId: string): string | null {
 }
 
 export function SidebarModeling() {
-  const nodesInitialized = useNodesInitialized()
-
   const {
     nodes,
     edges,
@@ -313,22 +308,6 @@ export function SidebarModeling() {
 
     setDragging(null)
     setDropIndex(null)
-  }
-
-  function handleBeautify() {
-    if (!nodesInitialized) {
-      toast.info('Diagram is still rendering — try again in a moment')
-      return
-    }
-
-    const { nodes: beautified, edges: beautifiedEdges } = beautifyDiagram(
-      nodes,
-      edges,
-      'LR'
-    )
-    setNodes(beautified)
-    setEdges(beautifiedEdges)
-    setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
   }
 
   return (
@@ -687,18 +666,6 @@ export function SidebarModeling() {
             })}
           </>
         )}
-
-        <div className="my-1.5 h-px bg-[#2A3242]" />
-
-        <button
-          type="button"
-          disabled={isLocked || !nodesInitialized || nodes.length === 0}
-          onClick={handleBeautify}
-          className="flex h-8 w-full items-center gap-2.5 rounded-[0.5rem] px-2 text-left text-[0.8125rem] text-[#F4F7FC] transition-colors hover:bg-[#1E2533] disabled:pointer-events-none disabled:opacity-40 [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-[#828DA3]"
-        >
-          <icons.BeautifyIcon />
-          Beautify layout
-        </button>
       </div>
     </SidebarLayout>
   )
