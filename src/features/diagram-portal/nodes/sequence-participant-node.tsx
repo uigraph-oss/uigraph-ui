@@ -1,4 +1,4 @@
-import { buildMetaData } from '@uigraph/sdk'
+import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
 import { Fragment, useRef } from 'react'
 import {
@@ -118,8 +118,13 @@ export function SequenceParticipantNode({
           size={Math.max(label.length, 1)}
           className="text-foreground border-none bg-transparent text-sm font-medium outline-none"
           onChange={(e) => {
+            const fields = data.componentFields ?? []
+            // buildMetaData rewrites every field from the map it's given, so
+            // the other fields' current values have to be carried over or
+            // renaming blanks them (the participant's color).
             updateNodeData(id, {
-              componentFields: buildMetaData(data.componentFields ?? [], {
+              componentFields: buildMetaData(fields, {
+                ...flattenMetaData(fields, fields),
                 name: e.target.value,
               }),
             })

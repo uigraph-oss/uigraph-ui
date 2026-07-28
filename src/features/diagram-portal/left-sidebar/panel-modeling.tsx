@@ -13,7 +13,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { buildMetaData, SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
+import {
+  buildMetaData,
+  flattenMetaData,
+  SEQUENCE_PARTICIPANT_COLOR,
+} from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
 import { useState } from 'react'
 import {
@@ -140,7 +144,10 @@ export function SidebarModeling() {
           ...n,
           data: {
             ...n.data,
-            componentFields: buildMetaData(componentFields, { name: value }),
+            componentFields: buildMetaData(componentFields, {
+              ...flattenMetaData(componentFields, componentFields),
+              name: value,
+            }),
           },
         }
       })
