@@ -1,18 +1,11 @@
+import { estimateSequenceMessageBoxSize, SEQUENCE_LAYOUT } from '@uigraph/sdk'
 import { Edge, Node } from '@xyflow/react'
 import { getComponentField } from '../hooks/use-component-field'
 import { TComponentField } from '../types/component-fields'
 import { DEFAULT_CONFIG, getRowY } from './sequence-diagram-layout'
 
-const ROW_HEIGHT_VERTICAL_PADDING = 16
+const ROW_HEIGHT_VERTICAL_PADDING = SEQUENCE_LAYOUT.ROW_VERTICAL_PADDING
 const PARTICIPANT_CENTER_OFFSET = 5
-
-const MIN_MESSAGE_WIDTH = DEFAULT_CONFIG.messageNodeWidth
-const MAX_MESSAGE_WIDTH = 240
-const TARGET_WRAP_LINES = 2
-const CHAR_WIDTH = 7
-const LINE_HEIGHT = 20
-const BOX_HORIZONTAL_PADDING = 24
-const BOX_VERTICAL_PADDING = 8
 
 type ParticipantLink = { from?: string; to?: string }
 
@@ -48,93 +41,6 @@ function getMessageLabel(message: Node): string {
   })
 
   return fromFields ?? (message.data?.label as string | undefined) ?? ''
-}
-
-/**
- * Simulates greedy word-boundary wrapping (like CSS `overflow-wrap: break-word`)
- * to count the resulting lines. A naive `totalChars / charsPerLine` estimate
- * is wrong whenever a short word is followed by a long unbreakable token —
- * e.g. "GET /v1/stores/{storeId} (batch hydrate)" strands "GET" alone on its
- * own line because "/v1/stores/{storeId}" doesn't fit next to it, producing
- * 3 real lines where a char-count average predicts 2 — undercounting the
- * rendered height enough for the box to spill into the row below it.
- */
-function estimateLines(words: string[], charsPerLine: number): number {
-  let lines = 1
-  let current = 0
-
-  for (const word of words) {
-    if (word.length > charsPerLine) {
-      if (current > 0) lines += 1
-      const wordLines = Math.ceil(word.length / charsPerLine)
-      lines += wordLines - 1
-      current = word.length - (wordLines - 1) * charsPerLine
-      continue
-    }
-
-    const next = current === 0 ? word.length : current + 1 + word.length
-    if (next > charsPerLine) {
-      lines += 1
-      current = word.length
-    } else {
-      current = next
-    }
-  }
-
-  return lines
-}
-
-/**
- * Estimates a message box's width/height from its label text, targeting a
- * ~2-line wrap instead of trusting whatever narrow fixed width the diagram
- * was created with (the SDK hardcodes 120px, which forces long labels into
- * 4+ jagged, mid-word-broken lines).
- */
-function estimateMessageBoxSize(label: string): {
-  width: number
-  height: number
-} {
-  const text = label.trim()
-
-  if (!text) {
-    return {
-      width: MIN_MESSAGE_WIDTH,
-      height: DEFAULT_CONFIG.messageNodeHeight,
-    }
-  }
-
-  const words = text.split(/\s+/).filter(Boolean)
-  const longestWord = Math.max(1, ...words.map((w) => w.length))
-
-  // Never choose a width narrower than the longest word needs — a width
-  // picked purely from the average would strand that word alone on its own
-  // line (or force mid-word breaks), inflating the real line count beyond
-  // what an average-based estimate predicts.
-  const idealCharsPerLine = Math.max(
-    1,
-    Math.ceil(text.length / TARGET_WRAP_LINES)
-  )
-  const charsPerLineNeeded = Math.max(idealCharsPerLine, longestWord)
-
-  const width = Math.min(
-    MAX_MESSAGE_WIDTH,
-    Math.max(
-      MIN_MESSAGE_WIDTH,
-      BOX_HORIZONTAL_PADDING + charsPerLineNeeded * CHAR_WIDTH
-    )
-  )
-
-  const charsPerLine = Math.max(
-    1,
-    Math.floor((width - BOX_HORIZONTAL_PADDING) / CHAR_WIDTH)
-  )
-  const lines = estimateLines(words, charsPerLine)
-  const height = Math.max(
-    DEFAULT_CONFIG.messageNodeHeight,
-    lines * LINE_HEIGHT + BOX_VERTICAL_PADDING
-  )
-
-  return { width, height }
 }
 
 const ROW_HANDLE_RE = /^row-\d+-(left|right)-(source|target)$/
@@ -261,9 +167,9 @@ function computeMessageX(
  * no longer overlap the row below them:
  *
  * - Each message's box is sized from its own label text (see
- *   `estimateMessageBoxSize`), instead of a fixed 120px width — this is
- *   what causes the aggressive word-breaking wrap in AI/mermaid-imported
- *   diagrams.
+ *   `estimateSequenceMessageBoxSize`), instead of a fixed width — a fixed
+ *   width is what causes the aggressive word-breaking wrap in AI/mermaid
+ *   -imported diagrams.
  * - Row order is derived by sorting messages on their *current* Y position,
  *   not by inverting the row-placement formula — robust to manually dragged
  *   nodes or repeated Beautify passes, and needs no prior `rowHeight` state.
@@ -299,7 +205,7 @@ export function beautifySequenceDiagram(
   const sizesById = new Map(
     orderedMessages.map((m) => [
       m.id,
-      estimateMessageBoxSize(getMessageLabel(m)),
+      estimateSequenceMessageBoxSize(getMessageLabel(m)),
     ])
   )
 
