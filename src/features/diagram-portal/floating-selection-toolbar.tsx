@@ -9,6 +9,8 @@ import {
   ToolbarSeparator,
   diagramToolbarContainerClassName,
 } from './floating-canvas-toolbar'
+import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
+import { getNextParticipantColumn } from './helpers/sequence-diagram-authoring'
 import { generateUUID } from './utils/uuid'
 
 type ClipBoard = {
@@ -18,6 +20,22 @@ type ClipBoard = {
 }
 
 const PASTE_OFFSET = 60
+
+// Closes the row gap a deleted message (or participant) leaves behind, and
+// regenerates any remaining messages' row-handle ids to match their
+// (possibly shifted) new position. No-op unless a sequence node was
+// actually among the deleted nodes.
+function renumberAfterDelete(rf: ReactFlowInstance, deletedNodes: Node[]) {
+  const hasSequenceNode = deletedNodes.some(
+    (n) => n.type === 'sequenceParticipant' || n.id.startsWith('message-')
+  )
+  if (!hasSequenceNode) return
+
+  const { nodes: beautifiedNodes, edges: beautifiedEdges } =
+    beautifySequenceDiagram(rf.getNodes(), rf.getEdges())
+  rf.setNodes(beautifiedNodes)
+  rf.setEdges(beautifiedEdges)
+}
 
 export function FloatingSelectionToolbar() {
   const [clipBoard, setClipBoard] = useState<ClipBoard | null>(null)
@@ -33,10 +51,16 @@ export function FloatingSelectionToolbar() {
     const rf = reactFlowInstance!
     if (!rf) return
 
+    const nodesToDelete = selectedNodeIds
+      .map((id) => rf.getNode(id)!)
+      .filter(Boolean)
+
     await rf.deleteElements({
       edges: selectedEdgeIds.map((id) => rf.getEdge(id)!).filter(Boolean),
-      nodes: selectedNodeIds.map((id) => rf.getNode(id)!).filter(Boolean),
+      nodes: nodesToDelete,
     })
+
+    renumberAfterDelete(rf, nodesToDelete)
   }
 
   function getClipBoardNodes(rf: ReactFlowInstance) {
@@ -100,8 +124,26 @@ export function FloatingSelectionToolbar() {
     const targetNodeIds = new Set(targetNodes.map((node) => node.id))
 
     targetNodes.forEach((node) => {
-      idMap.set(node.id, generateUUID())
+      // Preserve the `participant-`/`message-` id prefixes every sequence-
+      // diagram detection check (`startsWith(...)`) relies on — a clone
+      // with a plain UUID would silently stop being recognized as a
+      // sequence node anywhere downstream.
+      const prefix =
+        node.type === 'sequenceParticipant'
+          ? 'participant-'
+          : node.id.startsWith('message-')
+            ? 'message-'
+            : ''
+      idMap.set(node.id, `${prefix}${generateUUID()}`)
     })
+
+    // Cloned participants must land on the column grid at y=0, not at a
+    // flat +60/+60 offset — that's neither a valid column position nor the
+    // canonical row-0 y every other participant is locked to, which is
+    // exactly what previously produced an unaligned clone nobody could
+    // drag back into place.
+    const { x: startX, columnWidth } = getNextParticipantColumn(rf.getNodes())
+    let nextParticipantX = startX
 
     const newNodes = targetNodes.map((node) => {
       const newId = idMap.get(node.id)!
@@ -111,6 +153,19 @@ export function FloatingSelectionToolbar() {
           )
         : node.data?.childNodes
 
+      let position =
+        node.parentId && targetNodeIds.has(node.parentId)
+          ? node.position
+          : {
+              x: node.position.x + PASTE_OFFSET,
+              y: node.position.y + PASTE_OFFSET,
+            }
+
+      if (node.type === 'sequenceParticipant') {
+        position = { x: nextParticipantX, y: 0 }
+        nextParticipantX += columnWidth
+      }
+
       return {
         ...node,
         id: newId,
@@ -119,13 +174,7 @@ export function FloatingSelectionToolbar() {
           ...node.data,
           childNodes,
         },
-        position:
-          node.parentId && targetNodeIds.has(node.parentId)
-            ? node.position
-            : {
-                x: node.position.x + PASTE_OFFSET,
-                y: node.position.y + PASTE_OFFSET,
-              },
+        position,
       }
     })
 
@@ -161,15 +210,47 @@ export function FloatingSelectionToolbar() {
       }
     )
 
-    rf.setNodes((prevNodes) => [
-      ...prevNodes.map((a) => ({ ...a, selected: false })),
-      ...newNodes.map((a) => ({ ...a, selected: true })),
-    ])
+    const hasSequenceClone = newNodes.some(
+      (n) => n.type === 'sequenceParticipant' || n.id.startsWith('message-')
+    )
 
-    rf.setEdges((prevEdges) => [
-      ...prevEdges.map((a) => ({ ...a, selected: false })),
-      ...newEdges.map((a) => ({ ...a, selected: true })),
-    ])
+    if (hasSequenceClone) {
+      // Run the pasted diagram through a full beautify pass: it fixes row
+      // spacing/X-centering for the clone (and, via renumberSequenceRows,
+      // regenerates any row-handle-id edges the clone brought with it that
+      // would otherwise still point at its original row).
+      const newNodeIds = new Set<string>(newNodes.map((n) => n.id))
+      const newEdgeIds = new Set<string>(newEdges.map((e) => e.id))
+      const prevNodes = rf.getNodes().map((a) => ({ ...a, selected: false }))
+      const prevEdges = rf.getEdges().map((a) => ({ ...a, selected: false }))
+
+      const { nodes: beautifiedNodes, edges: beautifiedEdges } =
+        beautifySequenceDiagram(
+          [...prevNodes, ...newNodes],
+          [...prevEdges, ...newEdges]
+        )
+
+      rf.setNodes(
+        beautifiedNodes.map((n) =>
+          newNodeIds.has(n.id) ? { ...n, selected: true } : n
+        )
+      )
+      rf.setEdges(
+        beautifiedEdges.map((e) =>
+          newEdgeIds.has(e.id) ? { ...e, selected: true } : e
+        )
+      )
+    } else {
+      rf.setNodes((prevNodes) => [
+        ...prevNodes.map((a) => ({ ...a, selected: false })),
+        ...newNodes.map((a) => ({ ...a, selected: true })),
+      ])
+
+      rf.setEdges((prevEdges) => [
+        ...prevEdges.map((a) => ({ ...a, selected: false })),
+        ...newEdges.map((a) => ({ ...a, selected: true })),
+      ])
+    }
 
     if (cb.mode === 'copy') {
       setClipBoard({
@@ -185,6 +266,7 @@ export function FloatingSelectionToolbar() {
         nodes: targetNodes,
       })
 
+      renumberAfterDelete(rf, targetNodes)
       setClipBoard(null)
     }
   }

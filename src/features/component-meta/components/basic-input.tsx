@@ -211,6 +211,7 @@ export function ColorPickerInput({
 
       <HexColorInput
         color={value ?? ''}
+        prefixed
         readOnly={readonly}
         onChange={onChange}
         onInput={(e) => {

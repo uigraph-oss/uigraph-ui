@@ -14,8 +14,11 @@ import { cn } from '@/lib/utils'
 import {
   convertMermaidToReactFlow,
   convertMermaidToReactFlowWithContext,
+  convertReactFlowToSequenceMermaid,
   convertUiGraphToMermaid,
+  isSequenceDiagram,
 } from '@uigraph/sdk'
+import { useNodesInitialized } from '@xyflow/react'
 import { openFileExplorer } from 'daily-code/browser'
 import { parse } from 'jsonc-parser'
 import { ComponentProps, ReactNode, useState } from 'react'
@@ -26,6 +29,7 @@ import { toast } from 'sonner'
 import * as icons from './components/icons'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
+import { beautifyDiagram } from './helpers/beautify-diagram'
 import { downloadFlowDiagramImage } from './helpers/download-image'
 
 export const diagramToolbarContainerClassName =
@@ -33,6 +37,7 @@ export const diagramToolbarContainerClassName =
 
 export function FloatingCanvasToolbar() {
   const [isDownloading, setIsDownloading] = useState(false)
+  const nodesInitialized = useNodesInitialized()
 
   const {
     nodes,
@@ -130,13 +135,30 @@ export function FloatingCanvasToolbar() {
 
   function handleExportMermaid() {
     try {
-      const exported = convertUiGraphToMermaid({ nodes, edges })
-
       const baseName =
         diagramName
           .trim()
           .replace(/[\\/:*?"<>|]+/g, '-')
           .replace(/\s+/g, ' ') || 'uigraph-diagram'
+
+      if (isSequenceDiagram(nodes)) {
+        const mermaid = convertReactFlowToSequenceMermaid(nodes, edges)
+
+        const blob = new Blob([mermaid], {
+          type: 'text/plain;charset=utf-8',
+        })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${baseName}.mmd`
+        link.click()
+        URL.revokeObjectURL(url)
+
+        toast.success('Sequence diagram exported successfully')
+        return
+      }
+
+      const exported = convertUiGraphToMermaid({ nodes, edges })
 
       const mermaidBlob = new Blob([exported.mermaid], {
         type: 'text/plain;charset=utf-8',
@@ -291,6 +313,29 @@ export function FloatingCanvasToolbar() {
           }}
         >
           <icons.LayoutTBIcon />
+        </ToolbarButton>
+
+        <ToolbarButton
+          delayDuration={100}
+          tooltipPosition="top"
+          tooltip="Beautify Layout"
+          disabled={
+            tempDiagramState !== null || !nodesInitialized || nodes.length === 0
+          }
+          onClick={() => {
+            if (!nodesInitialized) {
+              toast.info('Diagram is still rendering — try again in a moment')
+              return
+            }
+
+            const { nodes: beautified, edges: beautifiedEdges } =
+              beautifyDiagram(nodes, edges, 'LR')
+            setNodes(beautified)
+            setEdges(beautifiedEdges)
+            setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
+          }}
+        >
+          <icons.BeautifyIcon />
         </ToolbarButton>
 
         <ToolbarSeparator />

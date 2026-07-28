@@ -528,6 +528,36 @@ export function LayoutTBIcon({
   )
 }
 
+export function BeautifyIcon({
+  className,
+  ...props
+}: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      fill="none"
+      viewBox="0 0 18 17"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(styles.icon, className)}
+      {...props}
+    >
+      {/* main sparkle */}
+      <path
+        d="M8 2L9.2 6L13 7.2L9.2 8.4L8 12.4L6.8 8.4L3 7.2L6.8 6L8 2Z"
+        stroke="currentColor"
+        strokeWidth="1.00395"
+        strokeLinejoin="round"
+      />
+      {/* small sparkle */}
+      <path
+        d="M13.75 10.5L14.35 12.35L16.2 12.95L14.35 13.55L13.75 15.4L13.15 13.55L11.3 12.95L13.15 12.35L13.75 10.5Z"
+        stroke="currentColor"
+        strokeWidth="1.00395"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function UploadIcon({
   className,
   ...props

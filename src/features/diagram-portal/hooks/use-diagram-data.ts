@@ -55,7 +55,12 @@ export function useDiagramData(initialData: ServerDiagramData) {
         ) {
           const node = nodesRef.current.find((n) => n.id === ch.id)
           if (node?.type === 'sequenceParticipant') {
-            const newPos = { ...ch.position, y: node.position.y }
+            // Snap to the canonical y (0), not whatever y happens to be
+            // currently stored — clamping to the current value is
+            // self-reinforcing: once anything (e.g. a paste offset) sets a
+            // wrong y, every later drag would just re-lock onto that same
+            // wrong value forever instead of correcting it.
+            const newPos = { ...ch.position, y: 0 }
             positionMap.set(ch.id, newPos)
             participantIdsWithChanges.add(ch.id)
             return { ...ch, position: newPos }

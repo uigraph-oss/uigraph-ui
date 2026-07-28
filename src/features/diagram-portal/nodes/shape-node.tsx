@@ -18,6 +18,8 @@ export type ShapeNodeData = NodeDataGenerator<
     shape: keyof typeof SHAPE_COMPONENTS_MAP
     textColor?: string
     textFontSize?: number
+    /** `autonumber` badge for a sequence-diagram message. */
+    sequenceNumber?: number
   }
 >
 
@@ -147,6 +149,12 @@ export function ShapeNode({
           }`,
         }}
       />
+
+      {data.sequenceNumber !== undefined && (
+        <div className="bg-muted text-muted-foreground absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full text-[10px] font-medium">
+          {data.sequenceNumber}
+        </div>
+      )}
 
       <TextareaAutosize
         ref={inputRef}

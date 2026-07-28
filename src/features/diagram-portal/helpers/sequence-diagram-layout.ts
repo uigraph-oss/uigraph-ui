@@ -1,3 +1,5 @@
+import { SEQUENCE_LAYOUT } from '@uigraph/sdk'
+
 export type SequenceConfig = {
   columnWidth: number
   rowHeight: number
@@ -8,12 +10,12 @@ export type SequenceConfig = {
 }
 
 export const DEFAULT_CONFIG: SequenceConfig = {
-  columnWidth: 200,
-  rowHeight: 60,
-  headerHeight: 40,
-  messageNodeWidth: 140,
-  messageNodeHeight: 32,
-  selfLoopOffset: 80,
+  columnWidth: SEQUENCE_LAYOUT.COLUMN_WIDTH,
+  rowHeight: SEQUENCE_LAYOUT.ROW_HEIGHT,
+  headerHeight: SEQUENCE_LAYOUT.HEADER_HEIGHT,
+  messageNodeWidth: SEQUENCE_LAYOUT.MESSAGE_NODE_WIDTH,
+  messageNodeHeight: SEQUENCE_LAYOUT.MESSAGE_NODE_HEIGHT,
+  selfLoopOffset: SEQUENCE_LAYOUT.SELF_LOOP_OFFSET,
 }
 
 export function getParticipantX(
