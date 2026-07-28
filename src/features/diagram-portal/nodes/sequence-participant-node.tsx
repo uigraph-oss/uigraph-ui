@@ -1,5 +1,13 @@
 import { buildMetaData } from '@uigraph/sdk'
-import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
+import {
+  Handle,
+  Node,
+  NodeProps,
+  Position,
+  useEdges,
+  useNodes,
+  useReactFlow,
+} from '@xyflow/react'
 import { Fragment, useMemo, useRef } from 'react'
 import {
   DEFAULT_CONFIG,
@@ -23,17 +31,18 @@ export type TSequenceParticipantNode = Node<
 >
 
 const NODE_WIDTH = 10
-const LIFELINE_STROKE = '#e5e7eb'
 const LIFELINE_WIDTH = 1
-const ACTIVATION_WIDTH = 2
-const ACTIVATION_STROKE = '#d1d5db'
-const INDICATOR_WIDTH = 3
+const ACTIVATION_WIDTH = 4
+const ACTIVATION_PADDING_RATIO = 0.3
+const INDICATOR_WIDTH = ACTIVATION_WIDTH
 
 export function SequenceParticipantNode({
   id,
   data,
 }: NodeProps<TSequenceParticipantNode>) {
-  const { getNodes, getEdges, updateNodeData } = useReactFlow()
+  const { updateNodeData } = useReactFlow()
+  const nodes = useNodes()
+  const edges = useEdges()
   const inputRef = useRef<HTMLInputElement>(null)
   const config = {
     ...DEFAULT_CONFIG,
@@ -51,7 +60,6 @@ export function SequenceParticipantNode({
   const lifelineX = NODE_WIDTH / 2
 
   const { activations, rowCount } = useMemo(() => {
-    const edges = getEdges()
     const connectedEdges = edges.filter(
       (e) => e.source === id || e.target === id
     )
@@ -60,25 +68,39 @@ export function SequenceParticipantNode({
         .flatMap((e) => [e.source, e.target])
         .filter((nid) => nid.startsWith('message-'))
     )
-    const nodes = getNodes()
-    const messageYs = nodes
+    const selfY = nodes.find((n) => n.id === id)?.position.y ?? 0
+    const centers = nodes
       .filter((n) => messageNodeIds.has(n.id))
-      .map((n) => n.position.y + (n.height ?? 36) / 2)
-    const rowIndices = messageYs.map((y) =>
-      Math.round((y - config.headerHeight) / config.rowHeight)
-    )
-    const minRow = rowIndices.length > 0 ? Math.min(...rowIndices) : 0
-    const maxRow = rowIndices.length > 0 ? Math.max(...rowIndices) : 0
-    const activations =
-      rowIndices.length > 0 ? [{ startRow: minRow, endRow: maxRow }] : []
-    const rowCount = rowIndices.length > 0 ? maxRow + 2 : (dataRowCount ?? 1)
+      .map(
+        (n) => n.position.y + (n.height ?? config.messageNodeHeight) / 2 - selfY
+      )
+      .sort((a, b) => a - b)
+    const half = config.rowHeight * ACTIVATION_PADDING_RATIO
+    const activations: Array<{ top: number; bottom: number }> = []
+    centers.forEach((center) => {
+      const last = activations[activations.length - 1]
+      if (last && center - half <= last.bottom) {
+        last.bottom = center + half
+        return
+      }
+      activations.push({ top: center - half, bottom: center + half })
+    })
+    const maxRow =
+      centers.length > 0
+        ? Math.round(
+            (centers[centers.length - 1] - config.headerHeight) /
+              config.rowHeight
+          )
+        : 0
+    const rowCount = centers.length > 0 ? maxRow + 2 : (dataRowCount ?? 1)
     return { activations, rowCount }
   }, [
-    getEdges,
-    getNodes,
+    edges,
+    nodes,
     id,
     config.headerHeight,
     config.rowHeight,
+    config.messageNodeHeight,
     dataRowCount,
   ])
 
@@ -97,7 +119,7 @@ export function SequenceParticipantNode({
         onDoubleClick={() => inputRef.current?.focus()}
       >
         <div
-          className="h-5 rounded-sm"
+          className="h-5 rounded-full"
           style={{ width: INDICATOR_WIDTH, backgroundColor: indicatorColor }}
         />
         <input
@@ -115,7 +137,7 @@ export function SequenceParticipantNode({
         />
       </div>
       <svg
-        className="pointer-events-none absolute top-0 left-0 overflow-visible"
+        className="text-muted-foreground/40 pointer-events-none absolute top-0 left-0 overflow-visible"
         width={NODE_WIDTH}
         height={totalHeight}
       >
@@ -124,28 +146,20 @@ export function SequenceParticipantNode({
           y1={config.headerHeight}
           x2={lifelineX}
           y2={totalHeight}
-          stroke={LIFELINE_STROKE}
+          stroke="currentColor"
           strokeWidth={LIFELINE_WIDTH}
-          strokeDasharray="4 4"
         />
-        {activations.map((act, i) => {
-          const top =
-            config.headerHeight +
-            act.startRow * config.rowHeight +
-            config.rowHeight / 2
-          const height = (act.endRow - act.startRow + 1) * config.rowHeight
-          return (
-            <rect
-              key={i}
-              x={lifelineX - ACTIVATION_WIDTH / 2}
-              y={top}
-              width={ACTIVATION_WIDTH}
-              height={height}
-              fill={ACTIVATION_STROKE}
-              rx={1}
-            />
-          )
-        })}
+        {activations.map((act) => (
+          <rect
+            key={act.top}
+            x={lifelineX - ACTIVATION_WIDTH / 2}
+            y={act.top}
+            width={ACTIVATION_WIDTH}
+            height={act.bottom - act.top}
+            fill={indicatorColor}
+            rx={ACTIVATION_WIDTH / 2}
+          />
+        ))}
       </svg>
       {Array.from({ length: rowCount }, (_, i) => {
         // Same coordinate frame as the SVG lifeline/activation rect above
