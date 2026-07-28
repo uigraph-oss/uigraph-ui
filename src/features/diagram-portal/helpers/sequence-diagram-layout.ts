@@ -13,7 +13,7 @@ export const DEFAULT_CONFIG: SequenceConfig = {
   headerHeight: 40,
   messageNodeWidth: 140,
   messageNodeHeight: 32,
-  selfLoopOffset: 80,
+  selfLoopOffset: 48,
 }
 
 export function getParticipantX(

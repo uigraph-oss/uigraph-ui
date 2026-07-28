@@ -1,7 +1,10 @@
 import { ComponentInputType } from '@/features/component-meta'
 import { Edge, Node } from '@xyflow/react'
 import { generateUUID } from '../utils/uuid'
-import { beautifySequenceDiagram } from './beautify-sequence-diagram'
+import {
+  beautifySequenceDiagram,
+  getNextSequenceRow,
+} from './beautify-sequence-diagram'
 import { DEFAULT_CONFIG, getRowY, rowHandleId } from './sequence-diagram-layout'
 
 function nameField(value: string) {
@@ -79,10 +82,9 @@ export function createMessage(
     return { nodes, edges }
   }
 
-  const messages = nodes.filter((n) => n.id.startsWith('message-'))
-  const rowIndex = messages.length
-
   const isSelf = fromParticipantId === toParticipantId
+  const rowIndex = getNextSequenceRow(nodes, edges)
+
   const goesRight = fromParticipant.position.x < toParticipant.position.x
   const sourceSide = goesRight || isSelf ? 'right' : 'left'
   const targetSide = isSelf ? 'right' : goesRight ? 'left' : 'right'

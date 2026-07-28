@@ -139,10 +139,52 @@ function estimateMessageBoxSize(label: string): {
 
 const ROW_HANDLE_RE = /^row-\d+-(left|right)-(source|target)$/
 
-function assignMessageRowIndices(nodes: Node[]): Map<string, number> {
+function isSelfMessage(
+  messageId: string,
+  links: Map<string, ParticipantLink>
+): boolean {
+  const link = links.get(messageId)
+  return Boolean(link?.from && link.from === link.to)
+}
+
+/**
+ * A self-message occupies TWO rows, not one: it leaves its lifeline at row n
+ * and returns to it at row n+1. Handing out a plain 0..n-1 sequence lets the
+ * message after a self-loop claim the row that loop returns into, so both
+ * land on the same point of the lifeline.
+ */
+function assignMessageRowIndices(
+  nodes: Node[],
+  links: Map<string, ParticipantLink>
+): Map<string, number> {
   const messages = nodes.filter((n) => n.id.startsWith('message-'))
   const ordered = [...messages].sort((a, b) => a.position.y - b.position.y)
-  return new Map(ordered.map((m, rowIndex) => [m.id, rowIndex]))
+
+  const rowIndexByMessageId = new Map<string, number>()
+  let row = 0
+  for (const message of ordered) {
+    rowIndexByMessageId.set(message.id, row)
+    row += isSelfMessage(message.id, links) ? 2 : 1
+  }
+
+  return rowIndexByMessageId
+}
+
+/**
+ * The first free row below every existing message — i.e. where a newly
+ * appended message belongs. Not the message count: self-messages own two
+ * rows each.
+ */
+export function getNextSequenceRow(nodes: Node[], edges: Edge[]): number {
+  const links = buildMessageParticipantLinks(edges)
+  const rowIndexByMessageId = assignMessageRowIndices(nodes, links)
+
+  let next = 0
+  for (const [messageId, rowIndex] of rowIndexByMessageId) {
+    next = Math.max(next, rowIndex + (isSelfMessage(messageId, links) ? 2 : 1))
+  }
+
+  return next
 }
 
 /**
@@ -154,22 +196,31 @@ function assignMessageRowIndices(nodes: Node[]): Map<string, number> {
  * Needed any time the SET of messages (or their Y-order) changes: add,
  * delete, or drag-reorder all shift row indices out from under any edge
  * whose id string still encodes the old one.
+ *
+ * The one asymmetry: a self-message's return edge (message -> participant)
+ * lands on row n+1, so it must be renumbered to its message's row PLUS one,
+ * or the loop collapses onto the single row it departs from.
  */
 export function renumberSequenceRows(
   nodes: Node[],
   edges: Edge[]
 ): { nodes: Node[]; edges: Edge[] } {
-  const rowIndexByMessageId = assignMessageRowIndices(nodes)
+  const links = buildMessageParticipantLinks(edges)
+  const rowIndexByMessageId = assignMessageRowIndices(nodes, links)
 
   if (rowIndexByMessageId.size === 0) {
     return { nodes, edges }
   }
 
   const updatedEdges = edges.map((edge) => {
-    const rowIndex =
-      rowIndexByMessageId.get(edge.source) ??
-      rowIndexByMessageId.get(edge.target)
-    if (rowIndex === undefined) return edge
+    const outgoingRowIndex = rowIndexByMessageId.get(edge.source)
+    const baseRowIndex =
+      outgoingRowIndex ?? rowIndexByMessageId.get(edge.target)
+    if (baseRowIndex === undefined) return edge
+
+    const isReturnEdge =
+      outgoingRowIndex !== undefined && isSelfMessage(edge.source, links)
+    const rowIndex = isReturnEdge ? baseRowIndex + 1 : baseRowIndex
 
     let sourceHandle = edge.sourceHandle
     let targetHandle = edge.targetHandle
@@ -196,8 +247,11 @@ function computeMessageX(
   messageWidth: number,
   isSelfMessage: boolean
 ): number {
+  // Left edge, not centered: a self-message box centered on the offset
+  // straddles its own lifeline once the label is wide enough, and the edges
+  // then wrap around the outside of the box to reach its top/bottom handles.
   if (isSelfMessage) {
-    return fromX + DEFAULT_CONFIG.selfLoopOffset - messageWidth / 2
+    return fromX + PARTICIPANT_CENTER_OFFSET + DEFAULT_CONFIG.selfLoopOffset
   }
   return (fromX + toX) / 2 + PARTICIPANT_CENTER_OFFSET - messageWidth / 2
 }
@@ -258,9 +312,12 @@ export function beautifySequenceDiagram(
 
   const cfg = { ...DEFAULT_CONFIG, rowHeight: effectiveRowHeight }
 
-  const updatedMessages = orderedMessages.map((message, rowIndex) => {
+  const rowIndexByMessageId = assignMessageRowIndices(nodes, links)
+
+  const updatedMessages = orderedMessages.map((message) => {
     const size = sizesById.get(message.id)!
-    const newY = getRowY(rowIndex, cfg) - size.height / 2
+    const newY =
+      getRowY(rowIndexByMessageId.get(message.id)!, cfg) - size.height / 2
 
     const link = links.get(message.id)
     const fromParticipant = link?.from
