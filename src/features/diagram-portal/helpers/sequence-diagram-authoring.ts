@@ -164,3 +164,82 @@ export function createMessage(
     [...edges, edgeA, edgeB]
   )
 }
+
+/**
+ * Re-derives which side of each participant a message departs from and
+ * arrives at, from the participants' *current* columns — the same rules
+ * `createMessage` applies when a message is first authored. Reordering
+ * participant columns flips those sides for every message that crossed the
+ * moved column, and a stale side leaves the arrowhead pointing away from
+ * the lifeline it's attached to.
+ *
+ * Only the side of a row handle is rewritten; its row number is left to
+ * `renumberSequenceRows` (via beautify), which owns that half of the id.
+ */
+export function reorientSequenceMessages(nodes: Node[], edges: Edge[]): Edge[] {
+  const participantsById = new Map(
+    nodes
+      .filter((n) => n.type === 'sequenceParticipant')
+      .map((p) => [p.id, p] as const)
+  )
+
+  const links = new Map<string, { from?: string; to?: string }>()
+  for (const edge of edges) {
+    if (
+      participantsById.has(edge.source) &&
+      edge.target.startsWith('message-')
+    ) {
+      links.set(edge.target, { ...links.get(edge.target), from: edge.source })
+    }
+    if (
+      edge.source.startsWith('message-') &&
+      participantsById.has(edge.target)
+    ) {
+      links.set(edge.source, { ...links.get(edge.source), to: edge.target })
+    }
+  }
+
+  return edges.map((edge) => {
+    const outgoingLink = links.get(edge.source)
+    const incomingLink = links.get(edge.target)
+    const link = outgoingLink ?? incomingLink
+    if (!link?.from || !link.to) return edge
+
+    const fromParticipant = participantsById.get(link.from)
+    const toParticipant = participantsById.get(link.to)
+    if (!fromParticipant || !toParticipant) return edge
+
+    const isSelf = link.from === link.to
+    const goesRight = fromParticipant.position.x < toParticipant.position.x
+    const sourceSide = goesRight || isSelf ? 'right' : 'left'
+    const targetSide = isSelf ? 'right' : goesRight ? 'left' : 'right'
+
+    if (outgoingLink) {
+      return {
+        ...edge,
+        sourceHandle: isSelf
+          ? 'source-bottom'
+          : goesRight
+            ? 'source-right'
+            : 'source-left',
+        targetHandle: edge.targetHandle?.replace(
+          /^row-(\d+)-(left|right)-/,
+          `row-$1-${targetSide}-`
+        ),
+      }
+    }
+
+    return {
+      ...edge,
+      sourceHandle: edge.sourceHandle?.replace(
+        /^row-(\d+)-(left|right)-/,
+        `row-$1-${sourceSide}-`
+      ),
+      targetHandle: isSelf
+        ? 'target-top'
+        : sourceSide === 'right'
+          ? 'target-left'
+          : 'target-right',
+    }
+  })
+}

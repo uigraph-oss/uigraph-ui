@@ -6,6 +6,7 @@ import {
   createMessage,
   createParticipantNode,
   getNextParticipantColumn,
+  reorientSequenceMessages,
 } from './sequence-diagram-authoring'
 
 function participant(id: string, x: number): Node {
@@ -149,5 +150,50 @@ describe('createMessage', () => {
       .sort((a, b) => a.position.y - b.position.y)
     expect(messages).toHaveLength(2)
     expect(messages[0].position.y).toBeLessThan(messages[1].position.y)
+  })
+})
+
+describe('reorientSequenceMessages', () => {
+  it('flips handle sides when the participant columns are swapped', () => {
+    const p1 = participant('participant-a', 0)
+    const p2 = participant('participant-b', 300)
+    const { nodes, edges } = createMessage(
+      [p1, p2],
+      [],
+      'participant-a',
+      'participant-b',
+      'GET /v1/stores'
+    )
+
+    const swapped = nodes.map((n) => {
+      if (n.id === 'participant-a') return { ...n, position: { x: 300, y: 0 } }
+      if (n.id === 'participant-b') return { ...n, position: { x: 0, y: 0 } }
+      return n
+    })
+
+    const reoriented = reorientSequenceMessages(swapped, edges)
+    const message = nodes.find((n) => n.id.startsWith('message-'))!
+    const fromEdge = reoriented.find((e) => e.source === 'participant-a')!
+    const toEdge = reoriented.find((e) => e.target === 'participant-b')!
+
+    expect(fromEdge.sourceHandle).toBe('row-0-left-source')
+    expect(fromEdge.targetHandle).toBe('target-right')
+    expect(toEdge.sourceHandle).toBe('source-left')
+    expect(toEdge.targetHandle).toBe('row-0-right-target')
+    expect(fromEdge.target).toBe(message.id)
+  })
+
+  it('leaves handles untouched when the column order is unchanged', () => {
+    const p1 = participant('participant-a', 0)
+    const p2 = participant('participant-b', 300)
+    const { nodes, edges } = createMessage(
+      [p1, p2],
+      [],
+      'participant-a',
+      'participant-b',
+      'GET /v1/stores'
+    )
+
+    expect(reorientSequenceMessages(nodes, edges)).toEqual(edges)
   })
 })

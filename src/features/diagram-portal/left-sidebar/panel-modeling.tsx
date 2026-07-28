@@ -31,6 +31,7 @@ import { beautifySequenceDiagram } from '../helpers/beautify-sequence-diagram'
 import {
   createMessage,
   createParticipantNode,
+  reorientSequenceMessages,
 } from '../helpers/sequence-diagram-authoring'
 import { getComponentField } from '../hooks/use-component-field'
 import { TComponentField } from '../types/component-fields'
@@ -186,7 +187,10 @@ export function SidebarModeling() {
     })
 
     const { nodes: beautified, edges: beautifiedEdges } =
-      beautifySequenceDiagram(movedNodes, edges)
+      beautifySequenceDiagram(
+        movedNodes,
+        reorientSequenceMessages(movedNodes, edges)
+      )
     setNodes(beautified)
     setEdges(beautifiedEdges)
   }
