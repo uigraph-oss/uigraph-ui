@@ -31,6 +31,10 @@ import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
 import { beautifyDiagram } from './helpers/beautify-diagram'
 import { downloadFlowDiagramImage } from './helpers/download-image'
+import {
+  applySequenceMermaidContext,
+  buildSequenceMermaidContext,
+} from './helpers/sequence-mermaid-context'
 
 export const diagramToolbarContainerClassName =
   'pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
@@ -93,6 +97,28 @@ export function FloatingCanvasToolbar() {
 
     try {
       const mermaidText = await mermaidFile.text()
+      const isSequenceMermaid = mermaidText
+        .split('\n')
+        .some((line) => line.trim().toLowerCase().startsWith('sequencediagram'))
+
+      if (isSequenceMermaid) {
+        const diagram = await convertMermaidToReactFlow(mermaidText)
+
+        if (diagram === null) {
+          return toast.error('Failed to convert Mermaid diagram to React Flow')
+        }
+
+        const nodes = contextFile
+          ? applySequenceMermaidContext(
+              diagram.nodes,
+              parse(await contextFile.text())
+            )
+          : diagram.nodes
+
+        setNodes(nodes)
+        setEdges(diagram.edges)
+        return
+      }
 
       if (contextFile) {
         const parsedContext: unknown = parse(await contextFile.text())
@@ -144,17 +170,30 @@ export function FloatingCanvasToolbar() {
       if (isSequenceDiagram(nodes)) {
         const mermaid = convertReactFlowToSequenceMermaid(nodes, edges)
 
-        const blob = new Blob([mermaid], {
+        const mermaidBlob = new Blob([mermaid], {
           type: 'text/plain;charset=utf-8',
         })
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `${baseName}.mmd`
-        link.click()
-        URL.revokeObjectURL(url)
+        const mermaidUrl = URL.createObjectURL(mermaidBlob)
+        const mermaidLink = document.createElement('a')
+        mermaidLink.href = mermaidUrl
+        mermaidLink.download = `${baseName}.mmd`
+        mermaidLink.click()
 
-        toast.success('Sequence diagram exported successfully')
+        const context = buildSequenceMermaidContext(nodes)
+
+        const contextBlob = new Blob([JSON.stringify(context, null, 2)], {
+          type: 'application/json;charset=utf-8',
+        })
+        const contextUrl = URL.createObjectURL(contextBlob)
+        const contextLink = document.createElement('a')
+        contextLink.href = contextUrl
+        contextLink.download = `${baseName}-context.json`
+        contextLink.click()
+
+        URL.revokeObjectURL(mermaidUrl)
+        URL.revokeObjectURL(contextUrl)
+
+        toast.success('Mermaid and context exported successfully')
         return
       }
 
