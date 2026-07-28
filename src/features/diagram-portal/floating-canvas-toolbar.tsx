@@ -14,7 +14,9 @@ import { cn } from '@/lib/utils'
 import {
   convertMermaidToReactFlow,
   convertMermaidToReactFlowWithContext,
+  convertReactFlowToSequenceMermaid,
   convertUiGraphToMermaid,
+  isSequenceDiagram,
 } from '@uigraph/sdk'
 import { useNodesInitialized } from '@xyflow/react'
 import { openFileExplorer } from 'daily-code/browser'
@@ -133,13 +135,30 @@ export function FloatingCanvasToolbar() {
 
   function handleExportMermaid() {
     try {
-      const exported = convertUiGraphToMermaid({ nodes, edges })
-
       const baseName =
         diagramName
           .trim()
           .replace(/[\\/:*?"<>|]+/g, '-')
           .replace(/\s+/g, ' ') || 'uigraph-diagram'
+
+      if (isSequenceDiagram(nodes)) {
+        const mermaid = convertReactFlowToSequenceMermaid(nodes, edges)
+
+        const blob = new Blob([mermaid], {
+          type: 'text/plain;charset=utf-8',
+        })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${baseName}.mmd`
+        link.click()
+        URL.revokeObjectURL(url)
+
+        toast.success('Sequence diagram exported successfully')
+        return
+      }
+
+      const exported = convertUiGraphToMermaid({ nodes, edges })
 
       const mermaidBlob = new Blob([exported.mermaid], {
         type: 'text/plain;charset=utf-8',
