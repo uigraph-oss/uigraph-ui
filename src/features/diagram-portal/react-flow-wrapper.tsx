@@ -29,6 +29,7 @@ import { DrawingOverlay } from './drawing-overlay'
 import { CUSTOM_EDGE_TYPES } from './edges'
 import { EdgeMarkerDefs } from './edges/edge-marker-defs'
 import { createEdgeMarker } from './edges/helpers'
+import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
 import { findEditorAction } from './helpers/editor-actions'
 import { handleOnGroupDrag, handleOnNodeDrag } from './helpers/on-node-drag'
 import { createGroupNode } from './helpers/xy-flow'
@@ -385,6 +386,17 @@ export function ReactFlowWrapper({
 
       if (node.type === 'group') {
         handleOnGroupDrag(node, reactFlowInstance)
+      } else if (node.id.startsWith('message-')) {
+        // Dragging a message reorders it: re-sort by Y, snap row
+        // spacing/positions back onto the grid, and regenerate the
+        // row-handle ids on its edges to match wherever it landed.
+        const { nodes: beautified, edges: beautifiedEdges } =
+          beautifySequenceDiagram(
+            reactFlowInstance.getNodes(),
+            reactFlowInstance.getEdges()
+          )
+        setNodes(beautified)
+        setEdges(beautifiedEdges)
       } else {
         handleOnNodeDrag(
           event as unknown as React.MouseEvent,
@@ -393,7 +405,7 @@ export function ReactFlowWrapper({
         )
       }
     },
-    [reactFlowInstance]
+    [reactFlowInstance, setNodes, setEdges]
   )
 
   // Ensure group nodes always have z-index -1

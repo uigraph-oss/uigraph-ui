@@ -1,5 +1,6 @@
+import { buildMetaData } from '@uigraph/sdk'
 import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useRef } from 'react'
 import {
   DEFAULT_CONFIG,
   getRowY,
@@ -11,6 +12,7 @@ import { NodeDataGenerator } from './types/node.types'
 export type SequenceParticipantNodeData = NodeDataGenerator<{
   label: string
   rowCount?: number
+  rowHeight?: number
   activations?: Array<{ startRow: number; endRow: number }>
   color?: string
 }>
@@ -31,8 +33,12 @@ export function SequenceParticipantNode({
   id,
   data,
 }: NodeProps<TSequenceParticipantNode>) {
-  const { getNodes, getEdges } = useReactFlow()
-  const config = DEFAULT_CONFIG
+  const { getNodes, getEdges, updateNodeData } = useReactFlow()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const config = {
+    ...DEFAULT_CONFIG,
+    rowHeight: data.rowHeight ?? DEFAULT_CONFIG.rowHeight,
+  }
   const { rowCount: dataRowCount } = data
   const name = useComponentField<string>(data.componentFields, {
     componentFieldId: 'name',
@@ -86,12 +92,27 @@ export function SequenceParticipantNode({
         height: totalHeight,
       }}
     >
-      <div className="absolute top-0 left-1/2 flex -translate-x-1/2 items-center gap-1.5">
+      <div
+        className="absolute top-0 left-1/2 flex -translate-x-1/2 items-center gap-1.5"
+        onDoubleClick={() => inputRef.current?.focus()}
+      >
         <div
           className="h-5 rounded-sm"
           style={{ width: INDICATOR_WIDTH, backgroundColor: indicatorColor }}
         />
-        <span className="text-sm font-medium whitespace-nowrap">{label}</span>
+        <input
+          ref={inputRef}
+          value={label}
+          size={Math.max(label.length, 1)}
+          className="text-foreground border-none bg-transparent text-sm font-medium outline-none"
+          onChange={(e) => {
+            updateNodeData(id, {
+              componentFields: buildMetaData(data.componentFields ?? [], {
+                name: e.target.value,
+              }),
+            })
+          }}
+        />
       </div>
       <svg
         className="pointer-events-none absolute top-0 left-0 overflow-visible"
@@ -127,7 +148,11 @@ export function SequenceParticipantNode({
         })}
       </svg>
       {Array.from({ length: rowCount }, (_, i) => {
-        const top = getRowY(i, config) - config.headerHeight
+        // Same coordinate frame as the SVG lifeline/activation rect above
+        // (both live in this component's own 0..totalHeight box) — no
+        // headerHeight subtraction here, or handles end up offset from the
+        // message boxes and activation bar they're meant to connect to.
+        const top = getRowY(i, config)
         const handleClass = '!w-1 !h-1 !opacity-0 !border-0 !bg-transparent'
         return (
           <Fragment key={i}>

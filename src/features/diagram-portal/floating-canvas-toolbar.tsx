@@ -16,23 +16,32 @@ import {
   convertMermaidToReactFlowWithContext,
   convertUiGraphToMermaid,
 } from '@uigraph/sdk'
+import { Node, useNodesInitialized } from '@xyflow/react'
 import { openFileExplorer } from 'daily-code/browser'
 import { parse } from 'jsonc-parser'
 import { ComponentProps, ReactNode, useState } from 'react'
 import { BsCamera } from 'react-icons/bs'
-import { LuImport } from 'react-icons/lu'
+import { LuImport, LuMessageSquarePlus, LuUserPlus } from 'react-icons/lu'
 import { SiMermaid } from 'react-icons/si'
 import { toast } from 'sonner'
+import { AddSequenceMessagePopover } from './components/add-sequence-message-popover'
 import * as icons from './components/icons'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
+import { beautifyDiagram } from './helpers/beautify-diagram'
+import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
 import { downloadFlowDiagramImage } from './helpers/download-image'
+import {
+  createMessage,
+  createParticipantNode,
+} from './helpers/sequence-diagram-authoring'
 
 export const diagramToolbarContainerClassName =
   'pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
 
 export function FloatingCanvasToolbar() {
   const [isDownloading, setIsDownloading] = useState(false)
+  const nodesInitialized = useNodesInitialized()
 
   const {
     nodes,
@@ -53,6 +62,54 @@ export function FloatingCanvasToolbar() {
 
     diagramName,
   } = useFlowDiagramContext()
+
+  // "Add participant"/"Add message" only ever make sense on a canvas that's
+  // either already a sequence diagram or completely empty (so one can be
+  // started) — never on a canvas with other, non-sequence content, since
+  // mixing the two has never been a supported combination anywhere in this
+  // codebase (row/handle math, beautify, etc. all assume "all sequence" or
+  // "no sequence", never both).
+  const isSequenceDiagram = nodes.some((n) => n.type === 'sequenceParticipant')
+  const showSequenceControls = isSequenceDiagram || nodes.length === 0
+
+  function handleAddParticipant() {
+    // A lone participant with no counterpart is a useless starting state,
+    // so bootstrapping an empty canvas creates both ends of the first
+    // message at once.
+    const newParticipants: Node[] = []
+    if (nodes.length === 0) {
+      const first = createParticipantNode(nodes, 'Participant A')
+      newParticipants.push(
+        first,
+        createParticipantNode([first], 'Participant B')
+      )
+    } else {
+      newParticipants.push(createParticipantNode(nodes, 'New Participant'))
+    }
+
+    const { nodes: beautified, edges: beautifiedEdges } =
+      beautifySequenceDiagram([...nodes, ...newParticipants], edges)
+    setNodes(beautified)
+    setEdges(beautifiedEdges)
+    setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
+  }
+
+  function handleAddMessage(
+    fromParticipantId: string,
+    toParticipantId: string,
+    label: string
+  ) {
+    const { nodes: updated, edges: updatedEdges } = createMessage(
+      nodes,
+      edges,
+      fromParticipantId,
+      toParticipantId,
+      label
+    )
+    setNodes(updated)
+    setEdges(updatedEdges)
+    setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
+  }
 
   async function handleExport() {
     setIsDownloading(true)
@@ -292,6 +349,64 @@ export function FloatingCanvasToolbar() {
         >
           <icons.LayoutTBIcon />
         </ToolbarButton>
+
+        <ToolbarButton
+          delayDuration={100}
+          tooltipPosition="top"
+          tooltip="Beautify"
+          disabled={
+            tempDiagramState !== null || !nodesInitialized || nodes.length === 0
+          }
+          onClick={() => {
+            if (!nodesInitialized) {
+              toast.info('Diagram is still rendering — try again in a moment')
+              return
+            }
+            const { nodes: beautified, edges: beautifiedEdges } =
+              beautifyDiagram(nodes, edges, 'LR')
+            setNodes(beautified)
+            setEdges(beautifiedEdges)
+            setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
+          }}
+        >
+          <icons.BeautifyIcon />
+        </ToolbarButton>
+
+        {showSequenceControls && (
+          <>
+            <ToolbarSeparator />
+
+            <ToolbarButton
+              delayDuration={100}
+              tooltipPosition="top"
+              tooltip={
+                isSequenceDiagram ? 'Add participant' : 'New sequence diagram'
+              }
+              disabled={tempDiagramState !== null}
+              onClick={handleAddParticipant}
+            >
+              <LuUserPlus />
+            </ToolbarButton>
+
+            {isSequenceDiagram && (
+              <AddSequenceMessagePopover
+                participants={nodes.filter(
+                  (n) => n.type === 'sequenceParticipant'
+                )}
+                onSubmit={handleAddMessage}
+              >
+                <ToolbarButton
+                  delayDuration={100}
+                  tooltipPosition="top"
+                  tooltip="Add message"
+                  disabled={tempDiagramState !== null}
+                >
+                  <LuMessageSquarePlus />
+                </ToolbarButton>
+              </AddSequenceMessagePopover>
+            )}
+          </>
+        )}
 
         <ToolbarSeparator />
 

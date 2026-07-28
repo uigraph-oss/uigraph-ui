@@ -55,3 +55,4 @@ ___REF___*
 /.vscode
 /public/context-schema.json
 docs/superpowers/*
+.pnpm-store/
