@@ -1,4 +1,4 @@
-import { ComponentInputType } from '@uigraph/sdk'
+import { ComponentInputType, convertMermaidToReactFlow } from '@uigraph/sdk'
 import { Edge, Node } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
 import {
@@ -367,5 +367,97 @@ describe('renumberSequenceRows', () => {
     const edges: Edge[] = []
     const result = renumberSequenceRows([p1], edges)
     expect(result.edges).toBe(edges)
+  })
+})
+
+describe('beautifying a freshly imported mermaid diagram', () => {
+  // The SDK lays an imported sequence diagram out and Beautify re-derives that
+  // same layout from the nodes alone. If the two ever drift, pressing Beautify
+  // right after an import silently moves everything — so pin them together.
+  async function importDiagram(...lines: string[]) {
+    const { nodes, edges } = await convertMermaidToReactFlow(
+      ['sequenceDiagram', ...lines].join('\n')
+    )
+    return { nodes: nodes as Node[], edges: edges as Edge[] }
+  }
+
+  function geometry(nodes: Node[]) {
+    return nodes.map((node) => ({
+      id: node.id,
+      x: Math.round(node.position.x),
+      y: Math.round(node.position.y),
+      width: node.width,
+      height: node.height,
+    }))
+  }
+
+  it('leaves a plain diagram untouched', async () => {
+    const { nodes, edges } = await importDiagram(
+      '  Alice->>Bob: Send order information',
+      '  Bob->>Alice: Return Checkout Session client secret',
+      '  Alice->>Alice: Customer completes payment'
+    )
+
+    expect(geometry(beautifySequenceDiagram(nodes, edges).nodes)).toEqual(
+      geometry(nodes)
+    )
+  })
+
+  it('leaves notes, loops and boxes untouched', async () => {
+    const { nodes, edges } = await importDiagram(
+      '  box Purple Front of house',
+      '    participant Alice',
+      '    participant Bob',
+      '  end',
+      '  Alice->>Bob: Hi',
+      '  loop HealthCheck',
+      '    Bob->>Bob: Fight against hypochondria',
+      '  end',
+      '  Note right of Bob: Rational thoughts!',
+      '  alt is sick',
+      '    Bob->>Alice: Not so good',
+      '  else is well',
+      '    Bob->>Alice: Feeling fresh',
+      '  end'
+    )
+
+    expect(geometry(beautifySequenceDiagram(nodes, edges).nodes)).toEqual(
+      geometry(nodes)
+    )
+  })
+
+  it('leaves nested frames untouched', async () => {
+    const { nodes, edges } = await importDiagram(
+      '  loop outer',
+      '    par inner',
+      '      Alice->>Bob: Hi',
+      '    and also',
+      '      Alice->>Bob: There',
+      '    end',
+      '  end'
+    )
+
+    expect(geometry(beautifySequenceDiagram(nodes, edges).nodes)).toEqual(
+      geometry(nodes)
+    )
+  })
+
+  it('keeps the row geometry it hands to the lifelines in sync', async () => {
+    const { nodes, edges } = await importDiagram(
+      '  Alice->>Bob: Hi',
+      '  loop HealthCheck',
+      '    Bob->>Bob: Fight against hypochondria',
+      '  end',
+      '  Bob->>Alice: Bye'
+    )
+
+    const before = nodes.find((n) => n.id === 'participant-Alice')!.data
+    const after = beautifySequenceDiagram(nodes, edges).nodes.find(
+      (n) => n.id === 'participant-Alice'
+    )!.data
+
+    expect(after.rowYs).toEqual(before.rowYs)
+    expect(after.rowHeight).toEqual(before.rowHeight)
+    expect(after.lifelineHeight).toEqual(before.lifelineHeight)
   })
 })

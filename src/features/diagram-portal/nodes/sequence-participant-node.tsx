@@ -21,6 +21,13 @@ export type SequenceParticipantNodeData = NodeDataGenerator<{
   label: string
   rowCount?: number
   rowHeight?: number
+  /** Center Y of every row, when rows aren't a uniform grid (block frames). */
+  rowYs?: number[]
+  lifelineHeight?: number
+  /** Row a `create participant` introduced this one at. */
+  lifelineStartRow?: number
+  /** Row a `destroy` removed it at. */
+  lifelineEndRow?: number
   activations?: Array<{ startRow: number; endRow: number }>
   color?: string
 }>
@@ -34,6 +41,7 @@ const NODE_WIDTH = 10
 const LIFELINE_WIDTH = 1
 const ACTIVATION_WIDTH = 4
 const ACTIVATION_PADDING_RATIO = 0.3
+const LIFELINE_OPACITY = 0.75
 const INDICATOR_WIDTH = ACTIVATION_WIDTH
 
 export function SequenceParticipantNode({
@@ -56,10 +64,34 @@ export function SequenceParticipantNode({
     componentFieldId: 'color',
   })
   const label = name ?? data.label ?? ''
-  const indicatorColor = color ?? data.color ?? '#f59e0b'
+  // Hex typed into the color field used to be stored without its `#`, which is
+  // not valid CSS — those saved values still have to render.
+  const savedColor = color ?? data.color ?? '#f59e0b'
+  const indicatorColor = /^[0-9a-f]{3,8}$/i.test(savedColor)
+    ? `#${savedColor}`
+    : savedColor
   const lifelineX = NODE_WIDTH / 2
 
+  const explicitRowYs = data.rowYs
+  const explicitActivations = data.activations
+
   const { activations, rowCount } = useMemo(() => {
+    // A mermaid import states its own geometry: rows aren't a uniform grid
+    // once block frames add label space between them, and activation bars come
+    // from `activate`/`+`/`-` statements rather than from wherever message
+    // boxes happen to sit. Only fall back to inferring both from the edges
+    // when the diagram was authored in the canvas and says nothing.
+    if (explicitRowYs) {
+      const half = config.rowHeight * ACTIVATION_PADDING_RATIO
+      return {
+        activations: (explicitActivations ?? []).map((activation) => ({
+          top: (explicitRowYs[activation.startRow] ?? 0) - half,
+          bottom: (explicitRowYs[activation.endRow] ?? 0) + half,
+        })),
+        rowCount: explicitRowYs.length,
+      }
+    }
+
     const connectedEdges = edges.filter(
       (e) => e.source === id || e.target === id
     )
@@ -102,9 +134,25 @@ export function SequenceParticipantNode({
     config.rowHeight,
     config.messageNodeHeight,
     dataRowCount,
+    explicitRowYs,
+    explicitActivations,
   ])
 
-  const totalHeight = config.headerHeight + rowCount * config.rowHeight
+  const totalHeight =
+    data.lifelineHeight ?? config.headerHeight + rowCount * config.rowHeight
+
+  // `create participant X` / `destroy X` clip the lifeline to the rows the
+  // participant actually exists for, instead of the full diagram height.
+  const lifelineTop =
+    data.lifelineStartRow !== undefined && explicitRowYs
+      ? (explicitRowYs[data.lifelineStartRow] ?? config.headerHeight) -
+        config.rowHeight / 2
+      : config.headerHeight
+  const lifelineBottom =
+    data.lifelineEndRow !== undefined && explicitRowYs
+      ? (explicitRowYs[data.lifelineEndRow] ?? totalHeight) +
+        config.rowHeight / 2
+      : totalHeight
 
   return (
     <div
@@ -137,16 +185,19 @@ export function SequenceParticipantNode({
         />
       </div>
       <svg
-        className="text-muted-foreground/40 pointer-events-none absolute top-0 left-0 overflow-visible"
+        className="pointer-events-none absolute top-0 left-0 overflow-visible"
         width={NODE_WIDTH}
         height={totalHeight}
       >
+        {/* The lifeline is the participant's own color, dimmed — a fixed grey
+            reads as a separate element from the name indicator above it. */}
         <line
           x1={lifelineX}
-          y1={config.headerHeight}
+          y1={lifelineTop}
           x2={lifelineX}
-          y2={totalHeight}
-          stroke="currentColor"
+          y2={lifelineBottom}
+          stroke={indicatorColor}
+          strokeOpacity={LIFELINE_OPACITY}
           strokeWidth={LIFELINE_WIDTH}
         />
         {activations.map((act) => (
@@ -157,6 +208,7 @@ export function SequenceParticipantNode({
             width={ACTIVATION_WIDTH}
             height={act.bottom - act.top}
             fill={indicatorColor}
+            fillOpacity={LIFELINE_OPACITY}
             rx={ACTIVATION_WIDTH / 2}
           />
         ))}
@@ -166,7 +218,7 @@ export function SequenceParticipantNode({
         // (both live in this component's own 0..totalHeight box) — no
         // headerHeight subtraction here, or handles end up offset from the
         // message boxes and activation bar they're meant to connect to.
-        const top = getRowY(i, config)
+        const top = explicitRowYs?.[i] ?? getRowY(i, config)
         const handleClass = '!w-1 !h-1 !opacity-0 !border-0 !bg-transparent'
         return (
           <Fragment key={i}>

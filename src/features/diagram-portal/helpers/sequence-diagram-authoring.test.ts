@@ -1,3 +1,5 @@
+import { ComponentInputType } from '@/features/component-meta'
+import { SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
 import {
@@ -44,6 +46,23 @@ describe('createParticipantNode', () => {
     expect(node.type).toBe('sequenceParticipant')
     expect(node.id.startsWith('participant-')).toBe(true)
     expect(node.position).toEqual({ x: 0, y: 0 })
+  })
+
+  it('gives the participant a color field, like an imported one', () => {
+    const node = createParticipantNode([], 'New Participant')
+    const fields = (
+      node.data as {
+        componentFields: Array<{
+          componentFieldId: string
+          type: string
+          data: Array<{ value: string }>
+        }>
+      }
+    ).componentFields
+
+    expect(fields.map((f) => f.componentFieldId)).toEqual(['name', 'color'])
+    expect(fields[1].type).toBe(ComponentInputType.ColorPicker)
+    expect(fields[1].data[0].value).toBe(SEQUENCE_PARTICIPANT_COLOR)
   })
 })
 

@@ -2,7 +2,7 @@ import { estimateSequenceMessageBoxSize, SEQUENCE_LAYOUT } from '@uigraph/sdk'
 import { Edge, Node } from '@xyflow/react'
 import { getComponentField } from '../hooks/use-component-field'
 import { TComponentField } from '../types/component-fields'
-import { DEFAULT_CONFIG, getRowY } from './sequence-diagram-layout'
+import { DEFAULT_CONFIG } from './sequence-diagram-layout'
 
 const ROW_HEIGHT_VERTICAL_PADDING = SEQUENCE_LAYOUT.ROW_VERTICAL_PADDING
 const PARTICIPANT_CENTER_OFFSET = 5
@@ -53,27 +53,87 @@ function isSelfMessage(
   return Boolean(link?.from && link.from === link.to)
 }
 
+/** Messages and notes both occupy rows; frames and participants do not. */
+function isRowItem(node: Node): boolean {
+  return node.id.startsWith('message-') || node.id.startsWith('note-')
+}
+
 /**
  * A self-message occupies TWO rows, not one: it leaves its lifeline at row n
  * and returns to it at row n+1. Handing out a plain 0..n-1 sequence lets the
- * message after a self-loop claim the row that loop returns into, so both
- * land on the same point of the lifeline.
+ * item after a self-loop claim the row that loop returns into, so both land on
+ * the same point of the lifeline.
  */
 function assignMessageRowIndices(
   nodes: Node[],
   links: Map<string, ParticipantLink>
 ): Map<string, number> {
-  const messages = nodes.filter((n) => n.id.startsWith('message-'))
-  const ordered = [...messages].sort((a, b) => a.position.y - b.position.y)
+  const ordered = nodes
+    .filter(isRowItem)
+    .sort((a, b) => a.position.y - b.position.y)
 
   const rowIndexByMessageId = new Map<string, number>()
   let row = 0
-  for (const message of ordered) {
-    rowIndexByMessageId.set(message.id, row)
-    row += isSelfMessage(message.id, links) ? 2 : 1
+  for (const item of ordered) {
+    rowIndexByMessageId.set(item.id, row)
+    row += isSelfMessage(item.id, links) ? 2 : 1
   }
 
   return rowIndexByMessageId
+}
+
+type SequenceBlockData = {
+  startRow: number
+  endRow: number
+  depth?: number
+  sections?: Array<{ startRow: number; endRow: number }>
+}
+
+function getBlockData(node: Node): SequenceBlockData | undefined {
+  const block = node.data?.sequenceBlock as SequenceBlockData | undefined
+  if (!block) return undefined
+  if (typeof block.startRow !== 'number') return undefined
+  if (typeof block.endRow !== 'number') return undefined
+  return block
+}
+
+/**
+ * Row Y positions for the whole diagram. Rows are NOT a uniform grid once
+ * `loop`/`alt`/`rect` frames are present: each frame needs label space above
+ * its first row and a margin below its last, and every row after it shifts
+ * down by that much. Mirrors the SDK's import-time grid so a Beautify pass
+ * reproduces the imported layout instead of collapsing the frames.
+ */
+function buildRowYs(
+  nodes: Node[],
+  rowCount: number,
+  rowHeight: number
+): { tops: number[]; centers: number[]; height: number } {
+  const padBefore = new Array<number>(rowCount + 1).fill(0)
+  const padAfter = new Array<number>(rowCount + 1).fill(0)
+
+  for (const node of nodes) {
+    const block = getBlockData(node)
+    if (!block) continue
+    if (block.startRow > rowCount - 1) continue
+    padBefore[block.startRow] += SEQUENCE_LAYOUT.BLOCK_TOP_PADDING
+    padAfter[Math.min(block.endRow, rowCount - 1)] +=
+      SEQUENCE_LAYOUT.BLOCK_BOTTOM_PADDING
+    for (const section of (block.sections ?? []).slice(1)) {
+      if (section.startRow > rowCount - 1) continue
+      padBefore[section.startRow] += SEQUENCE_LAYOUT.BLOCK_SECTION_PADDING
+    }
+  }
+
+  const tops: number[] = []
+  let y = SEQUENCE_LAYOUT.HEADER_HEIGHT
+  for (let row = 0; row < rowCount; row++) {
+    y += padBefore[row]
+    tops.push(y)
+    y += rowHeight + padAfter[row]
+  }
+
+  return { tops, centers: tops.map((top) => top + rowHeight / 2), height: y }
 }
 
 /**
@@ -189,48 +249,52 @@ export function beautifySequenceDiagram(
   edges: Edge[]
 ): { nodes: Node[]; edges: Edge[] } {
   const participants = nodes.filter((n) => n.type === 'sequenceParticipant')
-  const messages = nodes.filter((n) => n.id.startsWith('message-'))
+  const items = nodes.filter(isRowItem)
 
-  if (participants.length === 0 || messages.length === 0) {
+  if (participants.length === 0 || items.length === 0) {
     return { nodes, edges }
   }
 
   const links = buildMessageParticipantLinks(edges)
   const participantsById = new Map(participants.map((p) => [p.id, p]))
 
-  const orderedMessages = [...messages].sort(
-    (a, b) => a.position.y - b.position.y
-  )
+  const orderedItems = [...items].sort((a, b) => a.position.y - b.position.y)
 
   const sizesById = new Map(
-    orderedMessages.map((m) => [
-      m.id,
-      estimateSequenceMessageBoxSize(getMessageLabel(m)),
+    orderedItems.map((item) => [
+      item.id,
+      estimateSequenceMessageBoxSize(getMessageLabel(item)),
     ])
   )
 
-  const effectiveRowHeight = Math.max(
+  const rowHeight = Math.max(
     DEFAULT_CONFIG.rowHeight,
-    ...orderedMessages.map(
-      (m) => sizesById.get(m.id)!.height + ROW_HEIGHT_VERTICAL_PADDING
+    ...orderedItems.map(
+      (item) => sizesById.get(item.id)!.height + ROW_HEIGHT_VERTICAL_PADDING
     )
   )
 
-  const cfg = { ...DEFAULT_CONFIG, rowHeight: effectiveRowHeight }
+  const rowIndexByItemId = assignMessageRowIndices(nodes, links)
+  const rowCount = Math.max(
+    ...[...rowIndexByItemId].map(
+      ([id, row]) => row + (isSelfMessage(id, links) ? 2 : 1)
+    )
+  )
+  const rows = buildRowYs(nodes, rowCount, rowHeight)
 
-  const rowIndexByMessageId = assignMessageRowIndices(nodes, links)
+  const updatedItems = orderedItems.map((item) => {
+    const size = sizesById.get(item.id)!
+    const row = rowIndexByItemId.get(item.id)!
+    const newY = rows.centers[row] - size.height / 2
 
-  const updatedMessages = orderedMessages.map((message) => {
-    const size = sizesById.get(message.id)!
-    const newY =
-      getRowY(rowIndexByMessageId.get(message.id)!, cfg) - size.height / 2
-
-    const link = links.get(message.id)
+    const link = links.get(item.id)
     const fromParticipant = link?.from
       ? participantsById.get(link.from)
       : undefined
     const toParticipant = link?.to ? participantsById.get(link.to) : undefined
 
+    // Notes hang off a lifeline rather than spanning two of them, so their X
+    // is left where the importer put it.
     const newX =
       fromParticipant && toParticipant
         ? computeMessageX(
@@ -239,34 +303,102 @@ export function beautifySequenceDiagram(
             size.width,
             link!.from === link!.to
           )
-        : message.position.x
+        : item.position.x
+
+    const width = item.id.startsWith('note-')
+      ? (item.width ?? size.width)
+      : size.width
 
     return {
-      ...message,
+      ...item,
       position: { x: newX, y: newY },
-      width: size.width,
+      width,
       height: size.height,
       style: {
-        ...(message.style ?? {}),
-        width: size.width,
+        ...(item.style ?? {}),
+        width,
         height: size.height,
       },
     }
   })
 
-  const updatedMessagesById = new Map(updatedMessages.map((m) => [m.id, m]))
+  const updatedItemsById = new Map(updatedItems.map((item) => [item.id, item]))
 
   const updatedParticipants = participants.map((p) => ({
     ...p,
-    data: { ...p.data, rowHeight: effectiveRowHeight },
+    data: {
+      ...p.data,
+      rowHeight,
+      rowCount,
+      rowYs: rows.centers,
+      lifelineHeight: rows.height,
+    },
   }))
   const updatedParticipantsById = new Map(
     updatedParticipants.map((p) => [p.id, p])
   )
 
+  // Frames keep the row range they were imported with, so they follow the
+  // recomputed rows instead of drifting away from the messages they enclose.
+  const updatedFrames = new Map<string, Node>()
+  for (const node of nodes) {
+    const block = getBlockData(node)
+    if (block) {
+      // A frame nested inside another shares its rows, so it takes only its
+      // own share of the label space — the parent keeps the rest and stays
+      // visibly outside it.
+      const startRow = Math.min(block.startRow, rowCount - 1)
+      const endRow = Math.min(block.endRow, rowCount - 1)
+      const deeperAtTop = nodes.filter((other) => {
+        const otherBlock = getBlockData(other)
+        if (!otherBlock) return false
+        if (other.id === node.id) return false
+        if ((otherBlock.depth ?? 0) <= (block.depth ?? 0)) return false
+        return Math.min(otherBlock.startRow, rowCount - 1) === startRow
+      }).length
+      const deeperAtBottom = nodes.filter((other) => {
+        const otherBlock = getBlockData(other)
+        if (!otherBlock) return false
+        if (other.id === node.id) return false
+        if ((otherBlock.depth ?? 0) <= (block.depth ?? 0)) return false
+        return Math.min(otherBlock.endRow, rowCount - 1) === endRow
+      }).length
+
+      const top =
+        rows.tops[startRow] -
+        SEQUENCE_LAYOUT.BLOCK_TOP_PADDING * (deeperAtTop + 1)
+      const bottom =
+        rows.tops[endRow] +
+        rowHeight +
+        SEQUENCE_LAYOUT.BLOCK_BOTTOM_PADDING * (deeperAtBottom + 1)
+      updatedFrames.set(node.id, {
+        ...node,
+        position: { ...node.position, y: top },
+        height: bottom - top,
+        style: { ...(node.style ?? {}), height: bottom - top },
+      })
+      continue
+    }
+
+    if (node.data?.sequenceBox) {
+      const height =
+        rows.height +
+        SEQUENCE_LAYOUT.BOX_TOP_INSET +
+        SEQUENCE_LAYOUT.BOX_BOTTOM_PADDING
+      updatedFrames.set(node.id, {
+        ...node,
+        height,
+        style: { ...(node.style ?? {}), height },
+      })
+    }
+  }
+
   const updatedNodes = nodes.map(
     (n) =>
-      updatedParticipantsById.get(n.id) ?? updatedMessagesById.get(n.id) ?? n
+      updatedParticipantsById.get(n.id) ??
+      updatedItemsById.get(n.id) ??
+      updatedFrames.get(n.id) ??
+      n
   )
 
   return renumberSequenceRows(updatedNodes, edges)
