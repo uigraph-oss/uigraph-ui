@@ -116,7 +116,8 @@ function buildRowYs(
     const block = getBlockData(node)
     if (!block) continue
     if (block.startRow > rowCount - 1) continue
-    padBefore[block.startRow] += SEQUENCE_LAYOUT.BLOCK_TOP_PADDING
+    padBefore[block.startRow] +=
+      SEQUENCE_LAYOUT.BLOCK_TOP_PADDING + SEQUENCE_LAYOUT.BLOCK_FRAME_GAP
     padAfter[Math.min(block.endRow, rowCount - 1)] +=
       SEQUENCE_LAYOUT.BLOCK_BOTTOM_PADDING
     for (const section of (block.sections ?? []).slice(1)) {
