@@ -8,7 +8,13 @@ import {
 import { cn } from '@/lib/utils'
 import { BsDatabase } from 'react-icons/bs'
 import { GoComment } from 'react-icons/go'
-import { LuCloudy, LuComponent, LuImage, LuShapes } from 'react-icons/lu'
+import {
+  LuCloudy,
+  LuComponent,
+  LuImage,
+  LuShapes,
+  LuWorkflow,
+} from 'react-icons/lu'
 import { MdAnimation } from 'react-icons/md'
 import { RxText } from 'react-icons/rx'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
@@ -19,6 +25,7 @@ import { SidebarComponents } from './panel-components'
 import { PanelDataSourcesUnified } from './panel-data-sources-unified'
 import { SidebarGenerateWithAI } from './panel-generate-with-ai'
 import { SidebarImages } from './panel-images'
+import { SidebarModeling } from './panel-modeling'
 import { SidebarShapes } from './panel-shapes'
 import { SidebarText } from './panel-text'
 import { SidebarLayout } from './sidebar-layout'
@@ -111,6 +118,17 @@ export function FloatingLeftSidebar() {
           <Separator className="!w-8" />
 
           <SidebarButton
+            name="Modeling"
+            icon={<LuWorkflow />}
+            isActive={sidebarActiveTool === 'modeling'}
+            onClick={() =>
+              setSidebarActiveTool((prev) =>
+                prev === 'modeling' ? null : 'modeling'
+              )
+            }
+          />
+
+          <SidebarButton
             name="Data Sources"
             icon={<BsDatabase />}
             isActive={sidebarActiveTool === 'data-sources'}
@@ -126,6 +144,7 @@ export function FloatingLeftSidebar() {
       {sidebarActiveTool === 'components' && <SidebarComponents />}
       {sidebarActiveTool === 'data-sources' && <PanelDataSourcesUnified />}
       {sidebarActiveTool === 'shapes' && <SidebarShapes />}
+      {sidebarActiveTool === 'modeling' && <SidebarModeling />}
       {sidebarActiveTool === 'images' && <SidebarImages />}
       {sidebarActiveTool === 'animated' && <SidebarAnimatedNodes />}
       {sidebarActiveTool === 'text' && <SidebarText />}
