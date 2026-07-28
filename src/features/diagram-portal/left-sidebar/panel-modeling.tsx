@@ -19,6 +19,8 @@ import {
   SEQUENCE_PARTICIPANT_COLOR,
 } from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import {
   LuArrowRight,
@@ -37,6 +39,7 @@ import {
 import { getComponentField } from '../hooks/use-component-field'
 import { TComponentField } from '../types/component-fields'
 import { SidebarLayout } from './sidebar-layout'
+import { sidebarCategoryButtonClassName } from './sidebar-panel-styles'
 
 function fieldValue(node: Node, componentFieldId: string): string | null {
   const componentFields = node.data?.componentFields as
@@ -66,6 +69,7 @@ export function SidebarModeling() {
     index: number
   } | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
+  const [isSequenceExpanded, setIsSequenceExpanded] = useState(true)
 
   const isLocked = tempDiagramState !== null
 
@@ -320,359 +324,420 @@ export function SidebarModeling() {
   return (
     <SidebarLayout className="left-18">
       <div className="flex w-[16rem] flex-col p-1.5">
-        <div className="flex h-8 items-center justify-between gap-2 pr-1 pl-2">
-          <span className={'text-[0.8125rem] font-medium text-[#828DA3]'}>
-            Participants
-            {isSequenceDiagram && (
-              <span className="ml-1.5 text-[#5A6478]">
-                {participants.length}
-              </span>
-            )}
-          </span>
-
-          {isSequenceDiagram && (
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  disabled={!canAuthorSequence}
-                  onClick={handleAddParticipant}
-                  className={
-                    'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
-                  }
-                >
-                  <LuPlus className="size-3.5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right">Add participant</TooltipContent>
-            </Tooltip>
+        <button
+          onClick={() => setIsSequenceExpanded(!isSequenceExpanded)}
+          className={sidebarCategoryButtonClassName}
+        >
+          <span className="truncate">Sequence Diagram</span>
+          {isSequenceExpanded ? (
+            <ChevronDown className="size-3" />
+          ) : (
+            <ChevronRight className="size-3" />
           )}
-        </div>
+        </button>
 
-        {!isSequenceDiagram && (
-          <>
-            <button
-              type="button"
-              disabled={!canAuthorSequence}
-              onClick={handleAddParticipant}
-              className="hover:border-primary/40 flex h-9 w-full items-center gap-2 rounded-[0.5rem] border border-dashed border-[#2A3242] px-2 text-sm text-[#F4F7FC] transition-colors hover:bg-[#1E2533] disabled:pointer-events-none disabled:opacity-40"
+        <AnimatePresence initial={false}>
+          {isSequenceExpanded && (
+            <motion.div
+              key="category-sequence"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="overflow-hidden"
             >
-              <LuPlus className="size-4 text-[#828DA3]" />
-              New sequence diagram
-            </button>
-
-            {!isEmptyCanvas && (
-              <p className="px-2 pt-2 text-[0.6875rem] leading-relaxed text-[#828DA3]">
-                Sequence tools need an empty canvas, or a diagram that already
-                has participants.
-              </p>
-            )}
-          </>
-        )}
-
-        {participants.map((participant, index) => (
-          <div
-            key={participant.id}
-            draggable={!isLocked && renamingId !== participant.id}
-            onDragStart={(event) => {
-              event.dataTransfer.effectAllowed = 'move'
-              setDragging({ list: 'participants', index })
-            }}
-            onDragOver={(event) =>
-              handleRowDragOver(event, 'participants', index)
-            }
-            onDrop={() => handleRowDrop('participants')}
-            onDragEnd={() => {
-              setDragging(null)
-              setDropIndex(null)
-            }}
-            className={cn(
-              'group relative flex h-8 items-center gap-2 rounded-[0.5rem] pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
-              participant.selected && 'bg-[#1E2533]',
-              dragging?.list === 'participants' &&
-                dragging.index === index &&
-                'opacity-40'
-            )}
-          >
-            {dragging?.list === 'participants' && dropIndex === index && (
-              <span className="bg-primary pointer-events-none absolute inset-x-0 -top-px h-0.5" />
-            )}
-
-            {dragging?.list === 'participants' && dropIndex === index + 1 && (
-              <span className="bg-primary pointer-events-none absolute inset-x-0 -bottom-px h-0.5" />
-            )}
-
-            <span className="relative flex size-3.5 shrink-0 items-center justify-center">
-              <span
-                className="size-2 rounded-full transition-opacity group-hover:opacity-0"
-                style={{
-                  background:
-                    fieldValue(participant, 'color') ??
-                    SEQUENCE_PARTICIPANT_COLOR,
-                }}
-              />
-              <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />
-            </span>
-
-            {renamingId === participant.id ? (
-              <Input
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-                value={renameValue}
-                onChange={(e) => setRenameValue(e.target.value)}
-                onBlur={commitRename}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') commitRename()
-                  if (e.key === 'Escape') setRenamingId(null)
-                }}
-                className="h-6 border-[#2A3242] bg-transparent px-1.5 text-[0.8125rem] text-[#F4F7FC] shadow-none"
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => focusNode(participant.id)}
-                onDoubleClick={() =>
-                  startRename(participant.id, participantName(participant))
-                }
-                className="flex-1 truncate text-left text-[0.8125rem] text-[#F4F7FC]"
-              >
-                {participantName(participant)}
-              </button>
-            )}
-
-            <div
-              className={
-                'flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100'
-              }
-            >
-              <button
-                type="button"
-                disabled={isLocked}
-                onClick={() => handleDeleteParticipant(participant.id)}
-                className={cn(
-                  'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30',
-                  'hover:text-red-400'
-                )}
-              >
-                <LuTrash2 className="size-3.5" />
-              </button>
-            </div>
-          </div>
-        ))}
-
-        {isSequenceDiagram && (
-          <>
-            <div className="mt-2 flex h-8 items-center justify-between gap-2 pr-1 pl-2">
-              <span className={'text-[0.8125rem] font-medium text-[#828DA3]'}>
-                Messages
-                <span className="ml-1.5 text-[#5A6478]">{messages.length}</span>
-              </span>
-
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    disabled={isLocked}
-                    onClick={handleToggleMessageForm}
-                    className={cn(
-                      'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30',
-                      isMessageFormOpen && 'bg-[#2A3242] text-[#F4F7FC]'
-                    )}
+              <div className="flex flex-col">
+                <div className="flex h-8 items-center justify-between gap-2 pr-1 pl-2">
+                  <span
+                    className={'text-[0.8125rem] font-medium text-[#828DA3]'}
                   >
-                    {isMessageFormOpen ? (
-                      <LuX className="size-3.5" />
-                    ) : (
-                      <LuPlus className="size-3.5" />
+                    Participants
+                    {isSequenceDiagram && (
+                      <span className="ml-1.5 text-[#5A6478]">
+                        {participants.length}
+                      </span>
                     )}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  {isMessageFormOpen ? 'Cancel' : 'Add message'}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-
-            {isMessageFormOpen && (
-              <div className="mb-1 flex flex-col gap-2 rounded-[0.5rem] border border-[#2A3242] p-2">
-                <div className="flex items-center gap-1.5">
-                  <Select value={fromId} onValueChange={setFromId}>
-                    <SelectTrigger
-                      className={
-                        'h-8 w-full min-w-0 border-[#2A3242] bg-transparent text-xs text-[#F4F7FC] shadow-none placeholder:text-[#828DA3]'
-                      }
-                    >
-                      <SelectValue placeholder="From" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {participants.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {participantName(p)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <LuArrowRight className="size-3.5 shrink-0 text-[#828DA3]" />
-
-                  <Select value={toId} onValueChange={setToId}>
-                    <SelectTrigger
-                      className={
-                        'h-8 w-full min-w-0 border-[#2A3242] bg-transparent text-xs text-[#F4F7FC] shadow-none placeholder:text-[#828DA3]'
-                      }
-                    >
-                      <SelectValue placeholder="To" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {participants.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {participantName(p)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Input
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  autoFocus
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  placeholder="Message label"
-                  className={
-                    'h-8 w-full min-w-0 border-[#2A3242] bg-transparent text-xs text-[#F4F7FC] shadow-none placeholder:text-[#828DA3]'
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleAddMessage()
-                  }}
-                />
-
-                <Button
-                  className="h-8 w-full text-xs"
-                  disabled={!fromId || !toId}
-                  onClick={handleAddMessage}
-                >
-                  Add message
-                </Button>
-              </div>
-            )}
-
-            {messages.length === 0 && !isMessageFormOpen && (
-              <p className="px-2 pb-1 text-[0.6875rem] text-[#828DA3]">
-                No messages yet.
-              </p>
-            )}
-
-            {messages.map((message, index) => {
-              const link = messageLinks.get(message.id)
-              const from = participants.find((p) => p.id === link?.from)
-              const to = participants.find((p) => p.id === link?.to)
-              const messageLabel = fieldValue(message, 'name')
-
-              return (
-                <div
-                  key={message.id}
-                  draggable={!isLocked && renamingId !== message.id}
-                  onDragStart={(event) => {
-                    event.dataTransfer.effectAllowed = 'move'
-                    setDragging({ list: 'messages', index })
-                  }}
-                  onDragOver={(event) =>
-                    handleRowDragOver(event, 'messages', index)
-                  }
-                  onDrop={() => handleRowDrop('messages')}
-                  onDragEnd={() => {
-                    setDragging(null)
-                    setDropIndex(null)
-                  }}
-                  className={cn(
-                    'group relative flex min-h-8 items-center gap-2 rounded-[0.5rem] py-1 pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
-                    message.selected && 'bg-[#1E2533]',
-                    dragging?.list === 'messages' &&
-                      dragging.index === index &&
-                      'opacity-40'
-                  )}
-                >
-                  {dragging?.list === 'messages' && dropIndex === index && (
-                    <span className="bg-primary pointer-events-none absolute inset-x-0 -top-px h-0.5" />
-                  )}
-
-                  {dragging?.list === 'messages' && dropIndex === index + 1 && (
-                    <span className="bg-primary pointer-events-none absolute inset-x-0 -bottom-px h-0.5" />
-                  )}
-
-                  <span className="relative flex w-3 shrink-0 items-center justify-center">
-                    <span className="text-[0.6875rem] text-[#5A6478] transition-opacity group-hover:opacity-0">
-                      {index + 1}
-                    </span>
-                    <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />
                   </span>
 
-                  <button
-                    type="button"
-                    onClick={() => focusNode(message.id)}
-                    onDoubleClick={() =>
-                      startRename(message.id, messageLabel ?? '')
-                    }
-                    className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left"
-                  >
-                    {renamingId === message.id ? null : (
-                      <>
-                        <span className="flex w-full min-w-0 items-center gap-1 text-[0.8125rem] text-[#F4F7FC]">
-                          <span className="truncate">
-                            {from ? participantName(from) : 'Unknown'}
-                          </span>
-                          <LuArrowRight className="size-3 shrink-0 text-[#828DA3]" />
-                          <span className="truncate">
-                            {to ? participantName(to) : 'Unknown'}
-                          </span>
-                        </span>
-
-                        {messageLabel && (
-                          <span className="w-full truncate text-[0.6875rem] text-[#828DA3]">
-                            {messageLabel}
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </button>
-
-                  {renamingId === message.id && (
-                    <Input
-                      // eslint-disable-next-line jsx-a11y/no-autofocus
-                      autoFocus
-                      value={renameValue}
-                      onChange={(e) => setRenameValue(e.target.value)}
-                      onBlur={commitRename}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') commitRename()
-                        if (e.key === 'Escape') setRenamingId(null)
-                      }}
-                      className="h-6 border-[#2A3242] bg-transparent px-1.5 text-[0.8125rem] text-[#F4F7FC] shadow-none"
-                    />
+                  {isSequenceDiagram && (
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          disabled={!canAuthorSequence}
+                          onClick={handleAddParticipant}
+                          className={
+                            'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
+                          }
+                        >
+                          <LuPlus className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        Add participant
+                      </TooltipContent>
+                    </Tooltip>
                   )}
+                </div>
 
-                  <div
-                    className={
-                      'flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100'
-                    }
-                  >
+                {!isSequenceDiagram && (
+                  <>
                     <button
                       type="button"
-                      disabled={isLocked}
-                      onClick={() => handleDeleteMessage(message.id)}
-                      className={cn(
-                        'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30',
-                        'hover:text-red-400'
-                      )}
+                      disabled={!canAuthorSequence}
+                      onClick={handleAddParticipant}
+                      className="hover:border-primary/40 flex h-9 w-full items-center gap-2 rounded-[0.5rem] border border-dashed border-[#2A3242] px-2 text-sm text-[#F4F7FC] transition-colors hover:bg-[#1E2533] disabled:pointer-events-none disabled:opacity-40"
                     >
-                      <LuTrash2 className="size-3.5" />
+                      <LuPlus className="size-4 text-[#828DA3]" />
+                      New sequence diagram
                     </button>
+
+                    {!isEmptyCanvas && (
+                      <p className="px-2 pt-2 text-[0.6875rem] leading-relaxed text-[#828DA3]">
+                        Sequence tools need an empty canvas, or a diagram that
+                        already has participants.
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {participants.map((participant, index) => (
+                  <div
+                    key={participant.id}
+                    draggable={!isLocked && renamingId !== participant.id}
+                    onDragStart={(event) => {
+                      event.dataTransfer.effectAllowed = 'move'
+                      setDragging({ list: 'participants', index })
+                    }}
+                    onDragOver={(event) =>
+                      handleRowDragOver(event, 'participants', index)
+                    }
+                    onDrop={() => handleRowDrop('participants')}
+                    onDragEnd={() => {
+                      setDragging(null)
+                      setDropIndex(null)
+                    }}
+                    className={cn(
+                      'group relative flex h-8 items-center gap-2 rounded-[0.5rem] pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
+                      participant.selected && 'bg-[#1E2533]',
+                      dragging?.list === 'participants' &&
+                        dragging.index === index &&
+                        'opacity-40'
+                    )}
+                  >
+                    {dragging?.list === 'participants' &&
+                      dropIndex === index && (
+                        <span className="bg-primary pointer-events-none absolute inset-x-0 -top-px h-0.5" />
+                      )}
+
+                    {dragging?.list === 'participants' &&
+                      dropIndex === index + 1 && (
+                        <span className="bg-primary pointer-events-none absolute inset-x-0 -bottom-px h-0.5" />
+                      )}
+
+                    <span className="relative flex size-3.5 shrink-0 items-center justify-center">
+                      <span
+                        className="size-2 rounded-full transition-opacity group-hover:opacity-0"
+                        style={{
+                          background:
+                            fieldValue(participant, 'color') ??
+                            SEQUENCE_PARTICIPANT_COLOR,
+                        }}
+                      />
+                      <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />
+                    </span>
+
+                    {renamingId === participant.id ? (
+                      <Input
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus
+                        value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onBlur={commitRename}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') commitRename()
+                          if (e.key === 'Escape') setRenamingId(null)
+                        }}
+                        className="h-6 border-[#2A3242] bg-transparent px-1.5 text-[0.8125rem] text-[#F4F7FC] shadow-none"
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => focusNode(participant.id)}
+                        onDoubleClick={() =>
+                          startRename(
+                            participant.id,
+                            participantName(participant)
+                          )
+                        }
+                        className="flex-1 truncate text-left text-[0.8125rem] text-[#F4F7FC]"
+                      >
+                        {participantName(participant)}
+                      </button>
+                    )}
+
+                    <div
+                      className={
+                        'flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100'
+                      }
+                    >
+                      <button
+                        type="button"
+                        disabled={isLocked}
+                        onClick={() => handleDeleteParticipant(participant.id)}
+                        className={cn(
+                          'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30',
+                          'hover:text-red-400'
+                        )}
+                      >
+                        <LuTrash2 className="size-3.5" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </>
-        )}
+                ))}
+
+                {isSequenceDiagram && (
+                  <>
+                    <div className="mt-2 flex h-8 items-center justify-between gap-2 pr-1 pl-2">
+                      <span
+                        className={
+                          'text-[0.8125rem] font-medium text-[#828DA3]'
+                        }
+                      >
+                        Messages
+                        <span className="ml-1.5 text-[#5A6478]">
+                          {messages.length}
+                        </span>
+                      </span>
+
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            disabled={isLocked}
+                            onClick={handleToggleMessageForm}
+                            className={cn(
+                              'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30',
+                              isMessageFormOpen && 'bg-[#2A3242] text-[#F4F7FC]'
+                            )}
+                          >
+                            {isMessageFormOpen ? (
+                              <LuX className="size-3.5" />
+                            ) : (
+                              <LuPlus className="size-3.5" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          {isMessageFormOpen ? 'Cancel' : 'Add message'}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+
+                    {isMessageFormOpen && (
+                      <div className="mb-1 flex flex-col gap-2 rounded-[0.5rem] border border-[#2A3242] p-2">
+                        <div className="flex items-center gap-1.5">
+                          <Select value={fromId} onValueChange={setFromId}>
+                            <SelectTrigger
+                              className={
+                                'h-8 w-full min-w-0 border-[#2A3242] bg-transparent text-xs text-[#F4F7FC] shadow-none placeholder:text-[#828DA3]'
+                              }
+                            >
+                              <SelectValue placeholder="From" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {participants.map((p) => (
+                                <SelectItem key={p.id} value={p.id}>
+                                  {participantName(p)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          <LuArrowRight className="size-3.5 shrink-0 text-[#828DA3]" />
+
+                          <Select value={toId} onValueChange={setToId}>
+                            <SelectTrigger
+                              className={
+                                'h-8 w-full min-w-0 border-[#2A3242] bg-transparent text-xs text-[#F4F7FC] shadow-none placeholder:text-[#828DA3]'
+                              }
+                            >
+                              <SelectValue placeholder="To" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {participants.map((p) => (
+                                <SelectItem key={p.id} value={p.id}>
+                                  {participantName(p)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <Input
+                          // eslint-disable-next-line jsx-a11y/no-autofocus
+                          autoFocus
+                          value={label}
+                          onChange={(e) => setLabel(e.target.value)}
+                          placeholder="Message label"
+                          className={
+                            'h-8 w-full min-w-0 border-[#2A3242] bg-transparent text-xs text-[#F4F7FC] shadow-none placeholder:text-[#828DA3]'
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddMessage()
+                          }}
+                        />
+
+                        <Button
+                          className="h-8 w-full text-xs"
+                          disabled={!fromId || !toId}
+                          onClick={handleAddMessage}
+                        >
+                          Add message
+                        </Button>
+                      </div>
+                    )}
+
+                    {messages.length === 0 && !isMessageFormOpen && (
+                      <p className="px-2 pb-1 text-[0.6875rem] text-[#828DA3]">
+                        No messages yet.
+                      </p>
+                    )}
+
+                    {messages.map((message, index) => {
+                      const link = messageLinks.get(message.id)
+                      const from = participants.find((p) => p.id === link?.from)
+                      const to = participants.find((p) => p.id === link?.to)
+                      const messageLabel = fieldValue(message, 'name')
+
+                      return (
+                        <div
+                          key={message.id}
+                          draggable={!isLocked && renamingId !== message.id}
+                          onDragStart={(event) => {
+                            event.dataTransfer.effectAllowed = 'move'
+                            setDragging({ list: 'messages', index })
+                          }}
+                          onDragOver={(event) =>
+                            handleRowDragOver(event, 'messages', index)
+                          }
+                          onDrop={() => handleRowDrop('messages')}
+                          onDragEnd={() => {
+                            setDragging(null)
+                            setDropIndex(null)
+                          }}
+                          className={cn(
+                            'group relative flex min-h-8 items-center gap-2 rounded-[0.5rem] py-1 pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
+                            message.selected && 'bg-[#1E2533]',
+                            dragging?.list === 'messages' &&
+                              dragging.index === index &&
+                              'opacity-40'
+                          )}
+                        >
+                          {dragging?.list === 'messages' &&
+                            dropIndex === index && (
+                              <span className="bg-primary pointer-events-none absolute inset-x-0 -top-px h-0.5" />
+                            )}
+
+                          {dragging?.list === 'messages' &&
+                            dropIndex === index + 1 && (
+                              <span className="bg-primary pointer-events-none absolute inset-x-0 -bottom-px h-0.5" />
+                            )}
+
+                          <span className="relative flex w-3 shrink-0 items-center justify-center">
+                            <span className="text-[0.6875rem] text-[#5A6478] transition-opacity group-hover:opacity-0">
+                              {index + 1}
+                            </span>
+                            <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => focusNode(message.id)}
+                            onDoubleClick={() =>
+                              startRename(message.id, messageLabel ?? '')
+                            }
+                            className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left"
+                          >
+                            {renamingId === message.id ? null : (
+                              <>
+                                <span className="flex w-full min-w-0 items-center gap-1 text-[0.8125rem] text-[#F4F7FC]">
+                                  <span className="truncate">
+                                    {from ? participantName(from) : 'Unknown'}
+                                  </span>
+                                  <LuArrowRight className="size-3 shrink-0 text-[#828DA3]" />
+                                  <span className="truncate">
+                                    {to ? participantName(to) : 'Unknown'}
+                                  </span>
+                                </span>
+
+                                {messageLabel && (
+                                  <span className="w-full truncate text-[0.6875rem] text-[#828DA3]">
+                                    {messageLabel}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </button>
+
+                          {renamingId === message.id && (
+                            <Input
+                              // eslint-disable-next-line jsx-a11y/no-autofocus
+                              autoFocus
+                              value={renameValue}
+                              onChange={(e) => setRenameValue(e.target.value)}
+                              onBlur={commitRename}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') commitRename()
+                                if (e.key === 'Escape') setRenamingId(null)
+                              }}
+                              className="h-6 border-[#2A3242] bg-transparent px-1.5 text-[0.8125rem] text-[#F4F7FC] shadow-none"
+                            />
+                          )}
+
+                          <div
+                            className={
+                              'flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100'
+                            }
+                          >
+                            <button
+                              type="button"
+                              disabled={isLocked}
+                              onClick={() => handleDeleteMessage(message.id)}
+                              className={cn(
+                                'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30',
+                                'hover:text-red-400'
+                              )}
+                            >
+                              <LuTrash2 className="size-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button
+          type="button"
+          disabled
+          className={cn(
+            sidebarCategoryButtonClassName,
+            'disabled:pointer-events-none disabled:opacity-40'
+          )}
+        >
+          <span className="truncate">C4 Diagram</span>
+          <span className="flex shrink-0 items-center gap-1.5">
+            <span className="rounded-full border border-[#2A3242] px-1.5 py-px text-[0.625rem] font-medium text-[#828DA3]">
+              Coming soon
+            </span>
+            <ChevronRight className="size-3" />
+          </span>
+        </button>
       </div>
     </SidebarLayout>
   )
