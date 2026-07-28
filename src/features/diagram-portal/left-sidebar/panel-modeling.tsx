@@ -18,8 +18,7 @@ import { Node, useNodesInitialized } from '@xyflow/react'
 import { useState } from 'react'
 import {
   LuArrowRight,
-  LuChevronDown,
-  LuChevronUp,
+  LuGripVertical,
   LuPlus,
   LuTrash2,
   LuX,
@@ -62,6 +61,11 @@ export function SidebarModeling() {
   const [label, setLabel] = useState('')
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
+  const [dragging, setDragging] = useState<{
+    list: 'participants' | 'messages'
+    index: number
+  } | null>(null)
+  const [dropIndex, setDropIndex] = useState<number | null>(null)
 
   const isLocked = tempDiagramState !== null
 
@@ -167,21 +171,18 @@ export function SidebarModeling() {
     setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
   }
 
-  function handleMoveParticipant(participantId: string, offset: number) {
-    const index = participants.findIndex((p) => p.id === participantId)
-    const target = participants[index + offset]
-    if (!target) return
+  function handleReorderParticipants(fromIndex: number, toIndex: number) {
+    const reordered = [...participants]
+    const [moved] = reordered.splice(fromIndex, 1)
+    reordered.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, moved)
 
-    const current = participants[index]
-    const currentX = current.position.x
-    const targetX = target.position.x
+    const columnX = participants.map((p) => p.position.x)
+    const xById = new Map(reordered.map((p, i) => [p.id, columnX[i]]))
 
     const movedNodes = nodes.map((n) => {
-      if (n.id === current.id)
-        return { ...n, position: { ...n.position, x: targetX } }
-      if (n.id === target.id)
-        return { ...n, position: { ...n.position, x: currentX } }
-      return n
+      const x = xById.get(n.id)
+      if (x === undefined) return n
+      return { ...n, position: { ...n.position, x } }
     })
 
     const { nodes: beautified, edges: beautifiedEdges } =
@@ -244,21 +245,18 @@ export function SidebarModeling() {
     setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
   }
 
-  function handleMoveMessage(messageId: string, offset: number) {
-    const index = messages.findIndex((m) => m.id === messageId)
-    const target = messages[index + offset]
-    if (!target) return
+  function handleReorderMessages(fromIndex: number, toIndex: number) {
+    const reordered = [...messages]
+    const [moved] = reordered.splice(fromIndex, 1)
+    reordered.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, moved)
 
-    const current = messages[index]
-    const currentY = current.position.y
-    const targetY = target.position.y
+    const rowY = messages.map((m) => m.position.y)
+    const yById = new Map(reordered.map((m, i) => [m.id, rowY[i]]))
 
     const movedNodes = nodes.map((n) => {
-      if (n.id === current.id)
-        return { ...n, position: { ...n.position, y: targetY } }
-      if (n.id === target.id)
-        return { ...n, position: { ...n.position, y: currentY } }
-      return n
+      const y = yById.get(n.id)
+      if (y === undefined) return n
+      return { ...n, position: { ...n.position, y } }
     })
 
     const { nodes: beautified, edges: beautifiedEdges } =
@@ -277,6 +275,40 @@ export function SidebarModeling() {
       beautifySequenceDiagram(remainingNodes, remainingEdges)
     setNodes(beautified)
     setEdges(beautifiedEdges)
+  }
+
+  function handleRowDragOver(
+    event: React.DragEvent,
+    list: 'participants' | 'messages',
+    index: number
+  ) {
+    if (dragging === null) return
+    if (dragging.list !== list) return
+
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'move'
+
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const isBelowMiddle = event.clientY > bounds.top + bounds.height / 2
+    setDropIndex(isBelowMiddle ? index + 1 : index)
+  }
+
+  function handleRowDrop(list: 'participants' | 'messages') {
+    if (dragging === null) return
+    if (dragging.list !== list) return
+    if (dropIndex === null) return
+
+    if (dropIndex !== dragging.index && dropIndex !== dragging.index + 1) {
+      if (list === 'participants') {
+        handleReorderParticipants(dragging.index, dropIndex)
+      }
+      if (list === 'messages') {
+        handleReorderMessages(dragging.index, dropIndex)
+      }
+    }
+
+    setDragging(null)
+    setDropIndex(null)
   }
 
   function handleBeautify() {
@@ -351,19 +383,46 @@ export function SidebarModeling() {
         {participants.map((participant, index) => (
           <div
             key={participant.id}
+            draggable={!isLocked && renamingId !== participant.id}
+            onDragStart={(event) => {
+              event.dataTransfer.effectAllowed = 'move'
+              setDragging({ list: 'participants', index })
+            }}
+            onDragOver={(event) =>
+              handleRowDragOver(event, 'participants', index)
+            }
+            onDrop={() => handleRowDrop('participants')}
+            onDragEnd={() => {
+              setDragging(null)
+              setDropIndex(null)
+            }}
             className={cn(
-              'group flex h-8 items-center gap-2 rounded-[0.5rem] pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
-              participant.selected && 'bg-[#1E2533]'
+              'group relative flex h-8 items-center gap-2 rounded-[0.5rem] pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
+              participant.selected && 'bg-[#1E2533]',
+              dragging?.list === 'participants' &&
+                dragging.index === index &&
+                'opacity-40'
             )}
           >
-            <span
-              className="size-2 shrink-0 rounded-full"
-              style={{
-                background:
-                  fieldValue(participant, 'color') ??
-                  SEQUENCE_PARTICIPANT_COLOR,
-              }}
-            />
+            {dragging?.list === 'participants' && dropIndex === index && (
+              <span className="bg-primary pointer-events-none absolute inset-x-0 -top-px h-0.5" />
+            )}
+
+            {dragging?.list === 'participants' && dropIndex === index + 1 && (
+              <span className="bg-primary pointer-events-none absolute inset-x-0 -bottom-px h-0.5" />
+            )}
+
+            <span className="relative flex size-3.5 shrink-0 items-center justify-center">
+              <span
+                className="size-2 rounded-full transition-opacity group-hover:opacity-0"
+                style={{
+                  background:
+                    fieldValue(participant, 'color') ??
+                    SEQUENCE_PARTICIPANT_COLOR,
+                }}
+              />
+              <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />
+            </span>
 
             {renamingId === participant.id ? (
               <Input
@@ -396,28 +455,6 @@ export function SidebarModeling() {
                 'flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100'
               }
             >
-              <button
-                type="button"
-                disabled={isLocked || index === 0}
-                onClick={() => handleMoveParticipant(participant.id, -1)}
-                className={
-                  'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
-                }
-              >
-                <LuChevronUp className="size-3.5" />
-              </button>
-
-              <button
-                type="button"
-                disabled={isLocked || index === participants.length - 1}
-                onClick={() => handleMoveParticipant(participant.id, 1)}
-                className={
-                  'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
-                }
-              >
-                <LuChevronDown className="size-3.5" />
-              </button>
-
               <button
                 type="button"
                 disabled={isLocked}
@@ -544,13 +581,40 @@ export function SidebarModeling() {
               return (
                 <div
                   key={message.id}
+                  draggable={!isLocked && renamingId !== message.id}
+                  onDragStart={(event) => {
+                    event.dataTransfer.effectAllowed = 'move'
+                    setDragging({ list: 'messages', index })
+                  }}
+                  onDragOver={(event) =>
+                    handleRowDragOver(event, 'messages', index)
+                  }
+                  onDrop={() => handleRowDrop('messages')}
+                  onDragEnd={() => {
+                    setDragging(null)
+                    setDropIndex(null)
+                  }}
                   className={cn(
-                    'group flex min-h-8 items-center gap-2 rounded-[0.5rem] py-1 pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
-                    message.selected && 'bg-[#1E2533]'
+                    'group relative flex min-h-8 items-center gap-2 rounded-[0.5rem] py-1 pr-1 pl-2 transition-colors hover:bg-[#1E2533]',
+                    message.selected && 'bg-[#1E2533]',
+                    dragging?.list === 'messages' &&
+                      dragging.index === index &&
+                      'opacity-40'
                   )}
                 >
-                  <span className="w-3 shrink-0 text-right text-[0.6875rem] text-[#5A6478]">
-                    {index + 1}
+                  {dragging?.list === 'messages' && dropIndex === index && (
+                    <span className="bg-primary pointer-events-none absolute inset-x-0 -top-px h-0.5" />
+                  )}
+
+                  {dragging?.list === 'messages' && dropIndex === index + 1 && (
+                    <span className="bg-primary pointer-events-none absolute inset-x-0 -bottom-px h-0.5" />
+                  )}
+
+                  <span className="relative flex w-3 shrink-0 items-center justify-center">
+                    <span className="text-[0.6875rem] text-[#5A6478] transition-opacity group-hover:opacity-0">
+                      {index + 1}
+                    </span>
+                    <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />
                   </span>
 
                   <button
@@ -602,28 +666,6 @@ export function SidebarModeling() {
                       'flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100'
                     }
                   >
-                    <button
-                      type="button"
-                      disabled={isLocked || index === 0}
-                      onClick={() => handleMoveMessage(message.id, -1)}
-                      className={
-                        'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
-                      }
-                    >
-                      <LuChevronUp className="size-3.5" />
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={isLocked || index === messages.length - 1}
-                      onClick={() => handleMoveMessage(message.id, 1)}
-                      className={
-                        'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
-                      }
-                    >
-                      <LuChevronDown className="size-3.5" />
-                    </button>
-
                     <button
                       type="button"
                       disabled={isLocked}
