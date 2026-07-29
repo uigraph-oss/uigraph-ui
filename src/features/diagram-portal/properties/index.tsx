@@ -22,6 +22,7 @@ import { NodeCodeStyle } from './node-code-style'
 import { NodeDatabaseStyle } from './node-database-style'
 import { NodeDatabaseTableProperties } from './node-database-table-properties'
 import { NodeGroupStyle } from './node-group-style'
+import { NodeSequenceParticipantStyle } from './node-sequence-participant-style'
 import { NodeShapeStyle } from './node-shape-style'
 import { NodeSubDiagramProperties } from './node-sub-diagram-properties'
 import { NodeTextStyle } from './node-text-style'
@@ -196,6 +197,8 @@ export function FloatingProperties() {
                     <NodeCodeStyle />
                   ) : node.type === 'builder' ? (
                     <NodeBuilderStyle />
+                  ) : node.type === 'sequenceParticipant' ? (
+                    <NodeSequenceParticipantStyle />
                   ) : (
                     <p className="text-foreground/70 text-sm">
                       No style available

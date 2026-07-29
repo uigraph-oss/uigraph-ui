@@ -17,16 +17,6 @@ function nameField(value: string) {
   }
 }
 
-/** Same field a mermaid import gives its participants, so both are stylable. */
-function colorField(value: string) {
-  return {
-    componentFieldId: 'color',
-    type: ComponentInputType.ColorPicker,
-    label: 'Color',
-    data: [{ value }],
-  }
-}
-
 /**
  * Where the next participant column should go: one column past whatever's
  * currently rightmost, inferring column width from the existing spacing
@@ -64,10 +54,8 @@ export function createParticipantNode(nodes: Node[], name: string): Node {
     type: 'sequenceParticipant',
     position: { x, y: 0 },
     data: {
-      componentFields: [
-        nameField(name),
-        colorField(SEQUENCE_PARTICIPANT_COLOR),
-      ],
+      style: { baseColor: SEQUENCE_PARTICIPANT_COLOR },
+      componentFields: [nameField(name)],
     },
   }
 }

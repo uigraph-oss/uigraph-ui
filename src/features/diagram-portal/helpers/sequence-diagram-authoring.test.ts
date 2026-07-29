@@ -49,7 +49,7 @@ describe('createParticipantNode', () => {
     expect(node.position).toEqual({ x: 0, y: 0 })
   })
 
-  it('gives the participant a color field, like an imported one', () => {
+  it('keeps name as the only component field', () => {
     const node = createParticipantNode([], 'New Participant')
     const fields = (
       node.data as {
@@ -61,9 +61,15 @@ describe('createParticipantNode', () => {
       }
     ).componentFields
 
-    expect(fields.map((f) => f.componentFieldId)).toEqual(['name', 'color'])
-    expect(fields[1].type).toBe(ComponentInputType.ColorPicker)
-    expect(fields[1].data[0].value).toBe(SEQUENCE_PARTICIPANT_COLOR)
+    expect(fields.map((f) => f.componentFieldId)).toEqual(['name'])
+    expect(fields[0].type).toBe(ComponentInputType.TextInput)
+  })
+
+  it('styles the participant with the default color, like an imported one', () => {
+    const node = createParticipantNode([], 'New Participant')
+    const style = (node.data as { style: { baseColor: string } }).style
+
+    expect(style.baseColor).toBe(SEQUENCE_PARTICIPANT_COLOR)
   })
 })
 

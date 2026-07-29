@@ -472,8 +472,8 @@ export function ModelingSequenceDiagramSection() {
                       className="size-2 rounded-full transition-opacity group-hover:opacity-0"
                       style={{
                         background:
-                          fieldValue(participant, 'color') ??
-                          SEQUENCE_PARTICIPANT_COLOR,
+                          (participant.data?.style as { baseColor?: string })
+                            ?.baseColor ?? SEQUENCE_PARTICIPANT_COLOR,
                       }}
                     />
                     <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />

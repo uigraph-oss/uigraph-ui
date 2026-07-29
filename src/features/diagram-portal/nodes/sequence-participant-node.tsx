@@ -1,6 +1,11 @@
-import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
+import {
+  buildMetaData,
+  flattenMetaData,
+  SEQUENCE_PARTICIPANT_COLOR,
+} from '@uigraph/sdk'
 import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
 import { Fragment, useRef } from 'react'
+import TextareaAutosize from 'react-textarea-autosize'
 import {
   DEFAULT_CONFIG,
   getRowY,
@@ -13,15 +18,14 @@ export type SequenceParticipantNodeData = NodeDataGenerator<{
   label: string
   rowCount?: number
   rowHeight?: number
-  /** Center Y of every row, when rows aren't a uniform grid (block frames). */
   rowYs?: number[]
   lifelineHeight?: number
-  /** Row a `create participant` introduced this one at. */
   lifelineStartRow?: number
-  /** Row a `destroy` removed it at. */
   lifelineEndRow?: number
   activations?: Array<{ startRow: number; endRow: number }>
-  color?: string
+  style?: {
+    baseColor?: string
+  }
   titleFontSize?: number
 }>
 
@@ -33,6 +37,7 @@ export type TSequenceParticipantNode = Node<
 export const DEFAULT_TITLE_FONT_SIZE = 18
 
 const NODE_WIDTH = 10
+const TITLE_WIDTH_INSET = 16
 const LIFELINE_WIDTH = 1
 const ACTIVATION_WIDTH = 4
 const ACTIVATION_PADDING_RATIO = 0.3
@@ -43,7 +48,7 @@ export function SequenceParticipantNode({
   data,
 }: NodeProps<TSequenceParticipantNode>) {
   const { updateNodeData } = useReactFlow()
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const config = {
     ...DEFAULT_CONFIG,
     rowHeight: data.rowHeight ?? DEFAULT_CONFIG.rowHeight,
@@ -52,25 +57,14 @@ export function SequenceParticipantNode({
   const name = useComponentField<string>(data.componentFields, {
     componentFieldId: 'name',
   })
-  const color = useComponentField<string>(data.componentFields, {
-    componentFieldId: 'color',
-  })
   const label = name ?? data.label ?? ''
-  // Hex typed into the color field used to be stored without its `#`, which is
-  // not valid CSS — those saved values still have to render.
-  const savedColor = color ?? data.color ?? '#f59e0b'
-  const indicatorColor = /^[0-9a-f]{3,8}$/i.test(savedColor)
-    ? `#${savedColor}`
-    : savedColor
+  const indicatorColor = data.style?.baseColor ?? SEQUENCE_PARTICIPANT_COLOR
   const titleFontSize = data.titleFontSize ?? DEFAULT_TITLE_FONT_SIZE
   const lifelineX = NODE_WIDTH / 2
 
   const explicitRowYs = data.rowYs
   const explicitActivations = data.activations
 
-  // A bar means the participant is activated — `activate`/`deactivate` or the
-  // `+`/`-` arrow shorthand — never merely that a message touches the lifeline
-  // here. A diagram that never activates anyone draws no bars at all.
   const activationPadding = config.rowHeight * ACTIVATION_PADDING_RATIO
   const activations = (explicitActivations ?? []).map((activation) => ({
     top:
@@ -86,8 +80,6 @@ export function SequenceParticipantNode({
   const totalHeight =
     data.lifelineHeight ?? config.headerHeight + rowCount * config.rowHeight
 
-  // `create participant X` / `destroy X` clip the lifeline to the rows the
-  // participant actually exists for, instead of the full diagram height.
   const lifelineTop =
     data.lifelineStartRow !== undefined && explicitRowYs
       ? (explicitRowYs[data.lifelineStartRow] ?? config.headerHeight) -
@@ -113,23 +105,23 @@ export function SequenceParticipantNode({
         onDoubleClick={() => inputRef.current?.focus()}
       >
         <div
-          className="h-[1em] w-1 rounded-full"
+          className="h-[1.2em] w-1 rounded-full"
           style={{ backgroundColor: indicatorColor }}
         />
-        <input
+        <TextareaAutosize
           ref={inputRef}
           value={label}
-          size={Math.max(label.length, 1)}
-          className="text-foreground h-[1em] border-none bg-transparent p-0 text-[1em] leading-none font-medium outline-none"
+          rows={1}
+          onKeyDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{ width: config.columnWidth - TITLE_WIDTH_INSET }}
+          className="text-foreground block resize-none overflow-hidden border-none bg-transparent p-0 text-[1em] leading-[1] font-medium break-words outline-none"
           onChange={(e) => {
             const fields = data.componentFields ?? []
-            // buildMetaData rewrites every field from the map it's given, so
-            // the other fields' current values have to be carried over or
-            // renaming blanks them (the participant's color).
             updateNodeData(id, {
               componentFields: buildMetaData(fields, {
                 ...flattenMetaData(fields, fields),
-                name: e.target.value,
+                name: e.currentTarget.value,
               }),
             })
           }}
@@ -140,8 +132,6 @@ export function SequenceParticipantNode({
         width={NODE_WIDTH}
         height={totalHeight}
       >
-        {/* The lifeline is the participant's own color, dimmed — a fixed grey
-            reads as a separate element from the name indicator above it. */}
         <line
           x1={lifelineX}
           y1={lifelineTop}
@@ -165,10 +155,6 @@ export function SequenceParticipantNode({
         ))}
       </svg>
       {Array.from({ length: rowCount }, (_, i) => {
-        // Same coordinate frame as the SVG lifeline/activation rect above
-        // (both live in this component's own 0..totalHeight box) — no
-        // headerHeight subtraction here, or handles end up offset from the
-        // message boxes and activation bar they're meant to connect to.
         const top = explicitRowYs?.[i] ?? getRowY(i, config)
         const handleClass = '!w-1 !h-1 !opacity-0 !border-0 !bg-transparent'
         return (
