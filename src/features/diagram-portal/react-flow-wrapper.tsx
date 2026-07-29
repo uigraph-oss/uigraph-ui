@@ -246,14 +246,6 @@ export function ReactFlowWrapper({
       const isContainerNode =
         newNode.type === 'group' || newNode.type === 'c4Boundary'
 
-      // Ensure frame/group nodes have z-index -1
-      if (newNode.type === 'group') {
-        newNode.style = {
-          ...newNode.style,
-          zIndex: -1,
-        }
-      }
-
       if (isContainerNode) {
         setNodes((nds) => [newNode, ...nds])
       } else {
@@ -410,30 +402,6 @@ export function ReactFlowWrapper({
     },
     [reactFlowInstance, setNodes, setEdges]
   )
-
-  // Ensure group nodes always have z-index -1
-  useEffect(() => {
-    const needsUpdate = nodes.some(
-      (node) => node.type === 'group' && node.style?.zIndex !== -1
-    )
-
-    if (needsUpdate) {
-      setNodes((currentNodes) =>
-        currentNodes.map((node) => {
-          if (node.type === 'group' && node.style?.zIndex !== -1) {
-            return {
-              ...node,
-              style: {
-                ...node.style,
-                zIndex: -1,
-              },
-            }
-          }
-          return node
-        })
-      )
-    }
-  }, [nodes, setNodes])
 
   const isNodeWritable =
     !drawingMode && !forceReadOnly && tempDiagramState === null
