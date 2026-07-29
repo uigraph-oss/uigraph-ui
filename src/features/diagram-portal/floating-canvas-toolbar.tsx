@@ -95,9 +95,6 @@ export function FloatingCanvasToolbar() {
 
     try {
       const mermaidText = await mermaidFile.text()
-      const isSequenceMermaid = mermaidText
-        .split('\n')
-        .some((line) => line.trim().toLowerCase().startsWith('sequencediagram'))
 
       if (contextFile) {
         const parsedContext: unknown = parse(await contextFile.text())
@@ -113,7 +110,7 @@ export function FloatingCanvasToolbar() {
         const diagram = await convertMermaidToReactFlowWithContext(
           mermaidText,
           parsedContext,
-          { repositionNodes: !isSequenceMermaid }
+          { repositionNodes: true }
         )
 
         if (diagram === null) {
