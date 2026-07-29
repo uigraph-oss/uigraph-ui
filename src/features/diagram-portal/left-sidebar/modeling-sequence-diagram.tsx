@@ -33,16 +33,9 @@ import {
   reorientSequenceMessages,
 } from '../helpers/sequence-diagram-authoring'
 import { getComponentField } from '../hooks/use-component-field'
-import {
-  DEFAULT_TITLE_FONT_SIZE,
-  SEQUENCE_PARTICIPANT_COLOR,
-} from '../nodes/sequence-participant-node'
-import { SliderNumberField } from '../properties/components/slider-number-field'
+import { SEQUENCE_PARTICIPANT_COLOR } from '../nodes/sequence-participant-node'
 import { TComponentField } from '../types/component-fields'
 import { sidebarCategoryButtonClassName } from './sidebar-panel-styles'
-
-const FONT_SIZE_MIN = 8
-const FONT_SIZE_MAX = 40
 
 function fieldValue(node: Node, componentFieldId: string): string | null {
   const componentFields = node.data?.componentFields as
@@ -117,19 +110,6 @@ export function ModelingSequenceDiagramSection() {
 
     const index = participants.findIndex((p) => p.id === participant.id)
     return `Participant ${index + 1}`
-  }
-
-  const titleFontSize =
-    (participants[0]?.data?.titleFontSize as number | undefined) ??
-    DEFAULT_TITLE_FONT_SIZE
-
-  function handleChangeTitleFontSize(fontSize: number) {
-    setNodes((prev) =>
-      prev.map((n) => {
-        if (n.type !== 'sequenceParticipant') return n
-        return { ...n, data: { ...n.data, titleFontSize: fontSize } }
-      })
-    )
   }
 
   function focusNode(nodeId: string) {
@@ -364,22 +344,6 @@ export function ModelingSequenceDiagramSection() {
             className="overflow-hidden"
           >
             <div className="flex flex-col">
-              {isSequenceDiagram && (
-                <div className="pr-1 pl-2">
-                  <SliderNumberField
-                    min={FONT_SIZE_MIN}
-                    max={FONT_SIZE_MAX}
-                    step={1}
-                    label="Participant Font Size"
-                    labelClassName="text-[0.8125rem] font-medium text-[#828DA3]"
-                    labelRowClassName="-mb-1 h-7"
-                    inputClassName="!h-8 w-12 pl-1 text-[0.8125rem]"
-                    value={titleFontSize}
-                    onChange={handleChangeTitleFontSize}
-                  />
-                </div>
-              )}
-
               {(isSequenceDiagram || canAuthorSequence) && (
                 <div className="flex h-8 items-center justify-between gap-2 pr-1 pl-2">
                   <span
