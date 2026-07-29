@@ -6,11 +6,14 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useEffectState } from '@/hooks/use-effect-state'
+import { cn } from '@/lib/utils'
 import { LuEye, LuEyeOff } from 'react-icons/lu'
 
 export function Field({
   label,
   labelExtra,
+  labelClassName,
+  labelRowClassName,
 
   children,
 
@@ -21,6 +24,8 @@ export function Field({
 }: {
   label: string
   labelExtra?: React.ReactNode
+  labelClassName?: string
+  labelRowClassName?: string
   children: React.ReactNode
 
   visible?: boolean
@@ -32,8 +37,17 @@ export function Field({
 
   return (
     <div>
-      <div className="mb-2 flex h-7 items-center justify-between">
-        <Label className="text-sm font-normal text-[#F4F7FC]">{label}</Label>
+      <div
+        className={cn(
+          'mb-2 flex h-7 items-center justify-between',
+          labelRowClassName
+        )}
+      >
+        <Label
+          className={cn('text-sm font-normal text-[#F4F7FC]', labelClassName)}
+        >
+          {label}
+        </Label>
 
         <div className="flex items-center gap-2">
           {labelExtra}

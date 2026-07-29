@@ -1,4 +1,5 @@
 import { Slider } from '@/components/ui/slider'
+import { cn } from '@/lib/utils'
 import { Field } from '../field'
 
 interface SliderNumberFieldProps {
@@ -6,6 +7,9 @@ interface SliderNumberFieldProps {
   max: number
   step: number
   label: string
+  labelClassName?: string
+  labelRowClassName?: string
+  inputClassName?: string
   value: number | string
   onChange: (value: number) => void
 }
@@ -15,11 +19,18 @@ export function SliderNumberField({
   max,
   step,
   label,
+  labelClassName,
+  labelRowClassName,
+  inputClassName,
   value,
   onChange,
 }: SliderNumberFieldProps) {
   return (
-    <Field label={label}>
+    <Field
+      label={label}
+      labelClassName={labelClassName}
+      labelRowClassName={labelRowClassName}
+    >
       <div className="flex w-full items-center gap-3">
         <div className="flex-1">
           <Slider
@@ -43,7 +54,10 @@ export function SliderNumberField({
             }
           }}
           type="number"
-          className="border-stock text-paragraph !h-12 w-16 rounded-[0.5rem] border px-1 pl-3 text-center text-sm"
+          className={cn(
+            'border-stock text-paragraph !h-12 w-16 rounded-[0.5rem] border px-1 pl-3 text-center text-sm',
+            inputClassName
+          )}
         />
       </div>
     </Field>

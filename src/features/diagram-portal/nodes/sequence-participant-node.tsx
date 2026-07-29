@@ -22,12 +22,15 @@ export type SequenceParticipantNodeData = NodeDataGenerator<{
   lifelineEndRow?: number
   activations?: Array<{ startRow: number; endRow: number }>
   color?: string
+  titleFontSize?: number
 }>
 
 export type TSequenceParticipantNode = Node<
   SequenceParticipantNodeData,
   'sequenceParticipant'
 >
+
+export const DEFAULT_TITLE_FONT_SIZE = 14
 
 const NODE_WIDTH = 10
 const LIFELINE_WIDTH = 1
@@ -116,7 +119,8 @@ export function SequenceParticipantNode({
           ref={inputRef}
           value={label}
           size={Math.max(label.length, 1)}
-          className="text-foreground border-none bg-transparent text-sm font-medium outline-none"
+          style={{ fontSize: data.titleFontSize ?? DEFAULT_TITLE_FONT_SIZE }}
+          className="text-foreground border-none bg-transparent font-medium outline-none"
           onChange={(e) => {
             const fields = data.componentFields ?? []
             // buildMetaData rewrites every field from the map it's given, so
