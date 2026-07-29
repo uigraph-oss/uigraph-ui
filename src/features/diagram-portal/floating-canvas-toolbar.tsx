@@ -375,11 +375,7 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip={
-            isSequence
-              ? 'Beautify layout is unavailable for sequence diagrams'
-              : 'Beautify Layout'
-          }
+          tooltip="Beautify Layout"
           disabled={
             tempDiagramState !== null || !nodesInitialized || nodes.length === 0
           }
