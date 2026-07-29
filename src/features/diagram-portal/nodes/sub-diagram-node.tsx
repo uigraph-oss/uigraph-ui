@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { useMutation, useQuery } from '@apollo/client'
 import { Node, NodeProps, NodeResizeControl } from '@xyflow/react'
 import { useEffect, useState } from 'react'
@@ -150,19 +151,19 @@ export function SubDiagramNode({ data, selected }: NodeProps<TSubDiagramNode>) {
 
           {data.diagramId && hasThumbnail && (
             <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/65 opacity-0 transition-opacity group-hover:opacity-100">
-              <button
+              <Button
                 type="button"
-                title={`Open "${name}" in a new tab`}
+                size="sm"
+                className="pointer-events-auto"
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation()
                   openSubDiagram(data.diagramId!)
                 }}
-                className="pointer-events-auto flex items-center gap-1.5 px-2 py-1.5 text-[0.6875rem] text-[#F4F7FC]"
               >
                 <LuExternalLink className="size-3.5" />
                 Open in new tab
-              </button>
+              </Button>
             </span>
           )}
         </div>
