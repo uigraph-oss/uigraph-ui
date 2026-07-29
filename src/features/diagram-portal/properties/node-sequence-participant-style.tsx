@@ -1,10 +1,10 @@
 import { ColorPickerInput } from '@/features/component-meta'
-import { SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
 import { useEffectState } from 'daily-code/react'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import {
   DEFAULT_TITLE_FONT_SIZE,
+  SEQUENCE_PARTICIPANT_COLOR,
   TSequenceParticipantNode,
 } from '../nodes/sequence-participant-node'
 import { SliderNumberField } from './components/slider-number-field'
@@ -18,7 +18,7 @@ export function NodeSequenceParticipantStyle() {
   const { data, updateData } = useSingleSelectedNode<TSequenceParticipantNode>()
 
   const [localColor, setLocalColor] = useEffectState<string>(
-    data?.style?.baseColor ?? SEQUENCE_PARTICIPANT_COLOR
+    data?.color ?? SEQUENCE_PARTICIPANT_COLOR
   )
 
   const participant = nodes.find((n) => n.type === 'sequenceParticipant')
@@ -44,12 +44,7 @@ export function NodeSequenceParticipantStyle() {
           className="border-stock border-1 border-solid"
           onChange={(value) => {
             setLocalColor(value)
-            updateData({
-              style: {
-                ...(data?.style ?? {}),
-                baseColor: value,
-              },
-            })
+            updateData({ color: value })
           }}
         />
       </Field>

@@ -13,11 +13,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import {
-  buildMetaData,
-  flattenMetaData,
-  SEQUENCE_PARTICIPANT_COLOR,
-} from '@uigraph/sdk'
+import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
@@ -37,7 +33,10 @@ import {
   reorientSequenceMessages,
 } from '../helpers/sequence-diagram-authoring'
 import { getComponentField } from '../hooks/use-component-field'
-import { DEFAULT_TITLE_FONT_SIZE } from '../nodes/sequence-participant-node'
+import {
+  DEFAULT_TITLE_FONT_SIZE,
+  SEQUENCE_PARTICIPANT_COLOR,
+} from '../nodes/sequence-participant-node'
 import { SliderNumberField } from '../properties/components/slider-number-field'
 import { TComponentField } from '../types/component-fields'
 import { sidebarCategoryButtonClassName } from './sidebar-panel-styles'
@@ -472,8 +471,8 @@ export function ModelingSequenceDiagramSection() {
                       className="size-2 rounded-full transition-opacity group-hover:opacity-0"
                       style={{
                         background:
-                          (participant.data?.style as { baseColor?: string })
-                            ?.baseColor ?? SEQUENCE_PARTICIPANT_COLOR,
+                          (participant.data?.color as string | undefined) ??
+                          SEQUENCE_PARTICIPANT_COLOR,
                       }}
                     />
                     <LuGripVertical className="absolute size-3.5 cursor-grab text-[#828DA3] opacity-0 transition-opacity group-hover:opacity-100" />

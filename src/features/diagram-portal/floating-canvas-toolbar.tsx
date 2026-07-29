@@ -31,10 +31,6 @@ import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
 import { beautifyDiagram } from './helpers/beautify-diagram'
 import { downloadFlowDiagramImage } from './helpers/download-image'
-import {
-  applySequenceMermaidContext,
-  buildSequenceMermaidContext,
-} from './helpers/sequence-mermaid-context'
 
 export const diagramToolbarContainerClassName =
   'pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
@@ -103,25 +99,6 @@ export function FloatingCanvasToolbar() {
         .split('\n')
         .some((line) => line.trim().toLowerCase().startsWith('sequencediagram'))
 
-      if (isSequenceMermaid) {
-        const diagram = await convertMermaidToReactFlow(mermaidText)
-
-        if (diagram === null) {
-          return toast.error('Failed to convert Mermaid diagram to React Flow')
-        }
-
-        const nodes = contextFile
-          ? applySequenceMermaidContext(
-              diagram.nodes,
-              parse(await contextFile.text())
-            )
-          : diagram.nodes
-
-        setNodes(nodes)
-        setEdges(diagram.edges)
-        return
-      }
-
       if (contextFile) {
         const parsedContext: unknown = parse(await contextFile.text())
 
@@ -136,7 +113,7 @@ export function FloatingCanvasToolbar() {
         const diagram = await convertMermaidToReactFlowWithContext(
           mermaidText,
           parsedContext,
-          { repositionNodes: true }
+          { repositionNodes: !isSequenceMermaid }
         )
 
         if (diagram === null) {
@@ -181,7 +158,20 @@ export function FloatingCanvasToolbar() {
         mermaidLink.download = `${baseName}.mmd`
         mermaidLink.click()
 
-        const context = buildSequenceMermaidContext(nodes)
+        const context = {
+          nodes: Object.fromEntries(
+            nodes
+              .filter(
+                (node) =>
+                  node.type === 'sequenceParticipant' &&
+                  typeof node.data?.color === 'string'
+              )
+              .map((node) => [
+                node.id,
+                { style: { color: node.data.color as string } },
+              ])
+          ),
+        }
 
         const contextBlob = new Blob([JSON.stringify(context, null, 2)], {
           type: 'application/json;charset=utf-8',

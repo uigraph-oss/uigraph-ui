@@ -1,5 +1,4 @@
 import { ComponentInputType } from '@/features/component-meta'
-import { SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
 import {
@@ -63,13 +62,6 @@ describe('createParticipantNode', () => {
 
     expect(fields.map((f) => f.componentFieldId)).toEqual(['name'])
     expect(fields[0].type).toBe(ComponentInputType.TextInput)
-  })
-
-  it('styles the participant with the default color, like an imported one', () => {
-    const node = createParticipantNode([], 'New Participant')
-    const style = (node.data as { style: { baseColor: string } }).style
-
-    expect(style.baseColor).toBe(SEQUENCE_PARTICIPANT_COLOR)
   })
 })
 

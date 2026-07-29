@@ -1,8 +1,4 @@
-import {
-  buildMetaData,
-  flattenMetaData,
-  SEQUENCE_PARTICIPANT_COLOR,
-} from '@uigraph/sdk'
+import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
 import { Fragment, useRef } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
@@ -23,9 +19,7 @@ export type SequenceParticipantNodeData = NodeDataGenerator<{
   lifelineStartRow?: number
   lifelineEndRow?: number
   activations?: Array<{ startRow: number; endRow: number }>
-  style?: {
-    baseColor?: string
-  }
+  color?: string
   titleFontSize?: number
 }>
 
@@ -35,6 +29,7 @@ export type TSequenceParticipantNode = Node<
 >
 
 export const DEFAULT_TITLE_FONT_SIZE = 18
+export const SEQUENCE_PARTICIPANT_COLOR = '#E2E8F0'
 
 const NODE_WIDTH = 10
 const TITLE_WIDTH_INSET = 16
@@ -58,7 +53,7 @@ export function SequenceParticipantNode({
     componentFieldId: 'name',
   })
   const label = name ?? data.label ?? ''
-  const indicatorColor = data.style?.baseColor ?? SEQUENCE_PARTICIPANT_COLOR
+  const indicatorColor = data.color ?? SEQUENCE_PARTICIPANT_COLOR
   const titleFontSize = data.titleFontSize ?? DEFAULT_TITLE_FONT_SIZE
   const lifelineX = NODE_WIDTH / 2
 

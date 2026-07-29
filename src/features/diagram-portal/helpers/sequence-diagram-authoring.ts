@@ -1,5 +1,4 @@
 import { ComponentInputType } from '@/features/component-meta'
-import { SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
 import { Edge, Node } from '@xyflow/react'
 import { generateUUID } from '../utils/uuid'
 import {
@@ -54,7 +53,6 @@ export function createParticipantNode(nodes: Node[], name: string): Node {
     type: 'sequenceParticipant',
     position: { x, y: 0 },
     data: {
-      style: { baseColor: SEQUENCE_PARTICIPANT_COLOR },
       componentFields: [nameField(name)],
     },
   }
