@@ -30,14 +30,13 @@ export type TSequenceParticipantNode = Node<
   'sequenceParticipant'
 >
 
-export const DEFAULT_TITLE_FONT_SIZE = 14
+export const DEFAULT_TITLE_FONT_SIZE = 18
 
 const NODE_WIDTH = 10
 const LIFELINE_WIDTH = 1
 const ACTIVATION_WIDTH = 4
 const ACTIVATION_PADDING_RATIO = 0.3
 const LIFELINE_OPACITY = 0.75
-const INDICATOR_WIDTH = ACTIVATION_WIDTH
 
 export function SequenceParticipantNode({
   id,
@@ -63,6 +62,7 @@ export function SequenceParticipantNode({
   const indicatorColor = /^[0-9a-f]{3,8}$/i.test(savedColor)
     ? `#${savedColor}`
     : savedColor
+  const titleFontSize = data.titleFontSize ?? DEFAULT_TITLE_FONT_SIZE
   const lifelineX = NODE_WIDTH / 2
 
   const explicitRowYs = data.rowYs
@@ -108,19 +108,19 @@ export function SequenceParticipantNode({
       }}
     >
       <div
-        className="absolute top-0 left-1/2 flex -translate-x-1/2 items-center gap-1.5"
+        className="absolute top-0 left-1/2 -ml-0.5 flex items-end gap-1.5 pb-2"
+        style={{ height: config.headerHeight, fontSize: titleFontSize }}
         onDoubleClick={() => inputRef.current?.focus()}
       >
         <div
-          className="h-5 rounded-full"
-          style={{ width: INDICATOR_WIDTH, backgroundColor: indicatorColor }}
+          className="h-[1em] w-1 rounded-full"
+          style={{ backgroundColor: indicatorColor }}
         />
         <input
           ref={inputRef}
           value={label}
           size={Math.max(label.length, 1)}
-          style={{ fontSize: data.titleFontSize ?? DEFAULT_TITLE_FONT_SIZE }}
-          className="text-foreground border-none bg-transparent font-medium outline-none"
+          className="text-foreground h-[1em] border-none bg-transparent p-0 text-[1em] leading-none font-medium outline-none"
           onChange={(e) => {
             const fields = data.componentFields ?? []
             // buildMetaData rewrites every field from the map it's given, so
