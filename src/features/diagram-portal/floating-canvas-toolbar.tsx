@@ -63,6 +63,8 @@ export function FloatingCanvasToolbar() {
     diagramName,
   } = useFlowDiagramContext()
 
+  const isSequence = isSequenceDiagram(nodes)
+
   async function handleExport() {
     setIsDownloading(true)
 
@@ -329,9 +331,17 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip="Auto layout left-to-right"
-          disabled={tempDiagramState !== null}
+          tooltip={
+            isSequence
+              ? 'Auto layout is unavailable for sequence diagrams'
+              : 'Auto layout left-to-right'
+          }
+          disabled={tempDiagramState !== null || isSequence}
           onClick={() => {
+            if (isSequence) {
+              return
+            }
+
             const laid = applyAutoLayout(nodes, edges, 'LR')
             setNodes(laid)
             setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
@@ -343,9 +353,17 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip="Auto layout top-to-bottom"
-          disabled={tempDiagramState !== null}
+          tooltip={
+            isSequence
+              ? 'Auto layout is unavailable for sequence diagrams'
+              : 'Auto layout top-to-bottom'
+          }
+          disabled={tempDiagramState !== null || isSequence}
           onClick={() => {
+            if (isSequence) {
+              return
+            }
+
             const laid = applyAutoLayout(nodes, edges, 'TB')
             setNodes(laid)
             setTimeout(() => reactFlowInstance?.fitView({ padding: 0.2 }), 50)
@@ -357,11 +375,22 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip="Beautify Layout"
+          tooltip={
+            isSequence
+              ? 'Beautify layout is unavailable for sequence diagrams'
+              : 'Beautify Layout'
+          }
           disabled={
-            tempDiagramState !== null || !nodesInitialized || nodes.length === 0
+            tempDiagramState !== null ||
+            !nodesInitialized ||
+            nodes.length === 0 ||
+            isSequence
           }
           onClick={() => {
+            if (isSequence) {
+              return
+            }
+
             if (!nodesInitialized) {
               toast.info('Diagram is still rendering — try again in a moment')
               return
