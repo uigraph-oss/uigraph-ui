@@ -1,6 +1,7 @@
 'use client'
 
 import { VirtualCursor } from '@/components/virtual-cursor'
+import { env } from '@/env'
 import { ComponentInputType } from '@/features/component-meta'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ import * as React from 'react'
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
+import { DebugNodeBounds } from './debug-node-bounds'
 import { DrawingOverlay } from './drawing-overlay'
 import { CUSTOM_EDGE_TYPES } from './edges'
 import { EdgeMarkerDefs } from './edges/edge-marker-defs'
@@ -576,6 +578,10 @@ export function ReactFlowWrapper({
           isDrawing={drawingMode}
           onDrawComplete={onDrawComplete}
         />
+
+        {env.VITE_FEATURE_ENABLE_DEBUG_DIAGRAM_NODE_BOUNDS && (
+          <DebugNodeBounds />
+        )}
       </ReactFlow>
     </>
   )

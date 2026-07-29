@@ -1,11 +1,12 @@
-import { getNodesBounds, getViewportForBounds, Node } from '@xyflow/react'
+import { getViewportForBounds, Node } from '@xyflow/react'
 import { toCanvas } from 'html-to-image'
+import { getVisualNodesBounds } from './visual-nodes-bounds'
 
 const IMAGE_PADDING = 60
 const DIAGRAM_THUMBNAIL_BACKGROUND = '#0b0e16'
 
 function getImageViewport(nodes: Node[]) {
-  const nodesBounds = getNodesBounds(nodes)
+  const nodesBounds = getVisualNodesBounds(nodes)
   const paddedWidth = nodesBounds.width + IMAGE_PADDING
   const paddedHeight = nodesBounds.height + IMAGE_PADDING
 
