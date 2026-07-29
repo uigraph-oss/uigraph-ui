@@ -37,7 +37,9 @@ export function UnauthenticatedGuard({ children }: PropsWithChildren) {
   const status = useAuthStore((state) => state.status)
 
   if (status === 'authenticated') {
-    return <Navigate to="/" replace />
+    const searchParams = new URLSearchParams(window.location.search)
+    const next = searchParams.get('next')
+    return <Navigate to={next ? next : '/'} replace />
   }
 
   return children
