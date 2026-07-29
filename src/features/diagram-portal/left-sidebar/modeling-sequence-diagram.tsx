@@ -20,7 +20,7 @@ import {
 } from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import {
   LuArrowRight,
@@ -73,7 +73,7 @@ export function ModelingSequenceDiagramSection() {
     index: number
   } | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
-  const [isSequenceExpanded, setIsSequenceExpanded] = useState(true)
+  const [expandedOverride, setExpandedOverride] = useState<boolean | null>(null)
 
   const isLocked = tempDiagramState !== null
 
@@ -110,6 +110,7 @@ export function ModelingSequenceDiagramSection() {
   const isSequenceDiagram = participants.length > 0
   const isEmptyCanvas = nodes.length === 0
   const canAuthorSequence = !isLocked && (isSequenceDiagram || isEmptyCanvas)
+  const isSequenceExpanded = expandedOverride ?? canAuthorSequence
 
   function participantName(participant: Node): string {
     const name = fieldValue(participant, 'name')
@@ -341,15 +342,16 @@ export function ModelingSequenceDiagramSection() {
   return (
     <>
       <button
-        onClick={() => setIsSequenceExpanded(!isSequenceExpanded)}
+        onClick={() => setExpandedOverride(!isSequenceExpanded)}
         className={sidebarCategoryButtonClassName}
       >
         <span className="truncate">Sequence Diagram</span>
-        {isSequenceExpanded ? (
-          <ChevronDown className="size-3" />
-        ) : (
-          <ChevronRight className="size-3" />
-        )}
+        <ChevronDown
+          className={cn(
+            'size-3 transition-transform duration-200 ease-out',
+            !isSequenceExpanded && '-rotate-90'
+          )}
+        />
       </button>
 
       <AnimatePresence initial={false}>
@@ -379,56 +381,57 @@ export function ModelingSequenceDiagramSection() {
                 </div>
               )}
 
-              <div className="flex h-8 items-center justify-between gap-2 pr-1 pl-2">
-                <span className={'text-[0.8125rem] font-medium text-[#828DA3]'}>
-                  Participants
-                  {isSequenceDiagram && (
-                    <span className="ml-1.5 text-[#5A6478]">
-                      {participants.length}
-                    </span>
-                  )}
-                </span>
-
-                {isSequenceDiagram && (
-                  <Tooltip delayDuration={300}>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        disabled={!canAuthorSequence}
-                        onClick={handleAddParticipant}
-                        className={
-                          'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC] disabled:pointer-events-none disabled:opacity-30'
-                        }
-                      >
-                        <LuPlus className="size-3.5" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      Add participant
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
-
-              {!isSequenceDiagram && (
-                <>
-                  <button
-                    type="button"
-                    disabled={!canAuthorSequence}
-                    onClick={handleAddParticipant}
-                    className="hover:border-primary/40 flex h-9 w-full items-center gap-2 rounded-[0.5rem] border border-dashed border-[#2A3242] px-2 text-sm text-[#F4F7FC] transition-colors hover:bg-[#1E2533] disabled:pointer-events-none disabled:opacity-40"
+              {(isSequenceDiagram || canAuthorSequence) && (
+                <div className="flex h-8 items-center justify-between gap-2 pr-1 pl-2">
+                  <span
+                    className={'text-[0.8125rem] font-medium text-[#828DA3]'}
                   >
-                    <LuPlus className="size-4 text-[#828DA3]" />
-                    New sequence diagram
-                  </button>
+                    Participants
+                    {isSequenceDiagram && (
+                      <span className="ml-1.5 text-[#5A6478]">
+                        {participants.length}
+                      </span>
+                    )}
+                  </span>
 
-                  {!isEmptyCanvas && (
-                    <p className="px-2 pt-2 text-[0.6875rem] leading-relaxed text-[#828DA3]">
-                      Sequence tools need an empty canvas, or a diagram that
-                      already has participants.
-                    </p>
+                  {isSequenceDiagram && canAuthorSequence && (
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={handleAddParticipant}
+                          className={
+                            'flex size-6 shrink-0 items-center justify-center rounded-[0.375rem] text-[#828DA3] transition-colors hover:bg-[#2A3242] hover:text-[#F4F7FC]'
+                          }
+                        >
+                          <LuPlus className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        Add participant
+                      </TooltipContent>
+                    </Tooltip>
                   )}
-                </>
+                </div>
+              )}
+
+              {canAuthorSequence && !isSequenceDiagram && (
+                <button
+                  type="button"
+                  onClick={handleAddParticipant}
+                  className="hover:border-primary/40 flex h-9 w-full items-center gap-2 rounded-[0.5rem] border border-dashed border-[#2A3242] px-2 text-sm text-[#F4F7FC] transition-colors hover:bg-[#1E2533]"
+                >
+                  <LuPlus className="size-4 text-[#828DA3]" />
+                  New sequence diagram
+                </button>
+              )}
+
+              {!canAuthorSequence && !isSequenceDiagram && (
+                <p className="px-2 py-1 text-[0.6875rem] leading-relaxed text-[#828DA3]">
+                  {isLocked
+                    ? 'Sequence editing is unavailable while a preview is active.'
+                    : 'Sequence tools are unavailable on this diagram. Start a sequence diagram on an empty canvas, or open one that already has participants.'}
+                </p>
               )}
 
               {participants.map((participant, index) => (

@@ -4,8 +4,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import {
   C4_BOUNDARY_TOOLS,
@@ -16,7 +17,6 @@ import {
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import {
   sidebarCategoryButtonClassName,
-  sidebarNestedCategoryButtonClassName,
   sidebarTileClassName,
 } from './sidebar-panel-styles'
 
@@ -30,29 +30,20 @@ const GROUPS: { id: C4Group; label: string; tools: C4Tool[] }[] = [
 
 export function ModelingC4Section() {
   const [isExpanded, setIsExpanded] = useState(true)
-  const [expandedGroups, setExpandedGroups] = useState<Set<C4Group>>(
-    new Set(['elements', 'boundaries', 'sub-diagrams'])
-  )
-
-  function toggleGroup(group: C4Group) {
-    const next = new Set(expandedGroups)
-    if (next.has(group)) next.delete(group)
-    else next.add(group)
-    setExpandedGroups(next)
-  }
 
   return (
     <>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={sidebarCategoryButtonClassName}
+        className={cn(sidebarCategoryButtonClassName, 'mt-0.5')}
       >
         <span className="truncate">C4 Model</span>
-        {isExpanded ? (
-          <ChevronDown className="size-3" />
-        ) : (
-          <ChevronRight className="size-3" />
-        )}
+        <ChevronDown
+          className={cn(
+            'size-3 transition-transform duration-200 ease-out',
+            !isExpanded && '-rotate-90'
+          )}
+        />
       </button>
 
       <AnimatePresence initial={false}>
@@ -65,70 +56,43 @@ export function ModelingC4Section() {
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-1 px-1 pb-1">
-              {GROUPS.map((group) => {
-                const isGroupExpanded = expandedGroups.has(group.id)
+            <div className="flex flex-col gap-2 px-2 pt-2 pb-2">
+              {GROUPS.map((group) => (
+                <div key={group.id} className="flex flex-col gap-1.5">
+                  <span className="text-xs font-medium text-[#828DA3]">
+                    {group.label}
+                  </span>
 
-                return (
-                  <div key={group.id} className="flex flex-col gap-1">
-                    <button
-                      onClick={() => toggleGroup(group.id)}
-                      className={sidebarNestedCategoryButtonClassName}
-                    >
-                      <span className="truncate text-[#828DA3]">
-                        {group.label}
-                      </span>
-                      {isGroupExpanded ? (
-                        <ChevronDown className="size-3" />
-                      ) : (
-                        <ChevronRight className="size-3" />
-                      )}
-                    </button>
-
-                    <AnimatePresence initial={false}>
-                      {isGroupExpanded && (
-                        <motion.div
-                          key={`c4-group-${group.id}`}
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2, ease: 'easeOut' }}
-                          className="overflow-hidden"
-                        >
-                          <div className="grid grid-cols-4 gap-1.5 px-2 pb-1">
-                            {group.tools.map((tool) => (
-                              <TooltipProvider key={tool.id}>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <div
-                                      draggable
-                                      className={sidebarTileClassName}
-                                      onDragStart={(event: React.DragEvent) => {
-                                        componentDragDataTransfer(
-                                          event,
-                                          tool.nodeType,
-                                          tool.dragData,
-                                          tool.recommendedSize,
-                                          tool.label
-                                        )
-                                      }}
-                                    >
-                                      <div className="flex items-center justify-center">
-                                        {tool.icon}
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>{tool.label}</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {group.tools.map((tool) => (
+                      <TooltipProvider key={tool.id}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div
+                              draggable
+                              className={sidebarTileClassName}
+                              onDragStart={(event: React.DragEvent) => {
+                                componentDragDataTransfer(
+                                  event,
+                                  tool.nodeType,
+                                  tool.dragData,
+                                  tool.recommendedSize,
+                                  tool.label
+                                )
+                              }}
+                            >
+                              <div className="flex items-center justify-center">
+                                {tool.icon}
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{tool.label}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
           </motion.div>
         )}
