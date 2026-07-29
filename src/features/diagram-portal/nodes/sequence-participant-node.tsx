@@ -1,7 +1,6 @@
 import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
 import { Handle, Node, NodeProps, Position, useReactFlow } from '@xyflow/react'
 import { Fragment, useRef } from 'react'
-import TextareaAutosize from 'react-textarea-autosize'
 import {
   DEFAULT_CONFIG,
   getRowY,
@@ -32,7 +31,6 @@ export const DEFAULT_TITLE_FONT_SIZE = 18
 export const SEQUENCE_PARTICIPANT_COLOR = '#E2E8F0'
 
 const NODE_WIDTH = 10
-const TITLE_WIDTH_INSET = 16
 const LIFELINE_WIDTH = 1
 const ACTIVATION_WIDTH = 4
 const ACTIVATION_PADDING_RATIO = 0.3
@@ -43,7 +41,7 @@ export function SequenceParticipantNode({
   data,
 }: NodeProps<TSequenceParticipantNode>) {
   const { updateNodeData } = useReactFlow()
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const config = {
     ...DEFAULT_CONFIG,
     rowHeight: data.rowHeight ?? DEFAULT_CONFIG.rowHeight,
@@ -95,32 +93,34 @@ export function SequenceParticipantNode({
       }}
     >
       <div
-        className="absolute top-0 left-1/2 -ml-0.5 flex items-end gap-1.5 pb-2"
+        className="absolute top-0 left-1/2 -ml-0.5 flex items-end"
         style={{ height: config.headerHeight, fontSize: titleFontSize }}
         onDoubleClick={() => inputRef.current?.focus()}
       >
-        <div
-          className="h-[1.2em] w-1 rounded-full"
-          style={{ backgroundColor: indicatorColor }}
-        />
-        <TextareaAutosize
-          ref={inputRef}
-          value={label}
-          rows={1}
-          onKeyDown={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          style={{ width: config.columnWidth - TITLE_WIDTH_INSET }}
-          className="text-foreground block resize-none overflow-hidden border-none bg-transparent p-0 text-[1em] leading-[1] font-medium break-words outline-none"
-          onChange={(e) => {
-            const fields = data.componentFields ?? []
-            updateNodeData(id, {
-              componentFields: buildMetaData(fields, {
-                ...flattenMetaData(fields, fields),
-                name: e.currentTarget.value,
-              }),
-            })
-          }}
-        />
+        <div className="flex items-end gap-1.5 pb-2">
+          <div
+            className="w-1 self-stretch rounded-full"
+            style={{ backgroundColor: indicatorColor }}
+          />
+          <input
+            ref={inputRef}
+            value={label}
+            size={1}
+            onKeyDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{ textBoxTrim: 'trim-both', textBoxEdge: 'cap alphabetic' }}
+            className="text-foreground block field-sizing-content border-none bg-transparent p-0 text-[1em] leading-[1] font-medium whitespace-nowrap outline-none"
+            onChange={(e) => {
+              const fields = data.componentFields ?? []
+              updateNodeData(id, {
+                componentFields: buildMetaData(fields, {
+                  ...flattenMetaData(fields, fields),
+                  name: e.currentTarget.value,
+                }),
+              })
+            }}
+          />
+        </div>
       </div>
       <svg
         className="pointer-events-none absolute top-0 left-0 overflow-visible"
