@@ -24,7 +24,13 @@ export function AuthenticatedGuard({ children }: PropsWithChildren) {
     void signOut()
   }
 
-  return <Navigate to="/sign-in" replace />
+  let search = ''
+  const searchParams = new URLSearchParams(window.location.search)
+  if (!searchParams.has('next')) {
+    search = '?next=' + encodeURIComponent(window.location.pathname)
+  }
+
+  return <Navigate to={'/sign-in' + search} replace />
 }
 
 export function UnauthenticatedGuard({ children }: PropsWithChildren) {
