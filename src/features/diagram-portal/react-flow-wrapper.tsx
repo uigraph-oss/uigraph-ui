@@ -245,6 +245,9 @@ export function ReactFlowWrapper({
         }),
       }
 
+      const isContainerNode =
+        newNode.type === 'group' || newNode.type === 'c4Boundary'
+
       // Ensure frame/group nodes have z-index -1
       if (newNode.type === 'group') {
         newNode.style = {
@@ -253,7 +256,7 @@ export function ReactFlowWrapper({
         }
       }
 
-      if (newNode.type === 'group') {
+      if (isContainerNode) {
         setNodes((nds) => [newNode, ...nds])
       } else {
         reactFlowInstance.addNodes([newNode])

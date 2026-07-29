@@ -3,10 +3,13 @@ import { DragEvent } from 'react'
 import {
   AnimatedNodeData,
   BuilderNodeData,
+  C4BoundaryNodeData,
+  C4NodeData,
   CloudNodeData,
   DatabaseTableSQLNodeData,
   ImageNodeData,
   ShapeNodeData,
+  SubDiagramNodeData,
   TextNodeData,
   TNodeTypes,
 } from '..'
@@ -36,7 +39,13 @@ type NodeData<T extends TNodeTypes> = {
               ? DatabaseTableSQLNodeData
               : T extends 'table'
                 ? TableNodeData
-                : never
+                : T extends 'c4'
+                  ? C4NodeData
+                  : T extends 'c4Boundary'
+                    ? C4BoundaryNodeData
+                    : T extends 'subDiagram'
+                      ? SubDiagramNodeData
+                      : never
 
 export function componentDragDataTransfer<T extends TNodeTypes>(
   event: DragEvent,

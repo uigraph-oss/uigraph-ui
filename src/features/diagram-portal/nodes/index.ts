@@ -1,5 +1,7 @@
 import { AnimatedNode } from './animated-node'
 import { BuilderNode } from './builder-node'
+import { C4BoundaryNode } from './c4-boundary-node'
+import { C4Node } from './c4-node'
 import { CloudNode } from './cloud-node'
 import { CodeNode } from './code-node'
 import { CommentNode } from './comment-node'
@@ -9,6 +11,7 @@ import { GroupNode } from './group-node'
 import { ImageNode } from './image-node'
 import { SequenceParticipantNode } from './sequence-participant-node'
 import { ShapeNode } from './shape-node'
+import { SubDiagramNode } from './sub-diagram-node'
 import { TableNode } from './table-node'
 import { TextNode } from './text-node'
 
@@ -17,6 +20,8 @@ export { SHAPE_COMPONENTS_MAP } from './shape-node'
 
 export type * from './animated-node'
 export type * from './builder-node'
+export type * from './c4-boundary-node'
+export type * from './c4-node'
 export type * from './cloud-node'
 export type * from './code-node'
 export type * from './comment-node'
@@ -25,6 +30,7 @@ export type * from './group-node'
 export type * from './image-node'
 export type * from './sequence-participant-node'
 export type * from './shape-node'
+export type * from './sub-diagram-node'
 export type * from './table-node'
 export type * from './text-node'
 
@@ -45,4 +51,7 @@ export const CUSTOM_NODE_TYPES = {
   text: TextNode,
   databaseTableSQL: DatabaseTableSQLNode,
   dataTableInterface: DataTableInterfaceNode,
+  c4: C4Node,
+  c4Boundary: C4BoundaryNode,
+  subDiagram: SubDiagramNode,
 }

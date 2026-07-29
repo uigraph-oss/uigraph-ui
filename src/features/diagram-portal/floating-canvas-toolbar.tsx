@@ -381,16 +381,9 @@ export function FloatingCanvasToolbar() {
               : 'Beautify Layout'
           }
           disabled={
-            tempDiagramState !== null ||
-            !nodesInitialized ||
-            nodes.length === 0 ||
-            isSequence
+            tempDiagramState !== null || !nodesInitialized || nodes.length === 0
           }
           onClick={() => {
-            if (isSequence) {
-              return
-            }
-
             if (!nodesInitialized) {
               toast.info('Diagram is still rendering — try again in a moment')
               return
