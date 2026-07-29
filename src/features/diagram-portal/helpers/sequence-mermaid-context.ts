@@ -1,14 +1,18 @@
-import { buildMetaData, flattenMetaData } from '@uigraph/sdk'
+import { flattenMetaData } from '@uigraph/sdk'
 import { Node } from '@xyflow/react'
 import { TComponentField } from '../types/component-fields'
 
-/**
- * Sequence mermaid text is otherwise fully self-describing on round-trip —
- * the one piece of state(TODO) it can't carry is each participant's custom color
- * (set via the node's color picker), so that's all this context preserves.
- */
 export type SequenceMermaidContext = {
   participants?: Record<string, { color?: string }>
+}
+
+function participantName(node: Node): string | undefined {
+  const fields = (node.data?.componentFields ?? []) as TComponentField[]
+  const meta = flattenMetaData(fields, fields)
+
+  if (typeof meta.name === 'string') return meta.name
+  if (typeof node.data?.label === 'string') return node.data.label
+  return undefined
 }
 
 export function buildSequenceMermaidContext(
@@ -19,11 +23,9 @@ export function buildSequenceMermaidContext(
   for (const node of nodes) {
     if (node.type !== 'sequenceParticipant') continue
 
-    const fields = (node.data?.componentFields ?? []) as TComponentField[]
-    const meta = flattenMetaData(fields, fields)
-
-    const name = typeof meta.name === 'string' ? meta.name : undefined
-    const color = typeof meta.color === 'string' ? meta.color : undefined
+    const name = participantName(node)
+    const color = (node.data?.style as { baseColor?: string } | undefined)
+      ?.baseColor
 
     if (name && color) participants[name] = { color }
   }
@@ -49,9 +51,7 @@ export function applySequenceMermaidContext(
   return nodes.map((node) => {
     if (node.type !== 'sequenceParticipant') return node
 
-    const fields = (node.data?.componentFields ?? []) as TComponentField[]
-    const meta = flattenMetaData(fields, fields)
-    const name = typeof meta.name === 'string' ? meta.name : undefined
+    const name = participantName(node)
     const color = name ? participants[name]?.color : undefined
 
     if (!color) return node
@@ -60,7 +60,10 @@ export function applySequenceMermaidContext(
       ...node,
       data: {
         ...node.data,
-        componentFields: buildMetaData(fields, { ...meta, color }),
+        style: {
+          ...(node.data?.style as Record<string, unknown> | undefined),
+          baseColor: color,
+        },
       },
     }
   })
