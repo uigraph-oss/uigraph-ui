@@ -12,7 +12,6 @@ import {
   C4_BOUNDARY_TOOLS,
   C4_ELEMENT_TOOLS,
   C4Tool,
-  SUB_DIAGRAM_TOOL,
 } from '../constants/c4-tools'
 import { componentDragDataTransfer } from '../nodes/helpers/drag-data-transfer'
 import {
@@ -20,12 +19,11 @@ import {
   sidebarTileClassName,
 } from './sidebar-panel-styles'
 
-type C4Group = 'elements' | 'boundaries' | 'sub-diagrams'
+type C4Group = 'elements' | 'boundaries'
 
 const GROUPS: { id: C4Group; label: string; tools: C4Tool[] }[] = [
   { id: 'elements', label: 'Elements', tools: C4_ELEMENT_TOOLS },
   { id: 'boundaries', label: 'Boundaries', tools: C4_BOUNDARY_TOOLS },
-  { id: 'sub-diagrams', label: 'Sub Diagrams', tools: [SUB_DIAGRAM_TOOL] },
 ]
 
 export function ModelingC4Section() {

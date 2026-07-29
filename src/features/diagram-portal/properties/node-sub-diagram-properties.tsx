@@ -6,11 +6,10 @@ import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { useState } from 'react'
-import { LuExternalLink, LuSearch } from 'react-icons/lu'
+import { LuCheck, LuExternalLink, LuSearch } from 'react-icons/lu'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { useSingleSelectedNode } from '../hooks/use-single-selected-node'
 import { openSubDiagram, TSubDiagramNode } from '../nodes/sub-diagram-node'
-import { Field } from './field'
 
 export function NodeSubDiagramProperties() {
   const { data, updateData } = useSingleSelectedNode<TSubDiagramNode>()
@@ -39,19 +38,28 @@ export function NodeSubDiagramProperties() {
 
   return (
     <>
-      <Field label="Linked Diagram">
-        <div className="relative">
-          <LuSearch className="text-paragraph absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-          <Input
-            value={search}
-            placeholder="Search diagrams"
-            className="border-stock bg-input h-9 rounded-md pl-8 text-sm"
-            onChange={(e) => setSearch(e.currentTarget.value)}
-          />
-        </div>
-      </Field>
+      {data.diagramId && (
+        <Button
+          type="button"
+          className="h-9 w-full min-w-0 rounded-md text-sm"
+          onClick={() => openSubDiagram(data.diagramId!)}
+        >
+          <LuExternalLink className="size-3.5 shrink-0" />
+          <span className="truncate">Open in new tab</span>
+        </Button>
+      )}
 
-      <div className="flex max-h-72 flex-col gap-1 overflow-y-auto">
+      <div className="relative">
+        <LuSearch className="text-paragraph absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
+        <Input
+          value={search}
+          placeholder="Search diagrams"
+          className="border-stock bg-input h-9 w-full rounded-md pl-8 text-sm"
+          onChange={(e) => setSearch(e.currentTarget.value)}
+        />
+      </div>
+
+      <div className="flex max-h-72 min-w-0 flex-col gap-1 overflow-y-auto">
         {loading && diagrams.length === 0 && (
           <p className="text-paragraph py-2 text-xs">Loading diagrams…</p>
         )}
@@ -71,13 +79,12 @@ export function NodeSubDiagramProperties() {
                 updateData({
                   diagramId: diagram.id,
                   diagramName: diagram.name ?? 'Untitled diagram',
-                  thumbnailUrl: diagram.previewImageUrl ?? undefined,
                 })
               }
               className={cn(
-                'flex items-center gap-2 rounded-md border p-1.5 text-left transition-colors',
+                'flex w-full min-w-0 items-center gap-2 rounded-md border p-1.5 text-left transition-colors',
                 isSelected
-                  ? 'border-primary/50 bg-primary/10'
+                  ? 'border-primary bg-primary/10'
                   : 'border-stock hover:bg-input'
               )}
             >
@@ -91,25 +98,17 @@ export function NodeSubDiagramProperties() {
                 )}
               </div>
 
-              <span className="truncate text-xs text-[#F4F7FC]">
+              <span className="min-w-0 flex-1 truncate text-xs text-[#F4F7FC]">
                 {diagram.name ?? 'Untitled diagram'}
               </span>
+
+              {isSelected && (
+                <LuCheck className="text-primary size-3.5 shrink-0" />
+              )}
             </button>
           )
         })}
       </div>
-
-      {data.diagramId && (
-        <Button
-          type="button"
-          variant="outline"
-          className="border-stock bg-input h-9 w-full rounded-md text-sm"
-          onClick={() => openSubDiagram(data.diagramId!)}
-        >
-          <LuExternalLink className="size-3.5" />
-          Open in new tab
-        </Button>
-      )}
     </>
   )
 }

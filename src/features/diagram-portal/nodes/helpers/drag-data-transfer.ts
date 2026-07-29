@@ -16,7 +16,10 @@ import {
 import { TComponentField } from '../../types/component-fields'
 import { generateUUID } from '../../utils/uuid'
 import { TableNodeData } from '../table-node'
-import { setDiagramDragPreview } from './drag-preview'
+import {
+  setDiagramDragPreview,
+  setDiagramImageDragPreview,
+} from './drag-preview'
 
 type BuilderNodeShell = Omit<Node, 'position'>
 
@@ -52,7 +55,8 @@ export function componentDragDataTransfer<T extends TNodeTypes>(
   type: T,
   data: NodeData<T>,
   node?: Partial<Node>,
-  previewLabel?: string
+  previewLabel?: string,
+  previewImageSrc?: string
 ) {
   const dataTransfer = event.dataTransfer
   const builderNode: BuilderNodeShell = {
@@ -64,6 +68,11 @@ export function componentDragDataTransfer<T extends TNodeTypes>(
 
   dataTransfer.setData('application/react-flow', JSON.stringify(builderNode))
   dataTransfer.effectAllowed = 'move'
+
+  if (previewImageSrc) {
+    setDiagramImageDragPreview(event.nativeEvent, previewImageSrc)
+    return
+  }
 
   setDiagramDragPreview(
     event.nativeEvent,
