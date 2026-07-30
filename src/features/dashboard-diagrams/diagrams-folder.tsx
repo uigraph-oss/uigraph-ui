@@ -65,7 +65,7 @@ export function DiagramsFolder() {
   })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-4">
       <div className="flex items-center gap-2">
         <Input
           value={search}
