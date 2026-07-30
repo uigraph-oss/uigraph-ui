@@ -1,5 +1,4 @@
 import { ComponentInputType } from '@/features/component-meta'
-import { SEQUENCE_PARTICIPANT_COLOR } from '@uigraph/sdk'
 import { Edge, Node } from '@xyflow/react'
 import { generateUUID } from '../utils/uuid'
 import {
@@ -13,16 +12,6 @@ function nameField(value: string) {
     componentFieldId: 'name',
     type: ComponentInputType.TextInput,
     label: 'Name',
-    data: [{ value }],
-  }
-}
-
-/** Same field a mermaid import gives its participants, so both are stylable. */
-function colorField(value: string) {
-  return {
-    componentFieldId: 'color',
-    type: ComponentInputType.ColorPicker,
-    label: 'Color',
     data: [{ value }],
   }
 }
@@ -64,10 +53,7 @@ export function createParticipantNode(nodes: Node[], name: string): Node {
     type: 'sequenceParticipant',
     position: { x, y: 0 },
     data: {
-      componentFields: [
-        nameField(name),
-        colorField(SEQUENCE_PARTICIPANT_COLOR),
-      ],
+      componentFields: [nameField(name)],
     },
   }
 }

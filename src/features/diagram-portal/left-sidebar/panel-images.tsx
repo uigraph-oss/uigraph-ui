@@ -1,5 +1,6 @@
 'use client'
 
+import { JustifiedGallery } from '@/components/justified-gallery'
 import { Button } from '@/components/ui/button'
 import { ComponentInputType } from '@/features/component-meta'
 import { uploadFile } from '@/features/uploads/api/uploads'
@@ -8,7 +9,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { openFileExplorer } from 'daily-code/browser'
 import { ImageIcon, Upload } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { CREATE_DIAGRAM_IMAGE, DIAGRAM_IMAGES } from '../api/images'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
@@ -29,6 +30,12 @@ export function SidebarImages() {
   const images = useMemo(() => {
     return arrayNonNullable(data?.diagramImages)
   }, [data?.diagramImages])
+
+  const [draggingImageUrl, setDraggingImageUrl] = useState<string | null>(null)
+
+  const imageUrls = useMemo(() => {
+    return images.flatMap((image) => (image?.imageUrl ? [image.imageUrl] : []))
+  }, [images])
 
   async function handleUploadImage() {
     if (!diagramId || !organizationId) return
@@ -60,7 +67,7 @@ export function SidebarImages() {
 
   return (
     <SidebarLayout className="left-18">
-      <div className="flex w-[10.5rem] flex-col gap-3 p-2">
+      <div className="flex w-[15rem] flex-col gap-3 p-2">
         <Button
           preset="outline"
           onClick={handleUploadImage}
@@ -103,30 +110,41 @@ export function SidebarImages() {
               </div>
             </button>
           ) : (
-            images.map(
-              (image) =>
-                image?.diagramImageId && (
-                  <div
-                    key={image.diagramImageId}
+            <JustifiedGallery
+              imageHeight={64}
+              galleryId="diagram-images"
+              images={imageUrls}
+              renderImage={(imageUrl) => {
+                const image = images.find((item) => item?.imageUrl === imageUrl)
+
+                return (
+                  <img
                     draggable
-                    title={image.fileName ?? 'Diagram image'}
+                    src={imageUrl}
+                    alt={image?.fileName || 'Diagram image'}
+                    title={image?.fileName ?? 'Diagram image'}
                     className={cn(
-                      'group cursor-grab overflow-hidden rounded-lg border border-[#2A3242] bg-[#1E2533]',
-                      'hover:border-primary/40 transition-all select-none hover:bg-[#232b3a] active:cursor-grabbing'
+                      'w-full cursor-grab rounded-md border border-[#2A3242]',
+                      'hover:border-primary/60 hover:ring-primary/30 transition-all select-none hover:ring-2 active:cursor-grabbing',
+                      draggingImageUrl === imageUrl &&
+                        'border-primary ring-primary/40 opacity-40 ring-2'
                     )}
+                    onDragEnd={() => setDraggingImageUrl(null)}
                     onDragStart={(event: React.DragEvent) => {
+                      setDraggingImageUrl(imageUrl)
+
                       componentDragDataTransfer(
                         event,
                         'image',
                         {
-                          src: image.imageUrl ?? '',
+                          src: imageUrl,
                           componentFields: [
                             {
                               componentFieldId: 'name',
                               type: ComponentInputType.TextInput,
                               label: 'Name',
                               isReadonly: true,
-                              data: [{ value: image.fileName ?? 'Image' }],
+                              data: [{ value: image?.fileName ?? 'Image' }],
                             },
                             {
                               componentFieldId: 'description',
@@ -137,27 +155,15 @@ export function SidebarImages() {
                         },
                         {
                           width: 100,
-                        }
+                        },
+                        image?.fileName ?? 'Image',
+                        imageUrl
                       )
                     }}
-                  >
-                    <div className="flex aspect-square items-center justify-center bg-[#141925] p-2">
-                      <img
-                        src={image.imageUrl ?? ''}
-                        alt={image.fileName || 'Diagram image'}
-                        className="max-h-full max-w-full object-contain"
-                        draggable={false}
-                      />
-                    </div>
-
-                    {image.fileName && (
-                      <p className="truncate border-t border-[#2A3242] px-2 py-1.5 text-[10px] text-[#828DA3] group-hover:text-[#F4F7FC]">
-                        {image.fileName}
-                      </p>
-                    )}
-                  </div>
+                  />
                 )
-            )
+              }}
+            />
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { VirtualCursor } from '@/components/virtual-cursor'
+import { env } from '@/env'
 import { ComponentInputType } from '@/features/component-meta'
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ import * as React from 'react'
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
+import { DebugNodeBounds } from './debug-node-bounds'
 import { DrawingOverlay } from './drawing-overlay'
 import { CUSTOM_EDGE_TYPES } from './edges'
 import { EdgeMarkerDefs } from './edges/edge-marker-defs'
@@ -80,8 +82,6 @@ export function ReactFlowWrapper({
     dataSources,
     tempDiagramState,
   } = useFlowDiagramContext()
-
-  console.log(nodes)
 
   const ref = useAutoRef({
     reactFlowInstance,
@@ -243,15 +243,10 @@ export function ReactFlowWrapper({
         }),
       }
 
-      // Ensure frame/group nodes have z-index -1
-      if (newNode.type === 'group') {
-        newNode.style = {
-          ...newNode.style,
-          zIndex: -1,
-        }
-      }
+      const isContainerNode =
+        newNode.type === 'group' || newNode.type === 'c4Boundary'
 
-      if (newNode.type === 'group') {
+      if (isContainerNode) {
         setNodes((nds) => [newNode, ...nds])
       } else {
         reactFlowInstance.addNodes([newNode])
@@ -408,30 +403,6 @@ export function ReactFlowWrapper({
     [reactFlowInstance, setNodes, setEdges]
   )
 
-  // Ensure group nodes always have z-index -1
-  useEffect(() => {
-    const needsUpdate = nodes.some(
-      (node) => node.type === 'group' && node.style?.zIndex !== -1
-    )
-
-    if (needsUpdate) {
-      setNodes((currentNodes) =>
-        currentNodes.map((node) => {
-          if (node.type === 'group' && node.style?.zIndex !== -1) {
-            return {
-              ...node,
-              style: {
-                ...node.style,
-                zIndex: -1,
-              },
-            }
-          }
-          return node
-        })
-      )
-    }
-  }, [nodes, setNodes])
-
   const isNodeWritable =
     !drawingMode && !forceReadOnly && tempDiagramState === null
 
@@ -576,6 +547,10 @@ export function ReactFlowWrapper({
           isDrawing={drawingMode}
           onDrawComplete={onDrawComplete}
         />
+
+        {env.VITE_FEATURE_ENABLE_DEBUG_DIAGRAM_NODE_BOUNDS && (
+          <DebugNodeBounds />
+        )}
       </ReactFlow>
     </>
   )

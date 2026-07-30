@@ -6,6 +6,7 @@ import {
   getSimpleBezierPath,
   getSmoothStepPath,
   getStraightPath,
+  useInternalNode,
 } from '@xyflow/react'
 
 type PathType = 'bezier' | 'straight' | 'smoothstep' | 'step' | 'simplebezier'
@@ -18,13 +19,28 @@ export function createLabeledEdge(pathType: PathType) {
     style,
     markerEnd,
     markerStart,
+    source,
     sourceX,
     sourceY,
+    target,
     targetX,
     targetY,
     sourcePosition,
     targetPosition,
   }: EdgeProps) {
+    const sourceNode = useInternalNode(source)
+    const targetNode = useInternalNode(target)
+
+    let labelZIndex = 0
+
+    if (sourceNode?.parentId) {
+      labelZIndex = sourceNode.internals.z
+    }
+
+    if (targetNode?.parentId && targetNode.internals.z > labelZIndex) {
+      labelZIndex = targetNode.internals.z
+    }
+
     const params = {
       sourceX,
       sourceY,
@@ -82,6 +98,7 @@ export function createLabeledEdge(pathType: PathType) {
             <div
               style={{
                 position: 'absolute',
+                zIndex: labelZIndex,
                 transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
                 fontSize: labelFontSize,
                 lineHeight: 1.2,

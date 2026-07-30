@@ -16,12 +16,15 @@ import { ConfigurePropertiesModal } from './configure-properties'
 import { EdgeConfigure } from './edge-configure'
 import { NodeBuilderConfigure } from './node-builder-configure'
 import { NodeBuilderStyle } from './node-builder-style'
+import { NodeC4Style } from './node-c4-style'
 import { NodeCloudStyle } from './node-cloud-style'
 import { NodeCodeStyle } from './node-code-style'
 import { NodeDatabaseStyle } from './node-database-style'
 import { NodeDatabaseTableProperties } from './node-database-table-properties'
 import { NodeGroupStyle } from './node-group-style'
+import { NodeSequenceParticipantStyle } from './node-sequence-participant-style'
 import { NodeShapeStyle } from './node-shape-style'
+import { NodeSubDiagramProperties } from './node-sub-diagram-properties'
 import { NodeTextStyle } from './node-text-style'
 import { PropertiesLayout } from './properties-layout'
 import { TableProperties } from './table-properties'
@@ -166,6 +169,8 @@ export function FloatingProperties() {
                     <NodeDatabaseTableProperties />
                   ) : node.type === 'table' ? (
                     <TableProperties />
+                  ) : node.type === 'subDiagram' ? (
+                    <NodeSubDiagramProperties />
                   ) : (
                     <NodeBuilderConfigure />
                   )}
@@ -176,7 +181,9 @@ export function FloatingProperties() {
                 <>
                   {node.type === 'cloud' ? (
                     <NodeCloudStyle />
-                  ) : node.type === 'group' ? (
+                  ) : node.type === 'c4' ? (
+                    <NodeC4Style />
+                  ) : node.type === 'group' || node.type === 'c4Boundary' ? (
                     <NodeGroupStyle />
                   ) : node.type === 'shape' || node.type === 'default' ? (
                     <NodeShapeStyle />
@@ -190,6 +197,8 @@ export function FloatingProperties() {
                     <NodeCodeStyle />
                   ) : node.type === 'builder' ? (
                     <NodeBuilderStyle />
+                  ) : node.type === 'sequenceParticipant' ? (
+                    <NodeSequenceParticipantStyle />
                   ) : (
                     <p className="text-foreground/70 text-sm">
                       No style available

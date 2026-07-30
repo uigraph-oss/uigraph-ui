@@ -16,6 +16,11 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .optional()
     .transform((v) => v === 'true'),
+
+  VITE_FEATURE_ENABLE_DEBUG_DIAGRAM_NODE_BOUNDS: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((v) => v === 'true'),
 })
 
 export const env = envSchema.parse({

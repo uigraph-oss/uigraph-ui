@@ -38,6 +38,7 @@ export function PropertiesLayout({
     <div ref={containerRef} className={'relative isolate'}>
       <div className="pointer-events-auto absolute inset-0 h-fit max-h-full rounded-b-[0.75rem] border border-t-0 border-[#2A3242] bg-[#141925]">
         <ScrollArea
+          className="[&>div>div]:!block"
           style={{ height: Math.min(contentHeight ?? 0, containerHeight ?? 0) }}
         >
           <div

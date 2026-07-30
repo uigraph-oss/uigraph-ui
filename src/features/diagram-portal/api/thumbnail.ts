@@ -9,6 +9,12 @@ export const PREPARE_DIAGRAM_THUMBNAIL_UPLOAD = graphql(`
   }
 `)
 
+export const GENERATE_DIAGRAM_THUMBNAIL = graphql(`
+  mutation GenerateDiagramThumbnail($orgId: ID!, $diagramId: ID!) {
+    generateDiagramThumbnail(orgId: $orgId, diagramId: $diagramId)
+  }
+`)
+
 export const CONFIRM_DIAGRAM_THUMBNAIL_UPLOAD = graphql(`
   mutation ConfirmDiagramThumbnailUpload(
     $orgId: ID!

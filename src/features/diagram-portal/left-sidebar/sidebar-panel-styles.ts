@@ -2,7 +2,7 @@ export const sidebarTileClassName =
   'flex aspect-square w-full cursor-grab items-center justify-center rounded-[0.5rem] border border-[#2A3242] bg-[#1E2533] p-2 text-[#F4F7FC] transition-all select-none hover:bg-[#232b3a] active:cursor-grabbing [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain [&_path]:!stroke-[#CBD5E1] [&_rect]:!stroke-[#CBD5E1] [&_circle]:!stroke-[#CBD5E1] [&_polygon]:!stroke-[#CBD5E1] [&_line]:!stroke-[#CBD5E1] [&_ellipse]:!stroke-[#CBD5E1]'
 
 export const sidebarCategoryButtonClassName =
-  'group flex h-7 w-full items-center justify-between rounded-md px-2 text-xs font-medium text-[#F4F7FC] transition-colors hover:bg-[#1E2533]'
+  'group flex h-8 w-full items-center justify-between rounded-md px-2 text-xs font-medium text-[#F4F7FC] transition-colors hover:bg-[#1E2533]'
 
 export const sidebarNestedCategoryButtonClassName =
   'group flex h-8 w-full items-center justify-between rounded-md px-3 text-xs font-medium text-[#F4F7FC] transition-colors hover:bg-[#1E2533]'

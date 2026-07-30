@@ -11,6 +11,7 @@ export const DIAGRAM = graphql(`
       previewAssetId
       previewImageUrl
       previewContentHash
+      previewStatus
       createdAt
       updatedAt
     }

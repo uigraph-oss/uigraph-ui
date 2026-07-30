@@ -28,6 +28,11 @@
     justify-content: center;
   }
 
+  &.react-flow__node-group,
+  &.react-flow__node-c4Boundary {
+    z-index: -1 !important;
+  }
+
   &.react-flow__node-comment {
     z-index: 10000 !important;
     isolation: isolate !important;
@@ -164,8 +169,6 @@
 }
 
 .react-flow__viewport.downloading .react-flow__node {
-  outline: 1px solid #e5e7e9 !important;
-
   &,
   * {
     transition: none !important;

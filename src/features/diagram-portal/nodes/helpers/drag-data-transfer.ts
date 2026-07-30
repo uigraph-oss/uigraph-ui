@@ -3,17 +3,23 @@ import { DragEvent } from 'react'
 import {
   AnimatedNodeData,
   BuilderNodeData,
+  C4BoundaryNodeData,
+  C4NodeData,
   CloudNodeData,
   DatabaseTableSQLNodeData,
   ImageNodeData,
   ShapeNodeData,
+  SubDiagramNodeData,
   TextNodeData,
   TNodeTypes,
 } from '..'
 import { TComponentField } from '../../types/component-fields'
 import { generateUUID } from '../../utils/uuid'
 import { TableNodeData } from '../table-node'
-import { setDiagramDragPreview } from './drag-preview'
+import {
+  setDiagramDragPreview,
+  setDiagramImageDragPreview,
+} from './drag-preview'
 
 type BuilderNodeShell = Omit<Node, 'position'>
 
@@ -36,14 +42,21 @@ type NodeData<T extends TNodeTypes> = {
               ? DatabaseTableSQLNodeData
               : T extends 'table'
                 ? TableNodeData
-                : never
+                : T extends 'c4'
+                  ? C4NodeData
+                  : T extends 'c4Boundary'
+                    ? C4BoundaryNodeData
+                    : T extends 'subDiagram'
+                      ? SubDiagramNodeData
+                      : never
 
 export function componentDragDataTransfer<T extends TNodeTypes>(
   event: DragEvent,
   type: T,
   data: NodeData<T>,
   node?: Partial<Node>,
-  previewLabel?: string
+  previewLabel?: string,
+  previewImageSrc?: string
 ) {
   const dataTransfer = event.dataTransfer
   const builderNode: BuilderNodeShell = {
@@ -55,6 +68,11 @@ export function componentDragDataTransfer<T extends TNodeTypes>(
 
   dataTransfer.setData('application/react-flow', JSON.stringify(builderNode))
   dataTransfer.effectAllowed = 'move'
+
+  if (previewImageSrc) {
+    setDiagramImageDragPreview(event.nativeEvent, previewImageSrc)
+    return
+  }
 
   setDiagramDragPreview(
     event.nativeEvent,

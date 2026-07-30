@@ -11,6 +11,43 @@ if (typeof document !== 'undefined') {
   document.addEventListener('dragend', cleanupActiveDragPreviews)
 }
 
+export function setDiagramImageDragPreview(event: DragEvent, src: string) {
+  const preview = document.createElement('div')
+  preview.style.cssText = [
+    'position: fixed',
+    'top: -1000px',
+    'left: -1000px',
+    'display: block',
+    'width: 140px',
+    'overflow: hidden',
+    'border-radius: 10px',
+    'border: 1px solid #2A3242',
+    'background: #141925',
+    'box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45)',
+    'pointer-events: none',
+    'z-index: 9999',
+  ].join(';')
+
+  const image = document.createElement('img')
+  image.src = src
+  image.style.cssText = ['display: block', 'width: 100%', 'height: auto'].join(
+    ';'
+  )
+  preview.appendChild(image)
+
+  document.body.appendChild(preview)
+  activeDragPreviews.add(preview)
+
+  if (!event.dataTransfer) {
+    preview.remove()
+    activeDragPreviews.delete(preview)
+    return
+  }
+
+  const { width, height } = preview.getBoundingClientRect()
+  event.dataTransfer.setDragImage(preview, width / 2, height / 2)
+}
+
 export function setDiagramDragPreview(event: DragEvent, label: string) {
   const preview = document.createElement('div')
   preview.style.cssText = [
