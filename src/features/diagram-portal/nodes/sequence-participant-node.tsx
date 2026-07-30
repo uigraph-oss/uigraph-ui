@@ -99,7 +99,7 @@ export function SequenceParticipantNode({
       >
         <div className="flex items-end gap-1.5 pb-2">
           <div
-            className="w-1 self-stretch rounded-full"
+            className="h-[1em] w-1 rounded-full"
             style={{ backgroundColor: indicatorColor }}
           />
           <input
@@ -108,8 +108,7 @@ export function SequenceParticipantNode({
             size={1}
             onKeyDown={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            style={{ textBoxTrim: 'trim-both', textBoxEdge: 'cap alphabetic' }}
-            className="text-foreground block field-sizing-content border-none bg-transparent p-0 text-[1em] leading-[1] font-medium whitespace-nowrap outline-none"
+            className="text-foreground mb-[-0.25em] block field-sizing-content border-none bg-transparent p-0 text-[1em] leading-[1] font-medium whitespace-nowrap outline-none"
             onChange={(e) => {
               const fields = data.componentFields ?? []
               updateNodeData(id, {

@@ -101,11 +101,11 @@ export function ServiceOverview() {
   const labels =
     (service.labels as string[] | null | undefined)?.filter(Boolean) ?? []
   const dependencies = dependenciesRes.data?.dependencies ?? []
-  const upstreamDependencies = dependencies.filter(
-    (dependency) => dependency.direction === 'upstream'
-  )
   const downstreamDependencies = dependencies.filter(
     (dependency) => dependency.direction === 'downstream'
+  )
+  const upstreamDependencies = dependencies.filter(
+    (dependency) => dependency.direction === 'upstream'
   )
 
   const integrations = [
@@ -239,12 +239,12 @@ export function ServiceOverview() {
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[
               {
-                heading: `↑ Upstream · depends on (${upstreamDependencies.length})`,
-                dependencies: upstreamDependencies,
+                heading: `↓ Downstream · calls (${downstreamDependencies.length})`,
+                dependencies: downstreamDependencies,
               },
               {
-                heading: `↓ Downstream · depended on by (${downstreamDependencies.length})`,
-                dependencies: downstreamDependencies,
+                heading: `↑ Upstream · called by (${upstreamDependencies.length})`,
+                dependencies: upstreamDependencies,
               },
             ].map((summary) => (
               <Link
@@ -268,12 +268,8 @@ export function ServiceOverview() {
                       className="mt-2 flex items-center justify-between gap-2 text-[12px]"
                     >
                       <span className="truncate text-[#F4F7FC]">
-                        {dependency.direction === 'upstream'
-                          ? (dependency.providerService?.name ??
-                            dependency.providerName ??
-                            dependency.name)
-                          : (dependency.consumerService?.name ??
-                            dependency.name)}
+                        {dependency.dependency?.name ??
+                          dependency.dependencyName}
                       </span>
                       <span
                         className={cn(

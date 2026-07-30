@@ -18,7 +18,6 @@ import {
   dependenciesToGraph,
   type ServiceDependencyGraphData,
 } from '@/features/services/api/dependencies'
-import { useServiceContext } from '@/features/services/contexts/service-context'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Settings2 } from 'lucide-react'
@@ -33,7 +32,6 @@ export function DashboardServiceDependencies({
   serviceId: string
 }) {
   const orgId = useCurrentOrganization().id
-  const { service } = useServiceContext()
   const navigate = useNavigate()
   const [direction, setDirection] = useState('all')
   const [criticality, setCriticality] = useState('all')
@@ -49,16 +47,7 @@ export function DashboardServiceDependencies({
     : undefined
   if (rawDependencies && (direction !== 'all' || criticality !== 'all')) {
     const filtered = rawDependencies.filter((dependency) => {
-      if (
-        direction === 'upstream' &&
-        dependency.consumerService?.id !== serviceId
-      ) {
-        return false
-      }
-      if (
-        direction === 'downstream' &&
-        dependency.providerService?.id !== serviceId
-      ) {
+      if (direction !== 'all' && dependency.direction !== direction) {
         return false
       }
       if (criticality !== 'all' && dependency.criticality !== criticality) {
@@ -89,7 +78,6 @@ export function DashboardServiceDependencies({
         {manageOpen && (
           <ManageDependenciesModal
             serviceId={serviceId}
-            serviceName={service?.name}
             onClose={() => setManageOpen(false)}
           />
         )}

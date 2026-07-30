@@ -8,6 +8,8 @@ export type DependencyServiceRef = {
   updatedAt?: string | null
 }
 
+export type DependencyDirection = 'upstream' | 'downstream'
+
 export type ServiceDependency = {
   id: string
   name: string
@@ -17,10 +19,10 @@ export type ServiceDependency = {
   apiGroupName?: string | null
   apiEndpointNames?: string[] | null
   databaseName?: string | null
-  direction: string
-  providerName?: string | null
-  consumerService?: DependencyServiceRef | null
-  providerService?: DependencyServiceRef | null
+  direction: DependencyDirection
+  dependencyName: string
+  service?: DependencyServiceRef | null
+  dependency?: DependencyServiceRef | null
 }
 
 export type DependencyGraphNode = {
@@ -38,6 +40,7 @@ export type DependencyGraphEdge = {
   id: string
   source: string
   target: string
+  direction: DependencyDirection
   type?: string | null
   criticality?: string | null
   apiGroupName?: string | null
@@ -57,46 +60,45 @@ export function dependenciesToGraph(
   const edges: DependencyGraphEdge[] = []
 
   for (const dependency of dependencies) {
-    const consumer = dependency.consumerService
-    if (!consumer) {
+    const service = dependency.service
+    if (!service) {
       continue
     }
-    if (!nodes.has(consumer.id)) {
-      nodes.set(consumer.id, {
-        id: consumer.id,
-        name: consumer.name,
+    if (!nodes.has(service.id)) {
+      nodes.set(service.id, {
+        id: service.id,
+        name: service.name,
         service: {
-          id: consumer.id,
-          description: consumer.description,
-          gitRepoUrl: consumer.gitRepoUrl,
-          updatedAt: consumer.updatedAt,
+          id: service.id,
+          description: service.description,
+          gitRepoUrl: service.gitRepoUrl,
+          updatedAt: service.updatedAt,
         },
       })
     }
 
-    const provider = dependency.providerService
-    let providerId: string
-    if (provider) {
-      providerId = provider.id
-      if (!nodes.has(providerId)) {
-        nodes.set(providerId, {
-          id: providerId,
-          name: provider.name,
+    const peer = dependency.dependency
+    let peerId: string
+    if (peer) {
+      peerId = peer.id
+      if (!nodes.has(peerId)) {
+        nodes.set(peerId, {
+          id: peerId,
+          name: peer.name,
           service: {
-            id: provider.id,
-            description: provider.description,
-            gitRepoUrl: provider.gitRepoUrl,
-            updatedAt: provider.updatedAt,
+            id: peer.id,
+            description: peer.description,
+            gitRepoUrl: peer.gitRepoUrl,
+            updatedAt: peer.updatedAt,
           },
         })
       }
     } else {
-      const providerName = dependency.providerName ?? dependency.name
-      providerId = `ghost:${providerName}`
-      if (!nodes.has(providerId)) {
-        nodes.set(providerId, {
-          id: providerId,
-          name: providerName,
+      peerId = `ghost:${dependency.dependencyName}`
+      if (!nodes.has(peerId)) {
+        nodes.set(peerId, {
+          id: peerId,
+          name: dependency.dependencyName,
           service: null,
         })
       }
@@ -104,8 +106,9 @@ export function dependenciesToGraph(
 
     edges.push({
       id: dependency.id,
-      source: consumer.id,
-      target: providerId,
+      source: service.id,
+      target: peerId,
+      direction: dependency.direction,
       type: dependency.type,
       criticality: dependency.criticality,
       apiGroupName: dependency.apiGroupName,
@@ -151,12 +154,12 @@ export const SERVICE_DEPENDENCIES = gql(`
       apiEndpointNames
       databaseName
       direction
-      providerName
-      consumerService {
+      dependencyName
+      service {
         id
         name
       }
-      providerService {
+      dependency {
         id
         name
       }
@@ -175,15 +178,15 @@ export const SERVICE_DEPENDENCY_GRAPH = gql(`
       apiEndpointNames
       databaseName
       direction
-      providerName
-      consumerService {
+      dependencyName
+      service {
         id
         name
         description
         gitRepoUrl
         updatedAt
       }
-      providerService {
+      dependency {
         id
         name
         description
@@ -204,12 +207,12 @@ export const UPDATE_SERVICE_DEPENDENCIES = gql(`
       id
       name
       direction
-      providerName
-      consumerService {
+      dependencyName
+      service {
         id
         name
       }
-      providerService {
+      dependency {
         id
         name
       }
@@ -228,15 +231,15 @@ export const ORGANIZATION_DEPENDENCY_GRAPH = gql(`
       apiEndpointNames
       databaseName
       direction
-      providerName
-      consumerService {
+      dependencyName
+      service {
         id
         name
         description
         gitRepoUrl
         updatedAt
       }
-      providerService {
+      dependency {
         id
         name
         description
