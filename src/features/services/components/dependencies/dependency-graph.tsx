@@ -72,7 +72,7 @@ type DependencyEdgeData = {
   apiGroupName?: string | null
   databaseName?: string | null
   endpoints?: string[] | null
-  providerServiceId?: string
+  dependencyServiceId?: string
   hard: boolean
   showDetails: boolean
 }
@@ -100,19 +100,19 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
     data?.edgeType === 'http' ||
     data?.edgeType === 'graphql' ||
     data?.edgeType === 'grpc'
-  const providerServiceId = data?.providerServiceId ?? ''
+  const dependencyServiceId = data?.dependencyServiceId ?? ''
   const apiGroupName = data?.apiGroupName ?? ''
   const endpoints = data?.endpoints ?? []
   const canFetch =
     isApi &&
     Boolean(orgId) &&
-    Boolean(providerServiceId) &&
-    !providerServiceId.startsWith('ghost:') &&
+    Boolean(dependencyServiceId) &&
+    !dependencyServiceId.startsWith('ghost:') &&
     Boolean(apiGroupName) &&
     endpoints.length > 0
 
   const groupsQuery = useQuery(API_GROUPS, {
-    variables: { orgId, serviceId: providerServiceId },
+    variables: { orgId, serviceId: dependencyServiceId },
     skip: !canFetch,
   })
   const group = groupsQuery.data?.apiGroups?.find(
@@ -121,7 +121,7 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
   const endpointsQuery = useQuery(API_ENDPOINTS, {
     variables: {
       orgId,
-      serviceId: providerServiceId,
+      serviceId: dependencyServiceId,
       apiGroupId: group?.id ?? '',
     },
     skip: !canFetch || !group?.id,
@@ -131,11 +131,11 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
   const canFetchDb =
     data?.edgeType === 'database' &&
     Boolean(orgId) &&
-    Boolean(providerServiceId) &&
-    !providerServiceId.startsWith('ghost:') &&
+    Boolean(dependencyServiceId) &&
+    !dependencyServiceId.startsWith('ghost:') &&
     Boolean(databaseName)
   const dbsQuery = useQuery(SERVICE_DBS, {
-    variables: { orgId, serviceId: providerServiceId },
+    variables: { orgId, serviceId: dependencyServiceId },
     skip: !canFetchDb,
   })
   const db = dbsQuery.data?.serviceDBs?.find((d) => d.dbName === databaseName)
@@ -186,7 +186,7 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
     if (db?.id) {
       return (
         <a
-          href={Paths.services.database(providerServiceId, db.id)}
+          href={Paths.services.database(dependencyServiceId, db.id)}
           target="_blank"
           rel="noreferrer"
           onClick={(event) => event.stopPropagation()}
@@ -259,7 +259,7 @@ function DependencyTooltipContent({ data }: { data?: DependencyEdgeData }) {
             <a
               key={operationId}
               href={Paths.services.apiEndpoint(
-                providerServiceId,
+                dependencyServiceId,
                 group.id,
                 endpoint.id
               )}
@@ -292,6 +292,7 @@ function DependencyEdge({
   targetY,
   sourcePosition,
   targetPosition,
+  markerStart,
   markerEnd,
   style,
   data,
@@ -311,7 +312,12 @@ function DependencyEdge({
 
   return (
     <>
-      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <BaseEdge
+        path={edgePath}
+        markerStart={markerStart}
+        markerEnd={markerEnd}
+        style={style}
+      />
       <EdgeLabelRenderer>
         {showDetails && data?.detailText ? (
           <div
@@ -460,7 +466,7 @@ export function DependencyGraph({
 
   const layout = new dagre.graphlib.Graph()
   layout.setDefaultEdgeLabel(() => ({}))
-  layout.setGraph({ rankdir: 'RL', nodesep: 42, ranksep: 180 })
+  layout.setGraph({ rankdir: 'LR', nodesep: 42, ranksep: 180 })
 
   for (const node of nodes)
     layout.setNode(node.id, { width: nodeWidth, height: 128 })
@@ -642,15 +648,27 @@ export function DependencyGraph({
           ? labelText.slice(0, 19).trimEnd() + '…'
           : labelText
 
+    const marker = {
+      type: MarkerType.ArrowClosed,
+      color: hard ? '#C2703F' : '#64748B',
+    }
+    let markerStart = undefined
+    let markerEnd = undefined
+    if (edge.direction === 'upstream') {
+      markerStart = marker
+    } else if (edge.direction === 'downstream') {
+      markerEnd = marker
+    } else {
+      throw new Error(`unknown dependency direction: ${edge.direction}`)
+    }
+
     return {
       id: edge.id,
-      source: edge.target,
-      target: edge.source,
+      source: edge.source,
+      target: edge.target,
       type: 'dependency',
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        color: hard ? '#C2703F' : '#64748B',
-      },
+      markerStart,
+      markerEnd,
       data: {
         detailText,
         edgeType: edge.type,
@@ -658,7 +676,7 @@ export function DependencyGraph({
         apiGroupName: edge.apiGroupName,
         databaseName: edge.databaseName,
         endpoints,
-        providerServiceId: edge.target,
+        dependencyServiceId: edge.target,
         hard,
         showDetails,
       },

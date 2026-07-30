@@ -82,8 +82,7 @@ const formSchema = z
   .superRefine((value, ctx) => {
     const seen = new Map<string, number>()
     value.rows.forEach((row, index) => {
-      const owner = row.direction === 'upstream' ? 'self' : row.otherService
-      const key = `${owner}::${row.name}`
+      const key = row.name
       if (row.name && seen.has(key)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -101,6 +100,7 @@ type DependencyType = DependencyRow['type']
 type DependencyInput = {
   name: string
   service: string
+  direction: string
   type: string
   criticality: string
   description: string
@@ -115,10 +115,6 @@ function isApiType(type: string): boolean {
 
 function isDbType(type: string): boolean {
   return type === 'database'
-}
-
-function providerNameOf(dep: ServiceDependency): string {
-  return dep.providerName ?? dep.providerService?.name ?? ''
 }
 
 function endpointNamesOf(dep: ServiceDependency): string[] {
@@ -144,28 +140,11 @@ function buildInput(
   return base
 }
 
-function depToInput(dep: ServiceDependency): DependencyInput {
-  const type = dep.type ?? ''
-  const base = {
-    name: dep.name,
-    service: providerNameOf(dep),
-    type,
-    criticality: dep.criticality ?? 'soft',
-    description: dep.description ?? '',
-  }
-  return buildInput(
-    base,
-    type,
-    dep.apiGroupName ?? '',
-    endpointNamesOf(dep),
-    dep.databaseName ?? ''
-  )
-}
-
-function rowToInput(row: DependencyRow, providerName: string): DependencyInput {
+function rowToInput(row: DependencyRow): DependencyInput {
   const base = {
     name: row.name,
-    service: providerName,
+    service: row.otherService,
+    direction: row.direction,
     type: row.type,
     criticality: row.criticality,
     description: row.description,
@@ -183,20 +162,20 @@ function DependencyTypeFields({
   index,
   form,
   orgId,
-  providerServiceId,
+  dependencyServiceId,
   type,
 }: {
   index: number
   form: UseFormReturn<FormValues>
   orgId: string
-  providerServiceId: string | undefined
+  dependencyServiceId: string | undefined
   type: DependencyType
 }) {
   const apiGroupName = form.watch(`rows.${index}.apiGroupName`)
 
   const apiGroupsRes = useQuery(API_GROUPS, {
-    variables: { orgId, serviceId: providerServiceId! },
-    skip: !orgId || !providerServiceId || !isApiType(type),
+    variables: { orgId, serviceId: dependencyServiceId! },
+    skip: !orgId || !dependencyServiceId || !isApiType(type),
   })
   const apiGroups = (apiGroupsRes.data?.apiGroups ?? []).filter(
     (group) => (group.protocol ?? '').toLowerCase() === PROTOCOL_BY_TYPE[type]
@@ -206,20 +185,20 @@ function DependencyTypeFields({
   const endpointsRes = useQuery(API_ENDPOINTS, {
     variables: {
       orgId,
-      serviceId: providerServiceId!,
+      serviceId: dependencyServiceId!,
       apiGroupId: selectedGroup?.id ?? '',
     },
-    skip: !orgId || !providerServiceId || !selectedGroup,
+    skip: !orgId || !dependencyServiceId || !selectedGroup,
   })
   const endpoints = endpointsRes.data?.apiEndpoints ?? []
 
   const dbsRes = useQuery(SERVICE_DBS, {
-    variables: { orgId, serviceId: providerServiceId! },
-    skip: !orgId || !providerServiceId || !isDbType(type),
+    variables: { orgId, serviceId: dependencyServiceId! },
+    skip: !orgId || !dependencyServiceId || !isDbType(type),
   })
   const dbs = dbsRes.data?.serviceDBs ?? []
 
-  if (!providerServiceId) {
+  if (!dependencyServiceId) {
     return (
       <p className="text-xs text-[#828DA3]">
         Select an onboarded provider service to choose its APIs or databases.
@@ -348,7 +327,6 @@ function DependencyEditor({
   remove,
   serviceOptions,
   orgId,
-  serviceId,
   services,
 }: {
   fieldId: string
@@ -358,17 +336,15 @@ function DependencyEditor({
   remove: (index: number) => void
   serviceOptions: { label: string; value: string }[]
   orgId: string
-  serviceId: string
   services: { id: string; name: string }[]
 }) {
   const row = form.watch(`rows.${index}`)
   const errors = form.formState.errors.rows?.[index]
   const type = (row?.type ?? '') as DependencyType
 
-  const providerServiceId =
-    direction === 'upstream'
-      ? services.find((s) => s.name === row?.otherService)?.id
-      : serviceId
+  const dependencyServiceId = services.find(
+    (s) => s.name === row?.otherService
+  )?.id
 
   return (
     <AccordionItem
@@ -387,7 +363,9 @@ function DependencyEditor({
             <div className="flex flex-wrap items-center gap-2 text-xs text-[#828DA3]">
               <span>
                 {row?.otherService ||
-                  (direction === 'upstream' ? 'New provider' : 'New consumer')}
+                  (direction === 'downstream'
+                    ? 'New provider'
+                    : 'New consumer')}
               </span>
               <span className="rounded bg-[#1E2533] px-2 py-0.5 text-[#D2D9E6]">
                 {DEPENDENCY_TYPE_OPTIONS.find(
@@ -407,13 +385,13 @@ function DependencyEditor({
             onClick={() =>
               form.setValue(
                 `rows.${index}.direction`,
-                direction === 'upstream' ? 'downstream' : 'upstream'
+                direction === 'downstream' ? 'upstream' : 'downstream'
               )
             }
             className="flex h-9 items-center gap-2 rounded-[8px] px-3.5 text-sm text-[#828DA3] transition-all hover:bg-[#1E2533] hover:text-[#F4F7FC]"
           >
             <ArrowRightLeft className="size-[18px]" />
-            Move to {direction === 'upstream' ? 'downstream' : 'upstream'}
+            Move to {direction === 'downstream' ? 'upstream' : 'downstream'}
           </button>
           <button
             type="button"
@@ -431,7 +409,7 @@ function DependencyEditor({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label className="text-sm font-normal text-[#828DA3]">
-                {direction === 'upstream'
+                {direction === 'downstream'
                   ? 'Provider service'
                   : 'Consumer service'}
               </Label>
@@ -558,7 +536,7 @@ function DependencyEditor({
               index={index}
               form={form}
               orgId={orgId}
-              providerServiceId={providerServiceId}
+              dependencyServiceId={dependencyServiceId}
               type={type}
             />
           )}
@@ -570,11 +548,9 @@ function DependencyEditor({
 
 export function ManageDependenciesModal({
   serviceId: presetServiceId,
-  serviceName: presetServiceName,
   onClose,
 }: {
   serviceId?: string
-  serviceName?: string
   onClose: () => void
 }) {
   const orgId = useCurrentOrganization().id
@@ -590,8 +566,6 @@ export function ManageDependenciesModal({
     skip: !orgId,
   })
   const services = servicesRes.data?.services.items ?? []
-  const serviceName =
-    presetServiceName ?? services.find((s) => s.id === serviceId)?.name ?? ''
   const serviceOptions = services
     .filter((s) => s.id !== serviceId)
     .map((s) => ({ label: s.name, value: s.name }))
@@ -611,17 +585,10 @@ export function ManageDependenciesModal({
     }
     return dependencies.map((dep) => {
       const type = (dep.type ?? '') as DependencyType
-      const direction = (
-        dep.direction === 'downstream' ? 'downstream' : 'upstream'
-      ) as DependencyRow['direction']
-      const otherService =
-        direction === 'upstream'
-          ? providerNameOf(dep)
-          : (dep.consumerService?.name ?? '')
       return {
         dependencyId: dep.id,
-        direction,
-        otherService,
+        direction: dep.direction,
+        otherService: dep.dependency?.name ?? dep.dependencyName,
         name: dep.name,
         type,
         criticality: (dep.criticality ??
@@ -648,75 +615,14 @@ export function ManageDependenciesModal({
       return
     }
 
-    function resolveOwnerId(row: DependencyRow): string | null {
-      if (row.direction === 'upstream') {
-        return serviceId
-      }
-      return services.find((s) => s.name === row.otherService)?.id ?? null
-    }
-
-    for (const row of values.rows) {
-      if (row.direction === 'downstream' && !resolveOwnerId(row)) {
-        toast.error(
-          `Downstream consumer "${row.otherService}" must be an existing service`
-        )
-        return
-      }
-    }
-
-    const upstreamPayload = values.rows
-      .filter((row) => row.direction === 'upstream')
-      .map((row) => rowToInput(row, row.otherService))
-
-    const initialDownstreamOwners = new Set(
-      (dependencies ?? [])
-        .filter((dep) => dep.direction === 'downstream')
-        .map((dep) => dep.consumerService?.id)
-        .filter((id): id is string => Boolean(id))
-    )
-    const currentDownstreamOwners = new Set(
-      values.rows
-        .filter((row) => row.direction === 'downstream')
-        .map((row) => resolveOwnerId(row))
-        .filter((id): id is string => Boolean(id))
-    )
-    const affectedOwners = new Set([
-      ...initialDownstreamOwners,
-      ...currentDownstreamOwners,
-    ])
-
     try {
       await updateDependencies({
         variables: {
           orgId,
           serviceId,
-          input: { dependencies: upstreamPayload },
+          input: { dependencies: values.rows.map(rowToInput) },
         },
       })
-
-      for (const ownerId of affectedOwners) {
-        const ownerResult = await apollo.query<ServiceDependenciesData>({
-          query: SERVICE_DEPENDENCIES,
-          variables: { orgId, serviceId: ownerId, direction: 'upstream' },
-          fetchPolicy: 'network-only',
-        })
-        const kept = (ownerResult.data.dependencies ?? [])
-          .filter((dep) => providerNameOf(dep) !== serviceName)
-          .map(depToInput)
-        const edgesIntoService = values.rows
-          .filter(
-            (row) =>
-              row.direction === 'downstream' && resolveOwnerId(row) === ownerId
-          )
-          .map((row) => rowToInput(row, serviceName))
-        await updateDependencies({
-          variables: {
-            orgId,
-            serviceId: ownerId,
-            input: { dependencies: [...kept, ...edgesIntoService] },
-          },
-        })
-      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Failed to save dependencies'
@@ -777,70 +683,10 @@ export function ManageDependenciesModal({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <h3 className="text-base font-medium text-[#F4F7FC]">
-                    Upstream dependencies
-                  </h3>
-                  <p className="text-sm text-[#828DA3]">
-                    Services this service relies on.
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  preset="outline"
-                  onClick={() =>
-                    append({
-                      dependencyId: null,
-                      direction: 'upstream',
-                      otherService: '',
-                      name: '',
-                      type: '',
-                      criticality: 'soft',
-                      description: '',
-                      apiGroupName: '',
-                      apiEndpointNames: [],
-                      databaseName: '',
-                    })
-                  }
-                >
-                  <Plus className="size-4" />
-                  Add upstream dependency
-                </Button>
-              </div>
-
-              {fields.map((field, index) =>
-                form.watch(`rows.${index}.direction`) === 'upstream' ? (
-                  <DependencyEditor
-                    key={field.id}
-                    fieldId={field.id}
-                    index={index}
-                    direction="upstream"
-                    form={form}
-                    remove={remove}
-                    serviceOptions={serviceOptions}
-                    orgId={orgId!}
-                    serviceId={serviceId}
-                    services={services}
-                  />
-                ) : null
-              )}
-
-              {!fields.some(
-                (_, index) =>
-                  form.watch(`rows.${index}.direction`) === 'upstream'
-              ) && (
-                <p className="text-sm text-[#828DA3]">
-                  No upstream dependencies yet.
-                </p>
-              )}
-            </section>
-
-            <section className="space-y-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <h3 className="text-base font-medium text-[#F4F7FC]">
                     Downstream dependencies
                   </h3>
                   <p className="text-sm text-[#828DA3]">
-                    Services that rely on this service.
+                    This service is downstream of these — it calls them.
                   </p>
                 </div>
                 <Button
@@ -877,7 +723,6 @@ export function ManageDependenciesModal({
                     remove={remove}
                     serviceOptions={serviceOptions}
                     orgId={orgId!}
-                    serviceId={serviceId}
                     services={services}
                   />
                 ) : null
@@ -889,6 +734,65 @@ export function ManageDependenciesModal({
               ) && (
                 <p className="text-sm text-[#828DA3]">
                   No downstream dependencies yet.
+                </p>
+              )}
+            </section>
+
+            <section className="space-y-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <h3 className="text-base font-medium text-[#F4F7FC]">
+                    Upstream dependencies
+                  </h3>
+                  <p className="text-sm text-[#828DA3]">
+                    This service is upstream of these — they call it.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  preset="outline"
+                  onClick={() =>
+                    append({
+                      dependencyId: null,
+                      direction: 'upstream',
+                      otherService: '',
+                      name: '',
+                      type: '',
+                      criticality: 'soft',
+                      description: '',
+                      apiGroupName: '',
+                      apiEndpointNames: [],
+                      databaseName: '',
+                    })
+                  }
+                >
+                  <Plus className="size-4" />
+                  Add upstream dependency
+                </Button>
+              </div>
+
+              {fields.map((field, index) =>
+                form.watch(`rows.${index}.direction`) === 'upstream' ? (
+                  <DependencyEditor
+                    key={field.id}
+                    fieldId={field.id}
+                    index={index}
+                    direction="upstream"
+                    form={form}
+                    remove={remove}
+                    serviceOptions={serviceOptions}
+                    orgId={orgId!}
+                    services={services}
+                  />
+                ) : null
+              )}
+
+              {!fields.some(
+                (_, index) =>
+                  form.watch(`rows.${index}.direction`) === 'upstream'
+              ) && (
+                <p className="text-sm text-[#828DA3]">
+                  No upstream dependencies yet.
                 </p>
               )}
             </section>
