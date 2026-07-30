@@ -49,16 +49,18 @@ export function NodeSequenceParticipantStyle() {
         />
       </Field>
 
-      <p className="text-sm font-normal text-[#828DA3]">Global Styling</p>
+      <div className="-mx-4 space-y-3 border-t border-[#2A3242] px-4 pt-4">
+        <p className="text-xs font-normal text-[#828DA3]">Global Styling</p>
 
-      <SliderNumberField
-        min={FONT_SIZE_MIN}
-        max={FONT_SIZE_MAX}
-        step={1}
-        label="Participant Font Size"
-        value={titleFontSize}
-        onChange={handleChangeTitleFontSize}
-      />
+        <SliderNumberField
+          min={FONT_SIZE_MIN}
+          max={FONT_SIZE_MAX}
+          step={1}
+          label="Participant Font Size"
+          value={titleFontSize}
+          onChange={handleChangeTitleFontSize}
+        />
+      </div>
     </>
   )
 }
