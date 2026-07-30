@@ -470,7 +470,15 @@ export function DependencyGraph({
 
   for (const node of nodes)
     layout.setNode(node.id, { width: nodeWidth, height: 128 })
-  for (const edge of edges) layout.setEdge(edge.source, edge.target)
+  for (const edge of edges) {
+    if (edge.direction === 'downstream') {
+      layout.setEdge(edge.source, edge.target)
+    } else if (edge.direction === 'upstream') {
+      layout.setEdge(edge.target, edge.source)
+    } else {
+      throw new Error(`unknown dependency direction: ${edge.direction}`)
+    }
+  }
   dagre.layout(layout)
 
   const flowNodes: Node<FlowNodeData>[] = nodes.map((node) => {
@@ -652,20 +660,37 @@ export function DependencyGraph({
       type: MarkerType.ArrowClosed,
       color: hard ? '#C2703F' : '#64748B',
     }
-    let markerStart = undefined
-    let markerEnd = undefined
-    if (edge.direction === 'upstream') {
-      markerStart = marker
-    } else if (edge.direction === 'downstream') {
-      markerEnd = marker
+
+    let caller: string
+    let callee: string
+    if (edge.direction === 'downstream') {
+      caller = edge.source
+      callee = edge.target
+    } else if (edge.direction === 'upstream') {
+      caller = edge.target
+      callee = edge.source
     } else {
       throw new Error(`unknown dependency direction: ${edge.direction}`)
     }
 
+    let source: string
+    let target: string
+    let markerStart = undefined
+    let markerEnd = undefined
+    if (layout.node(caller).x <= layout.node(callee).x) {
+      source = caller
+      target = callee
+      markerEnd = marker
+    } else {
+      source = callee
+      target = caller
+      markerStart = marker
+    }
+
     return {
       id: edge.id,
-      source: edge.source,
-      target: edge.target,
+      source,
+      target,
       type: 'dependency',
       markerStart,
       markerEnd,
