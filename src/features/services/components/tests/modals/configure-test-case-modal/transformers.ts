@@ -9,12 +9,7 @@ export function transformToCreateTestCase(
     title: data.title,
     description: data.description,
     type: data.type,
-    priority: {
-      p0: 'P0',
-      p1: 'P1',
-      p2: 'P2',
-      p3: 'P3',
-    }[data.priority],
+    priority: data.priority,
     labels: data.tags,
     linkedTicket: data.linkedTicket,
     estimatedDurationMins:
@@ -25,6 +20,7 @@ export function transformToCreateTestCase(
     linkedMapNodeId: data.linkedMapNode,
     evidenceRequired: data.evidenceRequired,
     isCritical: data.critical,
+    screenshotUrls: data.screenshotUrls,
     manual:
       data.type === 'manual'
         ? {
@@ -124,12 +120,7 @@ export function transformToUpdateTestCase(
     title: data.title,
     description: data.description,
     type: data.type,
-    priority: {
-      p0: 'P0',
-      p1: 'P1',
-      p2: 'P2',
-      p3: 'P3',
-    }[data.priority],
+    priority: data.priority,
     labels: data.tags,
     linkedTicket: data.linkedTicket,
     estimatedDurationMins:
@@ -140,6 +131,7 @@ export function transformToUpdateTestCase(
     linkedMapNodeId: data.linkedMapNode,
     evidenceRequired: data.evidenceRequired,
     isCritical: data.critical,
+    screenshotUrls: data.screenshotUrls,
     manual:
       data.type === 'manual'
         ? {
@@ -270,6 +262,8 @@ export function transformTestCaseToSchema(
         ? undefined
         : testCase.evidenceRequired,
     critical: testCase.isCritical === null ? undefined : testCase.isCritical,
+    screenshotUrls:
+      testCase.screenshotUrls === null ? undefined : testCase.screenshotUrls,
     preconditions:
       testCase.manual?.preconditions === null
         ? undefined

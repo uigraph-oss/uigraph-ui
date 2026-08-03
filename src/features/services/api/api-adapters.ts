@@ -4,7 +4,11 @@ import {
   parseJsonDeep,
 } from '@/utils/api/openapi-display'
 import { ComponentInputType } from '@uigraph/sdk'
-import type { DashboardAPIEndpoint, DashboardAPIGroup } from './api-endpoints'
+import type {
+  DashboardAPIEndpoint,
+  DashboardAPIGroup,
+  DashboardEndpointSLA,
+} from './api-endpoints'
 import type { DashboardAPIGroupVersion } from './api-group-version'
 
 export type LegacyApiEndpoint = {
@@ -20,6 +24,7 @@ export type LegacyApiEndpoint = {
   serviceApiGroupId?: string | null
   updatedAt?: string | null
   updatedBy?: string | null
+  sla?: DashboardEndpointSLA | null
 }
 
 export type LegacyComponentMeta = {
@@ -294,6 +299,7 @@ export function endpointToLegacyWithMeta(
       order: endpoint.order,
       createdAt: endpoint.createdAt,
       updatedAt: endpoint.updatedAt,
+      sla: endpoint.sla,
     },
     componentMeta: {
       componentMetaId: endpoint.id,

@@ -20,6 +20,12 @@ export const configureTestCaseSchema = z
     linkedMapNode: z.string().optional(),
     evidenceRequired: z.boolean().optional(),
     critical: z.boolean().optional(),
+    // Already-uploaded screenshots (asset IDs) and newly-picked-but-not-yet-
+    // uploaded files are kept separate — new files only get uploaded (and
+    // merged into screenshotUrls) at submit time, mirroring the pattern in
+    // import-load-results-modal.tsx.
+    screenshotUrls: z.array(z.string()).optional(),
+    screenshotFiles: z.array(z.instanceof(File)).optional(),
     preconditions: z.string().optional(),
     testData: z.string().optional(),
     steps: z

@@ -13,6 +13,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
+import { FileText } from 'lucide-react'
 import { useMemo } from 'react'
 import { FaGithub, FaJira, FaSlack } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
@@ -59,6 +60,13 @@ function getMonogram(name: string) {
   return w.length >= 2
     ? `${w[0][0]}${w[1][0]}`.toUpperCase()
     : name.substring(0, 2).toUpperCase()
+}
+function docLinkHostname(url: string) {
+  try {
+    return new URL(url).hostname
+  } catch {
+    return 'Open link'
+  }
 }
 
 export function ServiceOverview() {
@@ -127,6 +135,12 @@ export function ServiceOverview() {
       sub: 'View Channel',
       href: service.slackChannelUrl,
     },
+    ...(service.docLinks ?? []).filter(Boolean).map((doc) => ({
+      icon: <FileText className="size-4 text-[#F4F7FC]" />,
+      label: doc!.label,
+      sub: docLinkHostname(doc!.url),
+      href: doc!.url,
+    })),
   ].filter(Boolean) as {
     icon: React.ReactNode
     label: string
@@ -309,7 +323,7 @@ export function ServiceOverview() {
             >
               {integrations.map(({ icon, label, sub, href }) => (
                 <a
-                  key={label}
+                  key={href}
                   href={href}
                   target="_blank"
                   className="flex items-center gap-3 rounded-xl border border-[#2A3242] bg-[#1E2533] px-4 py-3 transition-colors hover:border-[#3B4658] hover:bg-[#2A3242]"

@@ -29,6 +29,7 @@ import { Filter, X } from 'lucide-react'
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ACTOR } from '../../api/actor'
 import { TEST_RUNS_SUMMARY } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
 
@@ -43,7 +44,6 @@ type TestRunSummary = {
   status?: string | null
   startedBy?: string | null
   executedBy?: string | null
-  executedByProfileImgUrl?: string | null
   executedAt?: string | null
   overallStatus?: string | null
   passedCount?: number | null
@@ -267,6 +267,7 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
               <TestRunRow
                 key={run.testRunId ?? `run-${index}`}
                 summary={run}
+                orgId={orgId}
                 onClick={() => handleRowClick(run)}
               />
             ))
@@ -316,10 +317,20 @@ export function TestRunHistoryTable({ testPackId }: TestRunHistoryTableProps) {
 
 type TestRunRowProps = {
   summary: TestRunSummary
+  orgId?: string | null
   onClick: () => void
 }
 
-function TestRunRow({ summary, onClick }: TestRunRowProps) {
+function TestRunRow({ summary, orgId, onClick }: TestRunRowProps) {
+  const executedById = summary.executedBy ?? undefined
+  const { data: executorData } = useQuery(ACTOR, {
+    variables: { orgId: orgId!, id: executedById! },
+    skip: !orgId || !executedById,
+    fetchPolicy: 'cache-first',
+  })
+  const executedByName = executorData?.actor?.name?.trim() || executedById || ''
+  const executedByAvatar = executorData?.actor?.avatarUrl || ''
+
   const passed = summary.passedCount ?? 0
   const failed = summary.failedCount ?? 0
   const skipped = summary.skippedCount ?? 0
@@ -358,18 +369,15 @@ function TestRunRow({ summary, onClick }: TestRunRowProps) {
         <span className="text-amber-600">{blocked}</span>
       </TableCell>
       <TableCell>
-        {summary.executedBy ? (
+        {executedByName ? (
           <div className="flex items-center gap-2">
             <Avatar className="size-5">
-              <AvatarImage
-                src={summary.executedByProfileImgUrl || ''}
-                className="object-cover"
-              />
+              <AvatarImage src={executedByAvatar} className="object-cover" />
               <AvatarFallback className="text-xs">
-                {summary.executedBy.charAt(0).toUpperCase()}
+                {executedByName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span>{summary.executedBy}</span>
+            <span>{executedByName}</span>
           </div>
         ) : (
           '—'

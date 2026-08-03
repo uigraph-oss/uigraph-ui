@@ -1,5 +1,6 @@
 'use client'
 
+import { GT } from '@/api'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
@@ -206,6 +207,7 @@ export const [
             order?: number | null
             serviceApiGroupId?: string | null
             componentMetaId?: string | null
+            sla?: GT.EndpointSlaInput | null
           }
         }
       }) => {
@@ -223,6 +225,7 @@ export const [
               exampleRequests: serializeSamples(input.exampleRequests),
               exampleResponses: serializeSamples(input.exampleResponses),
               order: input.order ?? undefined,
+              sla: input.sla ?? undefined,
             },
           },
         })

@@ -17,6 +17,15 @@ export type DashboardAPIGroup = {
   updatedAt: string
 }
 
+export type DashboardEndpointSLA = {
+  thresholds?: Array<{
+    id: string
+    metric: string
+    comparator: string
+    value: number
+  }> | null
+}
+
 export type DashboardAPIEndpoint = {
   id: string
   apiGroupId: string
@@ -34,6 +43,7 @@ export type DashboardAPIEndpoint = {
   exampleRequests: string
   exampleResponses: string
   order: number
+  sla?: DashboardEndpointSLA | null
   createdBy: string
   updatedBy?: string | null
   createdAt: string
@@ -109,10 +119,34 @@ export const API_ENDPOINTS = graphql(`
       exampleRequests
       exampleResponses
       order
+      sla {
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
       createdBy
       updatedBy
       createdAt
       updatedAt
+    }
+  }
+`)
+
+export const API_ENDPOINT_SLA_BY_ID = graphql(`
+  query APIEndpointSlaByID($orgId: ID!, $id: ID!) {
+    apiEndpointById(orgId: $orgId, id: $id) {
+      id
+      sla {
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
     }
   }
 `)
@@ -202,6 +236,14 @@ export const CREATE_API_ENDPOINT = graphql(`
       input: $input
     ) {
       id
+      sla {
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
     }
   }
 `)
@@ -222,6 +264,14 @@ export const UPDATE_API_ENDPOINT = graphql(`
       input: $input
     ) {
       id
+      sla {
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
     }
   }
 `)

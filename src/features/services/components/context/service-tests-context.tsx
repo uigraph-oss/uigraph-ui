@@ -7,7 +7,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { createContext } from 'daily-code/react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
@@ -49,10 +49,12 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       serviceId,
       testPackId: selectedPackId ?? '',
     }
+    // Unscoped (no testPackId) — the sidebar's "last run" list needs every
+    // pack's summary regardless of which one is currently selected, so this
+    // must not narrow to just the selected pack.
     const runsVars = {
       orgId: orgId!,
       serviceId,
-      testPackId: selectedPackId ?? undefined,
     }
     const packRunsVars = {
       orgId: orgId!,
@@ -72,7 +74,9 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       skip: !orgId || !serviceId || !selectedPackId,
     })
 
-    const { data: packRunsData } = useQuery(TEST_RUNS, {
+    // Pre-warms the cache for LoadRunHistoryTable/TestRunHistoryTable, which
+    // run this same cache-first query themselves once the pack panel mounts.
+    useQuery(TEST_RUNS, {
       fetchPolicy: 'cache-first',
       variables: packRunsVars,
       skip: !orgId || !serviceId || !selectedPackId,
@@ -81,7 +85,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     const { data: summaryRunsData } = useQuery(TEST_RUNS_SUMMARY, {
       fetchPolicy: 'cache-first',
       variables: runsVars,
-      skip: !orgId || !serviceId || !!selectedPackId,
+      skip: !orgId || !serviceId,
     })
 
     const testPacks = useMemo(() => {
@@ -102,16 +106,12 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       })
     }, [casesData?.testCases])
 
+    // Always the all-packs summary — this only feeds the sidebar's "last
+    // run" list, which needs every pack's latest run regardless of which
+    // pack is currently selected in the main panel.
     const testRuns = useMemo(() => {
-      if (selectedPackId) {
-        return arrayNonNullable(packRunsData?.testRuns)
-      }
       return arrayNonNullable(summaryRunsData?.testRunsSummary)
-    }, [
-      packRunsData?.testRuns,
-      selectedPackId,
-      summaryRunsData?.testRunsSummary,
-    ])
+    }, [summaryRunsData?.testRunsSummary])
 
     const selectedPack = useMemo(() => {
       return (
@@ -124,16 +124,18 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
 
     const packRefetchQueries = [
       { query: TEST_PACKS, variables: packsVars },
-      selectedPackId
-        ? { query: TEST_RUNS, variables: packRunsVars }
-        : { query: TEST_RUNS_SUMMARY, variables: runsVars },
+      { query: TEST_RUNS_SUMMARY, variables: runsVars },
+      ...(selectedPackId
+        ? [{ query: TEST_RUNS, variables: packRunsVars }]
+        : []),
     ]
 
     const caseRefetchQueries = [
       { query: TEST_CASES, variables: casesVars },
-      selectedPackId
-        ? { query: TEST_RUNS, variables: packRunsVars }
-        : { query: TEST_RUNS_SUMMARY, variables: runsVars },
+      { query: TEST_RUNS_SUMMARY, variables: runsVars },
+      ...(selectedPackId
+        ? [{ query: TEST_RUNS, variables: packRunsVars }]
+        : []),
     ]
 
     const [createTestPack] = useMutation(CREATE_TEST_PACK, {
@@ -178,6 +180,16 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       [pathname, navigate, searchParams]
     )
 
+    // Landing on Tests with no ?packId (e.g. the tab's default entry) would
+    // otherwise show a blank "select a test pack" placeholder even though
+    // packs exist — auto-select the most recently updated one instead, so
+    // the page opens straight into a populated view.
+    useEffect(() => {
+      if (!isTestPacksLoading && !selectedPackId && testPacks.length > 0) {
+        handleSelectPack(testPacks[0].testPackId)
+      }
+    }, [isTestPacksLoading, selectedPackId, testPacks, handleSelectPack])
+
     const clearSelectedPack = useCallback(() => {
       const currentParams = new URLSearchParams(searchParams.toString())
       currentParams.delete('packId')
@@ -189,7 +201,8 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     const createPack = useCallback(
       async (data: {
         name: string
-        type: 'smoke' | 'regression' | 'manual'
+        type: 'smoke' | 'regression' | 'manual' | 'load'
+        loadConfig?: { targetEndpoints: string[] }
       }) => {
         try {
           const result = await createTestPack({
@@ -199,6 +212,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
               input: {
                 name: data.name,
                 type: data.type,
+                loadConfig: data.loadConfig,
               },
             },
           })
@@ -222,7 +236,11 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
     const updatePack = useCallback(
       async (
         testPackId: string,
-        data: { name: string; type: 'smoke' | 'regression' | 'manual' }
+        data: {
+          name: string
+          type: 'smoke' | 'regression' | 'manual' | 'load'
+          loadConfig?: { targetEndpoints: string[] }
+        }
       ) => {
         try {
           await updateTestPack({
@@ -233,6 +251,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
               input: {
                 name: data.name,
                 type: data.type,
+                loadConfig: data.loadConfig,
               },
             },
           })
@@ -525,6 +544,68 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       [createTestRun, navigate, orgId, selectedPackId, serviceId]
     )
 
+    const importLoadRun = useCallback(
+      async (data: {
+        environment: string
+        releaseLabel?: string
+        overallStatus?: string
+        loadMetrics: GT.LoadTestMetricsInput
+      }) => {
+        if (!selectedPackId) return null
+
+        try {
+          const result = await createTestRun({
+            variables: {
+              orgId: orgId!,
+              serviceId,
+              input: {
+                testPackId: selectedPackId,
+                environment: data.environment,
+                releaseLabel: data.releaseLabel,
+                overallStatus: data.overallStatus,
+                loadMetrics: data.loadMetrics,
+              },
+            },
+          })
+
+          const testRunId = result.data?.createTestRun?.testRunId
+          if (testRunId) {
+            void navigate(`/services/${serviceId}/tests/runs/${testRunId}`)
+            toast.success('Load test results imported successfully')
+            return testRunId
+          }
+          toast.error('Failed to import load test results')
+          return null
+        } catch (error) {
+          toast.error('Failed to import load test results')
+          console.error(error)
+          throw error
+        }
+      },
+      [createTestRun, navigate, orgId, selectedPackId, serviceId]
+    )
+
+    const pinBaselineRun = useCallback(
+      async (testPackId: string, testRunId: string) => {
+        try {
+          await updateTestPack({
+            variables: {
+              orgId: orgId!,
+              serviceId,
+              id: testPackId,
+              input: { baselineRunId: testRunId },
+            },
+          })
+          toast.success('Pinned as baseline')
+        } catch (error) {
+          toast.error('Failed to pin baseline')
+          console.error(error)
+          throw error
+        }
+      },
+      [orgId, serviceId, updateTestPack]
+    )
+
     return {
       orgId,
       serviceId,
@@ -547,5 +628,7 @@ export const [ServiceTestsContextProvider, useServiceTestsContext] =
       duplicateTestCase,
       reorderTestCase,
       confirmRunPack,
+      importLoadRun,
+      pinBaselineRun,
     }
   })

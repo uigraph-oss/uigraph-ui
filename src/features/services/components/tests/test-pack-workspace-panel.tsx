@@ -11,11 +11,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
-import { Info, Play, Plus } from 'lucide-react'
+import { Info, Play, Plus, UploadCloud } from 'lucide-react'
 import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useServiceTestsContext } from '../context/service-tests-context'
+import { LoadRunHistoryTable } from './load-run-history-table'
 import { ConfigureTestCaseModal } from './modals/configure-test-case-modal'
 import { transformToCreateTestCase } from './modals/configure-test-case-modal/transformers'
 import { TestCaseList } from './test-case-list'
@@ -24,12 +25,14 @@ import { TestRunHistoryTable } from './test-run-history-table'
 type TestPackWorkspacePanelProps = {
   onAddTestCase?: () => void
   onRunPack?: () => void
+  onImportResults?: () => void
   onViewTestCase?: (testCase: TestCase) => void
 }
 
 export function TestPackWorkspacePanel({
   onAddTestCase,
   onRunPack,
+  onImportResults,
   onViewTestCase,
 }: TestPackWorkspacePanelProps) {
   const navigate = useNavigate()
@@ -47,7 +50,9 @@ export function TestPackWorkspacePanel({
   } = useServiceTestsContext()
 
   const [isCreateTestPackOpen, setIsCreateTestPackOpen] = useState(false)
-  const activeTab = searchParams.get('tab') === 'runs' ? 'runs' : 'cases'
+  const isLoadPack = selectedPack?.type?.toLowerCase() === 'load'
+  const requestedTab = searchParams.get('tab') === 'runs' ? 'runs' : 'cases'
+  const activeTab = isLoadPack ? 'runs' : requestedTab
 
   const [baseControl] = useBetterTabs(
     [
@@ -93,15 +98,11 @@ export function TestPackWorkspacePanel({
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="border-border border-b bg-[#141925] pt-1">
-        <BetterTabController
-          control={control}
-          className="m-0 mb-[-1px] rounded-none border-transparent bg-transparent p-0"
-          overlayClassName="h-[2px] top-auto bottom-0 bg-primary"
-          triggerClassName="text-sm h-9 px-5"
-          activeTriggerClassName="text-foreground border-primary"
-        />
-      </div>
+      {!isLoadPack && (
+        <div className="border-border border-b bg-[#141925] py-3">
+          <BetterTabController control={control} />
+        </div>
+      )}
 
       <BetterDialogProvider
         open={isCreateTestPackOpen}
@@ -150,14 +151,18 @@ export function TestPackWorkspacePanel({
                 <TooltipContent>
                   {activeTab === 'cases'
                     ? 'Test cases define what to verify. Drag to change execution order.'
-                    : 'Each run records results for all test cases in this pack.'}
+                    : isLoadPack
+                      ? 'Each run records the metrics from one imported load test result.'
+                      : 'Each run records results for all test cases in this pack.'}
                 </TooltipContent>
               </Tooltip>
             </div>
             <p className="text-muted-foreground mt-1.5 text-sm">
               {activeTab === 'cases'
                 ? 'Add and manage test cases in this pack. Drag to reorder.'
-                : 'View test run history and results for this pack.'}
+                : isLoadPack
+                  ? 'View imported load test run history and results for this pack.'
+                  : 'View test run history and results for this pack.'}
             </p>
           </div>
           <div className="shrink-0">
@@ -171,7 +176,14 @@ export function TestPackWorkspacePanel({
               </Button>
             )}
 
-            {activeTab === 'runs' && onRunPack && (
+            {activeTab === 'runs' && isLoadPack && onImportResults && (
+              <Button preset="primary" onClick={onImportResults}>
+                <UploadCloud className="h-4 w-4" />
+                Add Run
+              </Button>
+            )}
+
+            {activeTab === 'runs' && !isLoadPack && onRunPack && (
               <Button preset="primary" onClick={onRunPack}>
                 <Play className="h-4 w-4" />
                 Run Pack
@@ -209,6 +221,11 @@ export function TestPackWorkspacePanel({
               <TestCaseList onView={onViewTestCase} />
             </div>
           )
+        ) : isLoadPack ? (
+          <LoadRunHistoryTable
+            testPackId={selectedPackId}
+            baselineRunId={selectedPack.baselineRunId}
+          />
         ) : (
           <TestRunHistoryTable testPackId={selectedPackId} />
         )}

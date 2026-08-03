@@ -30,7 +30,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
   }, [activeTab])
 
   return (
-    <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
       <DashboardHeader
         crumbs={[
           { to: '/services', label: 'Services' },
@@ -54,7 +54,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
           <SectionLoader />
         </div>
       ) : service ? (
-        <div className="grid grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
+        <div className="grid min-h-0 grid-rows-[auto_1fr] rounded-t-[1.2rem] bg-[#141925]">
           <div className="border-stock flex items-center border-b-2">
             {serviceTabs.map((tab) => (
               <Button
@@ -75,7 +75,7 @@ export function DashboardServiceDetailLayout({ children }: PropsWithChildren) {
             ))}
           </div>
 
-          <GridScrollBody>{children}</GridScrollBody>
+          <GridScrollBody className="min-h-0">{children}</GridScrollBody>
         </div>
       ) : (
         <div>Service not found</div>

@@ -9,6 +9,12 @@ export type ServiceStats = {
   testCaseCount: number
 }
 
+export type ServiceDocLink = {
+  id: string
+  label: string
+  url: string
+}
+
 export type DashboardService = {
   id: string
   orgId: string
@@ -26,6 +32,7 @@ export type DashboardService = {
   lastCommitSha?: string | null
   labels: string[]
   metadata?: string | null
+  docLinks?: ServiceDocLink[] | null
   createdBy: string
   updatedBy?: string | null
   stats?: ServiceStats | null
@@ -72,6 +79,11 @@ export const SERVICES = graphql(`
         lastCommitSha
         labels
         metadata
+        docLinks {
+          id
+          label
+          url
+        }
         createdBy
         updatedBy
         stats {
@@ -108,6 +120,11 @@ export const SERVICE = graphql(`
       lastCommitSha
       labels
       metadata
+      docLinks {
+        id
+        label
+        url
+      }
       createdBy
       updatedBy
       stats {
@@ -157,6 +174,7 @@ export function toCreateServiceInput(data: {
   gitRepoUrl?: string
   jiraProjectUrl?: string
   slackChannelUrl?: string
+  docLinks?: ServiceDocLink[]
 }) {
   return {
     name: data.name,
@@ -167,6 +185,7 @@ export function toCreateServiceInput(data: {
     gitRepoUrl: data.gitRepoUrl,
     jiraProjectUrl: data.jiraProjectUrl,
     slackChannelUrl: data.slackChannelUrl,
+    docLinks: data.docLinks,
     status: 'active',
     tier: 'tier3',
     language: '',
@@ -182,6 +201,7 @@ export function toUpdateServiceInput(data: {
   gitRepoUrl?: string
   jiraProjectUrl?: string
   slackChannelUrl?: string
+  docLinks?: ServiceDocLink[]
 }) {
   return {
     name: data.name,
@@ -192,5 +212,6 @@ export function toUpdateServiceInput(data: {
     gitRepoUrl: data.gitRepoUrl,
     jiraProjectUrl: data.jiraProjectUrl,
     slackChannelUrl: data.slackChannelUrl,
+    docLinks: data.docLinks,
   }
 }

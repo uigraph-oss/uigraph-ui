@@ -40,6 +40,7 @@ export function ApiEndPointRow({
   return (
     <ApiEndPointRowCore
       componentMeta={componentMeta}
+      sla={endpoint.sla}
       onViewOpen={() => setIsViewOpen(true)}
       actionsCell={
         !readonly && (
@@ -119,6 +120,7 @@ export function ApiEndPointRowReadonly({
   return (
     <ApiEndPointRowCore
       componentMeta={componentMeta}
+      sla={endpoint.sla}
       onViewOpen={() => onSelect(endpoint)}
     />
   )

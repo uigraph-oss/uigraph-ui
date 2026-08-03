@@ -8,6 +8,16 @@ export const TEST_PACKS = graphql(`
       orgId
       name
       type
+      loadConfig {
+        targetEndpoints
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
+      baselineRunId
       createdBy
       updatedBy
       createdAt
@@ -28,6 +38,16 @@ export const CREATE_TEST_PACK = graphql(`
       orgId
       name
       type
+      loadConfig {
+        targetEndpoints
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
+      baselineRunId
       createdBy
       updatedBy
       createdAt
@@ -54,6 +74,16 @@ export const UPDATE_TEST_PACK = graphql(`
       orgId
       name
       type
+      loadConfig {
+        targetEndpoints
+        thresholds {
+          id
+          metric
+          comparator
+          value
+        }
+      }
+      baselineRunId
       createdBy
       updatedBy
       createdAt
@@ -87,6 +117,7 @@ export const TEST_CASES = graphql(`
       linkedMapNodeId
       isCritical
       evidenceRequired
+      screenshotUrls
       status
       version
       baselineRunResultId
@@ -110,9 +141,31 @@ export const TEST_CASES = graphql(`
         httpMethod
         apiSpecId
         operationId
+        auth {
+          type
+          bearerToken
+          apiKeyHeader
+          apiKeyValue
+          basicUsername
+          basicPassword
+        }
+        requestHeaders {
+          key
+          value
+        }
+        queryParams {
+          key
+          value
+        }
         requestBody
         expectedStatusCode
         maxResponseTimeMs
+        responseBody
+        assertions {
+          field
+          type
+          value
+        }
       }
       graphql {
         operationType
@@ -120,12 +173,22 @@ export const TEST_CASES = graphql(`
         query
         variables
         responseBody
+        assertions {
+          field
+          type
+          value
+        }
         expectError
       }
       database {
         dialect
         schemaId
         query
+        assertions {
+          field
+          type
+          value
+        }
         setupQuery
         teardownQuery
       }
@@ -136,9 +199,18 @@ export const TEST_CASES = graphql(`
         protoFileId
         serverAddress
         requestMessage
+        metadata {
+          key
+          value
+        }
         expectedStatus
         deadlineMs
         responseBody
+        assertions {
+          field
+          type
+          value
+        }
         useTLS
         expectError
       }
@@ -169,6 +241,7 @@ export const CREATE_TEST_CASE = graphql(`
       linkedMapNodeId
       isCritical
       evidenceRequired
+      screenshotUrls
       status
       version
       baselineRunResultId
@@ -192,9 +265,31 @@ export const CREATE_TEST_CASE = graphql(`
         httpMethod
         apiSpecId
         operationId
+        auth {
+          type
+          bearerToken
+          apiKeyHeader
+          apiKeyValue
+          basicUsername
+          basicPassword
+        }
+        requestHeaders {
+          key
+          value
+        }
+        queryParams {
+          key
+          value
+        }
         requestBody
         expectedStatusCode
         maxResponseTimeMs
+        responseBody
+        assertions {
+          field
+          type
+          value
+        }
       }
       graphql {
         operationType
@@ -202,12 +297,22 @@ export const CREATE_TEST_CASE = graphql(`
         query
         variables
         responseBody
+        assertions {
+          field
+          type
+          value
+        }
         expectError
       }
       database {
         dialect
         schemaId
         query
+        assertions {
+          field
+          type
+          value
+        }
         setupQuery
         teardownQuery
       }
@@ -218,9 +323,18 @@ export const CREATE_TEST_CASE = graphql(`
         protoFileId
         serverAddress
         requestMessage
+        metadata {
+          key
+          value
+        }
         expectedStatus
         deadlineMs
         responseBody
+        assertions {
+          field
+          type
+          value
+        }
         useTLS
         expectError
       }
@@ -257,6 +371,7 @@ export const UPDATE_TEST_CASE = graphql(`
       linkedMapNodeId
       isCritical
       evidenceRequired
+      screenshotUrls
       status
       version
       baselineRunResultId
@@ -280,9 +395,31 @@ export const UPDATE_TEST_CASE = graphql(`
         httpMethod
         apiSpecId
         operationId
+        auth {
+          type
+          bearerToken
+          apiKeyHeader
+          apiKeyValue
+          basicUsername
+          basicPassword
+        }
+        requestHeaders {
+          key
+          value
+        }
+        queryParams {
+          key
+          value
+        }
         requestBody
         expectedStatusCode
         maxResponseTimeMs
+        responseBody
+        assertions {
+          field
+          type
+          value
+        }
       }
       graphql {
         operationType
@@ -290,12 +427,22 @@ export const UPDATE_TEST_CASE = graphql(`
         query
         variables
         responseBody
+        assertions {
+          field
+          type
+          value
+        }
         expectError
       }
       database {
         dialect
         schemaId
         query
+        assertions {
+          field
+          type
+          value
+        }
         setupQuery
         teardownQuery
       }
@@ -306,9 +453,18 @@ export const UPDATE_TEST_CASE = graphql(`
         protoFileId
         serverAddress
         requestMessage
+        metadata {
+          key
+          value
+        }
         expectedStatus
         deadlineMs
         responseBody
+        assertions {
+          field
+          type
+          value
+        }
         useTLS
         expectError
       }
@@ -338,6 +494,51 @@ export const TEST_RUNS = graphql(`
       executedBy
       executedAt
       overallStatus
+      loadMetrics {
+        durationSec
+        totalRequests
+        requestsPerSec
+        errorRate
+        minLatencyMs
+        avgLatencyMs
+        maxLatencyMs
+        p50LatencyMs
+        p90LatencyMs
+        p95LatencyMs
+        p99LatencyMs
+        virtualUsers
+        timeSeries {
+          tSec
+          rps
+          errorRate
+          p95LatencyMs
+          activeVUs
+        }
+        perEndpoint {
+          endpoint
+          method
+          requestCount
+          requestsPerSec
+          errorRate
+          avgLatencyMs
+          p50LatencyMs
+          p90LatencyMs
+          p95LatencyMs
+          p99LatencyMs
+          apiEndpointId
+        }
+        customMetrics {
+          name
+          value
+          unit
+          timeSeries {
+            t
+            v
+          }
+        }
+        notes
+        screenshotUrls
+      }
     }
   }
 `)
@@ -358,6 +559,51 @@ export const TEST_RUN = graphql(`
       executedBy
       executedAt
       overallStatus
+      loadMetrics {
+        durationSec
+        totalRequests
+        requestsPerSec
+        errorRate
+        minLatencyMs
+        avgLatencyMs
+        maxLatencyMs
+        p50LatencyMs
+        p90LatencyMs
+        p95LatencyMs
+        p99LatencyMs
+        virtualUsers
+        timeSeries {
+          tSec
+          rps
+          errorRate
+          p95LatencyMs
+          activeVUs
+        }
+        perEndpoint {
+          endpoint
+          method
+          requestCount
+          requestsPerSec
+          errorRate
+          avgLatencyMs
+          p50LatencyMs
+          p90LatencyMs
+          p95LatencyMs
+          p99LatencyMs
+          apiEndpointId
+        }
+        customMetrics {
+          name
+          value
+          unit
+          timeSeries {
+            t
+            v
+          }
+        }
+        notes
+        screenshotUrls
+      }
     }
   }
 `)

@@ -1,0 +1,37 @@
+{
+  "metrics": {
+    "http_reqs": {
+      "type": "counter",
+      "contains": "default",
+      "values": { "count": 148500, "rate": 495.0 }
+    },
+    "http_req_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 142.7,
+        "min": 8.1,
+        "med": 118.4,
+        "max": 1820.6,
+        "p(90)": 245.3,
+        "p(95)": 312.8,
+        "p(99)": 610.2
+      }
+    },
+    "http_req_failed": {
+      "type": "rate",
+      "contains": "default",
+      "values": { "rate": 0.0041, "passes": 147891, "fails": 609 }
+    },
+    "vus_max": {
+      "type": "gauge",
+      "contains": "default",
+      "values": { "value": 100, "min": 100, "max": 100 }
+    }
+  },
+  "state": {
+    "isStdOutTTY": true,
+    "isStdErrTTY": true,
+    "testRunDurationMs": 300000
+  }
+}

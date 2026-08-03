@@ -1,5 +1,6 @@
 import { GitIcon, JiraIcon, SlackIcon } from '@/assets/svgs'
 import { BetterDialogContent } from '@/components/better-dialog'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -18,7 +19,8 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { arrayNonNullable } from 'daily-code'
-import { Controller, useForm } from 'react-hook-form'
+import { Plus, Trash2 } from 'lucide-react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const configureServiceSchema = z.object({
@@ -34,6 +36,16 @@ const configureServiceSchema = z.object({
 
   slackChannelUrl: z.url('Invalid URL').optional(),
   slackChannelName: z.string().optional(),
+
+  docLinks: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string().min(1, 'Label is required'),
+        url: z.url('Invalid URL'),
+      })
+    )
+    .optional(),
 
   labels: z.array(z.string()).optional(),
   teamId: z.string().min(1, 'Team is required'),
@@ -80,6 +92,11 @@ export function ConfigureServiceModal({
       labels: [],
       ...defaultValues,
     },
+  })
+
+  const docLinksArray = useFieldArray({
+    control: form.control,
+    name: 'docLinks',
   })
 
   return (
@@ -378,6 +395,88 @@ export function ConfigureServiceModal({
               </p>
             )}
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="leding-[1.33] text-sm font-normal">
+            Doc Links <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <p className="text-muted-foreground text-xs">
+            Link tech specs, one-pagers, or other reference docs that live
+            elsewhere — Confluence, Notion, Google Docs, etc. Just paste the
+            URL.
+          </p>
+
+          {docLinksArray.fields.length > 0 && (
+            <div className="space-y-2">
+              {docLinksArray.fields.map((field, index) => (
+                <div key={field.id} className="flex items-start gap-2">
+                  <div className="w-[220px] shrink-0 space-y-1">
+                    <Controller
+                      name={`docLinks.${index}.label`}
+                      control={form.control}
+                      render={({ field: labelField }) => (
+                        <Input
+                          placeholder="Label, e.g. Tech Spec"
+                          className="h-11 rounded-[12px] border border-[#2A3242] bg-transparent px-4 focus:outline-none"
+                          {...labelField}
+                        />
+                      )}
+                    />
+                    {form.formState.errors.docLinks?.[index]?.label && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.docLinks[index]?.label?.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <Controller
+                      name={`docLinks.${index}.url`}
+                      control={form.control}
+                      render={({ field: urlField }) => (
+                        <Input
+                          type="url"
+                          placeholder="https://..."
+                          className="h-11 rounded-[12px] border border-[#2A3242] bg-transparent px-4 focus:outline-none"
+                          {...urlField}
+                        />
+                      )}
+                    />
+                    {form.formState.errors.docLinks?.[index]?.url && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.docLinks[index]?.url?.message}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-destructive mt-0.5 h-11 w-11 shrink-0"
+                    onClick={() => docLinksArray.remove(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() =>
+              docLinksArray.append({
+                id: crypto.randomUUID(),
+                label: '',
+                url: '',
+              })
+            }
+          >
+            <Plus className="h-4 w-4" />
+            Add Doc Link
+          </Button>
         </div>
 
         <div className="space-y-2">
