@@ -2,7 +2,10 @@
 
 import { SectionLoader } from '@/components/section-loader'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { DashboardPageSectionLayout } from '@/features/dashboard'
+import {
+  DashboardSectionContent,
+  DashboardSectionHeader,
+} from '@/features/dashboard'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -129,11 +132,11 @@ export function DashboardInsightsPageInner() {
     (summary.data?.costSavingsSummary.totalCalls ?? 0) === 0
 
   return (
-    <DashboardPageSectionLayout
-      title="Savings Overview"
-      description="Cost and token savings from using Claude/Cursor with the uigraph MCP server."
-      crumbs={[{ to: '/dashboard/insights', label: 'Insights' }]}
-      headerContent={
+    <>
+      <DashboardSectionHeader
+        title="Savings Overview"
+        description="Cost and token savings from using Claude/Cursor with the uigraph MCP server."
+      >
         <SavingsFilters
           period={period}
           onPeriodChange={(value) => setSearchParams({ period: value })}
@@ -145,104 +148,111 @@ export function DashboardInsightsPageInner() {
           }
           modelOptions={modelOptions}
         />
-      }
-    >
-      {loading ? (
-        <SectionLoader label="Loading insights..." />
-      ) : error ? (
-        <p className="text-paragraph px-6 py-16 text-center text-sm">
-          Couldn&apos;t load insights right now. Please try again.
-        </p>
-      ) : isEmpty ? (
-        <SavingsEmptyState />
-      ) : (
-        <div className="space-y-6 pb-6">
-          <SavingsHeroCards
-            period={period}
-            totalCalls={summary.data!.costSavingsSummary.totalCalls}
-            totalTokensSaved={summary.data!.costSavingsSummary.totalTokensSaved}
-            costSavedUsd={summary.data!.costSavingsSummary.costSavedUsd}
-            timeSavedMs={summary.data!.costSavingsSummary.timeSavedMs}
-            totalDurationMs={summary.data!.costSavingsSummary.totalDurationMs}
-          />
+      </DashboardSectionHeader>
 
-          <SavingsComparison
-            costServedUsd={summary.data!.costSavingsSummary.costServedUsd}
-            costRawUsd={summary.data!.costSavingsSummary.costRawUsd}
-            modelLabel={modelLabel}
-          />
-
-          <SavingsTrendChart
-            data={(timeseries.data?.costSavingsTimeseries ?? []).map((d) => ({
-              date: d.date,
-              costSavedUsd: d.costSavedUsd,
-            }))}
-          />
-
-          <div className="border-stock bg-shading/40 rounded-[12px] border">
-            <div className="border-stock flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4">
-              <p className="text-paragraph mr-2 text-sm font-medium">
-                Breakdown
-              </p>
-              <ToggleGroup
-                type="single"
-                value={dimension}
-                onValueChange={(value) =>
-                  value && setDimension(value as BreakdownDimension)
-                }
-                variant="outline"
-              >
-                <ToggleGroupItem
-                  value="tool"
-                  className="hover:bg-muted hover:text-foreground px-5"
-                >
-                  By Tool
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="client"
-                  className="hover:bg-muted hover:text-foreground px-5"
-                >
-                  By Agent
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="model"
-                  className="hover:bg-muted hover:text-foreground px-5"
-                >
-                  By Model
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="user"
-                  className="hover:bg-muted hover:text-foreground px-5"
-                >
-                  By User
-                </ToggleGroupItem>
-              </ToggleGroup>
-
-              <SavingsExportButton
-                rows={breakdownRows}
-                filename={`insights-${dimension}-${period}.csv`}
-                columns={[
-                  { header: 'Name', value: (r) => r.label },
-                  { header: 'Calls', value: (r) => r.totalCalls },
-                  { header: 'Tokens Saved', value: (r) => r.tokensSaved },
-                  { header: 'Cost Saved (USD)', value: (r) => r.costSavedUsd },
-                ]}
-              />
-            </div>
-            <SavingsBreakdownTable
-              rows={breakdownRows}
-              variant={dimension === 'model' ? 'model' : 'default'}
+      <DashboardSectionContent>
+        {loading ? (
+          <SectionLoader label="Loading insights..." />
+        ) : error ? (
+          <p className="text-paragraph px-6 py-16 text-center text-sm">
+            Couldn&apos;t load insights right now. Please try again.
+          </p>
+        ) : isEmpty ? (
+          <SavingsEmptyState />
+        ) : (
+          <div className="space-y-6 pb-6">
+            <SavingsHeroCards
+              period={period}
+              totalCalls={summary.data!.costSavingsSummary.totalCalls}
+              totalTokensSaved={
+                summary.data!.costSavingsSummary.totalTokensSaved
+              }
+              costSavedUsd={summary.data!.costSavingsSummary.costSavedUsd}
+              timeSavedMs={summary.data!.costSavingsSummary.timeSavedMs}
+              totalDurationMs={summary.data!.costSavingsSummary.totalDurationMs}
             />
-            {dimension === 'model' ? (
-              <p className="text-paragraph border-stock border-t px-6 py-4 text-center text-xs">
-                This isn&apos;t actual uigraph MCP usage — it&apos;s an estimate
-                of what these tokens would have cost on each model if it had
-                been used.
-              </p>
-            ) : null}
+
+            <SavingsComparison
+              costServedUsd={summary.data!.costSavingsSummary.costServedUsd}
+              costRawUsd={summary.data!.costSavingsSummary.costRawUsd}
+              modelLabel={modelLabel}
+            />
+
+            <SavingsTrendChart
+              data={(timeseries.data?.costSavingsTimeseries ?? []).map((d) => ({
+                date: d.date,
+                costSavedUsd: d.costSavedUsd,
+              }))}
+            />
+
+            <div className="border-stock bg-shading/40 rounded-[12px] border">
+              <div className="border-stock flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4">
+                <p className="text-paragraph mr-2 text-sm font-medium">
+                  Breakdown
+                </p>
+                <ToggleGroup
+                  type="single"
+                  value={dimension}
+                  onValueChange={(value) =>
+                    value && setDimension(value as BreakdownDimension)
+                  }
+                  variant="outline"
+                >
+                  <ToggleGroupItem
+                    value="tool"
+                    className="hover:bg-muted hover:text-foreground px-5"
+                  >
+                    By Tool
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="client"
+                    className="hover:bg-muted hover:text-foreground px-5"
+                  >
+                    By Agent
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="model"
+                    className="hover:bg-muted hover:text-foreground px-5"
+                  >
+                    By Model
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="user"
+                    className="hover:bg-muted hover:text-foreground px-5"
+                  >
+                    By User
+                  </ToggleGroupItem>
+                </ToggleGroup>
+
+                <SavingsExportButton
+                  rows={breakdownRows}
+                  filename={`insights-${dimension}-${period}.csv`}
+                  columns={[
+                    { header: 'Name', value: (r) => r.label },
+                    { header: 'Calls', value: (r) => r.totalCalls },
+                    { header: 'Tokens Saved', value: (r) => r.tokensSaved },
+                    {
+                      header: 'Cost Saved (USD)',
+                      value: (r) => r.costSavedUsd,
+                    },
+                  ]}
+                />
+              </div>
+              <SavingsBreakdownTable
+                rows={breakdownRows}
+                variant={dimension === 'model' ? 'model' : 'default'}
+              />
+              {dimension === 'model' ? (
+                <p className="text-paragraph border-stock border-t px-6 py-4 text-center text-xs">
+                  This isn&apos;t actual uigraph MCP usage — it&apos;s an
+                  estimate of what these tokens would have cost on each model if
+                  it had been used.
+                </p>
+              ) : null}
+            </div>
           </div>
-        </div>
-      )}
-    </DashboardPageSectionLayout>
+        )}
+      </DashboardSectionContent>
+    </>
   )
 }

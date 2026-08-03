@@ -262,6 +262,21 @@ const DashboardInsightsPage = lazy(() =>
     (mod) => ({ default: mod.DashboardInsightsPage })
   )
 )
+const DashboardInsightsLayout = lazy(() =>
+  import('@/features/dashboard-insights/dashboard-insights-layout').then(
+    (mod) => ({ default: mod.DashboardInsightsLayout })
+  )
+)
+const DashboardAgentsPage = lazy(() =>
+  import('@/features/dashboard-insights/agents/dashboard-agents-page').then(
+    (mod) => ({ default: mod.DashboardAgentsPage })
+  )
+)
+const DashboardAgentSessionPage = lazy(() =>
+  import('@/features/dashboard-insights/agents/dashboard-agent-session-page').then(
+    (mod) => ({ default: mod.DashboardAgentSessionPage })
+  )
+)
 const DashboardServices = lazy(() =>
   import('@/features/services/components/services-list/dashboard-services').then(
     (mod) => ({ default: mod.DashboardServices })
@@ -448,8 +463,16 @@ export function AppRoutes() {
 
           <Route
             path="/dashboard/insights"
-            element={<DashboardInsightsPage />}
-          />
+            element={<DashboardInsightsLayout />}
+          >
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<DashboardInsightsPage />} />
+            <Route path="agents" element={<DashboardAgentsPage />} />
+            <Route
+              path="agents/:sessionId"
+              element={<DashboardAgentSessionPage />}
+            />
+          </Route>
 
           <Route path="/services" element={<DashboardServices />} />
           <Route

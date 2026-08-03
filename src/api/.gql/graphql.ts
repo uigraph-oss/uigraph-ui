@@ -121,6 +121,96 @@ export type AddMemberInput = {
   role: Scalars['String']['input'];
 };
 
+export type AgentSession = {
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  actorName?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['Time']['output']>;
+  durationMs?: Maybe<Scalars['Int']['output']>;
+  error?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  modelName?: Maybe<Scalars['String']['output']>;
+  orgId: Scalars['ID']['output'];
+  report?: Maybe<Scalars['String']['output']>;
+  serviceAccountId?: Maybe<Scalars['ID']['output']>;
+  startedAt: Scalars['Time']['output'];
+  status: Scalars['String']['output'];
+  title?: Maybe<Scalars['String']['output']>;
+  totals: AgentSessionTotals;
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['Time']['output'];
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type AgentSessionDetail = {
+  session: AgentSession;
+  steps: Array<AgentSessionStep>;
+};
+
+export type AgentSessionPage = {
+  limit: Scalars['Int']['output'];
+  offset: Scalars['Int']['output'];
+  period: Scalars['String']['output'];
+  sessions: Array<AgentSession>;
+  total: Scalars['Int']['output'];
+};
+
+export type AgentSessionStep = {
+  cachedInputTokens?: Maybe<Scalars['Int']['output']>;
+  cachedOutputTokens?: Maybe<Scalars['Int']['output']>;
+  completedAt: Scalars['Time']['output'];
+  costUsd?: Maybe<Scalars['Float']['output']>;
+  durationMs: Scalars['Int']['output'];
+  error?: Maybe<Scalars['String']['output']>;
+  finishReason?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  input?: Maybe<Scalars['JSON']['output']>;
+  inputTokens?: Maybe<Scalars['Int']['output']>;
+  kind: Scalars['String']['output'];
+  modelName?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  output?: Maybe<Scalars['JSON']['output']>;
+  outputTokens?: Maybe<Scalars['Int']['output']>;
+  reasoningTokens?: Maybe<Scalars['Int']['output']>;
+  seq: Scalars['Int']['output'];
+  sessionId: Scalars['ID']['output'];
+  startedAt: Scalars['Time']['output'];
+  text?: Maybe<Scalars['String']['output']>;
+};
+
+export type AgentSessionSummary = {
+  byType: Array<AgentSessionTypeSummary>;
+  completedSessions: Scalars['Int']['output'];
+  failedSessions: Scalars['Int']['output'];
+  period: Scalars['String']['output'];
+  runningSessions: Scalars['Int']['output'];
+  totalDurationMs: Scalars['Int']['output'];
+  totalSessions: Scalars['Int']['output'];
+  totals: AgentSessionTotals;
+};
+
+export type AgentSessionTotals = {
+  cachedInputTokens: Scalars['Int']['output'];
+  cachedOutputTokens: Scalars['Int']['output'];
+  costUsd?: Maybe<Scalars['Float']['output']>;
+  inputTokens: Scalars['Int']['output'];
+  outputTokens: Scalars['Int']['output'];
+  reasoningTokens: Scalars['Int']['output'];
+  stepCount: Scalars['Int']['output'];
+  stepDurationMs: Scalars['Int']['output'];
+  unpricedSteps: Scalars['Int']['output'];
+};
+
+export type AgentSessionTypeSummary = {
+  completedSessions: Scalars['Int']['output'];
+  failedSessions: Scalars['Int']['output'];
+  runningSessions: Scalars['Int']['output'];
+  totalDurationMs: Scalars['Int']['output'];
+  totalSessions: Scalars['Int']['output'];
+  totals: AgentSessionTotals;
+  type: Scalars['String']['output'];
+};
+
 export type Assertion = {
   field: Scalars['String']['output'];
   type: Scalars['String']['output'];
@@ -2753,6 +2843,9 @@ export type OrgSummary = {
 
 export type Query = {
   actor?: Maybe<Actor>;
+  agentSession: AgentSessionDetail;
+  agentSessionSummary: AgentSessionSummary;
+  agentSessions: AgentSessionPage;
   apiEndpoint: ApiEndpoint;
   apiEndpointById: ApiEndpoint;
   apiEndpoints: Array<ApiEndpoint>;
@@ -2869,6 +2962,29 @@ export type Query = {
 export type QueryActorArgs = {
   id: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryAgentSessionArgs = {
+  id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryAgentSessionSummaryArgs = {
+  orgId: Scalars['ID']['input'];
+  period?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryAgentSessionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orgId: Scalars['ID']['input'];
+  period?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -4660,6 +4776,35 @@ export type DeleteDocMutationVariables = Exact<{
 
 
 export type DeleteDocMutation = { deleteDoc: boolean };
+
+export type AgentSessionSummaryQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  period?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type AgentSessionSummaryQuery = { agentSessionSummary: { period: string, totalSessions: number, completedSessions: number, failedSessions: number, runningSessions: number, totalDurationMs: number, totals: { stepCount: number, inputTokens: number, outputTokens: number, reasoningTokens: number, cachedInputTokens: number, cachedOutputTokens: number, costUsd?: number | null, unpricedSteps: number, stepDurationMs: number }, byType: Array<{ type: string, totalSessions: number, completedSessions: number, failedSessions: number, runningSessions: number, totalDurationMs: number, totals: { stepCount: number, inputTokens: number, outputTokens: number, costUsd?: number | null, unpricedSteps: number } }> } };
+
+export type AgentSessionsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  type?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type AgentSessionsQuery = { agentSessions: { total: number, period: string, limit: number, offset: number, sessions: Array<{ id: string, type: string, status: string, actorName?: string | null, actorAvatarUrl?: string | null, serviceAccountId?: string | null, title?: string | null, modelName?: string | null, metadata?: unknown | null, startedAt: string, completedAt?: string | null, durationMs?: number | null, totals: { stepCount: number, inputTokens: number, outputTokens: number, costUsd?: number | null, unpricedSteps: number } }> } };
+
+export type AgentSessionQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type AgentSessionQuery = { agentSession: { session: { id: string, type: string, status: string, actorName?: string | null, actorAvatarUrl?: string | null, serviceAccountId?: string | null, title?: string | null, modelName?: string | null, metadata?: unknown | null, report?: string | null, error?: string | null, startedAt: string, updatedAt: string, completedAt?: string | null, durationMs?: number | null, totals: { stepCount: number, inputTokens: number, outputTokens: number, reasoningTokens: number, cachedInputTokens: number, cachedOutputTokens: number, costUsd?: number | null, unpricedSteps: number, stepDurationMs: number } }, steps: Array<{ id: string, seq: number, kind: string, name?: string | null, modelName?: string | null, input?: unknown | null, output?: unknown | null, text?: string | null, finishReason?: string | null, error?: string | null, inputTokens?: number | null, outputTokens?: number | null, reasoningTokens?: number | null, cachedInputTokens?: number | null, cachedOutputTokens?: number | null, costUsd?: number | null, startedAt: string, completedAt: string, durationMs: number }> } };
 
 export type CostSavingsSummaryQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
@@ -6627,6 +6772,9 @@ export const DocsDocument = {"kind":"Document","definitions":[{"kind":"Operation
 export const CreateDocDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateDoc"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateDocInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createDoc"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}}]}}]}}]} as unknown as DocumentNode<CreateDocMutation, CreateDocMutationVariables>;
 export const UpdateDocDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateDoc"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateDocInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDoc"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}}]}}]}}]} as unknown as DocumentNode<UpdateDocMutation, UpdateDocMutationVariables>;
 export const DeleteDocDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteDoc"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteDoc"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteDocMutation, DeleteDocMutationVariables>;
+export const AgentSessionSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AgentSessionSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"agentSessionSummary"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"totalSessions"}},{"kind":"Field","name":{"kind":"Name","value":"completedSessions"}},{"kind":"Field","name":{"kind":"Name","value":"failedSessions"}},{"kind":"Field","name":{"kind":"Name","value":"runningSessions"}},{"kind":"Field","name":{"kind":"Name","value":"totalDurationMs"}},{"kind":"Field","name":{"kind":"Name","value":"totals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stepCount"}},{"kind":"Field","name":{"kind":"Name","value":"inputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"outputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"reasoningTokens"}},{"kind":"Field","name":{"kind":"Name","value":"cachedInputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"cachedOutputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"costUsd"}},{"kind":"Field","name":{"kind":"Name","value":"unpricedSteps"}},{"kind":"Field","name":{"kind":"Name","value":"stepDurationMs"}}]}},{"kind":"Field","name":{"kind":"Name","value":"byType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"totalSessions"}},{"kind":"Field","name":{"kind":"Name","value":"completedSessions"}},{"kind":"Field","name":{"kind":"Name","value":"failedSessions"}},{"kind":"Field","name":{"kind":"Name","value":"runningSessions"}},{"kind":"Field","name":{"kind":"Name","value":"totalDurationMs"}},{"kind":"Field","name":{"kind":"Name","value":"totals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stepCount"}},{"kind":"Field","name":{"kind":"Name","value":"inputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"outputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"costUsd"}},{"kind":"Field","name":{"kind":"Name","value":"unpricedSteps"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AgentSessionSummaryQuery, AgentSessionSummaryQueryVariables>;
+export const AgentSessionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AgentSessions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"agentSessions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"status"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"sessions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"actorName"}},{"kind":"Field","name":{"kind":"Name","value":"actorAvatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"serviceAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"modelName"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"durationMs"}},{"kind":"Field","name":{"kind":"Name","value":"totals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stepCount"}},{"kind":"Field","name":{"kind":"Name","value":"inputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"outputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"costUsd"}},{"kind":"Field","name":{"kind":"Name","value":"unpricedSteps"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AgentSessionsQuery, AgentSessionsQueryVariables>;
+export const AgentSessionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AgentSession"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"agentSession"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"session"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"actorName"}},{"kind":"Field","name":{"kind":"Name","value":"actorAvatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"serviceAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"modelName"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"report"}},{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"durationMs"}},{"kind":"Field","name":{"kind":"Name","value":"totals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stepCount"}},{"kind":"Field","name":{"kind":"Name","value":"inputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"outputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"reasoningTokens"}},{"kind":"Field","name":{"kind":"Name","value":"cachedInputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"cachedOutputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"costUsd"}},{"kind":"Field","name":{"kind":"Name","value":"unpricedSteps"}},{"kind":"Field","name":{"kind":"Name","value":"stepDurationMs"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"steps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"seq"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"modelName"}},{"kind":"Field","name":{"kind":"Name","value":"input"}},{"kind":"Field","name":{"kind":"Name","value":"output"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"finishReason"}},{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"inputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"outputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"reasoningTokens"}},{"kind":"Field","name":{"kind":"Name","value":"cachedInputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"cachedOutputTokens"}},{"kind":"Field","name":{"kind":"Name","value":"costUsd"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"durationMs"}}]}}]}}]}}]} as unknown as DocumentNode<AgentSessionQuery, AgentSessionQueryVariables>;
 export const CostSavingsSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CostSavingsSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"modelId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"costSavingsSummary"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"modelId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"modelId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"modelId"}},{"kind":"Field","name":{"kind":"Name","value":"totalCalls"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokensServed"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokensSaved"}},{"kind":"Field","name":{"kind":"Name","value":"costServedUsd"}},{"kind":"Field","name":{"kind":"Name","value":"costRawUsd"}},{"kind":"Field","name":{"kind":"Name","value":"costSavedUsd"}},{"kind":"Field","name":{"kind":"Name","value":"uniqueUsersCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalDurationMs"}},{"kind":"Field","name":{"kind":"Name","value":"estAgentTimeMs"}},{"kind":"Field","name":{"kind":"Name","value":"timeSavedMs"}}]}}]}}]} as unknown as DocumentNode<CostSavingsSummaryQuery, CostSavingsSummaryQueryVariables>;
 export const CostSavingsTimeseriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CostSavingsTimeseries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"modelId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"costSavingsTimeseries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"modelId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"modelId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"totalCalls"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokensServed"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokensSaved"}},{"kind":"Field","name":{"kind":"Name","value":"costServedUsd"}},{"kind":"Field","name":{"kind":"Name","value":"costRawUsd"}},{"kind":"Field","name":{"kind":"Name","value":"costSavedUsd"}},{"kind":"Field","name":{"kind":"Name","value":"totalDurationMs"}},{"kind":"Field","name":{"kind":"Name","value":"estAgentTimeMs"}},{"kind":"Field","name":{"kind":"Name","value":"timeSavedMs"}}]}}]}}]} as unknown as DocumentNode<CostSavingsTimeseriesQuery, CostSavingsTimeseriesQueryVariables>;
 export const CostSavingsByToolDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CostSavingsByTool"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"modelId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"costSavingsByTool"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"modelId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"modelId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"toolName"}},{"kind":"Field","name":{"kind":"Name","value":"totalCalls"}},{"kind":"Field","name":{"kind":"Name","value":"tokensSaved"}},{"kind":"Field","name":{"kind":"Name","value":"costSavedUsd"}},{"kind":"Field","name":{"kind":"Name","value":"totalDurationMs"}}]}}]}}]} as unknown as DocumentNode<CostSavingsByToolQuery, CostSavingsByToolQueryVariables>;
