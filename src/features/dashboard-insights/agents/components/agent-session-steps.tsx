@@ -34,9 +34,12 @@ export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
   }
 
   return (
-    <ol className="divide-stock/60 divide-y">
+    <ol className="space-y-1.5 p-4">
       {steps.map((step) => (
-        <li key={step.id} className="px-6 py-2.5">
+        <li
+          key={step.id}
+          className="border-stock bg-shading-gray/50 rounded-lg border px-4 py-2.5"
+        >
           <div className="flex items-center gap-3">
             <span className="text-paragraph shrink-0 font-mono text-xs tabular-nums">
               {String(step.seq).padStart(2, '0')}
