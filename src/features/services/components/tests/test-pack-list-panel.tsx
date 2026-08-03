@@ -43,9 +43,18 @@ export function TestPackListPanel({
         return 'secondary'
       case 'manual':
         return 'outline'
+      case 'load':
+        return 'outline'
       default:
         return 'secondary'
     }
+  }
+
+  function getTypeBadgeClassName(type: string | null) {
+    if (type?.toLowerCase() === 'load') {
+      return 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300'
+    }
+    return undefined
   }
 
   return (
@@ -101,6 +110,7 @@ export function TestPackListPanel({
                 onEdit={() => onEditPack(pack)}
                 onDelete={() => onDeletePack(pack)}
                 getTypeBadgeVariant={getTypeBadgeVariant}
+                getTypeBadgeClassName={getTypeBadgeClassName}
               />
             )
           })}
@@ -120,6 +130,7 @@ type TestPackRowProps = {
   getTypeBadgeVariant: (
     type: string | null
   ) => 'default' | 'secondary' | 'outline'
+  getTypeBadgeClassName: (type: string | null) => string | undefined
 }
 
 function TestPackRow({
@@ -130,6 +141,7 @@ function TestPackRow({
   onEdit,
   onDelete,
   getTypeBadgeVariant,
+  getTypeBadgeClassName,
 }: TestPackRowProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -159,7 +171,12 @@ function TestPackRow({
         <div className="flex items-center gap-2">
           <span className="font-semibold">{pack.name ?? 'Untitled'}</span>
           {pack.type && (
-            <Badge variant={getTypeBadgeVariant(pack.type)}>{pack.type}</Badge>
+            <Badge
+              variant={getTypeBadgeVariant(pack.type)}
+              className={getTypeBadgeClassName(pack.type)}
+            >
+              {pack.type}
+            </Badge>
           )}
         </div>
         {latestRun ? (

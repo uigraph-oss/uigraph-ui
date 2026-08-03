@@ -10,11 +10,11 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
-import { AnimatePresence } from 'framer-motion'
 import { CirclePlus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useServiceContext } from '../../contexts/service-context'
+import { decodePackTargetEndpoints } from '../../lib/load-pack-target-endpoints'
 import {
   ServiceTestsContextProvider,
   useServiceTestsContext,
@@ -26,8 +26,8 @@ import {
   transformToUpdateTestCase,
 } from './modals/configure-test-case-modal/transformers'
 import { CreateTestPackModal } from './modals/create-test-pack-modal'
+import { ImportLoadResultsModal } from './modals/import-load-results-modal'
 import { RunPackModal } from './modals/run-pack-modal'
-import { TestInspector } from './test-inspector'
 import { TestPackListPanel } from './test-pack-list-panel'
 import { TestPackWorkspacePanel } from './test-pack-workspace-panel'
 
@@ -52,6 +52,7 @@ function ServiceTestsPageContent() {
     updatePack,
     deletePack,
     confirmRunPack,
+    importLoadRun,
     updateTestCaseMutation,
     createTestCaseMutation,
   } = useServiceTestsContext()
@@ -63,12 +64,11 @@ function ServiceTestsPageContent() {
   const [packToDelete, setPackToDelete] = useState<GT.TestPack | null>(null)
 
   const [isCreateCaseModalOpen, setIsCreateCaseModalOpen] = useState(false)
-  const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false)
-  const [isTestCaseDetailDrawerOpen, setIsTestCaseDetailDrawerOpen] =
-    useState(false)
-  const [caseToEdit, setCaseToEdit] = useState<TestCase | null>(null)
+  const [isViewCaseModalOpen, setIsViewCaseModalOpen] = useState(false)
   const [caseToView, setCaseToView] = useState<TestCase | null>(null)
   const [isRunPackModalOpen, setIsRunPackModalOpen] = useState(false)
+  const [isImportResultsModalOpen, setIsImportResultsModalOpen] =
+    useState(false)
 
   function handleNewTestPack() {
     setIsCreateModalOpen(true)
@@ -86,7 +86,8 @@ function ServiceTestsPageContent() {
 
   async function handleCreatePack(data: {
     name: string
-    type: 'smoke' | 'regression' | 'manual'
+    type: 'smoke' | 'regression' | 'manual' | 'load'
+    loadConfig?: { targetEndpoints: string[] }
   }) {
     try {
       await createPack(data)
@@ -98,7 +99,8 @@ function ServiceTestsPageContent() {
 
   async function handleUpdatePack(data: {
     name: string
-    type: 'smoke' | 'regression' | 'manual'
+    type: 'smoke' | 'regression' | 'manual' | 'load'
+    loadConfig?: { targetEndpoints: string[] }
   }) {
     if (!packToEdit?.testPackId) return
     try {
@@ -129,11 +131,6 @@ function ServiceTestsPageContent() {
     setIsCreateCaseModalOpen(true)
   }
 
-  function handleEditTestCase(testCase: TestCase) {
-    setCaseToEdit(testCase)
-    setIsUpdateCaseModalOpen(true)
-  }
-
   function handleRunPack() {
     if (!selectedPackId) {
       toast.error('Please select a test pack first')
@@ -154,11 +151,30 @@ function ServiceTestsPageContent() {
     }
   }
 
+  function handleImportResults() {
+    if (!selectedPackId) {
+      toast.error('Please select a test pack first')
+      return
+    }
+    setIsImportResultsModalOpen(true)
+  }
+
+  async function handleConfirmImportResults(
+    data: Parameters<typeof importLoadRun>[0]
+  ) {
+    try {
+      await importLoadRun(data)
+      setIsImportResultsModalOpen(false)
+    } catch {
+      // Error handled in context
+    }
+  }
+
   return (
     <div className="flex h-full flex-col">
       <DashboardSectionHeader
         title="Tests"
-        description="Manage smoke, regression, and manual test packs."
+        description="Manage smoke, regression, manual, and load test packs."
       >
         <Button preset="primary" onClick={handleNewTestPack}>
           <CirclePlus className="h-4 w-4" />
@@ -184,30 +200,14 @@ function ServiceTestsPageContent() {
                 <TestPackWorkspacePanel
                   onAddTestCase={handleAddTestCase}
                   onRunPack={handleRunPack}
+                  onImportResults={handleImportResults}
                   onViewTestCase={(testCase) => {
                     setCaseToView(testCase)
-                    setIsTestCaseDetailDrawerOpen(true)
+                    setIsViewCaseModalOpen(true)
                   }}
                 />
               </div>
             </div>
-
-            <AnimatePresence>
-              {isTestCaseDetailDrawerOpen && caseToView && (
-                <TestInspector
-                  testCase={caseToView}
-                  testPack={selectedPack}
-                  open={isTestCaseDetailDrawerOpen}
-                  onClose={() => {
-                    setIsTestCaseDetailDrawerOpen(false)
-                    setCaseToView(null)
-                  }}
-                  onEdit={handleEditTestCase}
-                  onRunTest={() => selectedPackId && handleRunPack()}
-                  onRerun={() => selectedPackId && handleRunPack()}
-                />
-              )}
-            </AnimatePresence>
           </div>
         )}
       </DashboardSectionContent>
@@ -233,8 +233,9 @@ function ServiceTestsPageContent() {
               ? {
                   name: packToEdit.name ?? undefined,
                   type:
-                    (packToEdit.type as 'smoke' | 'regression' | 'manual') ??
-                    undefined,
+                    (packToEdit.type as
+                      'smoke' | 'regression' | 'manual' | 'load') ?? undefined,
+                  loadConfig: packToEdit.loadConfig,
                 }
               : undefined
           }
@@ -280,34 +281,34 @@ function ServiceTestsPageContent() {
         </BetterDialogProvider>
       )}
 
-      {selectedPackId && caseToEdit && (
+      {selectedPackId && caseToView && (
         <BetterDialogProvider
-          open={isUpdateCaseModalOpen}
+          open={isViewCaseModalOpen}
           onOpenChange={(open) => {
-            setIsUpdateCaseModalOpen(open)
-            if (!open) setCaseToEdit(null)
+            setIsViewCaseModalOpen(open)
+            if (!open) setCaseToView(null)
           }}
         >
           <ConfigureTestCaseModal
-            mode="update"
-            defaultValue={transformTestCaseToSchema(caseToEdit)}
+            mode="view"
+            defaultValue={transformTestCaseToSchema(caseToView)}
             onSubmit={async (data) => {
               await updateTestCaseMutation({
                 variables: {
                   orgId: orgId!,
                   serviceId,
-                  id: caseToEdit.testCaseId!,
+                  id: caseToView.testCaseId!,
                   input: {
-                    testPackId: caseToEdit.testPackId!,
-                    order: caseToEdit.order ?? 0,
+                    testPackId: caseToView.testPackId!,
+                    order: caseToView.order ?? 0,
                     ...transformToUpdateTestCase(data),
                   },
                 },
               })
 
               toast.success('Test case updated successfully')
-              setIsUpdateCaseModalOpen(false)
-              setCaseToEdit(null)
+              setIsViewCaseModalOpen(false)
+              setCaseToView(null)
             }}
           />
         </BetterDialogProvider>
@@ -319,6 +320,20 @@ function ServiceTestsPageContent() {
           onOpenChange={setIsRunPackModalOpen}
         >
           <RunPackModal onSubmit={handleConfirmRunPack} />
+        </BetterDialogProvider>
+      )}
+
+      {selectedPackId && (
+        <BetterDialogProvider
+          open={isImportResultsModalOpen}
+          onOpenChange={setIsImportResultsModalOpen}
+        >
+          <ImportLoadResultsModal
+            scopedTargetEndpoints={decodePackTargetEndpoints(
+              selectedPack?.loadConfig?.targetEndpoints
+            )}
+            onSubmit={handleConfirmImportResults}
+          />
         </BetterDialogProvider>
       )}
     </div>

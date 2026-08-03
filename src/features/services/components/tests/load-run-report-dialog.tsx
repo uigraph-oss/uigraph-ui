@@ -1,0 +1,370 @@
+'use client'
+
+import { GT } from '@/api'
+import {
+  BetterDialogCloseButton,
+  BetterDialogContent,
+} from '@/components/better-dialog'
+import { Button } from '@/components/ui/button'
+import { DialogTitle } from '@/components/ui/dialog'
+import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { format } from 'date-fns'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Copy, FileText } from 'lucide-react'
+import { toast } from 'sonner'
+import { SlaCell, type EndpointSlaState } from './load-run-shared'
+
+type PerEndpointRow = {
+  endpoint: string
+  method: string
+  requestCount: number
+  requestsPerSec: number
+  errorRate: number
+  avgLatencyMs: number
+  p50LatencyMs: number
+  p90LatencyMs: number
+  p95LatencyMs: number
+  p99LatencyMs: number
+  apiEndpointId?: string | null
+}
+
+export type LoadRunReportDialogProps = {
+  testRun: NonNullable<GT.TestRunQuery['testRun']>
+  perEndpoint: PerEndpointRow[]
+  endpointSlaStates: EndpointSlaState[]
+  slaRollup: string | null
+}
+
+const SLA_MARKDOWN_LABEL: Record<EndpointSlaState, string> = {
+  pass: '✅',
+  fail: '❌',
+  'no-sla': 'no SLA set',
+  'not-linked': 'not linked',
+}
+
+type Verdict = {
+  label: string
+  emoji: string
+  variant: 'go' | 'conditional' | 'nogo' | 'unset'
+}
+
+function computeVerdict(overallStatus: string | null | undefined): Verdict {
+  switch ((overallStatus ?? '').toLowerCase()) {
+    case 'passed':
+      return { label: 'GO', emoji: '✅', variant: 'go' }
+    case 'partial':
+      return { label: 'CONDITIONAL', emoji: '⚠️', variant: 'conditional' }
+    case 'failed':
+      return { label: 'NO-GO', emoji: '🔴', variant: 'nogo' }
+    default:
+      return { label: 'NOT SET', emoji: '⬜', variant: 'unset' }
+  }
+}
+
+const verdictBannerClass: Record<Verdict['variant'], string> = {
+  go: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+  conditional: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
+  nogo: 'border-red-500/30 bg-red-500/10 text-red-300',
+  unset: 'border-border bg-muted/20 text-muted-foreground',
+}
+
+function formatDuration(seconds: number): string {
+  if (seconds < 60) return `${Math.round(seconds)}s`
+  const m = Math.floor(seconds / 60)
+  const s = Math.round(seconds % 60)
+  return s > 0 ? `${m}m ${s}s` : `${m}m`
+}
+
+function generateMarkdown(
+  testRun: LoadRunReportDialogProps['testRun'],
+  perEndpoint: PerEndpointRow[],
+  endpointSlaStates: EndpointSlaState[],
+  slaRollup: string | null
+): string {
+  const metrics = testRun.loadMetrics
+  const rid = testRun.testRunId?.slice(-8) ?? 'Unknown'
+  const env = testRun.environment ?? 'Unknown'
+  const release = testRun.releaseLabel
+  const date = testRun.executedAt
+    ? format(new Date(testRun.executedAt), 'MMM d, yyyy · HH:mm')
+    : format(new Date(), 'MMM d, yyyy · HH:mm')
+  const v = computeVerdict(testRun.overallStatus)
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const runUrl = `${origin}/services/${testRun.serviceId}/tests/runs/${testRun.testRunId}`
+
+  let md = `# 📋 Load Test Report — Run #${rid}\n\n`
+  md += `**Env:** ${env}${release ? `  **Release:** ${release}` : ''}  **${date}**\n\n`
+
+  if (!metrics) {
+    md += `No load metrics were recorded for this run.\n`
+    return md
+  }
+
+  md += `> **${v.emoji} ${v.label}**${slaRollup ? ` — ${slaRollup}` : ''} — ${(metrics.errorRate * 100).toFixed(2)}% error rate, P95 ${Math.round(metrics.p95LatencyMs)}ms\n\n`
+  md += `---\n\n## 📊 Summary\n\n`
+  md += `| Metric | Value |\n| --- | ---: |\n`
+  md += `| Requests/sec | ${metrics.requestsPerSec.toFixed(1)} |\n`
+  md += `| Total Requests | ${metrics.totalRequests} |\n`
+  md += `| Duration | ${formatDuration(metrics.durationSec)} |\n`
+  md += `| Error Rate | ${(metrics.errorRate * 100).toFixed(2)}% |\n`
+  md += `| P50 | ${Math.round(metrics.p50LatencyMs)}ms |\n`
+  md += `| P90 | ${Math.round(metrics.p90LatencyMs)}ms |\n`
+  md += `| P95 | ${Math.round(metrics.p95LatencyMs)}ms |\n`
+  md += `| P99 | ${Math.round(metrics.p99LatencyMs)}ms |\n\n`
+
+  if (perEndpoint.length > 0) {
+    md += `---\n\n## 🔍 Per-Endpoint Breakdown\n\n`
+    md += `| Endpoint | Method | Requests | Req/s | Error Rate | Avg | P50 | P90 | P95 | P99 | SLA |\n`
+    md += `| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |\n`
+    perEndpoint.forEach((row, index) => {
+      const sla = SLA_MARKDOWN_LABEL[endpointSlaStates[index]]
+      md += `| ${row.endpoint} | ${row.method} | ${row.requestCount} | ${row.requestsPerSec.toFixed(1)} | ${(row.errorRate * 100).toFixed(2)}% | ${Math.round(row.avgLatencyMs)}ms | ${Math.round(row.p50LatencyMs)}ms | ${Math.round(row.p90LatencyMs)}ms | ${Math.round(row.p95LatencyMs)}ms | ${Math.round(row.p99LatencyMs)}ms | ${sla} |\n`
+    })
+    md += `\n`
+  }
+
+  md += `---\n\n## 📝 Notes\n\n${metrics.notes?.trim() || 'No notes recorded.'}\n\n`
+  md += `---\n\n_Generated by UIGraph · Run #${rid} · ${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}_\n`
+  md += `_[View full run](${runUrl})_\n`
+  md += `_Paste into: Jira · ServiceNow · Confluence · Slack_\n`
+  return md
+}
+
+function ReportPreview({
+  testRun,
+  perEndpoint,
+  endpointSlaStates,
+  slaRollup,
+}: LoadRunReportDialogProps) {
+  const metrics = testRun.loadMetrics
+  const v = computeVerdict(testRun.overallStatus)
+
+  if (!metrics) {
+    return (
+      <div className="text-muted-foreground p-6 text-sm">
+        No load metrics were recorded for this run.
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-5 p-6">
+      <div
+        className={`rounded-xl border px-5 py-4 ${verdictBannerClass[v.variant]}`}
+      >
+        <p className="text-lg font-semibold">
+          {v.emoji} {v.label}
+        </p>
+        <p className="mt-1 text-sm opacity-90">
+          {slaRollup ? `${slaRollup} · ` : ''}
+          {(metrics.errorRate * 100).toFixed(2)}% error rate · P95{' '}
+          {Math.round(metrics.p95LatencyMs)}ms
+        </p>
+      </div>
+
+      <div className="border-border overflow-hidden rounded-xl border">
+        <table className="w-full text-sm">
+          <tbody>
+            {[
+              ['Requests/sec', metrics.requestsPerSec.toFixed(1)],
+              ['Total Requests', String(metrics.totalRequests)],
+              ['Duration', formatDuration(metrics.durationSec)],
+              ['Error Rate', `${(metrics.errorRate * 100).toFixed(2)}%`],
+              ['P50', `${Math.round(metrics.p50LatencyMs)}ms`],
+              ['P90', `${Math.round(metrics.p90LatencyMs)}ms`],
+              ['P95', `${Math.round(metrics.p95LatencyMs)}ms`],
+              ['P99', `${Math.round(metrics.p99LatencyMs)}ms`],
+            ].map(([label, value]) => (
+              <tr key={label} className="border-border border-b last:border-0">
+                <td className="text-muted-foreground px-4 py-2">{label}</td>
+                <td className="px-4 py-2 text-right font-mono">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {perEndpoint.length > 0 && (
+        <div className="border-border overflow-hidden rounded-xl border">
+          <div className="border-border border-b px-4 py-2.5">
+            <p className="text-sm font-semibold">Per-endpoint breakdown</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-muted-foreground text-xs">
+                  <th className="px-4 py-2 text-left font-medium">Endpoint</th>
+                  <th className="px-4 py-2 text-left font-medium">Method</th>
+                  <th className="px-4 py-2 text-right font-medium">Requests</th>
+                  <th className="px-4 py-2 text-right font-medium">Req/s</th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    Error Rate
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">Avg</th>
+                  <th className="px-4 py-2 text-right font-medium">P50</th>
+                  <th className="px-4 py-2 text-right font-medium">P90</th>
+                  <th className="px-4 py-2 text-right font-medium">P95</th>
+                  <th className="px-4 py-2 text-right font-medium">P99</th>
+                  <th className="px-4 py-2 text-center font-medium">SLA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {perEndpoint.map((row, index) => (
+                  <tr
+                    key={`${row.endpoint}-${index}`}
+                    className="border-border border-t"
+                  >
+                    <td className="px-4 py-2 font-mono text-xs">
+                      {row.endpoint}
+                    </td>
+                    <td className="px-4 py-2">{row.method}</td>
+                    <td className="px-4 py-2 text-right">{row.requestCount}</td>
+                    <td className="px-4 py-2 text-right">
+                      {row.requestsPerSec.toFixed(1)}
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {(row.errorRate * 100).toFixed(2)}%
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.round(row.avgLatencyMs)}ms
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.round(row.p50LatencyMs)}ms
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.round(row.p90LatencyMs)}ms
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.round(row.p95LatencyMs)}ms
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.round(row.p99LatencyMs)}ms
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <SlaCell state={endpointSlaStates[index]} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <div className="border-border rounded-xl border px-4 py-3">
+        <p className="mb-1 text-sm font-semibold">Notes</p>
+        <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+          {metrics.notes?.trim() || 'No notes recorded.'}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export function LoadRunReportDialog({
+  testRun,
+  perEndpoint,
+  endpointSlaStates,
+  slaRollup,
+}: LoadRunReportDialogProps) {
+  const [tabs, activeTab] = useBetterTabs(
+    [
+      { id: 'preview', label: 'Preview' },
+      { id: 'markdown', label: 'Markdown' },
+    ],
+    'preview'
+  )
+  const markdown = generateMarkdown(
+    testRun,
+    perEndpoint,
+    endpointSlaStates,
+    slaRollup
+  )
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(markdown)
+      toast.success('Report copied to clipboard!')
+    } catch {
+      toast.error('Failed to copy report')
+    }
+  }
+
+  return (
+    <BetterDialogContent
+      className="p-0"
+      _headerContent={
+        <div className="flex shrink-0 items-center justify-between border-b bg-[#141925] px-6 py-4">
+          <div>
+            <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+              <FileText className="h-4 w-4" />
+              Load Test Report
+            </DialogTitle>
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              Run #{testRun.testRunId?.slice(-8) ?? '—'}
+              {testRun.environment && ` · ${testRun.environment}`}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              preset="outline"
+              onClick={handleCopy}
+              className="h-10 px-3! text-xs"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              Copy Markdown
+            </Button>
+
+            <BetterDialogCloseButton />
+          </div>
+        </div>
+      }
+    >
+      <div className="shrink-0 border-b bg-[#141925] px-5 pt-2 pb-3">
+        <BetterTabController
+          control={tabs}
+          className="mx-0 w-fit bg-[#1E2533]"
+          triggerClassName="h-9 text-xs font-medium text-[#828DA3]"
+          activeTriggerClassName="text-foreground"
+          overlayClassName="shadow-none"
+        />
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === 'preview' && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ReportPreview
+              testRun={testRun}
+              perEndpoint={perEndpoint}
+              endpointSlaStates={endpointSlaStates}
+              slaRollup={slaRollup}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait">
+        {activeTab === 'markdown' && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="p-6">
+              <pre className="rounded-xl border bg-slate-900 p-5 text-xs leading-relaxed break-words whitespace-pre-wrap text-slate-100">
+                <code>{markdown}</code>
+              </pre>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </BetterDialogContent>
+  )
+}

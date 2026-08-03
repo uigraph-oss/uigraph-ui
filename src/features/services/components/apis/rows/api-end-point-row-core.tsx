@@ -4,6 +4,7 @@ import { MethodBadge } from '@/components/api/method-badge'
 import { Badge } from '@/components/ui/badge'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { LegacyComponentMeta } from '@/features/services/api/api-adapters'
+import { DashboardEndpointSLA } from '@/features/services/api/api-endpoints'
 import { flattenMetaData } from '@uigraph/sdk'
 import { arrayNonNullable } from 'daily-code'
 import { useMemo } from 'react'
@@ -11,11 +12,13 @@ import { useMemo } from 'react'
 export function ApiEndPointRowCore({
   onViewOpen,
   componentMeta,
+  sla,
   actionsCell,
   additionalContent,
 }: {
   onViewOpen: () => void
   componentMeta: LegacyComponentMeta
+  sla?: DashboardEndpointSLA | null
   actionsCell?: React.ReactNode
   additionalContent?: React.ReactNode
 }) {
@@ -109,6 +112,14 @@ export function ApiEndPointRowCore({
                   {tag}
                 </Badge>
               ))}
+            {(sla?.thresholds?.length ?? 0) > 0 && (
+              <Badge
+                variant="secondary"
+                className="border-emerald-800/50 bg-emerald-950/40 text-[10px] text-emerald-400"
+              >
+                SLA
+              </Badge>
+            )}
           </div>
         </TableCell>
 

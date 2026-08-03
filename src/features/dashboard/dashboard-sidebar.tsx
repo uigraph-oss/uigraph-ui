@@ -23,15 +23,21 @@ export function DashboardSidebar() {
   )
 
   return (
-    <aside className={'flex h-full flex-col gap-[1.31rem] bg-[#141925] py-4'}>
-      <div className={'px-4'}>
+    <aside
+      className={'flex h-full min-h-0 flex-col gap-[1.31rem] bg-[#141925] py-4'}
+    >
+      <div className={'shrink-0 px-4'}>
         <Link to="/dashboard" className={'flex items-center justify-center'}>
           <UigraphMark size={42} />
         </Link>
       </div>
 
       <TooltipProvider delayDuration={400}>
-        <ul className={'flex w-full flex-col gap-3 px-2'}>
+        <ul
+          className={
+            'no-scrollbar flex min-h-0 w-full flex-1 flex-col gap-3 overflow-y-auto px-2'
+          }
+        >
           {navLinks.map((item) => {
             const isActive = item.isActive(pathname)
 

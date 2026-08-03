@@ -13,13 +13,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
 import { format } from 'date-fns'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  FiArrowLeft,
-  FiArrowRight,
-  FiCheck,
-  FiStopCircle,
-  FiX,
-} from 'react-icons/fi'
+import { FiCheck, FiStopCircle, FiX } from 'react-icons/fi'
 import { IoPause, IoPlaySkipForwardOutline } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -973,32 +967,6 @@ export function TestRunExecutionPage() {
                         )}
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      preset="outline"
-                      size="sm"
-                      disabled={selectedIndex === 0}
-                      onClick={() =>
-                        setSelectedIndex((i) => Math.max(0, i - 1))
-                      }
-                    >
-                      <FiArrowLeft className="h-4 w-4" />
-                      Prev
-                    </Button>
-                    <Button
-                      preset="primary"
-                      size="sm"
-                      disabled={selectedIndex === testCases.length - 1}
-                      onClick={() =>
-                        setSelectedIndex((i) =>
-                          Math.min(i + 1, testCases.length - 1)
-                        )
-                      }
-                    >
-                      Next
-                      <FiArrowRight className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               </div>

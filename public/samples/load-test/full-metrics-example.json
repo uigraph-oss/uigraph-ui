@@ -1,0 +1,70 @@
+{
+  "durationSec": 300,
+  "totalRequests": 148500,
+  "requestsPerSec": 495.0,
+  "errorRate": 0.0041,
+  "minLatencyMs": 8,
+  "avgLatencyMs": 142.7,
+  "maxLatencyMs": 1820,
+  "p50LatencyMs": 118,
+  "p90LatencyMs": 245,
+  "p95LatencyMs": 312,
+  "p99LatencyMs": 610,
+  "virtualUsers": 100,
+  "timeSeries": [
+    { "tSec": 0, "rps": 120.5, "errorRate": 0.0, "p95LatencyMs": 210, "activeVUs": 20 },
+    { "tSec": 30, "rps": 410.2, "errorRate": 0.002, "p95LatencyMs": 265, "activeVUs": 60 },
+    { "tSec": 60, "rps": 495.0, "errorRate": 0.004, "p95LatencyMs": 312, "activeVUs": 100 },
+    { "tSec": 120, "rps": 470.1, "errorRate": 0.003, "p95LatencyMs": 289, "activeVUs": 100 },
+    { "tSec": 180, "rps": 440.2, "errorRate": 0.002, "p95LatencyMs": 260, "activeVUs": 100 },
+    { "tSec": 240, "rps": 400.4, "errorRate": 0.001, "p95LatencyMs": 232, "activeVUs": 100 },
+    { "tSec": 300, "rps": 390.1, "errorRate": 0.001, "p95LatencyMs": 220, "activeVUs": 0 }
+  ],
+  "perEndpoint": [
+    {
+      "endpoint": "/auth/signin",
+      "method": "POST",
+      "requestCount": 60000,
+      "requestsPerSec": 200.0,
+      "errorRate": 0.006,
+      "avgLatencyMs": 165.2,
+      "p50LatencyMs": 140,
+      "p90LatencyMs": 280,
+      "p95LatencyMs": 340,
+      "p99LatencyMs": 620,
+      "apiEndpointId": null
+    },
+    {
+      "endpoint": "/auth/session",
+      "method": "GET",
+      "requestCount": 88500,
+      "requestsPerSec": 295.0,
+      "errorRate": 0.002,
+      "avgLatencyMs": 98.4,
+      "p50LatencyMs": 85,
+      "p90LatencyMs": 180,
+      "p95LatencyMs": 220,
+      "p99LatencyMs": 410,
+      "apiEndpointId": null
+    }
+  ],
+  "customMetrics": [
+    {
+      "name": "DB CPU %",
+      "value": 62.5,
+      "unit": "%",
+      "timeSeries": [
+        { "t": 0, "v": 20 },
+        { "t": 60, "v": 62.5 },
+        { "t": 300, "v": 55 }
+      ]
+    },
+    {
+      "name": "Queue Depth",
+      "value": 12,
+      "unit": "msgs"
+    }
+  ],
+  "notes": "Ran against staging with 100 VUs ramping over 5 minutes. No errors above baseline; DB CPU stayed under 65%.",
+  "screenshotUrls": []
+}

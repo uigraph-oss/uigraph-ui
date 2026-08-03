@@ -12,7 +12,7 @@ import { DashboardSidebar } from './dashboard-sidebar'
 
 export function DashboardLayout({ children }: PropsWithChildren) {
   return (
-    <main className="bg-shading-gray grid h-screen grid-cols-[5.25rem_1fr] gap-2">
+    <main className="bg-shading-gray grid h-screen grid-cols-[5.25rem_1fr] grid-rows-[1fr] gap-2 overflow-hidden">
       <DashboardSidebar />
       {children}
       <OrgOnboardingDialog />
@@ -93,10 +93,10 @@ export function DashboardPageLayout({
   crumbs,
 }: PropsWithChildren<{ crumbs: { to: string; label: ReactNode }[] }>) {
   return (
-    <div className="grid grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr] gap-[0.81rem] pt-3 pr-3">
       <DashboardHeader crumbs={crumbs} />
 
-      <GridScrollBody className="bg-shading rounded-t-[1.2rem]">
+      <GridScrollBody className="bg-shading min-h-0 rounded-t-[1.2rem]">
         {children}
       </GridScrollBody>
     </div>

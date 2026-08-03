@@ -3,10 +3,12 @@
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { useNavigate, useParams } from 'react-router-dom'
-import { TEST_RUN } from '../../api/tests'
+import { toast } from 'sonner'
+import { TEST_RUN, UPDATE_TEST_PACK } from '../../api/tests'
 import { useServiceContext } from '../../contexts/service-context'
+import { LoadRunResultsView } from './load-run-results-view'
 import { RunDetailsView } from './run-details-view'
 
 export function TestRunDetailsPage() {
@@ -17,6 +19,26 @@ export function TestRunDetailsPage() {
   const navigate = useNavigate()
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id
+  const [updateTestPack] = useMutation(UPDATE_TEST_PACK)
+
+  async function pinBaselineRun(testPackId: string, testRunId: string) {
+    try {
+      await updateTestPack({
+        variables: {
+          orgId: orgId!,
+          serviceId,
+          id: testPackId,
+          input: { baselineRunId: testRunId },
+        },
+      })
+      toast.success('Pinned as baseline')
+    } catch (error) {
+      toast.error('Failed to pin baseline')
+      console.error(error)
+      throw error
+    }
+  }
+
   const testRunId =
     typeof params.testRunId === 'string'
       ? params.testRunId
@@ -59,6 +81,16 @@ export function TestRunDetailsPage() {
           </Button>
         </div>
       </div>
+    )
+  }
+
+  if (testRun.loadMetrics) {
+    return (
+      <LoadRunResultsView
+        testRun={testRun}
+        serviceId={serviceId ?? ''}
+        onPinBaseline={pinBaselineRun}
+      />
     )
   }
 

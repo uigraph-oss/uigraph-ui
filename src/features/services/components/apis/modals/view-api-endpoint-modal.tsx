@@ -10,6 +10,7 @@ import { useMemo } from 'react'
 import { ConfigureApiEndpointConnections } from '../configure-api-endpoint-connections'
 import { ConfigureApiEndpointMeta } from '../configure-api-endpoint-meta'
 import { ConfigureApiEndpointSamples } from '../configure-api-endpoint-samples'
+import { ConfigureApiEndpointSla } from '../configure-api-endpoint-sla'
 import {
   EndpointSchemaView,
   type EndpointSchemaData,
@@ -81,6 +82,7 @@ export function ViewApiEndpointModal({
       ...(hasSchemaData ? [{ id: 'schema', label: 'Schema' }] : []),
       { id: 'samples', label: 'Samples' },
       { id: 'connections', label: 'Connections' },
+      { id: 'sla', label: 'SLA' },
     ]
     return base
   }, [hasSchemaData])
@@ -181,6 +183,19 @@ export function ViewApiEndpointModal({
               endpoint={endpoint}
               readonly={readonly}
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="sync">
+        {drawerTab === 'sla' && (
+          <motion.div
+            key="sla"
+            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+          >
+            <ConfigureApiEndpointSla endpoint={endpoint} readonly={readonly} />
           </motion.div>
         )}
       </AnimatePresence>
