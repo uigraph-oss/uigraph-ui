@@ -207,6 +207,31 @@ export type ClientSavings = {
   totalDurationMs: Scalars['Int']['output'];
 };
 
+export type CloudConnection = {
+  createdAt: Scalars['Time']['output'];
+  createdBy: Scalars['ID']['output'];
+  displayName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastVerifiedAt?: Maybe<Scalars['Time']['output']>;
+  orgId: Scalars['ID']['output'];
+  provider: CloudProvider;
+  status: CloudConnectionStatus;
+  statusMessage: Scalars['String']['output'];
+  updatedAt: Scalars['Time']['output'];
+};
+
+export enum CloudConnectionStatus {
+  Connected = 'CONNECTED',
+  Error = 'ERROR',
+  Pending = 'PENDING'
+}
+
+export enum CloudProvider {
+  Aws = 'AWS',
+  Azure = 'AZURE',
+  Gcp = 'GCP'
+}
+
 export type Comment = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
@@ -289,6 +314,14 @@ export type Components = {
   customComponents: Array<Component>;
 };
 
+export type CostTrendPoint = {
+  awsUsd: Scalars['Float']['output'];
+  azureUsd: Scalars['Float']['output'];
+  date: Scalars['String']['output'];
+  gcpUsd: Scalars['Float']['output'];
+  totalUsd: Scalars['Float']['output'];
+};
+
 export type CreateApiEndpointInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   exampleRequests?: InputMaybe<Scalars['String']['input']>;
@@ -321,6 +354,22 @@ export type CreateChatMessageInput = {
 
 export type CreateChatSessionInput = {
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateCloudConnectionInput = {
+  billingDataset?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['String']['input']>;
+  clientSecret?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  externalId?: InputMaybe<Scalars['String']['input']>;
+  provider: CloudProvider;
+  /** AWS */
+  roleArn?: InputMaybe<Scalars['String']['input']>;
+  /** GCP */
+  serviceAccountJson?: InputMaybe<Scalars['String']['input']>;
+  subscriptionId?: InputMaybe<Scalars['String']['input']>;
+  /** Azure */
+  tenantId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateCommentInput = {
@@ -1124,6 +1173,27 @@ export type GraphQlTestCaseInput = {
   variables?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type InfraResource = {
+  environment: Scalars['String']['output'];
+  externalResourceId: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastSyncedAt: Scalars['Time']['output'];
+  matchedTags: Array<Scalars['String']['output']>;
+  monthlyCostUsd: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  provider: CloudProvider;
+  region: Scalars['String']['output'];
+  resourceType: Scalars['String']['output'];
+  status: InfraResourceStatus;
+  tags: Array<Scalars['String']['output']>;
+};
+
+export enum InfraResourceStatus {
+  Degraded = 'DEGRADED',
+  Running = 'RUNNING',
+  Stopped = 'STOPPED'
+}
+
 export type KeyValue = {
   key: Scalars['String']['output'];
   value: Scalars['String']['output'];
@@ -1536,6 +1606,7 @@ export type Mutation = {
   createAssetUpload: AssetUpload;
   createChatMessage: ChatMessage;
   createChatSession: ChatSession;
+  createCloudConnection: CloudConnection;
   createComment: Comment;
   createCustomComponent: Component;
   createDiagram: Diagram;
@@ -1567,6 +1638,7 @@ export type Mutation = {
   createService: Service;
   createServiceAccount: ServiceAccount;
   createServiceAccountToken: CreatedToken;
+  createServiceCostTagRule: ServiceCostTagRule;
   createServiceDB: ServiceDb;
   createServiceDBVersion: ServiceDbVersion;
   createServiceDiagram: ServiceDiagram;
@@ -1580,6 +1652,7 @@ export type Mutation = {
   deleteAPIEndpoint: Scalars['Boolean']['output'];
   deleteAPIGroup: Scalars['Boolean']['output'];
   deleteChatSession: Scalars['Boolean']['output'];
+  deleteCloudConnection: Scalars['Boolean']['output'];
   deleteComment: Scalars['Boolean']['output'];
   deleteCustomComponent: Scalars['Boolean']['output'];
   deleteDiagram: Scalars['Boolean']['output'];
@@ -1609,6 +1682,7 @@ export type Mutation = {
   deleteServerOrg: Scalars['Boolean']['output'];
   deleteService: Scalars['Boolean']['output'];
   deleteServiceAccount: Scalars['Boolean']['output'];
+  deleteServiceCostTagRule: Scalars['Boolean']['output'];
   deleteServiceDB: Scalars['Boolean']['output'];
   deleteServiceDiagram: Scalars['Boolean']['output'];
   deleteServiceDoc: Scalars['Boolean']['output'];
@@ -1638,8 +1712,10 @@ export type Mutation = {
   setServiceAccountAvatar: Scalars['Boolean']['output'];
   switchOrg: Scalars['Boolean']['output'];
   syncAPIGroup: SyncApiGroupResult;
+  syncCloudConnection: Scalars['Int']['output'];
   syncDiagram: SyncDiagramResult;
   syncFrame: SyncFrameResult;
+  testCloudConnection: TestCloudConnectionResult;
   updateAPIEndpoint: ApiEndpoint;
   updateAPIGroup: ApiGroup;
   updateChatSession: ChatSession;
@@ -1740,6 +1816,12 @@ export type MutationCreateChatMessageArgs = {
 
 export type MutationCreateChatSessionArgs = {
   input: CreateChatSessionInput;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateCloudConnectionArgs = {
+  input: CreateCloudConnectionInput;
   orgId: Scalars['ID']['input'];
 };
 
@@ -1949,6 +2031,14 @@ export type MutationCreateServiceAccountTokenArgs = {
 };
 
 
+export type MutationCreateServiceCostTagRuleArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  tagKey: Scalars['String']['input'];
+  tagValue: Scalars['String']['input'];
+};
+
+
 export type MutationCreateServiceDbArgs = {
   input: CreateServiceDbInput;
   orgId: Scalars['ID']['input'];
@@ -2034,6 +2124,12 @@ export type MutationDeleteApiGroupArgs = {
 
 export type MutationDeleteChatSessionArgs = {
   id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteCloudConnectionArgs = {
+  connectionId: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
 };
 
@@ -2216,6 +2312,13 @@ export type MutationDeleteServiceAccountArgs = {
 };
 
 
+export type MutationDeleteServiceCostTagRuleArgs = {
+  orgId: Scalars['ID']['input'];
+  ruleId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteServiceDbArgs = {
   id: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
@@ -2385,6 +2488,12 @@ export type MutationSyncApiGroupArgs = {
 };
 
 
+export type MutationSyncCloudConnectionArgs = {
+  connectionId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
 export type MutationSyncDiagramArgs = {
   input: SyncDiagramInput;
   orgId: Scalars['ID']['input'];
@@ -2394,6 +2503,12 @@ export type MutationSyncDiagramArgs = {
 export type MutationSyncFrameArgs = {
   input: SyncFrameInput;
   mapId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationTestCloudConnectionArgs = {
+  connectionId: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
 };
 
@@ -2766,6 +2881,8 @@ export type Query = {
   chatMessages: Array<ChatMessage>;
   chatSession: ChatSessionWithMessages;
   chatSessions: Array<ChatSession>;
+  cloudConnection: CloudConnection;
+  cloudConnections: Array<CloudConnection>;
   comments: Array<Comment>;
   componentLinkUsages: Array<ComponentLinkUsage>;
   components: Components;
@@ -2842,6 +2959,10 @@ export type Query = {
   serviceAccountScopes: Array<Scalars['String']['output']>;
   serviceAccountTokens: Array<ServiceAccountToken>;
   serviceAccounts: Array<ServiceAccount>;
+  serviceCostResources: Array<InfraResource>;
+  serviceCostSummary: ServiceCostSummary;
+  serviceCostTagRules: Array<ServiceCostTagRule>;
+  serviceCostTrend: Array<CostTrendPoint>;
   serviceDB: ServiceDb;
   serviceDBVersions: Array<ServiceDbVersion>;
   serviceDBs: Array<ServiceDb>;
@@ -2953,6 +3074,17 @@ export type QueryChatSessionArgs = {
 
 
 export type QueryChatSessionsArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryCloudConnectionArgs = {
+  connectionId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryCloudConnectionsArgs = {
   orgId: Scalars['ID']['input'];
 };
 
@@ -3406,6 +3538,31 @@ export type QueryServiceAccountsArgs = {
 };
 
 
+export type QueryServiceCostResourcesArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type QueryServiceCostSummaryArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type QueryServiceCostTagRulesArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type QueryServiceCostTrendArgs = {
+  days?: InputMaybe<Scalars['Int']['input']>;
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type QueryServiceDbArgs = {
   id: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
@@ -3703,6 +3860,24 @@ export type ServiceAccountToken = {
   serviceAccountId: Scalars['ID']['output'];
 };
 
+export type ServiceCostSummary = {
+  momChangePct: Scalars['Float']['output'];
+  providerCount: Scalars['Int']['output'];
+  resourceCount: Scalars['Int']['output'];
+  topCostDriverLabel: Scalars['String']['output'];
+  topCostDriverUsd: Scalars['Float']['output'];
+  totalMonthlyCostUsd: Scalars['Float']['output'];
+};
+
+export type ServiceCostTagRule = {
+  createdAt: Scalars['Time']['output'];
+  createdBy: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  serviceId: Scalars['ID']['output'];
+  tagKey: Scalars['String']['output'];
+  tagValue: Scalars['String']['output'];
+};
+
 export type ServiceDb = {
   createdAt: Scalars['Time']['output'];
   createdBy: Scalars['ID']['output'];
@@ -3907,6 +4082,11 @@ export type TestCaseStepInput = {
   action: Scalars['String']['input'];
   expectedResult: Scalars['String']['input'];
   order: Scalars['Int']['input'];
+};
+
+export type TestCloudConnectionResult = {
+  error?: Maybe<Scalars['String']['output']>;
+  ok: Scalars['Boolean']['output'];
 };
 
 export type TestPack = {
@@ -5032,6 +5212,45 @@ export type UpdateUserMutationVariables = Exact<{
 
 
 export type UpdateUserMutation = { updateUser: { id: string, name: string } };
+
+export type CloudConnectionsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type CloudConnectionsQuery = { cloudConnections: Array<{ id: string, orgId: string, provider: CloudProvider, displayName: string, status: CloudConnectionStatus, statusMessage: string, lastVerifiedAt?: string | null, createdBy: string, createdAt: string, updatedAt: string }> };
+
+export type CreateCloudConnectionMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  input: CreateCloudConnectionInput;
+}>;
+
+
+export type CreateCloudConnectionMutation = { createCloudConnection: { id: string, orgId: string, provider: CloudProvider, displayName: string, status: CloudConnectionStatus, statusMessage: string, lastVerifiedAt?: string | null, createdBy: string, createdAt: string, updatedAt: string } };
+
+export type DeleteCloudConnectionMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  connectionId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteCloudConnectionMutation = { deleteCloudConnection: boolean };
+
+export type TestCloudConnectionMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  connectionId: Scalars['ID']['input'];
+}>;
+
+
+export type TestCloudConnectionMutation = { testCloudConnection: { ok: boolean, error?: string | null } };
+
+export type SyncCloudConnectionMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  connectionId: Scalars['ID']['input'];
+}>;
+
+
+export type SyncCloudConnectionMutation = { syncCloudConnection: number };
 
 export type PrepareUserAvatarUploadMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -6570,6 +6789,50 @@ export type UpdateTestRunResultMutationVariables = Exact<{
 
 export type UpdateTestRunResultMutation = { updateTestRunResult: { testRunResultId: string, status: string } };
 
+export type ServiceCostResourcesQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+}>;
+
+
+export type ServiceCostResourcesQuery = { serviceCostResources: Array<{ id: string, externalResourceId: string, name: string, resourceType: string, provider: CloudProvider, region: string, environment: string, status: InfraResourceStatus, monthlyCostUsd: number, tags: Array<string>, matchedTags: Array<string>, lastSyncedAt: string }> };
+
+export type ServiceCostTrendQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  days?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type ServiceCostTrendQuery = { serviceCostTrend: Array<{ date: string, totalUsd: number, awsUsd: number, azureUsd: number, gcpUsd: number }> };
+
+export type ServiceCostTagRulesQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+}>;
+
+
+export type ServiceCostTagRulesQuery = { serviceCostTagRules: Array<{ id: string, serviceId: string, tagKey: string, tagValue: string, createdBy: string, createdAt: string }> };
+
+export type CreateServiceCostTagRuleMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  tagKey: Scalars['String']['input'];
+  tagValue: Scalars['String']['input'];
+}>;
+
+
+export type CreateServiceCostTagRuleMutation = { createServiceCostTagRule: { id: string, serviceId: string, tagKey: string, tagValue: string, createdBy: string, createdAt: string } };
+
+export type DeleteServiceCostTagRuleMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  ruleId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteServiceCostTagRuleMutation = { deleteServiceCostTagRule: boolean };
+
 export type CreateAssetUploadMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
 }>;
@@ -6668,6 +6931,11 @@ export const CreateTeamDocument = {"kind":"Document","definitions":[{"kind":"Ope
 export const UpdateTeamDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTeam"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateTeamMutation, UpdateTeamMutationVariables>;
 export const DeleteTeamDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTeam"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamId"}}}]}]}}]} as unknown as DocumentNode<DeleteTeamMutation, DeleteTeamMutationVariables>;
 export const UpdateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;
+export const CloudConnectionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CloudConnections"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cloudConnections"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"statusMessage"}},{"kind":"Field","name":{"kind":"Name","value":"lastVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CloudConnectionsQuery, CloudConnectionsQueryVariables>;
+export const CreateCloudConnectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCloudConnection"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCloudConnectionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCloudConnection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"statusMessage"}},{"kind":"Field","name":{"kind":"Name","value":"lastVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateCloudConnectionMutation, CreateCloudConnectionMutationVariables>;
+export const DeleteCloudConnectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteCloudConnection"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"connectionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCloudConnection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"connectionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"connectionId"}}}]}]}}]} as unknown as DocumentNode<DeleteCloudConnectionMutation, DeleteCloudConnectionMutationVariables>;
+export const TestCloudConnectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TestCloudConnection"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"connectionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testCloudConnection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"connectionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"connectionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"error"}}]}}]}}]} as unknown as DocumentNode<TestCloudConnectionMutation, TestCloudConnectionMutationVariables>;
+export const SyncCloudConnectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SyncCloudConnection"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"connectionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"syncCloudConnection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"connectionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"connectionId"}}}]}]}}]} as unknown as DocumentNode<SyncCloudConnectionMutation, SyncCloudConnectionMutationVariables>;
 export const PrepareUserAvatarUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PrepareUserAvatarUpload"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prepareUserAvatarUpload"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<PrepareUserAvatarUploadMutation, PrepareUserAvatarUploadMutationVariables>;
 export const SetMyAvatarDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SetMyAvatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setMyAvatar"}}]}}]} as unknown as DocumentNode<SetMyAvatarMutation, SetMyAvatarMutationVariables>;
 export const ServiceAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceAccounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"scopes"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"isInternal"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ServiceAccountsQuery, ServiceAccountsQueryVariables>;
@@ -6849,6 +7117,11 @@ export const UpdateTestRunDocument = {"kind":"Document","definitions":[{"kind":"
 export const TestRunResultsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TestRunResults"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"testRunId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testRunResults"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"testRunId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"testRunId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testRunResultId"}},{"kind":"Field","name":{"kind":"Name","value":"testRunId"}},{"kind":"Field","name":{"kind":"Name","value":"testCaseId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"blockedReason"}},{"kind":"Field","name":{"kind":"Name","value":"responseStatus"}},{"kind":"Field","name":{"kind":"Name","value":"responseBody"}},{"kind":"Field","name":{"kind":"Name","value":"responseTimeMs"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"screenshotUrls"}},{"kind":"Field","name":{"kind":"Name","value":"executedAt"}},{"kind":"Field","name":{"kind":"Name","value":"executedBy"}}]}}]}}]} as unknown as DocumentNode<TestRunResultsQuery, TestRunResultsQueryVariables>;
 export const CreateTestRunResultDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTestRunResult"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTestRunResultInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTestRunResult"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testRunResultId"}},{"kind":"Field","name":{"kind":"Name","value":"testRunId"}},{"kind":"Field","name":{"kind":"Name","value":"testCaseId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<CreateTestRunResultMutation, CreateTestRunResultMutationVariables>;
 export const UpdateTestRunResultDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTestRunResult"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateTestRunResultInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTestRunResult"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testRunResultId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<UpdateTestRunResultMutation, UpdateTestRunResultMutationVariables>;
+export const ServiceCostResourcesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceCostResources"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceCostResources"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"externalResourceId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"region"}},{"kind":"Field","name":{"kind":"Name","value":"environment"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"monthlyCostUsd"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"matchedTags"}},{"kind":"Field","name":{"kind":"Name","value":"lastSyncedAt"}}]}}]}}]} as unknown as DocumentNode<ServiceCostResourcesQuery, ServiceCostResourcesQueryVariables>;
+export const ServiceCostTrendDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceCostTrend"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"days"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceCostTrend"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"days"},"value":{"kind":"Variable","name":{"kind":"Name","value":"days"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"totalUsd"}},{"kind":"Field","name":{"kind":"Name","value":"awsUsd"}},{"kind":"Field","name":{"kind":"Name","value":"azureUsd"}},{"kind":"Field","name":{"kind":"Name","value":"gcpUsd"}}]}}]}}]} as unknown as DocumentNode<ServiceCostTrendQuery, ServiceCostTrendQueryVariables>;
+export const ServiceCostTagRulesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceCostTagRules"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceCostTagRules"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"tagKey"}},{"kind":"Field","name":{"kind":"Name","value":"tagValue"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<ServiceCostTagRulesQuery, ServiceCostTagRulesQueryVariables>;
+export const CreateServiceCostTagRuleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateServiceCostTagRule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tagKey"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tagValue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createServiceCostTagRule"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"tagKey"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tagKey"}}},{"kind":"Argument","name":{"kind":"Name","value":"tagValue"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tagValue"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"tagKey"}},{"kind":"Field","name":{"kind":"Name","value":"tagValue"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<CreateServiceCostTagRuleMutation, CreateServiceCostTagRuleMutationVariables>;
+export const DeleteServiceCostTagRuleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteServiceCostTagRule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ruleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteServiceCostTagRule"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"ruleId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ruleId"}}}]}]}}]} as unknown as DocumentNode<DeleteServiceCostTagRuleMutation, DeleteServiceCostTagRuleMutationVariables>;
 export const CreateAssetUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAssetUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAssetUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<CreateAssetUploadMutation, CreateAssetUploadMutationVariables>;
 export const AssetUrlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetUrl"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assetId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"assetId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assetId"}}}]}]}}]} as unknown as DocumentNode<AssetUrlQuery, AssetUrlQueryVariables>;
 export const AssetUrlsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetUrls"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assetIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetUrls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"assetIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assetIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]} as unknown as DocumentNode<AssetUrlsQuery, AssetUrlsQueryVariables>;
