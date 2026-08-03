@@ -148,12 +148,16 @@ export function AgentSessionsTable({ rows }: { rows: AgentSessionRow[] }) {
                   ).toLocaleString()}
                 </td>
                 <td className="text-foreground px-4 py-3 text-right tabular-nums">
-                  {formatCost(row.totals.costUsd, row.totals.unpricedSteps)}
+                  {formatCost(row.totals.costUsd, row.totals.unpricedSteps) ?? (
+                    <span className="text-paragraph">—</span>
+                  )}
                 </td>
                 <td className="text-foreground px-4 py-3 text-right tabular-nums">
-                  {row.durationMs === null || row.durationMs === undefined
-                    ? '—'
-                    : formatDuration(row.durationMs)}
+                  {row.durationMs === null || row.durationMs === undefined ? (
+                    <span className="text-paragraph">—</span>
+                  ) : (
+                    formatDuration(row.durationMs)
+                  )}
                 </td>
                 <td className="text-paragraph px-6 py-3 text-right whitespace-nowrap">
                   {format(new Date(row.startedAt), 'MMM d, HH:mm')}

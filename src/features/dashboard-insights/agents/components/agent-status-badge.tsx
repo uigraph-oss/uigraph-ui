@@ -5,7 +5,7 @@ const statusStyles = {
   running: {
     label: 'Running',
     icon: Loader2,
-    className: 'bg-primary/10 text-primary',
+    className: 'bg-muted/40 text-foreground',
     spin: true,
   },
   completed: {

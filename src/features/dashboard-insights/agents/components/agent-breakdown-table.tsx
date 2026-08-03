@@ -88,7 +88,10 @@ export function AgentBreakdownTable({ rows }: { rows: AgentGroupRow[] }) {
                 <td className="overflow-hidden px-4 py-3">
                   <div className="text-paragraph flex items-center gap-2 text-xs whitespace-nowrap">
                     <span className="text-foreground font-medium tabular-nums">
-                      {successRate(row.completedSessions, row.failedSessions)}
+                      {successRate(
+                        row.completedSessions,
+                        row.failedSessions
+                      ) ?? <span className="text-paragraph">—</span>}
                     </span>
                     <span className="text-success">
                       {row.completedSessions.toLocaleString()} ok
@@ -97,7 +100,7 @@ export function AgentBreakdownTable({ rows }: { rows: AgentGroupRow[] }) {
                       {row.failedSessions.toLocaleString()} failed
                     </span>
                     {row.runningSessions > 0 ? (
-                      <span className="text-primary">
+                      <span className="text-foreground">
                         {row.runningSessions.toLocaleString()} running
                       </span>
                     ) : null}
@@ -110,18 +113,22 @@ export function AgentBreakdownTable({ rows }: { rows: AgentGroupRow[] }) {
                   {row.tokens.toLocaleString()}
                 </td>
                 <td className="text-foreground px-4 py-3 text-right tabular-nums">
-                  {formatCost(row.costUsd, row.unpricedSteps)}
+                  {formatCost(row.costUsd, row.unpricedSteps) ?? (
+                    <span className="text-paragraph">—</span>
+                  )}
                 </td>
                 <td className="text-foreground px-4 py-3 text-right tabular-nums">
-                  {row.finishedSessions === 0
-                    ? '—'
-                    : formatDuration(avgDurationMs)}
+                  {row.finishedSessions === 0 ? (
+                    <span className="text-paragraph">—</span>
+                  ) : (
+                    formatDuration(avgDurationMs)
+                  )}
                 </td>
                 <td className="px-6 py-3">
                   <div className="flex items-center gap-2">
                     <div className="bg-muted/30 h-1.5 w-full max-w-[80px] overflow-hidden rounded-full">
                       <div
-                        className="bg-primary h-full rounded-full"
+                        className="bg-paragraph/70 h-full rounded-full"
                         style={{ width: `${Math.max(pct, 2)}%` }}
                       />
                     </div>

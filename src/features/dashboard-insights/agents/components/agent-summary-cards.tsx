@@ -32,9 +32,14 @@ export function AgentSummaryCards({
 }: AgentSummaryCardsProps) {
   const finishedSessions = completedSessions + failedSessions
   const avgDurationMs =
-    finishedSessions > 0 ? totalDurationMs / finishedSessions : 0
+    finishedSessions === 0 ? 0 : totalDurationMs / finishedSessions
 
-  const cards = [
+  const cards: {
+    icon: typeof PlayCircle
+    label: string
+    value: string | null
+    hint: string
+  }[] = [
     {
       icon: PlayCircle,
       label: 'Runs',
@@ -65,7 +70,7 @@ export function AgentSummaryCards({
     {
       icon: Timer,
       label: 'Avg Duration',
-      value: formatDuration(avgDurationMs),
+      value: finishedSessions === 0 ? null : formatDuration(avgDurationMs),
       hint: 'Wall clock time of finished runs, divided by the number of finished runs.',
     },
   ]
@@ -83,7 +88,7 @@ export function AgentSummaryCards({
                 </span>
               </div>
               <p className="text-foreground mt-3 text-2xl font-semibold tracking-tight">
-                {card.value}
+                {card.value ?? <span className="text-paragraph">—</span>}
               </p>
             </div>
           </TooltipTrigger>

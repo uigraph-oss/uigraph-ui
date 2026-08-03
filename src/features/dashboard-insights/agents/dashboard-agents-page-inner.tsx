@@ -69,7 +69,6 @@ export function DashboardAgentsPageInner() {
     variables: {
       orgId,
       period,
-      type: type === 'all' ? undefined : type,
     },
   })
 
@@ -77,8 +76,8 @@ export function DashboardAgentsPageInner() {
     variables: {
       orgId,
       period,
-      status: status === 'all' ? undefined : status,
-      type: type === 'all' ? undefined : type,
+      status: view === 'runs' && status !== 'all' ? status : undefined,
+      type: view === 'runs' && type !== 'all' ? type : undefined,
       limit: 50,
     },
     pollInterval:
@@ -103,63 +102,23 @@ export function DashboardAgentsPageInner() {
         title="Agent Runs"
         description="Every UiGraph agent run, its steps, tokens and cost."
       >
-        <div className="flex items-center gap-3">
-          <ToggleGroup
-            type="single"
-            value={period}
-            onValueChange={(value) =>
-              value && setSearchParams({ period: value })
-            }
-            variant="outline"
-          >
-            {PERIODS.map((p) => (
-              <ToggleGroupItem
-                key={p.value}
-                value={p.value}
-                aria-label={p.label}
-                className="hover:bg-muted hover:text-foreground px-5"
-              >
-                {p.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-
-          <Select
-            value={type}
-            onValueChange={(value) =>
-              setSearchParams({ type: value === 'all' ? null : value })
-            }
-          >
-            <SelectTrigger className="h-10 w-[160px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TYPES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={status}
-            onValueChange={(value) =>
-              setSearchParams({ status: value === 'all' ? null : value })
-            }
-          >
-            <SelectTrigger className="h-10 w-[160px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUSES.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <ToggleGroup
+          type="single"
+          value={period}
+          onValueChange={(value) => value && setSearchParams({ period: value })}
+          variant="outline"
+        >
+          {PERIODS.map((p) => (
+            <ToggleGroupItem
+              key={p.value}
+              value={p.value}
+              aria-label={p.label}
+              className="hover:bg-muted hover:text-foreground px-5"
+            >
+              {p.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       </DashboardSectionHeader>
 
       <DashboardSectionContent>
@@ -216,11 +175,57 @@ export function DashboardAgentsPageInner() {
                   ))}
                 </ToggleGroup>
 
-                <p className="text-paragraph text-xs">
-                  {view === 'runs'
-                    ? `Showing ${rows.length} of ${totalRuns} runs`
-                    : `${groupRows.length} grouped from ${rows.length} of ${totalRuns} runs`}
-                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-paragraph text-xs">
+                    {view === 'runs'
+                      ? `Showing ${rows.length} of ${totalRuns} runs`
+                      : `${groupRows.length} grouped from ${rows.length} of ${totalRuns} runs`}
+                  </p>
+
+                  {view === 'runs' ? (
+                    <>
+                      <Select
+                        value={type}
+                        onValueChange={(value) =>
+                          setSearchParams({
+                            type: value === 'all' ? null : value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="h-9 w-[150px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TYPES.map((t) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              {t.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select
+                        value={status}
+                        onValueChange={(value) =>
+                          setSearchParams({
+                            status: value === 'all' ? null : value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="h-9 w-[150px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STATUSES.map((s) => (
+                            <SelectItem key={s.value} value={s.value}>
+                              {s.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : null}
+                </div>
               </div>
 
               {view === 'runs' ? (

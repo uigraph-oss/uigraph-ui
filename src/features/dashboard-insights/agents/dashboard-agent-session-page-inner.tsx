@@ -62,9 +62,9 @@ export function DashboardAgentSessionPageInner() {
       step.kind === 'tool' && (step.name === 'write' || step.name === 'edit')
   )
 
-  const facts = [
+  const facts: { label: string; value: string | null }[] = [
     { label: 'Agent', value: session.type },
-    { label: 'Model', value: session.modelName ?? '—' },
+    { label: 'Model', value: session.modelName ?? null },
     {
       label: 'Duration',
       value:
@@ -129,7 +129,7 @@ export function DashboardAgentSessionPageInner() {
                   {fact.label}
                 </p>
                 <p className="text-foreground mt-1 text-sm break-words">
-                  {fact.value}
+                  {fact.value ?? <span className="text-paragraph">—</span>}
                 </p>
               </div>
             ))}

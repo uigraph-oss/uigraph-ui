@@ -44,8 +44,8 @@ export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
               step.error
                 ? 'bg-destructive/10 text-destructive'
                 : step.kind === 'llm'
-                  ? 'bg-primary/10 text-primary'
-                  : 'bg-muted/40 text-paragraph'
+                  ? 'bg-muted/40 text-foreground'
+                  : 'bg-muted/25 text-paragraph'
             )}
           >
             {step.error ? (
