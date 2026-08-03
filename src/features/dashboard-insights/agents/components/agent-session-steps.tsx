@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import { AlertTriangle, Sparkles, Wrench } from 'lucide-react'
+import { useState } from 'react'
 import { formatDuration } from '../../lib/format-duration'
 import { formatUsd } from '../lib/agent-session-format'
 
@@ -26,6 +27,8 @@ export type AgentSessionStepRow = {
 }
 
 export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
+  const [openPayload, setOpenPayload] = useState<string | null>(null)
+
   if (steps.length === 0) {
     return (
       <p className="text-paragraph px-6 py-8 text-center text-sm">
@@ -37,101 +40,136 @@ export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
   return (
     <ol className="divide-stock divide-y">
       {steps.map((step) => (
-        <li key={step.id} className="flex gap-4 px-6 py-4">
-          <span
-            className={cn(
-              'flex size-8 shrink-0 items-center justify-center rounded-full',
-              step.error
-                ? 'bg-destructive/10 text-destructive'
-                : step.kind === 'llm'
-                  ? 'bg-primary/10 text-primary'
-                  : 'bg-muted/40 text-paragraph'
-            )}
-          >
-            {step.error ? (
-              <AlertTriangle className="size-4" />
-            ) : step.kind === 'llm' ? (
-              <Sparkles className="size-4" />
-            ) : (
-              <Wrench className="size-4" />
-            )}
-          </span>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="text-foreground text-sm font-medium">
-                {step.kind === 'llm'
-                  ? (step.modelName ?? 'Model turn')
-                  : (step.name ?? 'Tool call')}
+        <li
+          key={step.id}
+          className={cn(
+            'px-6 py-3.5',
+            step.kind === 'llm' ? 'bg-transparent' : 'bg-shading-gray/10'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex w-11 shrink-0 items-center gap-2">
+              <span className="text-paragraph font-mono text-xs tabular-nums">
+                {String(step.seq).padStart(2, '0')}
               </span>
-              <span className="text-paragraph text-xs">
-                #{step.seq} · {formatDuration(step.durationMs)}
-              </span>
-              {step.finishReason ? (
-                <span className="bg-muted/40 text-paragraph rounded-full px-2 py-0.5 text-xs">
-                  {step.finishReason}
-                </span>
-              ) : null}
-              {step.costUsd === null || step.costUsd === undefined ? null : (
-                <span className="text-paragraph text-xs tabular-nums">
-                  {formatUsd(step.costUsd)}
-                </span>
+              {step.error ? (
+                <AlertTriangle className="text-destructive size-3.5" />
+              ) : step.kind === 'llm' ? (
+                <Sparkles className="text-foreground size-3.5" />
+              ) : (
+                <Wrench className="text-paragraph size-3.5" />
               )}
             </div>
 
-            {step.kind === 'llm' ? (
-              <p className="text-paragraph mt-2 text-xs tabular-nums">
-                {formatTokens('in', step.inputTokens)}
-                {formatTokens('out', step.outputTokens)}
-                {formatTokens('reasoning', step.reasoningTokens)}
-                {formatTokens('cache read', step.cachedInputTokens)}
-                {formatTokens('cache write', step.cachedOutputTokens)}
-              </p>
-            ) : null}
-
-            {step.text ? (
-              <p className="text-paragraph mt-2 text-sm whitespace-pre-wrap">
-                {step.text}
-              </p>
-            ) : null}
-
-            {step.error ? (
-              <p className="text-destructive mt-2 text-sm break-words">
-                {step.error}
-              </p>
-            ) : null}
+            <span
+              className={cn(
+                'min-w-0 truncate text-sm',
+                step.error ? 'text-destructive' : 'text-foreground'
+              )}
+            >
+              {step.kind === 'llm'
+                ? (step.modelName ?? 'Model turn')
+                : (step.name ?? 'Tool call')}
+            </span>
 
             {step.input === null || step.input === undefined ? null : (
-              <Payload label="Input" value={step.input} />
+              <PayloadButton
+                label="Input"
+                active={openPayload === `${step.id}-input`}
+                onClick={() =>
+                  setOpenPayload(
+                    openPayload === `${step.id}-input`
+                      ? null
+                      : `${step.id}-input`
+                  )
+                }
+              />
             )}
 
             {step.output === null || step.output === undefined ? null : (
-              <Payload label="Output" value={step.output} />
+              <PayloadButton
+                label="Output"
+                active={openPayload === `${step.id}-output`}
+                onClick={() =>
+                  setOpenPayload(
+                    openPayload === `${step.id}-output`
+                      ? null
+                      : `${step.id}-output`
+                  )
+                }
+              />
             )}
+
+            <span className="text-paragraph ml-auto shrink-0 pl-4 font-mono text-xs tabular-nums">
+              {[
+                step.finishReason,
+                step.costUsd === null || step.costUsd === undefined
+                  ? null
+                  : formatUsd(step.costUsd),
+                step.kind === 'llm'
+                  ? `${((step.inputTokens ?? 0) + (step.outputTokens ?? 0)).toLocaleString()} tok`
+                  : null,
+                formatDuration(step.durationMs),
+              ]
+                .filter((part) => part !== null)
+                .join('  ·  ')}
+            </span>
           </div>
+
+          {step.text ? (
+            <p className="text-paragraph mt-2 pl-14 text-sm whitespace-pre-wrap">
+              {step.text}
+            </p>
+          ) : null}
+
+          {step.error ? (
+            <p className="text-destructive mt-2 pl-14 text-sm break-words">
+              {step.error}
+            </p>
+          ) : null}
+
+          {openPayload === `${step.id}-input` ? (
+            <Payload value={step.input} />
+          ) : null}
+
+          {openPayload === `${step.id}-output` ? (
+            <Payload value={step.output} />
+          ) : null}
         </li>
       ))}
     </ol>
   )
 }
 
-function formatTokens(label: string, value: number | null | undefined) {
-  if (value === null || value === undefined) {
-    return null
-  }
-
-  return `${label} ${value.toLocaleString()}  `
+function PayloadButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'shrink-0 rounded border px-2 py-0.5 font-mono text-[11px] transition-colors',
+        active
+          ? 'border-stock bg-muted/50 text-foreground'
+          : 'border-stock/70 text-paragraph hover:border-stock hover:text-foreground'
+      )}
+    >
+      {label}
+    </button>
+  )
 }
 
-function Payload({ label, value }: { label: string; value: unknown }) {
+function Payload({ value }: { value: unknown }) {
   return (
-    <details className="mt-2">
-      <summary className="text-paragraph cursor-pointer text-xs select-none">
-        {label}
-      </summary>
-      <pre className="bg-muted/20 text-paragraph mt-2 max-h-64 overflow-auto rounded-md p-3 text-xs">
-        {JSON.stringify(value, null, 2)}
-      </pre>
-    </details>
+    <pre className="border-stock bg-shading-gray/80 text-paragraph mt-2 ml-14 max-h-64 overflow-auto rounded-md border p-3 font-mono text-xs">
+      {JSON.stringify(value, null, 2)}
+    </pre>
   )
 }

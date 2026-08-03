@@ -16,10 +16,13 @@ import {
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
+import { useState } from 'react'
 import { AGENT_SESSIONS, AGENT_SESSION_SUMMARY } from './api/agent-sessions'
+import { AgentBreakdownTable } from './components/agent-breakdown-table'
 import { AgentSessionsEmptyState } from './components/agent-sessions-empty-state'
 import { AgentSessionsTable } from './components/agent-sessions-table'
 import { AgentSummaryCards } from './components/agent-summary-cards'
+import { groupAgentSessions } from './lib/agent-session-group'
 
 const PERIODS = [
   { value: '1d', label: 'Today' },
@@ -41,8 +44,18 @@ const TYPES = [
   { value: 'artifacts', label: 'Artifacts' },
 ]
 
+const VIEWS = [
+  { value: 'runs', label: 'Runs' },
+  { value: 'agent', label: 'By Agent' },
+  { value: 'model', label: 'By Model' },
+  { value: 'user', label: 'By User' },
+] as const
+
+type AgentsView = (typeof VIEWS)[number]['value']
+
 export function DashboardAgentsPageInner() {
   const orgId = useCurrentOrganization().id
+  const [view, setView] = useState<AgentsView>('runs')
   const [
     { period: periodParam, status: statusParam, type: typeParam },
     setSearchParams,
@@ -56,7 +69,6 @@ export function DashboardAgentsPageInner() {
     variables: {
       orgId,
       period,
-      type: type === 'all' ? undefined : type,
     },
   })
 
@@ -64,8 +76,8 @@ export function DashboardAgentsPageInner() {
     variables: {
       orgId,
       period,
-      status: status === 'all' ? undefined : status,
-      type: type === 'all' ? undefined : type,
+      status: view === 'runs' && status !== 'all' ? status : undefined,
+      type: view === 'runs' && type !== 'all' ? type : undefined,
       limit: 50,
     },
     pollInterval:
@@ -77,6 +89,8 @@ export function DashboardAgentsPageInner() {
   const loading = summary.loading || sessions.loading
   const error = summary.error || sessions.error
   const rows = sessions.data?.agentSessions.sessions ?? []
+  const totalRuns = sessions.data?.agentSessions.total ?? 0
+  const groupRows = view === 'runs' ? [] : groupAgentSessions(rows, view)
   const isEmpty =
     !loading &&
     !error &&
@@ -88,63 +102,23 @@ export function DashboardAgentsPageInner() {
         title="Agent Runs"
         description="Every UiGraph agent run, its steps, tokens and cost."
       >
-        <div className="flex items-center gap-3">
-          <ToggleGroup
-            type="single"
-            value={period}
-            onValueChange={(value) =>
-              value && setSearchParams({ period: value })
-            }
-            variant="outline"
-          >
-            {PERIODS.map((p) => (
-              <ToggleGroupItem
-                key={p.value}
-                value={p.value}
-                aria-label={p.label}
-                className="hover:bg-muted hover:text-foreground px-5"
-              >
-                {p.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-
-          <Select
-            value={type}
-            onValueChange={(value) =>
-              setSearchParams({ type: value === 'all' ? null : value })
-            }
-          >
-            <SelectTrigger className="h-10 w-[160px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TYPES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={status}
-            onValueChange={(value) =>
-              setSearchParams({ status: value === 'all' ? null : value })
-            }
-          >
-            <SelectTrigger className="h-10 w-[160px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUSES.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <ToggleGroup
+          type="single"
+          value={period}
+          onValueChange={(value) => value && setSearchParams({ period: value })}
+          variant="outline"
+        >
+          {PERIODS.map((p) => (
+            <ToggleGroupItem
+              key={p.value}
+              value={p.value}
+              aria-label={p.label}
+              className="hover:bg-muted hover:text-foreground px-5"
+            >
+              {p.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       </DashboardSectionHeader>
 
       <DashboardSectionContent>
@@ -181,15 +155,84 @@ export function DashboardAgentsPageInner() {
             />
 
             <div className="border-stock bg-shading/40 rounded-[12px] border">
-              <div className="border-stock flex items-center justify-between gap-3 border-b px-6 py-4">
-                <p className="text-paragraph text-sm font-medium">Runs</p>
-                <p className="text-paragraph text-xs">
-                  Showing {rows.length} of{' '}
-                  {sessions.data?.agentSessions.total ?? 0}
-                </p>
+              <div className="border-stock flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4">
+                <ToggleGroup
+                  type="single"
+                  value={view}
+                  onValueChange={(value) =>
+                    value && setView(value as AgentsView)
+                  }
+                  variant="outline"
+                >
+                  {VIEWS.map((v) => (
+                    <ToggleGroupItem
+                      key={v.value}
+                      value={v.value}
+                      className="hover:bg-muted hover:text-foreground px-5"
+                    >
+                      {v.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-paragraph text-xs">
+                    {view === 'runs'
+                      ? `Showing ${rows.length} of ${totalRuns} runs`
+                      : `${groupRows.length} grouped from ${rows.length} of ${totalRuns} runs`}
+                  </p>
+
+                  {view === 'runs' ? (
+                    <>
+                      <Select
+                        value={type}
+                        onValueChange={(value) =>
+                          setSearchParams({
+                            type: value === 'all' ? null : value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="h-9 w-[150px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TYPES.map((t) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              {t.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select
+                        value={status}
+                        onValueChange={(value) =>
+                          setSearchParams({
+                            status: value === 'all' ? null : value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="h-9 w-[150px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STATUSES.map((s) => (
+                            <SelectItem key={s.value} value={s.value}>
+                              {s.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : null}
+                </div>
               </div>
 
-              <AgentSessionsTable rows={rows} />
+              {view === 'runs' ? (
+                <AgentSessionsTable rows={rows} />
+              ) : (
+                <AgentBreakdownTable rows={groupRows} />
+              )}
             </div>
 
             {summary.data!.agentSessionSummary.totals.unpricedSteps > 0 ? (

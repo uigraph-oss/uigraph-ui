@@ -9,9 +9,9 @@ export function formatUsd(value: number): string {
 export function formatCost(
   costUsd: number | null | undefined,
   unpricedSteps: number
-): string {
+): string | null {
   if (costUsd === null || costUsd === undefined) {
-    return '—'
+    return null
   }
 
   if (unpricedSteps > 0) {
@@ -24,11 +24,11 @@ export function formatCost(
 export function successRate(
   completedSessions: number,
   failedSessions: number
-): string {
+): string | null {
   const finished = completedSessions + failedSessions
 
   if (finished === 0) {
-    return '—'
+    return null
   }
 
   return `${Math.round((completedSessions / finished) * 100)}%`
