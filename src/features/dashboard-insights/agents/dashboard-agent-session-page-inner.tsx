@@ -22,9 +22,7 @@ import {
   TimerIcon,
   WalletIcon,
 } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
 import { useNavigate, useParams } from 'react-router-dom'
-import remarkGfm from 'remark-gfm'
 import { formatDuration } from '../lib/format-duration'
 import { AGENT_SESSION } from './api/agent-sessions'
 import {
@@ -32,7 +30,7 @@ import {
   type AgentSessionStepRow,
 } from './components/agent-session-steps'
 import { AgentStatusBadge } from './components/agent-status-badge'
-import { REPORT_MARKDOWN_COMPONENTS } from './components/report-markdown'
+import { ReportMarkdown } from './components/report-markdown'
 import { formatCost } from './lib/agent-session-format'
 import { gitMetadata, metadataEntries } from './lib/agent-session-metadata'
 
@@ -266,13 +264,8 @@ export function DashboardAgentSessionPageInner() {
                   Report
                 </h2>
               </div>
-              <div className="px-6 py-4 text-sm">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={REPORT_MARKDOWN_COMPONENTS}
-                >
-                  {session.report}
-                </ReactMarkdown>
+              <div className="px-6 py-4">
+                <ReportMarkdown content={session.report} />
               </div>
             </div>
           ) : null}
