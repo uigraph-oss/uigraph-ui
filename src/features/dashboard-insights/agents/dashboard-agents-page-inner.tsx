@@ -1,0 +1,207 @@
+'use client'
+
+import { SectionLoader } from '@/components/section-loader'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import {
+  DashboardSectionContent,
+  DashboardSectionHeader,
+} from '@/features/dashboard'
+import { useSearchParamsState } from '@/hooks/use-search-params-state'
+import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
+import { AGENT_SESSIONS, AGENT_SESSION_SUMMARY } from './api/agent-sessions'
+import { AgentSessionsEmptyState } from './components/agent-sessions-empty-state'
+import { AgentSessionsTable } from './components/agent-sessions-table'
+import { AgentSummaryCards } from './components/agent-summary-cards'
+
+const PERIODS = [
+  { value: '1d', label: 'Today' },
+  { value: '7d', label: '7d' },
+  { value: '30d', label: '30d' },
+  { value: '1y', label: '1y' },
+]
+
+const STATUSES = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'running', label: 'Running' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'cancelled', label: 'Cancelled' },
+]
+
+const TYPES = [
+  { value: 'all', label: 'All agents' },
+  { value: 'artifacts', label: 'Artifacts' },
+]
+
+export function DashboardAgentsPageInner() {
+  const orgId = useCurrentOrganization().id
+  const [
+    { period: periodParam, status: statusParam, type: typeParam },
+    setSearchParams,
+  ] = useSearchParamsState('period', 'status', 'type')
+
+  const period = periodParam ?? '7d'
+  const status = statusParam ?? 'all'
+  const type = typeParam ?? 'all'
+
+  const summary = useQuery(AGENT_SESSION_SUMMARY, {
+    variables: {
+      orgId,
+      period,
+      type: type === 'all' ? undefined : type,
+    },
+  })
+
+  const sessions = useQuery(AGENT_SESSIONS, {
+    variables: {
+      orgId,
+      period,
+      status: status === 'all' ? undefined : status,
+      type: type === 'all' ? undefined : type,
+      limit: 50,
+    },
+    pollInterval:
+      (summary.data?.agentSessionSummary.runningSessions ?? 0) > 0
+        ? 5000
+        : undefined,
+  })
+
+  const loading = summary.loading || sessions.loading
+  const error = summary.error || sessions.error
+  const rows = sessions.data?.agentSessions.sessions ?? []
+  const isEmpty =
+    !loading &&
+    !error &&
+    (summary.data?.agentSessionSummary.totalSessions ?? 0) === 0
+
+  return (
+    <>
+      <DashboardSectionHeader
+        title="Agent Runs"
+        description="Every UiGraph agent run, its steps, tokens and cost."
+      >
+        <div className="flex items-center gap-3">
+          <ToggleGroup
+            type="single"
+            value={period}
+            onValueChange={(value) =>
+              value && setSearchParams({ period: value })
+            }
+            variant="outline"
+          >
+            {PERIODS.map((p) => (
+              <ToggleGroupItem
+                key={p.value}
+                value={p.value}
+                aria-label={p.label}
+                className="hover:bg-muted hover:text-foreground px-5"
+              >
+                {p.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+
+          <Select
+            value={type}
+            onValueChange={(value) =>
+              setSearchParams({ type: value === 'all' ? null : value })
+            }
+          >
+            <SelectTrigger className="h-10 w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TYPES.map((t) => (
+                <SelectItem key={t.value} value={t.value}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={status}
+            onValueChange={(value) =>
+              setSearchParams({ status: value === 'all' ? null : value })
+            }
+          >
+            <SelectTrigger className="h-10 w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUSES.map((s) => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </DashboardSectionHeader>
+
+      <DashboardSectionContent>
+        {loading ? (
+          <SectionLoader label="Loading agent runs..." />
+        ) : error ? (
+          <p className="text-paragraph px-6 py-16 text-center text-sm">
+            Couldn&apos;t load agent runs right now. Please try again.
+          </p>
+        ) : isEmpty ? (
+          <AgentSessionsEmptyState />
+        ) : (
+          <div className="space-y-6 pb-6">
+            <AgentSummaryCards
+              totalSessions={summary.data!.agentSessionSummary.totalSessions}
+              completedSessions={
+                summary.data!.agentSessionSummary.completedSessions
+              }
+              failedSessions={summary.data!.agentSessionSummary.failedSessions}
+              runningSessions={
+                summary.data!.agentSessionSummary.runningSessions
+              }
+              totalDurationMs={
+                summary.data!.agentSessionSummary.totalDurationMs
+              }
+              inputTokens={summary.data!.agentSessionSummary.totals.inputTokens}
+              outputTokens={
+                summary.data!.agentSessionSummary.totals.outputTokens
+              }
+              costUsd={summary.data!.agentSessionSummary.totals.costUsd}
+              unpricedSteps={
+                summary.data!.agentSessionSummary.totals.unpricedSteps
+              }
+            />
+
+            <div className="border-stock bg-shading/40 rounded-[12px] border">
+              <div className="border-stock flex items-center justify-between gap-3 border-b px-6 py-4">
+                <p className="text-paragraph text-sm font-medium">Runs</p>
+                <p className="text-paragraph text-xs">
+                  Showing {rows.length} of{' '}
+                  {sessions.data?.agentSessions.total ?? 0}
+                </p>
+              </div>
+
+              <AgentSessionsTable rows={rows} />
+            </div>
+
+            {summary.data!.agentSessionSummary.totals.unpricedSteps > 0 ? (
+              <p className="text-paragraph text-center text-xs">
+                * Cost is an estimate.{' '}
+                {summary.data!.agentSessionSummary.totals.unpricedSteps} step(s)
+                ran on a model with no known price and are not included.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </DashboardSectionContent>
+    </>
+  )
+}
