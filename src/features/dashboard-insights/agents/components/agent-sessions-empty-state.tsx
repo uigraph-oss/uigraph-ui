@@ -11,7 +11,7 @@ export function AgentSessionsEmptyState() {
         </code>{' '}
         and{' '}
         <code className="bg-muted/40 rounded px-1 py-0.5 text-xs">
-          UIGRAPH_API_KEY
+          UIGRAPH_TOKEN
         </code>{' '}
         where it runs. Every run then shows up here with its full step timeline.
       </p>

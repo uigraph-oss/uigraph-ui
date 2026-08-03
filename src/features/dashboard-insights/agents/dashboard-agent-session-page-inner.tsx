@@ -168,13 +168,6 @@ export function DashboardAgentSessionPageInner() {
             </div>
           ) : null}
 
-          <div className="border-stock bg-shading/40 rounded-[12px] border">
-            <p className="text-paragraph border-stock border-b px-6 py-4 text-sm font-medium">
-              Timeline
-            </p>
-            <AgentSessionSteps steps={steps} />
-          </div>
-
           {session.report ? (
             <div className="border-stock bg-shading/40 rounded-[12px] border">
               <p className="text-paragraph border-stock border-b px-6 py-4 text-sm font-medium">
@@ -190,6 +183,13 @@ export function DashboardAgentSessionPageInner() {
               </div>
             </div>
           ) : null}
+
+          <div className="border-stock bg-shading/40 rounded-[12px] border">
+            <p className="text-paragraph border-stock border-b px-6 py-4 text-sm font-medium">
+              Timeline
+            </p>
+            <AgentSessionSteps steps={steps} />
+          </div>
         </div>
       </DashboardSectionContent>
     </>
