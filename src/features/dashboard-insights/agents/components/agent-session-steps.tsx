@@ -1,4 +1,6 @@
-import { AlertTriangle, ChevronRight, Sparkles, Wrench } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { AlertTriangle, Sparkles, Wrench } from 'lucide-react'
+import { useState } from 'react'
 import { formatDuration } from '../../lib/format-duration'
 import { formatUsd } from '../lib/agent-session-format'
 
@@ -25,6 +27,8 @@ export type AgentSessionStepRow = {
 }
 
 export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
+  const [openPayload, setOpenPayload] = useState<string | null>(null)
+
   if (steps.length === 0) {
     return (
       <p className="text-paragraph px-6 py-8 text-center text-sm">
@@ -34,32 +38,69 @@ export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
   }
 
   return (
-    <ol className="space-y-1.5 p-4">
+    <ol className="divide-stock divide-y">
       {steps.map((step) => (
         <li
           key={step.id}
-          className="border-stock bg-shading-gray/50 rounded-lg border px-4 py-2.5"
+          className={cn(
+            'px-6 py-3.5',
+            step.kind === 'llm' ? 'bg-transparent' : 'bg-shading-gray/10'
+          )}
         >
           <div className="flex items-center gap-3">
-            <span className="text-paragraph shrink-0 font-mono text-xs tabular-nums">
-              {String(step.seq).padStart(2, '0')}
-            </span>
+            <div className="flex w-11 shrink-0 items-center gap-2">
+              <span className="text-paragraph font-mono text-xs tabular-nums">
+                {String(step.seq).padStart(2, '0')}
+              </span>
+              {step.error ? (
+                <AlertTriangle className="text-destructive size-3.5" />
+              ) : step.kind === 'llm' ? (
+                <Sparkles className="text-foreground size-3.5" />
+              ) : (
+                <Wrench className="text-paragraph size-3.5" />
+              )}
+            </div>
 
-            {step.error ? (
-              <AlertTriangle className="text-destructive size-3.5 shrink-0" />
-            ) : step.kind === 'llm' ? (
-              <Sparkles className="text-foreground size-3.5 shrink-0" />
-            ) : (
-              <Wrench className="text-paragraph size-3.5 shrink-0" />
-            )}
-
-            <span className="text-foreground min-w-0 flex-1 truncate text-sm">
+            <span
+              className={cn(
+                'min-w-0 truncate text-sm',
+                step.error ? 'text-destructive' : 'text-foreground'
+              )}
+            >
               {step.kind === 'llm'
                 ? (step.modelName ?? 'Model turn')
                 : (step.name ?? 'Tool call')}
             </span>
 
-            <span className="text-paragraph shrink-0 font-mono text-xs tabular-nums">
+            {step.input === null || step.input === undefined ? null : (
+              <PayloadButton
+                label="Input"
+                active={openPayload === `${step.id}-input`}
+                onClick={() =>
+                  setOpenPayload(
+                    openPayload === `${step.id}-input`
+                      ? null
+                      : `${step.id}-input`
+                  )
+                }
+              />
+            )}
+
+            {step.output === null || step.output === undefined ? null : (
+              <PayloadButton
+                label="Output"
+                active={openPayload === `${step.id}-output`}
+                onClick={() =>
+                  setOpenPayload(
+                    openPayload === `${step.id}-output`
+                      ? null
+                      : `${step.id}-output`
+                  )
+                }
+              />
+            )}
+
+            <span className="text-paragraph ml-auto shrink-0 pl-4 font-mono text-xs tabular-nums">
               {[
                 step.finishReason,
                 step.costUsd === null || step.costUsd === undefined
@@ -76,40 +117,59 @@ export function AgentSessionSteps({ steps }: { steps: AgentSessionStepRow[] }) {
           </div>
 
           {step.text ? (
-            <p className="text-paragraph mt-1.5 pl-8 text-sm whitespace-pre-wrap">
+            <p className="text-paragraph mt-2 pl-14 text-sm whitespace-pre-wrap">
               {step.text}
             </p>
           ) : null}
 
           {step.error ? (
-            <p className="text-destructive mt-1.5 pl-8 font-mono text-xs break-words">
+            <p className="text-destructive mt-2 pl-14 text-sm break-words">
               {step.error}
             </p>
           ) : null}
 
-          {step.input === null || step.input === undefined ? null : (
-            <Payload label="Input" value={step.input} />
-          )}
+          {openPayload === `${step.id}-input` ? (
+            <Payload value={step.input} />
+          ) : null}
 
-          {step.output === null || step.output === undefined ? null : (
-            <Payload label="Output" value={step.output} />
-          )}
+          {openPayload === `${step.id}-output` ? (
+            <Payload value={step.output} />
+          ) : null}
         </li>
       ))}
     </ol>
   )
 }
 
-function Payload({ label, value }: { label: string; value: unknown }) {
+function PayloadButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  onClick: () => void
+}) {
   return (
-    <details className="group mt-1.5 pl-8">
-      <summary className="text-paragraph hover:text-foreground flex cursor-pointer list-none items-center gap-1.5 font-mono text-xs select-none">
-        <ChevronRight className="size-3 transition-transform group-open:rotate-90" />
-        {label}
-      </summary>
-      <pre className="border-stock/60 bg-shading-gray/60 text-paragraph mt-2 max-h-64 overflow-auto rounded-md border p-3 font-mono text-xs">
-        {JSON.stringify(value, null, 2)}
-      </pre>
-    </details>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'shrink-0 rounded border px-2 py-0.5 font-mono text-[11px] transition-colors',
+        active
+          ? 'border-stock bg-muted/50 text-foreground'
+          : 'border-stock/70 text-paragraph hover:border-stock hover:text-foreground'
+      )}
+    >
+      {label}
+    </button>
+  )
+}
+
+function Payload({ value }: { value: unknown }) {
+  return (
+    <pre className="border-stock bg-shading-gray/80 text-paragraph mt-2 ml-14 max-h-64 overflow-auto rounded-md border p-3 font-mono text-xs">
+      {JSON.stringify(value, null, 2)}
+    </pre>
   )
 }

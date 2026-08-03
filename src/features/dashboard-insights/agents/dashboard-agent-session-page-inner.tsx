@@ -2,7 +2,6 @@
 
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import { MARKDOWN_COMPONENTS } from '@/features/ai-chat/components/components'
 import {
   DashboardSectionContent,
   DashboardSectionHeader,
@@ -33,6 +32,7 @@ import {
   type AgentSessionStepRow,
 } from './components/agent-session-steps'
 import { AgentStatusBadge } from './components/agent-status-badge'
+import { REPORT_MARKDOWN_COMPONENTS } from './components/report-markdown'
 import { formatCost } from './lib/agent-session-format'
 import { gitMetadata, metadataEntries } from './lib/agent-session-metadata'
 
@@ -269,7 +269,7 @@ export function DashboardAgentSessionPageInner() {
               <div className="px-6 py-4 text-sm">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  components={MARKDOWN_COMPONENTS}
+                  components={REPORT_MARKDOWN_COMPONENTS}
                 >
                   {session.report}
                 </ReactMarkdown>
