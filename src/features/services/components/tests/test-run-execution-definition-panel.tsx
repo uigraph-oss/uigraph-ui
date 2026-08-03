@@ -1,22 +1,26 @@
 'use client'
 
 import type { TestCase } from '@/api/.gql/graphql'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { CodeMirrorWrapped, RichTextEditor } from '@/features/component-meta'
 import { FOCAL_POINTS } from '@/features/dashboard-pages/api/focal-point'
 import { FRAME_BY_ID } from '@/features/dashboard-projects/api/frame'
 import { MAP } from '@/features/dashboard-projects/api/map'
+import { API_ENDPOINT_BY_ID } from '@/features/image-frame-canvas-sidebar/api/component-link-nav'
+import { API_ENDPOINTS, API_GROUP } from '@/features/services/api/api-endpoints'
 import { useAssetUrls } from '@/features/uploads/api/uploads'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { format } from 'date-fns'
+import { arrayNonNullable } from 'daily-code'
 import { CircleDot, LayoutPanelTop, Monitor } from 'lucide-react'
 import { Delta } from 'quill'
 import { LuChevronRight } from 'react-icons/lu'
-import { ACTOR } from '../../api/actor'
+import { parseApiSpecValue } from './modals/configure-test-case-modal/api-selection-utils'
 import { getPriorityDisplay } from './run-step-result-row'
+
+const ENDPOINT_ID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 function toDelta(v: string | null | undefined): Delta | string {
   if (!v) return ''
@@ -145,8 +149,74 @@ function KeyValueList({
   )
 }
 
+function ApiSpecInfo({
+  orgId,
+  apiSpecId,
+}: {
+  orgId?: string
+  apiSpecId: string
+}) {
+  const { serviceId, apiGroupId } = parseApiSpecValue(apiSpecId)
+  const { data } = useQuery(API_GROUP, {
+    variables: { orgId: orgId!, serviceId, id: apiGroupId },
+    skip: !orgId || !serviceId || !apiGroupId,
+    fetchPolicy: 'cache-first',
+  })
+  const name =
+    data?.apiGroup?.name?.trim() ||
+    data?.apiGroup?.label?.trim() ||
+    data?.apiGroup?.version?.trim() ||
+    apiGroupId ||
+    '—'
+
+  return (
+    <div className="rounded-[12px] border border-[#2A3242] bg-[#141925] px-4 py-3 text-sm">
+      <span className="text-foreground">{name}</span>
+    </div>
+  )
+}
+
+function ApiEndpointPath({
+  orgId,
+  operationId,
+  apiSpecId,
+}: {
+  orgId?: string
+  operationId?: string | null
+  apiSpecId?: string | null
+}) {
+  const isEndpointId = Boolean(operationId && ENDPOINT_ID_RE.test(operationId))
+  const { serviceId, apiGroupId } = parseApiSpecValue(apiSpecId)
+
+  const { data: byIdData } = useQuery(API_ENDPOINT_BY_ID, {
+    variables: { orgId: orgId!, id: operationId! },
+    skip: !orgId || !operationId || !isEndpointId,
+    fetchPolicy: 'cache-first',
+  })
+
+  const { data: listData } = useQuery(API_ENDPOINTS, {
+    variables: { orgId: orgId!, serviceId, apiGroupId },
+    skip: !orgId || !serviceId || !apiGroupId,
+    fetchPolicy: 'cache-first',
+  })
+
+  const fromList = arrayNonNullable(listData?.apiEndpoints).find(
+    (endpoint) =>
+      endpoint.id === operationId || endpoint.operationId === operationId
+  )
+
+  const path =
+    byIdData?.apiEndpointById?.path?.trim() ||
+    fromList?.path?.trim() ||
+    operationId ||
+    '—'
+
+  return <>{path}</>
+}
+
 function APIDefinition({ testCase }: { testCase: TestCase }) {
   const api = testCase.api
+  const orgId = useCurrentOrganization()?.id
   if (!api) return null
 
   const method = (api.httpMethod ?? 'GET').toUpperCase()
@@ -168,6 +238,14 @@ function APIDefinition({ testCase }: { testCase: TestCase }) {
 
   return (
     <>
+      {api.apiSpecId && (
+        <div className="mb-5">
+          <Label className="text-foreground mb-1.5 block text-xs font-semibold">
+            API Spec
+          </Label>
+          <ApiSpecInfo orgId={orgId} apiSpecId={api.apiSpecId} />
+        </div>
+      )}
       <div className="mb-5 flex items-center gap-0 overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#141925]">
         <div className="flex shrink-0 border-r border-[#2A3242] bg-[#141925] px-3 py-2.5">
           <span
@@ -177,7 +255,11 @@ function APIDefinition({ testCase }: { testCase: TestCase }) {
           </span>
         </div>
         <div className="text-foreground/75 truncate px-3 py-2.5 font-mono text-sm">
-          {api.operationId ?? '—'}
+          <ApiEndpointPath
+            orgId={orgId}
+            operationId={api.operationId}
+            apiSpecId={api.apiSpecId}
+          />
         </div>
       </div>
       <div className="mb-5 grid grid-cols-2 gap-3">
@@ -500,15 +582,33 @@ function ReferenceScreenshots({
 }) {
   const assetUrlMap = useAssetUrls(orgId, assetIds)
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {assetIds.map((assetId) => (
-        <img
-          key={assetId}
-          src={assetUrlMap[assetId] ?? ''}
-          alt="Reference screenshot"
-          className="h-20 w-full rounded-[10px] border border-[#2A3242] object-cover"
-        />
-      ))}
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {assetIds.map((assetId) => {
+        const url = assetUrlMap[assetId]
+        if (!url) {
+          return (
+            <div
+              key={assetId}
+              className="h-36 w-full animate-pulse rounded-[10px] border border-[#2A3242] bg-[#141925]"
+            />
+          )
+        }
+        return (
+          <a
+            key={assetId}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="block overflow-hidden rounded-[10px] border border-[#2A3242] transition-opacity hover:opacity-90"
+          >
+            <img
+              src={url}
+              alt="Reference screenshot"
+              className="h-36 w-full object-cover"
+            />
+          </a>
+        )
+      })}
     </div>
   )
 }
@@ -561,41 +661,6 @@ function LinkedUiNode({
       <span className="text-foreground">
         {focalPoint?.name?.trim() || 'Untitled Focal Point'}
       </span>
-    </div>
-  )
-}
-
-function AuthorInfo({
-  orgId,
-  createdBy,
-  createdAt,
-}: {
-  orgId?: string
-  createdBy: string
-  createdAt?: string | null
-}) {
-  const { data } = useQuery(ACTOR, {
-    variables: { orgId: orgId!, id: createdBy },
-    skip: !orgId || !createdBy,
-    fetchPolicy: 'cache-first',
-  })
-  const name = data?.actor?.name?.trim() || createdBy
-  const avatarUrl = data?.actor?.avatarUrl || ''
-
-  return (
-    <div className="flex items-center gap-2 rounded-[12px] border border-[#2A3242] bg-[#141925] px-4 py-3 text-sm">
-      <Avatar className="size-5">
-        <AvatarImage src={avatarUrl} className="object-cover" />
-        <AvatarFallback className="text-[10px]">
-          {name.charAt(0).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-      <span className="text-foreground">{name}</span>
-      {createdAt && (
-        <span className="text-muted-foreground">
-          · {format(new Date(createdAt), 'MMM d, yyyy')}
-        </span>
-      )}
     </div>
   )
 }
@@ -678,19 +743,6 @@ export function TestRunExecutionDefinitionPanel({
           <LinkedUiNode
             orgId={orgId}
             linkedMapNodeId={testCase.linkedMapNodeId}
-          />
-        </div>
-      )}
-
-      {testCase.createdBy && (
-        <div className="mb-5">
-          <Label className="text-foreground mb-1.5 block text-xs font-semibold">
-            Author
-          </Label>
-          <AuthorInfo
-            orgId={orgId}
-            createdBy={testCase.createdBy}
-            createdAt={testCase.createdAt}
           />
         </div>
       )}
