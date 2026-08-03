@@ -120,8 +120,8 @@ export function ConfigureApiEndpointSla({
       <div>
         <h4 className="text-sm font-semibold">Pass/fail thresholds</h4>
         <p className="text-muted-foreground mt-1 text-xs">
-          Any load test run that targets this endpoint is automatically
-          graded against these — no need to redeclare them per test pack.
+          Any load test run that targets this endpoint is automatically graded
+          against these — no need to redeclare them per test pack.
         </p>
       </div>
 
