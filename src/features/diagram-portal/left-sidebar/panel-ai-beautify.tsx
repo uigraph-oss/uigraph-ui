@@ -12,6 +12,11 @@ import { SidebarLayout } from './sidebar-layout'
 
 const PRESETS = [
   {
+    label: 'Tidy layout',
+    prompt:
+      'Rearrange the diagram so it reads cleanly: even spacing, aligned rows and columns, no overlapping boxes, and the main flow running in one direction. Keep the palette calm and coherent.',
+  },
+  {
     label: 'Dark & bold',
     prompt:
       'Use a dark background palette with high contrast accent hues. Keep labels light and bold enough to read at a glance, and give the primary flow a heavier, saturated stroke.',
