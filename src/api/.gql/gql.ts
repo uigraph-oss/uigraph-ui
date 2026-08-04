@@ -86,6 +86,11 @@ type Documents = {
     "\n  mutation UpdateTeam($orgId: ID!, $teamId: ID!, $input: UpdateTeamInput!) {\n    updateTeam(orgId: $orgId, teamId: $teamId, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateTeamDocument,
     "\n  mutation DeleteTeam($orgId: ID!, $teamId: ID!) {\n    deleteTeam(orgId: $orgId, teamId: $teamId)\n  }\n": typeof types.DeleteTeamDocument,
     "\n  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      name\n    }\n  }\n": typeof types.UpdateUserDocument,
+    "\n  query CloudConnections($orgId: ID!) {\n    cloudConnections(orgId: $orgId) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CloudConnectionsDocument,
+    "\n  mutation CreateCloudConnection(\n    $orgId: ID!\n    $input: CreateCloudConnectionInput!\n  ) {\n    createCloudConnection(orgId: $orgId, input: $input) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateCloudConnectionDocument,
+    "\n  mutation DeleteCloudConnection($orgId: ID!, $connectionId: ID!) {\n    deleteCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n": typeof types.DeleteCloudConnectionDocument,
+    "\n  mutation TestCloudConnection($orgId: ID!, $connectionId: ID!) {\n    testCloudConnection(orgId: $orgId, connectionId: $connectionId) {\n      ok\n      error\n    }\n  }\n": typeof types.TestCloudConnectionDocument,
+    "\n  mutation SyncCloudConnection($orgId: ID!, $connectionId: ID!) {\n    syncCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n": typeof types.SyncCloudConnectionDocument,
     "\n  mutation PrepareUserAvatarUpload {\n    prepareUserAvatarUpload {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareUserAvatarUploadDocument,
     "\n  mutation SetMyAvatar {\n    setMyAvatar\n  }\n": typeof types.SetMyAvatarDocument,
     "\n  query ServiceAccounts($orgId: ID!) {\n    serviceAccounts(orgId: $orgId) {\n      id\n      orgId\n      name\n      description\n      scopes\n      disabled\n      isInternal\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServiceAccountsDocument,
@@ -267,6 +272,12 @@ type Documents = {
     "\n  query TestRunResults($orgId: ID!, $serviceId: ID!, $testRunId: ID!) {\n    testRunResults(\n      orgId: $orgId\n      serviceId: $serviceId\n      testRunId: $testRunId\n    ) {\n      testRunResultId\n      testRunId\n      testCaseId\n      serviceId\n      orgId\n      status\n      blockedReason\n      responseStatus\n      responseBody\n      responseTimeMs\n      notes\n      screenshotUrls\n      executedAt\n      executedBy\n    }\n  }\n": typeof types.TestRunResultsDocument,
     "\n  mutation CreateTestRunResult(\n    $orgId: ID!\n    $serviceId: ID!\n    $input: CreateTestRunResultInput!\n  ) {\n    createTestRunResult(orgId: $orgId, serviceId: $serviceId, input: $input) {\n      testRunResultId\n      testRunId\n      testCaseId\n      status\n    }\n  }\n": typeof types.CreateTestRunResultDocument,
     "\n  mutation UpdateTestRunResult(\n    $orgId: ID!\n    $serviceId: ID!\n    $id: ID!\n    $input: UpdateTestRunResultInput!\n  ) {\n    updateTestRunResult(\n      orgId: $orgId\n      serviceId: $serviceId\n      id: $id\n      input: $input\n    ) {\n      testRunResultId\n      status\n    }\n  }\n": typeof types.UpdateTestRunResultDocument,
+    "\n  query ServiceCostResources($orgId: ID!, $serviceId: ID!) {\n    serviceCostResources(orgId: $orgId, serviceId: $serviceId) {\n      id\n      externalResourceId\n      name\n      resourceType\n      provider\n      region\n      environment\n      status\n      monthlyCostUsd\n      tags\n      matchedTags\n      lastSyncedAt\n    }\n  }\n": typeof types.ServiceCostResourcesDocument,
+    "\n  query ServiceCostTrend($orgId: ID!, $serviceId: ID!, $days: Int) {\n    serviceCostTrend(orgId: $orgId, serviceId: $serviceId, days: $days) {\n      date\n      totalUsd\n      awsUsd\n      azureUsd\n      gcpUsd\n    }\n  }\n": typeof types.ServiceCostTrendDocument,
+    "\n  query ServiceCostTagRules($orgId: ID!, $serviceId: ID!) {\n    serviceCostTagRules(orgId: $orgId, serviceId: $serviceId) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": typeof types.ServiceCostTagRulesDocument,
+    "\n  mutation CreateServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $tagKey: String!\n    $tagValue: String!\n  ) {\n    createServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      tagKey: $tagKey\n      tagValue: $tagValue\n    ) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": typeof types.CreateServiceCostTagRuleDocument,
+    "\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n": typeof types.DeleteServiceCostTagRuleDocument,
+    "\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n": typeof types.ResourceDailyCostsDocument,
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": typeof types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": typeof types.AssetUrlsDocument,
@@ -345,6 +356,11 @@ const documents: Documents = {
     "\n  mutation UpdateTeam($orgId: ID!, $teamId: ID!, $input: UpdateTeamInput!) {\n    updateTeam(orgId: $orgId, teamId: $teamId, input: $input) {\n      id\n    }\n  }\n": types.UpdateTeamDocument,
     "\n  mutation DeleteTeam($orgId: ID!, $teamId: ID!) {\n    deleteTeam(orgId: $orgId, teamId: $teamId)\n  }\n": types.DeleteTeamDocument,
     "\n  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      name\n    }\n  }\n": types.UpdateUserDocument,
+    "\n  query CloudConnections($orgId: ID!) {\n    cloudConnections(orgId: $orgId) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n": types.CloudConnectionsDocument,
+    "\n  mutation CreateCloudConnection(\n    $orgId: ID!\n    $input: CreateCloudConnectionInput!\n  ) {\n    createCloudConnection(orgId: $orgId, input: $input) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateCloudConnectionDocument,
+    "\n  mutation DeleteCloudConnection($orgId: ID!, $connectionId: ID!) {\n    deleteCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n": types.DeleteCloudConnectionDocument,
+    "\n  mutation TestCloudConnection($orgId: ID!, $connectionId: ID!) {\n    testCloudConnection(orgId: $orgId, connectionId: $connectionId) {\n      ok\n      error\n    }\n  }\n": types.TestCloudConnectionDocument,
+    "\n  mutation SyncCloudConnection($orgId: ID!, $connectionId: ID!) {\n    syncCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n": types.SyncCloudConnectionDocument,
     "\n  mutation PrepareUserAvatarUpload {\n    prepareUserAvatarUpload {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareUserAvatarUploadDocument,
     "\n  mutation SetMyAvatar {\n    setMyAvatar\n  }\n": types.SetMyAvatarDocument,
     "\n  query ServiceAccounts($orgId: ID!) {\n    serviceAccounts(orgId: $orgId) {\n      id\n      orgId\n      name\n      description\n      scopes\n      disabled\n      isInternal\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServiceAccountsDocument,
@@ -526,6 +542,12 @@ const documents: Documents = {
     "\n  query TestRunResults($orgId: ID!, $serviceId: ID!, $testRunId: ID!) {\n    testRunResults(\n      orgId: $orgId\n      serviceId: $serviceId\n      testRunId: $testRunId\n    ) {\n      testRunResultId\n      testRunId\n      testCaseId\n      serviceId\n      orgId\n      status\n      blockedReason\n      responseStatus\n      responseBody\n      responseTimeMs\n      notes\n      screenshotUrls\n      executedAt\n      executedBy\n    }\n  }\n": types.TestRunResultsDocument,
     "\n  mutation CreateTestRunResult(\n    $orgId: ID!\n    $serviceId: ID!\n    $input: CreateTestRunResultInput!\n  ) {\n    createTestRunResult(orgId: $orgId, serviceId: $serviceId, input: $input) {\n      testRunResultId\n      testRunId\n      testCaseId\n      status\n    }\n  }\n": types.CreateTestRunResultDocument,
     "\n  mutation UpdateTestRunResult(\n    $orgId: ID!\n    $serviceId: ID!\n    $id: ID!\n    $input: UpdateTestRunResultInput!\n  ) {\n    updateTestRunResult(\n      orgId: $orgId\n      serviceId: $serviceId\n      id: $id\n      input: $input\n    ) {\n      testRunResultId\n      status\n    }\n  }\n": types.UpdateTestRunResultDocument,
+    "\n  query ServiceCostResources($orgId: ID!, $serviceId: ID!) {\n    serviceCostResources(orgId: $orgId, serviceId: $serviceId) {\n      id\n      externalResourceId\n      name\n      resourceType\n      provider\n      region\n      environment\n      status\n      monthlyCostUsd\n      tags\n      matchedTags\n      lastSyncedAt\n    }\n  }\n": types.ServiceCostResourcesDocument,
+    "\n  query ServiceCostTrend($orgId: ID!, $serviceId: ID!, $days: Int) {\n    serviceCostTrend(orgId: $orgId, serviceId: $serviceId, days: $days) {\n      date\n      totalUsd\n      awsUsd\n      azureUsd\n      gcpUsd\n    }\n  }\n": types.ServiceCostTrendDocument,
+    "\n  query ServiceCostTagRules($orgId: ID!, $serviceId: ID!) {\n    serviceCostTagRules(orgId: $orgId, serviceId: $serviceId) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": types.ServiceCostTagRulesDocument,
+    "\n  mutation CreateServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $tagKey: String!\n    $tagValue: String!\n  ) {\n    createServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      tagKey: $tagKey\n      tagValue: $tagValue\n    ) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": types.CreateServiceCostTagRuleDocument,
+    "\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n": types.DeleteServiceCostTagRuleDocument,
+    "\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n": types.ResourceDailyCostsDocument,
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": types.AssetUrlsDocument,
@@ -834,6 +856,26 @@ export function graphql(source: "\n  mutation DeleteTeam($orgId: ID!, $teamId: I
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query CloudConnections($orgId: ID!) {\n    cloudConnections(orgId: $orgId) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query CloudConnections($orgId: ID!) {\n    cloudConnections(orgId: $orgId) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateCloudConnection(\n    $orgId: ID!\n    $input: CreateCloudConnectionInput!\n  ) {\n    createCloudConnection(orgId: $orgId, input: $input) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateCloudConnection(\n    $orgId: ID!\n    $input: CreateCloudConnectionInput!\n  ) {\n    createCloudConnection(orgId: $orgId, input: $input) {\n      id\n      orgId\n      provider\n      displayName\n      status\n      statusMessage\n      lastVerifiedAt\n      createdBy\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteCloudConnection($orgId: ID!, $connectionId: ID!) {\n    deleteCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n"): (typeof documents)["\n  mutation DeleteCloudConnection($orgId: ID!, $connectionId: ID!) {\n    deleteCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation TestCloudConnection($orgId: ID!, $connectionId: ID!) {\n    testCloudConnection(orgId: $orgId, connectionId: $connectionId) {\n      ok\n      error\n    }\n  }\n"): (typeof documents)["\n  mutation TestCloudConnection($orgId: ID!, $connectionId: ID!) {\n    testCloudConnection(orgId: $orgId, connectionId: $connectionId) {\n      ok\n      error\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SyncCloudConnection($orgId: ID!, $connectionId: ID!) {\n    syncCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n"): (typeof documents)["\n  mutation SyncCloudConnection($orgId: ID!, $connectionId: ID!) {\n    syncCloudConnection(orgId: $orgId, connectionId: $connectionId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -1558,6 +1600,30 @@ export function graphql(source: "\n  mutation CreateTestRunResult(\n    $orgId: 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateTestRunResult(\n    $orgId: ID!\n    $serviceId: ID!\n    $id: ID!\n    $input: UpdateTestRunResultInput!\n  ) {\n    updateTestRunResult(\n      orgId: $orgId\n      serviceId: $serviceId\n      id: $id\n      input: $input\n    ) {\n      testRunResultId\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateTestRunResult(\n    $orgId: ID!\n    $serviceId: ID!\n    $id: ID!\n    $input: UpdateTestRunResultInput!\n  ) {\n    updateTestRunResult(\n      orgId: $orgId\n      serviceId: $serviceId\n      id: $id\n      input: $input\n    ) {\n      testRunResultId\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ServiceCostResources($orgId: ID!, $serviceId: ID!) {\n    serviceCostResources(orgId: $orgId, serviceId: $serviceId) {\n      id\n      externalResourceId\n      name\n      resourceType\n      provider\n      region\n      environment\n      status\n      monthlyCostUsd\n      tags\n      matchedTags\n      lastSyncedAt\n    }\n  }\n"): (typeof documents)["\n  query ServiceCostResources($orgId: ID!, $serviceId: ID!) {\n    serviceCostResources(orgId: $orgId, serviceId: $serviceId) {\n      id\n      externalResourceId\n      name\n      resourceType\n      provider\n      region\n      environment\n      status\n      monthlyCostUsd\n      tags\n      matchedTags\n      lastSyncedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ServiceCostTrend($orgId: ID!, $serviceId: ID!, $days: Int) {\n    serviceCostTrend(orgId: $orgId, serviceId: $serviceId, days: $days) {\n      date\n      totalUsd\n      awsUsd\n      azureUsd\n      gcpUsd\n    }\n  }\n"): (typeof documents)["\n  query ServiceCostTrend($orgId: ID!, $serviceId: ID!, $days: Int) {\n    serviceCostTrend(orgId: $orgId, serviceId: $serviceId, days: $days) {\n      date\n      totalUsd\n      awsUsd\n      azureUsd\n      gcpUsd\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ServiceCostTagRules($orgId: ID!, $serviceId: ID!) {\n    serviceCostTagRules(orgId: $orgId, serviceId: $serviceId) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query ServiceCostTagRules($orgId: ID!, $serviceId: ID!) {\n    serviceCostTagRules(orgId: $orgId, serviceId: $serviceId) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $tagKey: String!\n    $tagValue: String!\n  ) {\n    createServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      tagKey: $tagKey\n      tagValue: $tagValue\n    ) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $tagKey: String!\n    $tagValue: String!\n  ) {\n    createServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      tagKey: $tagKey\n      tagValue: $tagValue\n    ) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n"): (typeof documents)["\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n"): (typeof documents)["\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

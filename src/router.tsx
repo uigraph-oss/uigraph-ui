@@ -302,6 +302,11 @@ const ServiceDatabaseListPage = lazy(() =>
     (mod) => ({ default: mod.ServiceDatabaseListPage })
   )
 )
+const ServiceCostsInfraPage = lazy(() =>
+  import('@/features/services/components/costs/service-costs-infra-page').then(
+    (mod) => ({ default: mod.ServiceCostsInfraPage })
+  )
+)
 const ServiceDatabasePage = lazy(() =>
   import('@/features/services/components/databases/service-database-page').then(
     (mod) => ({ default: mod.ServiceDatabasePage })
@@ -355,6 +360,11 @@ const ServiceAccountsPage = lazy(() =>
 const ServiceAccountDetailPage = lazy(() =>
   import('@/features/dashboard-settings/service-accounts/service-account-detail-page').then(
     (mod) => ({ default: mod.ServiceAccountDetailPage })
+  )
+)
+const CloudConnectionsPage = lazy(() =>
+  import('@/features/dashboard-settings/cloud-connections/cloud-connections-page').then(
+    (mod) => ({ default: mod.CloudConnectionsPage })
   )
 )
 const DiagramPortalPage = lazy(() =>
@@ -488,6 +498,7 @@ export function AppRoutes() {
               element={<ApiGroupEndpointsPage />}
             />
             <Route path="architecture" element={<DashboardServiceDiagrams />} />
+            <Route path="costs" element={<ServiceCostsInfraPage />} />
             <Route path="data" element={<ServiceDatabaseListPage />} />
             <Route path="data/:dbId" element={<ServiceDatabasePage />} />
             <Route path="dependencies" element={<ServiceDependenciesRoute />} />
@@ -576,6 +587,10 @@ export function AppRoutes() {
             <Route
               path="service-accounts/:id"
               element={<ServiceAccountDetailPage />}
+            />
+            <Route
+              path="cloud-connections"
+              element={<CloudConnectionsPage />}
             />
             <Route path="security" element={<SecuritySettings />} />
           </Route>

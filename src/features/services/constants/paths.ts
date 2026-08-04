@@ -4,6 +4,7 @@ const allServiceTabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'apis', label: 'API & Behavior' },
   { id: 'architecture', label: 'Architecture' },
+  { id: 'costs', label: 'Costs & Infra' },
   { id: 'data', label: 'Data' },
   { id: 'dependencies', label: 'Dependencies' },
   { id: 'docs', label: 'Docs' },
