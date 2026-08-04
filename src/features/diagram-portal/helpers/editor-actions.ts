@@ -40,7 +40,14 @@ export const editorActions = [
       if (rf.getNodes().length === 0) {
         await rf.zoomTo(1)
       } else {
-        await rf.fitView()
+        await rf.fitView({
+          padding: {
+            top: '80px',
+            left: '20px',
+            right: '20px',
+            bottom: '20px',
+          },
+        })
       }
     },
   },
