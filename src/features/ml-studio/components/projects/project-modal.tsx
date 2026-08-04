@@ -19,9 +19,11 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { BoxesIcon, FlaskConicalIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -35,6 +37,30 @@ const projectSchema = z.object({
 })
 
 type ProjectFormValues = z.infer<typeof projectSchema>
+type ProjectTypeValue = ProjectFormValues['type']
+
+const PROJECT_TYPES: {
+  value: ProjectTypeValue
+  label: string
+  description: string
+  icon: typeof BoxesIcon
+  activeClassName: string
+}[] = [
+  {
+    value: 'model',
+    label: 'Model',
+    description: 'Track model cards, versions, and deployments',
+    icon: BoxesIcon,
+    activeClassName: 'border-blue-500 bg-blue-500/10',
+  },
+  {
+    value: 'training',
+    label: 'Training',
+    description: 'Organize experiments, runs, and datasets',
+    icon: FlaskConicalIcon,
+    activeClassName: 'border-violet-500 bg-violet-500/10',
+  },
+]
 
 const emptyValues: ProjectFormValues = {
   name: '',
@@ -166,15 +192,39 @@ export function ProjectModal({
               <FormItem>
                 <FormLabel>Type</FormLabel>
                 <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="border-stock text-foreground/80 h-[56px] w-full rounded-[16px] bg-transparent px-6">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="model">Model</SelectItem>
-                      <SelectItem value="training">Training</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="grid grid-cols-2 gap-3">
+                    {PROJECT_TYPES.map((type) => {
+                      const Icon = type.icon
+                      const isSelected = field.value === type.value
+                      return (
+                        <button
+                          key={type.value}
+                          type="button"
+                          onClick={() => field.onChange(type.value)}
+                          disabled={formState.isSubmitting}
+                          className={cn(
+                            'flex flex-col items-start gap-2 rounded-[16px] border border-[#2A3242] bg-[#141925] p-4 text-left transition-colors hover:border-[#3A4356]',
+                            isSelected && type.activeClassName
+                          )}
+                        >
+                          <Icon
+                            className={cn(
+                              'h-5 w-5',
+                              isSelected
+                                ? 'text-foreground'
+                                : 'text-muted-foreground'
+                            )}
+                          />
+                          <span className="text-sm font-semibold">
+                            {type.label}
+                          </span>
+                          <span className="text-muted-foreground text-xs leading-snug">
+                            {type.description}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
