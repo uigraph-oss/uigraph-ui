@@ -78,13 +78,15 @@ export function TagRulesPanel({ serviceId }: { serviceId: string }) {
         {rules.map((rule) => (
           <span
             key={rule.id}
-            className="bg-muted/40 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium"
+            className="bg-muted/40 inline-flex max-w-full items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium"
           >
-            {rule.tagKey}:{rule.tagValue}
+            <span className="min-w-0 break-all">
+              {rule.tagKey}:{rule.tagValue}
+            </span>
             <button
               type="button"
               onClick={() => void handleDelete(rule.id)}
-              className="text-paragraph hover:text-foreground"
+              className="text-paragraph hover:text-foreground shrink-0"
               aria-label={`Remove rule ${rule.tagKey}:${rule.tagValue}`}
             >
               <X className="size-3" />

@@ -313,7 +313,8 @@ export type CloudConnection = {
 export enum CloudConnectionStatus {
   Connected = 'CONNECTED',
   Error = 'ERROR',
-  Pending = 'PENDING'
+  Pending = 'PENDING',
+  Syncing = 'SYNCING'
 }
 
 export enum CloudProvider {
@@ -1802,7 +1803,8 @@ export type Mutation = {
   setServiceAccountAvatar: Scalars['Boolean']['output'];
   switchOrg: Scalars['Boolean']['output'];
   syncAPIGroup: SyncApiGroupResult;
-  syncCloudConnection: Scalars['Int']['output'];
+  /** Kicks off an async sync and returns immediately (true = started) — a full multi-region scan can take too long for a synchronous request. Watch the connection's status field for progress. */
+  syncCloudConnection: Scalars['Boolean']['output'];
   syncDiagram: SyncDiagramResult;
   syncFrame: SyncFrameResult;
   testCloudConnection: TestCloudConnectionResult;
@@ -5395,7 +5397,7 @@ export type SyncCloudConnectionMutationVariables = Exact<{
 }>;
 
 
-export type SyncCloudConnectionMutation = { syncCloudConnection: number };
+export type SyncCloudConnectionMutation = { syncCloudConnection: boolean };
 
 export type PrepareUserAvatarUploadMutationVariables = Exact<{ [key: string]: never; }>;
 

@@ -18,6 +18,7 @@ type CloudConnectionRowData = Pick<
 const STATUS_STYLES: Record<GT.CloudConnectionStatus, string> = {
   CONNECTED: 'bg-success/10 text-success',
   PENDING: 'bg-muted/40 text-paragraph',
+  SYNCING: 'bg-primary/10 text-primary',
   ERROR: 'bg-destructive/10 text-destructive',
 }
 
@@ -30,13 +31,16 @@ const PROVIDER_LABELS: Record<GT.CloudProvider, string> = {
 export function CloudConnectionRow({
   connection,
   onTest,
+  onSync,
   onDelete,
 }: {
   connection: CloudConnectionRowData
   onTest: (id: string) => Promise<void>
+  onSync: (id: string) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }) {
   const [testing, setTesting] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   return (
@@ -79,6 +83,23 @@ export function CloudConnectionRow({
             }}
           >
             {testing ? 'Testing…' : 'Test'}
+          </Button>
+          <Button
+            preset="outline"
+            className="h-8 px-3 text-xs"
+            disabled={syncing || connection.status === 'SYNCING'}
+            onClick={async () => {
+              setSyncing(true)
+              try {
+                await onSync(connection.id)
+              } finally {
+                setSyncing(false)
+              }
+            }}
+          >
+            {syncing || connection.status === 'SYNCING'
+              ? 'Syncing…'
+              : 'Sync now'}
           </Button>
           <Button
             preset="outline"

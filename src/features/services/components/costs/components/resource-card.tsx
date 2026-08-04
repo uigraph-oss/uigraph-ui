@@ -24,9 +24,9 @@ export function ResourceCard({ resource }: { resource: InfraResource }) {
   const iconSrc = PROVIDER_ICON_MAP[resource.provider][resource.type]
 
   return (
-    <div className="border-stock bg-shading/40 hover:ring-primary rounded-xl border p-4 transition-colors hover:ring-1">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5">
+    <div className="border-stock bg-shading/40 hover:ring-primary min-w-0 rounded-xl border p-4 transition-colors hover:ring-1">
+      <div className="flex min-w-0 items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2.5">
           <span className="bg-muted/30 flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg">
             <img src={iconSrc} alt="" className="size-5" />
           </span>

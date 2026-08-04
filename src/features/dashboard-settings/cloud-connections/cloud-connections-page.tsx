@@ -12,6 +12,7 @@ import {
   CLOUD_CONNECTIONS,
   CREATE_CLOUD_CONNECTION,
   DELETE_CLOUD_CONNECTION,
+  SYNC_CLOUD_CONNECTION,
   TEST_CLOUD_CONNECTION,
 } from './api'
 import {
@@ -29,6 +30,10 @@ export function CloudConnectionsPage() {
     variables: listVars,
     skip: !orgId,
     onError: (error) => toast.error(error.message),
+    // Sync now runs asynchronously — poll while this page is open so a
+    // connection's status flips from SYNCING back to CONNECTED/ERROR
+    // without the user having to refresh.
+    pollInterval: 5000,
   })
 
   const [createConnection] = useMutation(CREATE_CLOUD_CONNECTION, {
@@ -40,6 +45,10 @@ export function CloudConnectionsPage() {
     awaitRefetchQueries: true,
   })
   const [deleteConnection] = useMutation(DELETE_CLOUD_CONNECTION, {
+    refetchQueries: [{ query: CLOUD_CONNECTIONS, variables: listVars }],
+    awaitRefetchQueries: true,
+  })
+  const [syncConnection] = useMutation(SYNC_CLOUD_CONNECTION, {
     refetchQueries: [{ query: CLOUD_CONNECTIONS, variables: listVars }],
     awaitRefetchQueries: true,
   })
@@ -66,6 +75,15 @@ export function CloudConnectionsPage() {
       } else {
         toast.error(data?.testCloudConnection.error ?? 'Connection failed')
       }
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
+  async function handleSync(connectionId: string) {
+    try {
+      await syncConnection({ variables: { orgId, connectionId } })
+      toast.success('Sync started — this can take a minute for a full scan')
     } catch (error) {
       toast.error((error as Error).message)
     }
@@ -115,7 +133,7 @@ export function CloudConnectionsPage() {
                   <th className="w-48 px-6 py-4 text-left text-xs font-medium text-[#828DA3]">
                     Status
                   </th>
-                  <th className="w-40 px-6 py-4" />
+                  <th className="w-56 px-6 py-4" />
                 </tr>
               </thead>
               <tbody>
@@ -134,6 +152,7 @@ export function CloudConnectionsPage() {
                     key={connection.id}
                     connection={connection}
                     onTest={handleTest}
+                    onSync={handleSync}
                     onDelete={handleDelete}
                   />
                 ))}
