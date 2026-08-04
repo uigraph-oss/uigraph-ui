@@ -23,6 +23,7 @@ export const Paths = {
     database: (serviceId: string, dbId: string) =>
       `/services/${serviceId}/data/${dbId}`,
     diagrams: (serviceId: string) => `/services/${serviceId}/diagrams`,
+    costs: (serviceId: string) => `/services/${serviceId}/costs`,
     data: (serviceId: string) => `/services/${serviceId}/data`,
     operations: (serviceId: string) => `/services/${serviceId}/operations`,
     people: (serviceId: string) => `/services/${serviceId}/people`,

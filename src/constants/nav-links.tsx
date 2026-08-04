@@ -15,7 +15,7 @@ import {
   GoStack,
 } from 'react-icons/go'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { LuBot, LuFingerprint } from 'react-icons/lu'
+import { LuBot, LuCloud, LuFingerprint } from 'react-icons/lu'
 
 type NavLinkMeta = {
   icon: ReactNode
@@ -131,6 +131,12 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings/service-accounts',
     label: 'Service Accounts',
     icon: <LuBot />,
+    adminOnly: true,
+  },
+  {
+    id: '/settings/cloud-connections',
+    label: 'Cloud Connections',
+    icon: <LuCloud />,
     adminOnly: true,
   }
   /* {
