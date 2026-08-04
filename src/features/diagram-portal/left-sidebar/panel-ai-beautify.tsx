@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { useNodesInitialized } from '@xyflow/react'
 import { useState, type FormEvent } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
@@ -10,10 +11,36 @@ import { useAiBeautify } from '../hooks/use-ai-beautify'
 import { SidebarLayout } from './sidebar-layout'
 
 const PRESETS = [
-  'Dark & high contrast',
-  'Soft pastel',
-  'Monochrome blueprint',
-  'Highlight the data layer',
+  {
+    label: 'Dark & bold',
+    prompt:
+      'Use a dark background palette with high contrast accent hues. Keep labels light and bold enough to read at a glance, and give the primary flow a heavier, saturated stroke.',
+  },
+  {
+    label: 'Soft pastel',
+    prompt:
+      'Use a soft pastel palette with light fills, dark readable text and gentle soft strokes. Keep groups very pale so they recede behind their children.',
+  },
+  {
+    label: 'Blueprint',
+    prompt:
+      'Monochrome blueprint style: one blue hue plus neutrals, transparent or nearly transparent fills, thin uniform strokes and a precise technical feel. No decorative color.',
+  },
+  {
+    label: 'Data layer',
+    prompt:
+      'Highlight the data layer. Give databases, stores and queues a distinct accent hue and the cylinder or hexagon shapes that match what they are, and keep services neutral so the data path stands out.',
+  },
+  {
+    label: 'Group by domain',
+    prompt:
+      'Color by ownership: every node inside the same group shares a hue, and different groups get clearly different hues. Give each group container a pale fill with a stronger stroke of the same hue.',
+  },
+  {
+    label: 'Flow emphasis',
+    prompt:
+      'Make the main request path obvious: heavy saturated strokes on the primary flow, dashed lighter strokes for async, retry and fallback edges, and animate only the genuinely live streams.',
+  },
 ]
 
 export function SidebarAiBeautify() {
@@ -26,7 +53,7 @@ export function SidebarAiBeautify() {
     event.preventDefault()
 
     if (!nodesInitialized) {
-      toast.info('Diagram is still rendering — try again in a moment')
+      toast.info('Diagram is still rendering. Try again in a moment')
       return
     }
 
@@ -41,30 +68,40 @@ export function SidebarAiBeautify() {
             Beautify with AI
           </h3>
           <p className="text-xs text-[#8A94A6]">
-            Restyles the whole diagram — colors, shapes and sizes. Ids, labels
-            and connections stay untouched. Leave the prompt empty for a clean,
-            professional default.
+            Restyles colors, shapes and sizes. Structure never changes.
           </p>
         </div>
 
         <Textarea
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
-          placeholder="Ex: dark, high contrast, blue for infrastructure"
-          className="min-h-32 resize-y border-[#2A3242] bg-[#0F131C] text-[#F4F7FC]"
+          placeholder="Describe a style, or leave empty for a clean default"
+          className="min-h-28 resize-y border-[#2A3242] bg-[#0F131C] text-xs text-[#F4F7FC] placeholder:text-[#5C6679]"
           disabled={isBeautifying}
         />
 
         <div className="flex flex-wrap gap-1.5">
           {PRESETS.map((preset) => (
             <button
-              key={preset}
+              key={preset.label}
               type="button"
               disabled={isBeautifying}
-              onClick={() => setPrompt(preset)}
-              className="rounded-full border border-[#2A3242] px-2.5 py-1 text-xs text-[#8A94A6] transition-all hover:bg-[#1E2533] hover:text-[#F4F7FC] disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() =>
+                setPrompt((prev) =>
+                  prev === preset.prompt ? '' : preset.prompt
+                )
+              }
+              className={cn(
+                'rounded-[0.5rem] border px-2.5 py-1 text-xs transition-all disabled:cursor-not-allowed disabled:opacity-50',
+
+                prompt === preset.prompt &&
+                  'border-primary/40 bg-primary/10 text-primary',
+
+                prompt !== preset.prompt &&
+                  'border-[#2A3242] text-[#8A94A6] hover:bg-[#1E2533] hover:text-[#F4F7FC]'
+              )}
             >
-              {preset}
+              {preset.label}
             </button>
           ))}
         </div>
