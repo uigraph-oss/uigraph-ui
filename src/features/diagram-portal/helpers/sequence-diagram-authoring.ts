@@ -1,5 +1,6 @@
 import { ComponentInputType } from '@/features/component-meta'
-import { Edge, Node } from '@xyflow/react'
+import { Edge, MarkerType, Node } from '@xyflow/react'
+import { createEdgeMarker } from '../edges/helpers'
 import { generateUUID } from '../utils/uuid'
 import {
   beautifySequenceDiagram,
@@ -143,6 +144,7 @@ export function createMessage(
       'target'
     ),
     type: 'smoothstep',
+    markerEnd: createEdgeMarker({ type: MarkerType.ArrowClosed }),
   }
 
   return beautifySequenceDiagram(

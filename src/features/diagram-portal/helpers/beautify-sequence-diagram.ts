@@ -1,5 +1,6 @@
 import { estimateSequenceMessageBoxSize, SEQUENCE_LAYOUT } from '@uigraph/sdk'
-import { Edge, Node } from '@xyflow/react'
+import { Edge, MarkerType, Node } from '@xyflow/react'
+import { createEdgeMarker } from '../edges/helpers'
 import { getComponentField } from '../hooks/use-component-field'
 import { TComponentField } from '../types/component-fields'
 import { DEFAULT_CONFIG } from './sequence-diagram-layout'
@@ -208,6 +209,21 @@ export function renumberSequenceRows(
   return { nodes, edges: updatedEdges }
 }
 
+function withMessageArrowheads(edges: Edge[]): Edge[] {
+  return edges.map((edge) => {
+    if (!edge.source.startsWith('message-')) return edge
+    if (!edge.target.startsWith('participant-')) return edge
+    if (edge.markerEnd !== undefined) return edge
+    if (edge.markerStart !== undefined) return edge
+    if (edge.data?.arrowType !== undefined) return edge
+
+    return {
+      ...edge,
+      markerEnd: createEdgeMarker({ type: MarkerType.ArrowClosed }),
+    }
+  })
+}
+
 function computeMessageX(
   fromX: number,
   toX: number,
@@ -402,5 +418,5 @@ export function beautifySequenceDiagram(
       n
   )
 
-  return renumberSequenceRows(updatedNodes, edges)
+  return renumberSequenceRows(updatedNodes, withMessageArrowheads(edges))
 }
