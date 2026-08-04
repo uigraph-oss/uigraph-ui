@@ -277,6 +277,7 @@ type Documents = {
     "\n  query ServiceCostTagRules($orgId: ID!, $serviceId: ID!) {\n    serviceCostTagRules(orgId: $orgId, serviceId: $serviceId) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": typeof types.ServiceCostTagRulesDocument,
     "\n  mutation CreateServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $tagKey: String!\n    $tagValue: String!\n  ) {\n    createServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      tagKey: $tagKey\n      tagValue: $tagValue\n    ) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": typeof types.CreateServiceCostTagRuleDocument,
     "\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n": typeof types.DeleteServiceCostTagRuleDocument,
+    "\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n": typeof types.ResourceDailyCostsDocument,
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": typeof types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": typeof types.AssetUrlsDocument,
@@ -546,6 +547,7 @@ const documents: Documents = {
     "\n  query ServiceCostTagRules($orgId: ID!, $serviceId: ID!) {\n    serviceCostTagRules(orgId: $orgId, serviceId: $serviceId) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": types.ServiceCostTagRulesDocument,
     "\n  mutation CreateServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $tagKey: String!\n    $tagValue: String!\n  ) {\n    createServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      tagKey: $tagKey\n      tagValue: $tagValue\n    ) {\n      id\n      serviceId\n      tagKey\n      tagValue\n      createdBy\n      createdAt\n    }\n  }\n": types.CreateServiceCostTagRuleDocument,
     "\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n": types.DeleteServiceCostTagRuleDocument,
+    "\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n": types.ResourceDailyCostsDocument,
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": types.AssetUrlsDocument,
@@ -1618,6 +1620,10 @@ export function graphql(source: "\n  mutation CreateServiceCostTagRule(\n    $or
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n"): (typeof documents)["\n  mutation DeleteServiceCostTagRule(\n    $orgId: ID!\n    $serviceId: ID!\n    $ruleId: ID!\n  ) {\n    deleteServiceCostTagRule(\n      orgId: $orgId\n      serviceId: $serviceId\n      ruleId: $ruleId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n"): (typeof documents)["\n  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {\n    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {\n      date\n      costUsd\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -80,3 +80,12 @@ export const DELETE_SERVICE_COST_TAG_RULE = graphql(`
     )
   }
 `)
+
+export const RESOURCE_DAILY_COSTS = graphql(`
+  query ResourceDailyCosts($orgId: ID!, $resourceId: ID!, $days: Int) {
+    resourceDailyCosts(orgId: $orgId, resourceId: $resourceId, days: $days) {
+      date
+      costUsd
+    }
+  }
+`)

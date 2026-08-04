@@ -19,12 +19,29 @@ const STATUS_DOT: Record<InfraResource['status'], string> = {
   stopped: 'bg-paragraph/50',
 }
 
-export function ResourceCard({ resource }: { resource: InfraResource }) {
+export function ResourceCard({
+  resource,
+  onClick,
+}: {
+  resource: InfraResource
+  onClick?: () => void
+}) {
   const typeMeta = RESOURCE_TYPES[resource.type]
   const iconSrc = PROVIDER_ICON_MAP[resource.provider][resource.type]
 
   return (
-    <div className="border-stock bg-shading/40 hover:ring-primary min-w-0 rounded-xl border p-4 transition-colors hover:ring-1">
+    <div
+      className="border-stock bg-shading/40 hover:ring-primary min-w-0 cursor-pointer rounded-xl border p-4 transition-colors hover:ring-1"
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
+    >
       <div className="flex min-w-0 items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2.5">
           <span className="bg-muted/30 flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg">
