@@ -54,7 +54,7 @@ export function FloatingCanvasToolbar() {
     drawingMode,
     setDrawingMode,
 
-    tempDiagramState,
+    isPreviewing,
 
     diagramName,
   } = useFlowDiagramContext()
@@ -218,7 +218,7 @@ export function FloatingCanvasToolbar() {
           delayDuration={100}
           tooltipPosition="top"
           tooltip={selectedGroup ? 'Ungroup nodes' : 'Group nodes'}
-          disabled={tempDiagramState !== null}
+          disabled={isPreviewing}
           isActive={drawingMode || !!selectedGroup}
           onClick={() => {
             if (selectedGroup) {
@@ -282,7 +282,7 @@ export function FloatingCanvasToolbar() {
               ? 'Auto layout is unavailable for sequence diagrams'
               : 'Auto layout left-to-right'
           }
-          disabled={tempDiagramState !== null || isSequence}
+          disabled={isPreviewing || isSequence}
           onClick={() => {
             if (isSequence) {
               return
@@ -304,7 +304,7 @@ export function FloatingCanvasToolbar() {
               ? 'Auto layout is unavailable for sequence diagrams'
               : 'Auto layout top-to-bottom'
           }
-          disabled={tempDiagramState !== null || isSequence}
+          disabled={isPreviewing || isSequence}
           onClick={() => {
             if (isSequence) {
               return
@@ -322,9 +322,7 @@ export function FloatingCanvasToolbar() {
           delayDuration={100}
           tooltipPosition="top"
           tooltip="Beautify Layout"
-          disabled={
-            tempDiagramState !== null || !nodesInitialized || nodes.length === 0
-          }
+          disabled={isPreviewing || !nodesInitialized || nodes.length === 0}
           onClick={() => {
             if (!nodesInitialized) {
               toast.info('Diagram is still rendering — try again in a moment')
@@ -360,7 +358,7 @@ export function FloatingCanvasToolbar() {
           >
             <DropdownMenuItem
               onClick={() => void handleImportMermaid()}
-              disabled={tempDiagramState !== null}
+              disabled={isPreviewing}
             >
               <LuImport className="size-4" />
               Import Mermaid

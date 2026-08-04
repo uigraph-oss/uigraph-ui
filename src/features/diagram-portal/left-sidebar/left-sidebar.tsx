@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { BsDatabase } from 'react-icons/bs'
+import { BsDatabase, BsStars } from 'react-icons/bs'
 import { GoComment } from 'react-icons/go'
 import {
   LuCloudy,
@@ -18,6 +18,7 @@ import {
 import { MdAnimation } from 'react-icons/md'
 import { RxText } from 'react-icons/rx'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
+import { SidebarAiBeautify } from './panel-ai-beautify'
 import { SidebarAnimatedNodes } from './panel-animated-nodes'
 import { SidebarClouds } from './panel-clouds'
 import { SidebarComments } from './panel-comments'
@@ -138,6 +139,19 @@ export function FloatingLeftSidebar() {
               )
             }}
           />
+
+          <Separator className="!w-8" />
+
+          <SidebarButton
+            name="Beautify with AI"
+            icon={<BsStars />}
+            isActive={sidebarActiveTool === 'beautify-ai'}
+            onClick={() =>
+              setSidebarActiveTool((prev) =>
+                prev === 'beautify-ai' ? null : 'beautify-ai'
+              )
+            }
+          />
         </div>
       </SidebarLayout>
 
@@ -152,6 +166,7 @@ export function FloatingLeftSidebar() {
       {(sidebarActiveTool === 'comments' ||
         sidebarActiveTool === 'add-comment') && <SidebarComments />}
       {sidebarActiveTool === 'generate-ai' && <SidebarGenerateWithAI />}
+      {sidebarActiveTool === 'beautify-ai' && <SidebarAiBeautify />}
     </>
   )
 }

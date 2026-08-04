@@ -18,6 +18,7 @@ import { PropsWithChildren, useEffect, useRef } from 'react'
 import { LuMenu } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { UserDropdownMenu } from '../dashboard'
+import { AiBeautifyPreviewBar } from './components/ai-beautify-preview-bar'
 import { DiagramTestingOptions } from './components/diagram-testing-options'
 import { DiagramVersion } from './components/diagram-version'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
@@ -27,7 +28,7 @@ import { FloatingLeftSidebar } from './left-sidebar/left-sidebar'
 import { FloatingProperties } from './properties'
 
 export function FlowDiagramLayout({ children }: PropsWithChildren) {
-  const { viewport, diagramName, setDiagramName, tempDiagramState } =
+  const { viewport, diagramName, setDiagramName, isPreviewing } =
     useFlowDiagramContext()
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -151,9 +152,10 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
         <div className="absolute inset-4 top-2 isolate overflow-hidden rounded-[0.75rem] border border-[#2A3242]">
           {children}
           <FloatingCanvasToolbar />
-          {tempDiagramState === null && <FloatingLeftSidebar />}
-          {tempDiagramState === null && <FloatingProperties />}
-          {tempDiagramState === null && <FloatingSelectionToolbar />}
+          {!isPreviewing && <FloatingLeftSidebar />}
+          {!isPreviewing && <FloatingProperties />}
+          {!isPreviewing && <FloatingSelectionToolbar />}
+          <AiBeautifyPreviewBar />
         </div>
       </div>
     </section>

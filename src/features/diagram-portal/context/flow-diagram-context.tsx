@@ -109,15 +109,15 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       organizationId,
       folderId,
       teamId,
-      disabled: diagramData.tempDiagramState !== null,
+      disabled: diagramData.isPreviewing,
       initialLastUpdatedAt: initialInfo.lastUpdatedAt,
 
-      nodes: diagramData.nodes,
-      edges: diagramData.edges,
-      viewport: diagramData.viewport,
+      nodes: diagramData.latestData.nodes,
+      edges: diagramData.latestData.edges,
+      viewport: diagramData.latestData.viewport,
 
-      dataSources: diagramData.dataSources,
-      components: diagramData.flowComponents,
+      dataSources: diagramData.latestData.dataSources,
+      components: diagramData.latestData.components,
     })
 
     return {

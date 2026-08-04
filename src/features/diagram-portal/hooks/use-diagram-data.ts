@@ -1,5 +1,5 @@
 import { useAutoRef } from '@/hooks/use-auto-ref'
-import type { NodeChange } from '@xyflow/react'
+import type { Edge, Node, NodeChange } from '@xyflow/react'
 import { useEdgesState, useNodesState } from '@xyflow/react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { DataSource } from '../types/db-flow'
@@ -32,8 +32,26 @@ export function useDiagramData(initialData: ServerDiagramData) {
     null | (ServerDiagramData & { versionId: string })
   >(null)
 
-  const effectiveNodes = tempDiagramState ? tempDiagramState.nodes : latestNodes
-  const effectiveEdges = tempDiagramState ? tempDiagramState.edges : latestEdges
+  const [aiPreviewState, setAiPreviewState] = useState<null | {
+    nodes: Node[]
+    edges: Edge[]
+    theme: string
+    summary: string
+  }>(null)
+
+  const isPreviewing = aiPreviewState !== null || tempDiagramState !== null
+
+  const effectiveNodes = aiPreviewState
+    ? aiPreviewState.nodes
+    : tempDiagramState
+      ? tempDiagramState.nodes
+      : latestNodes
+
+  const effectiveEdges = aiPreviewState
+    ? aiPreviewState.edges
+    : tempDiagramState
+      ? tempDiagramState.edges
+      : latestEdges
   const nodesRef = useRef(effectiveNodes)
   const edgesRef = useRef(effectiveEdges)
   nodesRef.current = effectiveNodes
@@ -208,33 +226,33 @@ export function useDiagramData(initialData: ServerDiagramData) {
     viewport: tempDiagramState ? tempDiagramState.viewport : latestViewport,
     setViewport: tempDiagramState ? setTempViewport : setLatestViewport,
 
-    nodes: tempDiagramState ? tempDiagramState.nodes : latestNodes,
-    setNodes: tempDiagramState
+    nodes: effectiveNodes,
+    setNodes: isPreviewing
       ? (console.error as typeof setLatestNodes)
       : setLatestNodes,
-    onNodesChange: tempDiagramState
+    onNodesChange: isPreviewing
       ? (console.error as typeof onLatestNodesChange)
       : onNodesChangeWrapped,
 
-    edges: tempDiagramState ? tempDiagramState.edges : latestEdges,
-    setEdges: tempDiagramState
+    edges: effectiveEdges,
+    setEdges: isPreviewing
       ? (console.error as typeof setLatestEdges)
       : setLatestEdges,
-    onEdgesChange: tempDiagramState
+    onEdgesChange: isPreviewing
       ? (console.error as typeof onLatestEdgesChange)
       : onLatestEdgesChange,
 
     dataSources: tempDiagramState
       ? tempDiagramState.dataSources
       : latestDataSources,
-    setDataSources: tempDiagramState
+    setDataSources: isPreviewing
       ? (console.error as typeof setLatestDataSources)
       : setLatestDataSources,
 
     flowComponents: tempDiagramState
       ? tempDiagramState.components
       : latestFlowComponents,
-    setFlowComponents: tempDiagramState
+    setFlowComponents: isPreviewing
       ? (console.error as typeof setLatestFlowComponents)
       : setLatestFlowComponents,
 
@@ -248,6 +266,10 @@ export function useDiagramData(initialData: ServerDiagramData) {
 
     tempDiagramState,
     setTempDiagramState,
+
+    aiPreviewState,
+    setAiPreviewState,
+    isPreviewing,
 
     selectedNodeIds,
     setSelectedNodeIds,

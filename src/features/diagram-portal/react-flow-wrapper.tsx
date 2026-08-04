@@ -80,7 +80,7 @@ export function ReactFlowWrapper({
     setIsEdgeConnecting,
 
     dataSources,
-    tempDiagramState,
+    isPreviewing,
   } = useFlowDiagramContext()
 
   const ref = useAutoRef({
@@ -229,6 +229,7 @@ export function ReactFlowWrapper({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       if (!reactFlowInstance) return
+      if (isPreviewing) return
 
       event.preventDefault()
 
@@ -286,12 +287,13 @@ export function ReactFlowWrapper({
         }
       }
     },
-    [ref, reactFlowInstance, setNodes, setEdges]
+    [ref, reactFlowInstance, isPreviewing, setNodes, setEdges]
   )
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       if (!reactFlowInstance) return
+      if (isPreviewing) return
       if (sidebarActiveTool !== 'add-comment') return
 
       const id = generateUUID()
@@ -312,7 +314,13 @@ export function ReactFlowWrapper({
 
       setSidebarActiveTool(null)
     },
-    [reactFlowInstance, sidebarActiveTool, setNodes, setSidebarActiveTool]
+    [
+      reactFlowInstance,
+      isPreviewing,
+      sidebarActiveTool,
+      setNodes,
+      setSidebarActiveTool,
+    ]
   )
 
   const onDrawComplete = useCallback(
@@ -403,8 +411,7 @@ export function ReactFlowWrapper({
     [reactFlowInstance, setNodes, setEdges]
   )
 
-  const isNodeWritable =
-    !drawingMode && !forceReadOnly && tempDiagramState === null
+  const isNodeWritable = !drawingMode && !forceReadOnly && !isPreviewing
 
   const { undo, redo } = useDiagramHistory({
     nodes,
@@ -461,6 +468,18 @@ export function ReactFlowWrapper({
   return (
     <>
       {sidebarActiveTool === 'add-comment' && <VirtualCursor />}
+
+      {isPreviewing && (
+        <style>{`
+          .diagram-preview-locked .react-flow__node,
+          .diagram-preview-locked .react-flow__node *,
+          .diagram-preview-locked .react-flow__edge,
+          .diagram-preview-locked .react-flow__edge * {
+            pointer-events: none !important;
+            user-select: none !important;
+          }
+        `}</style>
+      )}
       <ReactFlow
         ref={reactFLowRef}
         nodeTypes={CUSTOM_NODE_TYPES}
@@ -490,7 +509,9 @@ export function ReactFlowWrapper({
           'relative isolate opacity-0 transition-opacity duration-100',
           reactFlowInstance && 'opacity-100',
           sidebarActiveTool === 'add-comment' &&
-            'cursor-none! [&_*]:cursor-none!'
+            'cursor-none! [&_*]:cursor-none!',
+
+          isPreviewing && 'diagram-preview-locked'
         )}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -544,7 +565,7 @@ export function ReactFlowWrapper({
         )}
 
         <DrawingOverlay
-          isDrawing={drawingMode}
+          isDrawing={drawingMode && !isPreviewing}
           onDrawComplete={onDrawComplete}
         />
 
