@@ -150,8 +150,8 @@ importers:
         specifier: ^15.5.13
         version: 15.5.13
       '@uigraph/sdk':
-        specifier: ^1.2.6
-        version: 1.2.6(@xyflow/react@12.11.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(quill@2.0.3)(supports-color@8.1.1)(zod@4.4.3)
+        specifier: ^1.2.7
+        version: 1.2.7(@xyflow/react@12.11.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(quill@2.0.3)(supports-color@8.1.1)(zod@4.4.3)
       '@uiw/codemirror-theme-monokai-dimmed':
         specifier: 4.25.3
         version: 4.25.3(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.7)
@@ -3401,8 +3401,8 @@ packages:
     resolution: {integrity: sha512-8C71BQkGjiMmXtop7pHVJu1l2NNShFdkCyD6a2ezzs5vU/L3LRtb69EtcteFwz0mYMPzIgOw0n6OV4VBUWZd7A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@uigraph/sdk@1.2.6':
-    resolution: {integrity: sha512-bWqxwQl763CtUTkwBIFe3ZPoyd2ukmJJ/lfiGT0eOFD7qGwdZhLWpb9+n+GufTFNF8kpsHw9HpNeR7NT3KJ+Xw==}
+  '@uigraph/sdk@1.2.7':
+    resolution: {integrity: sha512-krW5hUtYedlKxUQqqd1KdxQHHWMf1KuBXqTpcz1nuxHS4M3Jj74OXbTzBh38s9gtmxculTMgE7CukUwSb7Huog==}
     peerDependencies:
       '@xyflow/react': ^12
       quill: '*'
@@ -10957,7 +10957,7 @@ snapshots:
       '@typescript-eslint/types': 8.65.0
       eslint-visitor-keys: 5.0.1
 
-  '@uigraph/sdk@1.2.6(@xyflow/react@12.11.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(quill@2.0.3)(supports-color@8.1.1)(zod@4.4.3)':
+  '@uigraph/sdk@1.2.7(@xyflow/react@12.11.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(quill@2.0.3)(supports-color@8.1.1)(zod@4.4.3)':
     dependencies:
       '@xyflow/react': 12.11.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       dagre: 0.8.5
