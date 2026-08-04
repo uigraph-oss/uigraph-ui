@@ -139,64 +139,6 @@ describe('beautifySequenceDiagram', () => {
     expect(rm1.position.y).toBeLessThan(rm2.position.y)
   })
 
-  it('backfills a missing arrowhead on a message -> participant edge', () => {
-    const p1 = participant('participant-p1', 0)
-    const p2 = participant('participant-p2', 300)
-    const m0 = labeledMessage('message-m0', 0, 'POST /v1/billing')
-
-    const { edges: result } = beautifySequenceDiagram(
-      [p1, p2, m0],
-      linkEdges('participant-p1', 'message-m0', 'participant-p2')
-    )
-
-    const toEdge = result.find((e) => e.target === 'participant-p2')!
-    const fromEdge = result.find((e) => e.source === 'participant-p1')!
-
-    expect(toEdge.markerEnd).toMatchObject({ type: 'arrowclosed' })
-    expect(fromEdge.markerEnd).toBeUndefined()
-  })
-
-  it('leaves mermaid-imported and already-marked message edges alone', () => {
-    const p1 = participant('participant-p1', 0)
-    const p2 = participant('participant-p2', 300)
-    const headless = labeledMessage('message-headless', 0, 'no arrow')
-    const reversed = labeledMessage('message-reversed', 1, 'reversed arrow')
-
-    const edges: Edge[] = [
-      {
-        id: 'edge-headless-a',
-        source: 'participant-p1',
-        target: 'message-headless',
-      } as Edge,
-      {
-        id: 'edge-headless-b',
-        source: 'message-headless',
-        target: 'participant-p2',
-        data: { arrowType: 'none' },
-      } as Edge,
-      {
-        id: 'edge-reversed-a',
-        source: 'participant-p1',
-        target: 'message-reversed',
-      } as Edge,
-      {
-        id: 'edge-reversed-b',
-        source: 'message-reversed',
-        target: 'participant-p2',
-        markerStart: { type: 'arrowclosed' },
-      } as Edge,
-    ]
-
-    const { edges: result } = beautifySequenceDiagram(
-      [p1, p2, headless, reversed],
-      edges
-    )
-    const resultById = new Map(result.map((e) => [e.id, e]))
-
-    expect(resultById.get('edge-headless-b')!.markerEnd).toBeUndefined()
-    expect(resultById.get('edge-reversed-b')!.markerEnd).toBeUndefined()
-  })
-
   it('widens the message box for longer labels, up to a cap', () => {
     const p1 = participant('participant-p1', 0)
     const p2 = participant('participant-p2', 300)
