@@ -807,6 +807,23 @@ export type CreateTestRunResultInput = {
   testRunId: Scalars['ID']['input'];
 };
 
+export type CreateTimelineEventInput = {
+  adrNumber?: InputMaybe<Scalars['String']['input']>;
+  attachmentAssetId?: InputMaybe<Scalars['String']['input']>;
+  attachmentFileName?: InputMaybe<Scalars['String']['input']>;
+  attachmentFileType?: InputMaybe<Scalars['String']['input']>;
+  decisionStatus?: InputMaybe<Scalars['String']['input']>;
+  eventDate: Scalars['Time']['input'];
+  isAgentSummarized?: InputMaybe<Scalars['Boolean']['input']>;
+  sourceLabel?: InputMaybe<Scalars['String']['input']>;
+  sourceUrl?: InputMaybe<Scalars['String']['input']>;
+  summary: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  touches?: InputMaybe<Array<TimelineTouchInput>>;
+  type: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateTokenInput = {
   expiresAt?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -1739,6 +1756,7 @@ export type Mutation = {
   createTestPack: TestPack;
   createTestRun: TestRun;
   createTestRunResult: TestRunResult;
+  createTimelineEvent: TimelineEvent;
   createUser: User;
   deleteAPIEndpoint: Scalars['Boolean']['output'];
   deleteAPIGroup: Scalars['Boolean']['output'];
@@ -1780,6 +1798,7 @@ export type Mutation = {
   deleteTeam: Scalars['Boolean']['output'];
   deleteTestCase: Scalars['Boolean']['output'];
   deleteTestPack: Scalars['Boolean']['output'];
+  deleteTimelineEvent: Scalars['Boolean']['output'];
   disableUser: Scalars['Boolean']['output'];
   generateDiagramThumbnail: Scalars['Boolean']['output'];
   linkMlVersionEvaluations: Array<MlEvaluation>;
@@ -1845,6 +1864,7 @@ export type Mutation = {
   updateTestPack: TestPack;
   updateTestRun: TestRun;
   updateTestRunResult: TestRunResult;
+  updateTimelineEvent: TimelineEvent;
   updateUser: User;
   upsertCanvas: Canvas;
   upsertLDAP: Scalars['Boolean']['output'];
@@ -2194,6 +2214,13 @@ export type MutationCreateTestRunResultArgs = {
 };
 
 
+export type MutationCreateTimelineEventArgs = {
+  input: CreateTimelineEventInput;
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
 };
@@ -2447,6 +2474,13 @@ export type MutationDeleteTestCaseArgs = {
 
 export type MutationDeleteTestPackArgs = {
   id: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteTimelineEventArgs = {
+  eventId: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
 };
@@ -2889,6 +2923,14 @@ export type MutationUpdateTestRunResultArgs = {
 };
 
 
+export type MutationUpdateTimelineEventArgs = {
+  eventId: Scalars['ID']['input'];
+  input: UpdateTimelineEventInput;
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateUserArgs = {
   id: Scalars['ID']['input'];
   input: UpdateUserInput;
@@ -3067,6 +3109,7 @@ export type Query = {
   serviceDocById: ServiceDoc;
   serviceDocs: Array<ServiceDoc>;
   serviceImpact: Array<Dependency>;
+  serviceTimelineEvents: Array<TimelineEvent>;
   services: ServicePage;
   team: Team;
   teamMembers: Array<TeamMember>;
@@ -3741,6 +3784,12 @@ export type QueryServiceImpactArgs = {
 };
 
 
+export type QueryServiceTimelineEventsArgs = {
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type QueryServicesArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -4291,6 +4340,42 @@ export type TestRunSummary = {
   testRunId: Scalars['ID']['output'];
 };
 
+export type TimelineEvent = {
+  adrNumber?: Maybe<Scalars['String']['output']>;
+  attachmentAssetId?: Maybe<Scalars['String']['output']>;
+  attachmentFileName?: Maybe<Scalars['String']['output']>;
+  attachmentFileType?: Maybe<Scalars['String']['output']>;
+  attachmentUrl?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['Time']['output'];
+  decisionStatus?: Maybe<Scalars['String']['output']>;
+  eventDate: Scalars['Time']['output'];
+  id: Scalars['ID']['output'];
+  isAgentSummarized: Scalars['Boolean']['output'];
+  orgId: Scalars['ID']['output'];
+  origin: Scalars['String']['output'];
+  serviceId: Scalars['ID']['output'];
+  sourceLabel?: Maybe<Scalars['String']['output']>;
+  sourceUrl?: Maybe<Scalars['String']['output']>;
+  summary: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  touches: Array<TimelineTouch>;
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['Time']['output'];
+  version?: Maybe<Scalars['String']['output']>;
+};
+
+export type TimelineTouch = {
+  id: Scalars['ID']['output'];
+  kind: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+};
+
+export type TimelineTouchInput = {
+  id: Scalars['ID']['input'];
+  kind: Scalars['String']['input'];
+  label: Scalars['String']['input'];
+};
+
 export type ToolSavings = {
   costSavedUsd: Scalars['Float']['output'];
   estAgentTimeMs: Scalars['Int']['output'];
@@ -4644,6 +4729,23 @@ export type UpdateTestRunResultInput = {
   responseTimeMs?: InputMaybe<Scalars['Int']['input']>;
   screenshotUrls?: InputMaybe<Array<Scalars['String']['input']>>;
   status?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTimelineEventInput = {
+  adrNumber?: InputMaybe<Scalars['String']['input']>;
+  attachmentAssetId?: InputMaybe<Scalars['String']['input']>;
+  attachmentFileName?: InputMaybe<Scalars['String']['input']>;
+  attachmentFileType?: InputMaybe<Scalars['String']['input']>;
+  decisionStatus?: InputMaybe<Scalars['String']['input']>;
+  eventDate: Scalars['Time']['input'];
+  isAgentSummarized?: InputMaybe<Scalars['Boolean']['input']>;
+  sourceLabel?: InputMaybe<Scalars['String']['input']>;
+  sourceUrl?: InputMaybe<Scalars['String']['input']>;
+  summary: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  touches?: InputMaybe<Array<TimelineTouchInput>>;
+  type: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateUserInput = {
@@ -7002,6 +7104,42 @@ export type ResourceDailyCostsQueryVariables = Exact<{
 
 export type ResourceDailyCostsQuery = { resourceDailyCosts: Array<{ date: string, costUsd: number }> };
 
+export type ServiceTimelineEventsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+}>;
+
+
+export type ServiceTimelineEventsQuery = { serviceTimelineEvents: Array<{ id: string, serviceId: string, type: string, title: string, summary: string, eventDate: string, version?: string | null, adrNumber?: string | null, decisionStatus?: string | null, sourceLabel?: string | null, sourceUrl?: string | null, isAgentSummarized: boolean, origin: string, attachmentAssetId?: string | null, attachmentFileName?: string | null, attachmentFileType?: string | null, attachmentUrl?: string | null, createdAt: string, updatedAt: string, touches: Array<{ id: string, label: string, kind: string }> }> };
+
+export type CreateTimelineEventMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  input: CreateTimelineEventInput;
+}>;
+
+
+export type CreateTimelineEventMutation = { createTimelineEvent: { id: string, serviceId: string, type: string, title: string, summary: string, eventDate: string, version?: string | null, adrNumber?: string | null, decisionStatus?: string | null, sourceLabel?: string | null, sourceUrl?: string | null, isAgentSummarized: boolean, origin: string, attachmentAssetId?: string | null, attachmentFileName?: string | null, attachmentFileType?: string | null, attachmentUrl?: string | null, createdAt: string, updatedAt: string, touches: Array<{ id: string, label: string, kind: string }> } };
+
+export type UpdateTimelineEventMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  eventId: Scalars['ID']['input'];
+  input: UpdateTimelineEventInput;
+}>;
+
+
+export type UpdateTimelineEventMutation = { updateTimelineEvent: { id: string, serviceId: string, type: string, title: string, summary: string, eventDate: string, version?: string | null, adrNumber?: string | null, decisionStatus?: string | null, sourceLabel?: string | null, sourceUrl?: string | null, isAgentSummarized: boolean, origin: string, attachmentAssetId?: string | null, attachmentFileName?: string | null, attachmentFileType?: string | null, attachmentUrl?: string | null, createdAt: string, updatedAt: string, touches: Array<{ id: string, label: string, kind: string }> } };
+
+export type DeleteTimelineEventMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  serviceId: Scalars['ID']['input'];
+  eventId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteTimelineEventMutation = { deleteTimelineEvent: boolean };
+
 export type CreateAssetUploadMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
 }>;
@@ -7295,6 +7433,10 @@ export const ServiceCostTagRulesDocument = {"kind":"Document","definitions":[{"k
 export const CreateServiceCostTagRuleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateServiceCostTagRule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tagKey"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tagValue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createServiceCostTagRule"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"tagKey"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tagKey"}}},{"kind":"Argument","name":{"kind":"Name","value":"tagValue"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tagValue"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"tagKey"}},{"kind":"Field","name":{"kind":"Name","value":"tagValue"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<CreateServiceCostTagRuleMutation, CreateServiceCostTagRuleMutationVariables>;
 export const DeleteServiceCostTagRuleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteServiceCostTagRule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ruleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteServiceCostTagRule"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"ruleId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ruleId"}}}]}]}}]} as unknown as DocumentNode<DeleteServiceCostTagRuleMutation, DeleteServiceCostTagRuleMutationVariables>;
 export const ResourceDailyCostsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ResourceDailyCosts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"days"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resourceDailyCosts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"resourceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"days"},"value":{"kind":"Variable","name":{"kind":"Name","value":"days"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"costUsd"}}]}}]}}]} as unknown as DocumentNode<ResourceDailyCostsQuery, ResourceDailyCostsQueryVariables>;
+export const ServiceTimelineEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceTimelineEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceTimelineEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"eventDate"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"adrNumber"}},{"kind":"Field","name":{"kind":"Name","value":"decisionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"sourceLabel"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"isAgentSummarized"}},{"kind":"Field","name":{"kind":"Name","value":"origin"}},{"kind":"Field","name":{"kind":"Name","value":"touches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachmentAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentFileName"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentFileType"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ServiceTimelineEventsQuery, ServiceTimelineEventsQueryVariables>;
+export const CreateTimelineEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTimelineEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTimelineEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTimelineEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"eventDate"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"adrNumber"}},{"kind":"Field","name":{"kind":"Name","value":"decisionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"sourceLabel"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"isAgentSummarized"}},{"kind":"Field","name":{"kind":"Name","value":"origin"}},{"kind":"Field","name":{"kind":"Name","value":"touches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachmentAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentFileName"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentFileType"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTimelineEventMutation, CreateTimelineEventMutationVariables>;
+export const UpdateTimelineEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTimelineEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateTimelineEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTimelineEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"eventId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"eventDate"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"adrNumber"}},{"kind":"Field","name":{"kind":"Name","value":"decisionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"sourceLabel"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"isAgentSummarized"}},{"kind":"Field","name":{"kind":"Name","value":"origin"}},{"kind":"Field","name":{"kind":"Name","value":"touches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachmentAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentFileName"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentFileType"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTimelineEventMutation, UpdateTimelineEventMutationVariables>;
+export const DeleteTimelineEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTimelineEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTimelineEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"Argument","name":{"kind":"Name","value":"eventId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}}}]}]}}]} as unknown as DocumentNode<DeleteTimelineEventMutation, DeleteTimelineEventMutationVariables>;
 export const CreateAssetUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAssetUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAssetUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<CreateAssetUploadMutation, CreateAssetUploadMutationVariables>;
 export const AssetUrlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetUrl"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assetId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"assetId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assetId"}}}]}]}}]} as unknown as DocumentNode<AssetUrlQuery, AssetUrlQueryVariables>;
 export const AssetUrlsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetUrls"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assetIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetUrls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"assetIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assetIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]} as unknown as DocumentNode<AssetUrlsQuery, AssetUrlsQueryVariables>;

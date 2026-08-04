@@ -9,6 +9,7 @@ const allServiceTabs = [
   { id: 'dependencies', label: 'Dependencies' },
   { id: 'docs', label: 'Docs' },
   { id: 'tests', label: 'Tests' },
+  { id: 'timeline', label: 'Timeline' },
   { id: 'operations', label: 'Operations' },
   { id: 'people', label: 'People' },
 ] as const

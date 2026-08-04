@@ -307,6 +307,11 @@ const ServiceCostsInfraPage = lazy(() =>
     (mod) => ({ default: mod.ServiceCostsInfraPage })
   )
 )
+const ServiceTimelinePage = lazy(() =>
+  import('@/features/services/components/timeline/service-timeline-page').then(
+    (mod) => ({ default: mod.ServiceTimelinePage })
+  )
+)
 const ServiceDatabasePage = lazy(() =>
   import('@/features/services/components/databases/service-database-page').then(
     (mod) => ({ default: mod.ServiceDatabasePage })
@@ -499,6 +504,7 @@ export function AppRoutes() {
             />
             <Route path="architecture" element={<DashboardServiceDiagrams />} />
             <Route path="costs" element={<ServiceCostsInfraPage />} />
+            <Route path="timeline" element={<ServiceTimelinePage />} />
             <Route path="data" element={<ServiceDatabaseListPage />} />
             <Route path="data/:dbId" element={<ServiceDatabasePage />} />
             <Route path="dependencies" element={<ServiceDependenciesRoute />} />
