@@ -19,6 +19,7 @@ export type SequenceParticipantNodeData = NodeDataGenerator<{
   lifelineEndRow?: number
   activations?: Array<{ startRow: number; endRow: number }>
   color?: string
+  textColor?: string
   titleFontSize?: number
 }>
 
@@ -109,6 +110,7 @@ export function SequenceParticipantNode({
             onKeyDown={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
             className="text-foreground mb-[-0.25em] block field-sizing-content border-none bg-transparent p-0 text-[1em] leading-[1] font-medium whitespace-nowrap outline-none"
+            style={{ color: data.textColor }}
             onChange={(e) => {
               const fields = data.componentFields ?? []
               updateNodeData(id, {

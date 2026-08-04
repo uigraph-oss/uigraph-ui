@@ -21,6 +21,10 @@ export function NodeSequenceParticipantStyle() {
     data?.color ?? SEQUENCE_PARTICIPANT_COLOR
   )
 
+  const [localTextColor, setLocalTextColor] = useEffectState<string>(
+    data?.textColor ?? ''
+  )
+
   const participant = nodes.find((n) => n.type === 'sequenceParticipant')
 
   const titleFontSize =
@@ -45,6 +49,17 @@ export function NodeSequenceParticipantStyle() {
           onChange={(value) => {
             setLocalColor(value)
             updateData({ color: value })
+          }}
+        />
+      </Field>
+
+      <Field label="Text Color">
+        <ColorPickerInput
+          value={localTextColor}
+          className="border-stock border-1 border-solid"
+          onChange={(value) => {
+            setLocalTextColor(value)
+            updateData({ textColor: value })
           }}
         />
       </Field>

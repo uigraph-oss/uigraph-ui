@@ -55,6 +55,8 @@ export function useDiagramHistory({
   }, [nodes, edges, enabled])
 
   const undo = useCallback(() => {
+    if (!enabled) return
+
     const index = indexRef.current
 
     if (index <= 0) return
@@ -63,9 +65,11 @@ export function useDiagramHistory({
     const snapshot = historyRef.current[index - 1]
     setNodes(snapshot.nodes)
     setEdges(snapshot.edges)
-  }, [setNodes, setEdges])
+  }, [enabled, setNodes, setEdges])
 
   const redo = useCallback(() => {
+    if (!enabled) return
+
     const history = historyRef.current
     const index = indexRef.current
 
@@ -75,7 +79,7 @@ export function useDiagramHistory({
     const snapshot = history[index + 1]
     setNodes(snapshot.nodes)
     setEdges(snapshot.edges)
-  }, [setNodes, setEdges])
+  }, [enabled, setNodes, setEdges])
 
   return { undo, redo }
 }

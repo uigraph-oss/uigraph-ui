@@ -36,6 +36,7 @@ export function DiagramVersion() {
   const {
     diagramId,
     organizationId,
+    aiPreviewState,
     tempDiagramState,
     triggerMetaUpdate,
     setTempDiagramState,
@@ -87,7 +88,7 @@ export function DiagramVersion() {
       {tempDiagramState === null ? (
         <Button
           preset="outline"
-          disabled={isCreatingVersion}
+          disabled={isCreatingVersion || aiPreviewState !== null}
           onClick={async () => {
             try {
               setIsCreatingVersion(true)
@@ -166,6 +167,7 @@ export function DiagramVersion() {
       )}
 
       <Select
+        disabled={aiPreviewState !== null}
         value={
           tempDiagramState === null ? 'current' : tempDiagramState.versionId
         }

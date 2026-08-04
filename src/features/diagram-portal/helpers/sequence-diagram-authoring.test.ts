@@ -125,6 +125,67 @@ describe('createMessage', () => {
     ).toHaveLength(2)
   })
 
+  it('points an arrowhead at the destination lifeline, in both directions', () => {
+    const p1 = participant('participant-a', 0)
+    const p2 = participant('participant-b', 300)
+
+    const forward = createMessage(
+      [p1, p2],
+      [],
+      'participant-a',
+      'participant-b',
+      'GET /v1/stores'
+    )
+    const forwardMessage = forward.nodes.find((n) =>
+      n.id.startsWith('message-')
+    )!
+    const forwardFrom = forward.edges.find(
+      (e) => e.source === 'participant-a' && e.target === forwardMessage.id
+    )!
+    const forwardTo = forward.edges.find(
+      (e) => e.source === forwardMessage.id && e.target === 'participant-b'
+    )!
+
+    expect(forwardTo.markerEnd).toMatchObject({ type: 'arrowclosed' })
+    expect(forwardFrom.markerEnd).toBeUndefined()
+    expect(forwardFrom.markerStart).toBeUndefined()
+
+    const backward = createMessage(
+      [p1, p2],
+      [],
+      'participant-b',
+      'participant-a',
+      '200 OK'
+    )
+    const backwardMessage = backward.nodes.find((n) =>
+      n.id.startsWith('message-')
+    )!
+    const backwardTo = backward.edges.find(
+      (e) => e.source === backwardMessage.id && e.target === 'participant-a'
+    )!
+
+    expect(backwardTo.markerEnd).toMatchObject({ type: 'arrowclosed' })
+  })
+
+  it('points a self-message arrowhead at its return row', () => {
+    const p1 = participant('participant-a', 0)
+    const { nodes, edges } = createMessage(
+      [p1],
+      [],
+      'participant-a',
+      'participant-a',
+      'internal check'
+    )
+
+    const message = nodes.find((n) => n.id.startsWith('message-'))!
+    const returnEdge = edges.find(
+      (e) => e.source === message.id && e.target === 'participant-a'
+    )!
+
+    expect(returnEdge.markerEnd).toMatchObject({ type: 'arrowclosed' })
+    expect(returnEdge.targetHandle).toBe('row-1-right-target')
+  })
+
   it('appends subsequent messages below existing ones', () => {
     const p1 = participant('participant-a', 0)
     const p2 = participant('participant-b', 300)

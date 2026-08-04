@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils'
 import {
   convertMermaidToReactFlow,
   convertMermaidToReactFlowWithContext,
-  convertReactFlowToSequenceMermaid,
+  convertReactFlowToSequenceUiGraph,
   convertUiGraphToMermaid,
   isSequenceDiagram,
 } from '@uigraph/sdk'
@@ -54,7 +54,7 @@ export function FloatingCanvasToolbar() {
     drawingMode,
     setDrawingMode,
 
-    tempDiagramState,
+    isPreviewing,
 
     diagramName,
   } = useFlowDiagramContext()
@@ -143,50 +143,9 @@ export function FloatingCanvasToolbar() {
           .replace(/[\\/:*?"<>|]+/g, '-')
           .replace(/\s+/g, ' ') || 'uigraph-diagram'
 
-      if (isSequenceDiagram(nodes)) {
-        const mermaid = convertReactFlowToSequenceMermaid(nodes, edges)
-
-        const mermaidBlob = new Blob([mermaid], {
-          type: 'text/plain;charset=utf-8',
-        })
-        const mermaidUrl = URL.createObjectURL(mermaidBlob)
-        const mermaidLink = document.createElement('a')
-        mermaidLink.href = mermaidUrl
-        mermaidLink.download = `${baseName}.mmd`
-        mermaidLink.click()
-
-        const context = {
-          nodes: Object.fromEntries(
-            nodes
-              .filter(
-                (node) =>
-                  node.type === 'sequenceParticipant' &&
-                  typeof node.data?.color === 'string'
-              )
-              .map((node) => [
-                node.id,
-                { style: { color: node.data.color as string } },
-              ])
-          ),
-        }
-
-        const contextBlob = new Blob([JSON.stringify(context, null, 2)], {
-          type: 'application/json;charset=utf-8',
-        })
-        const contextUrl = URL.createObjectURL(contextBlob)
-        const contextLink = document.createElement('a')
-        contextLink.href = contextUrl
-        contextLink.download = `${baseName}-context.json`
-        contextLink.click()
-
-        URL.revokeObjectURL(mermaidUrl)
-        URL.revokeObjectURL(contextUrl)
-
-        toast.success('Mermaid and context exported successfully')
-        return
-      }
-
-      const exported = convertUiGraphToMermaid({ nodes, edges })
+      const exported = isSequenceDiagram(nodes)
+        ? convertReactFlowToSequenceUiGraph(nodes, edges)
+        : convertUiGraphToMermaid({ nodes, edges })
 
       const mermaidBlob = new Blob([exported.mermaid], {
         type: 'text/plain;charset=utf-8',
@@ -259,7 +218,7 @@ export function FloatingCanvasToolbar() {
           delayDuration={100}
           tooltipPosition="top"
           tooltip={selectedGroup ? 'Ungroup nodes' : 'Group nodes'}
-          disabled={tempDiagramState !== null}
+          disabled={isPreviewing}
           isActive={drawingMode || !!selectedGroup}
           onClick={() => {
             if (selectedGroup) {
@@ -323,7 +282,7 @@ export function FloatingCanvasToolbar() {
               ? 'Auto layout is unavailable for sequence diagrams'
               : 'Auto layout left-to-right'
           }
-          disabled={tempDiagramState !== null || isSequence}
+          disabled={isPreviewing || isSequence}
           onClick={() => {
             if (isSequence) {
               return
@@ -345,7 +304,7 @@ export function FloatingCanvasToolbar() {
               ? 'Auto layout is unavailable for sequence diagrams'
               : 'Auto layout top-to-bottom'
           }
-          disabled={tempDiagramState !== null || isSequence}
+          disabled={isPreviewing || isSequence}
           onClick={() => {
             if (isSequence) {
               return
@@ -363,9 +322,7 @@ export function FloatingCanvasToolbar() {
           delayDuration={100}
           tooltipPosition="top"
           tooltip="Beautify Layout"
-          disabled={
-            tempDiagramState !== null || !nodesInitialized || nodes.length === 0
-          }
+          disabled={isPreviewing || !nodesInitialized || nodes.length === 0}
           onClick={() => {
             if (!nodesInitialized) {
               toast.info('Diagram is still rendering — try again in a moment')
@@ -401,7 +358,7 @@ export function FloatingCanvasToolbar() {
           >
             <DropdownMenuItem
               onClick={() => void handleImportMermaid()}
-              disabled={tempDiagramState !== null}
+              disabled={isPreviewing}
             >
               <LuImport className="size-4" />
               Import Mermaid
