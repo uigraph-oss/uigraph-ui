@@ -292,3 +292,15 @@
 .folder-scroll-row:hover::-webkit-scrollbar-thumb {
   background-color: #d1d5db;
 }
+
+.react-flow .react-flow__node.draggable,
+.react-flow .react-flow__node.draggable.dragging,
+.react-flow .react-flow__nodesselection-rect {
+  cursor: move;
+}
+.react-flow .react-flow__node.draggable :is(input, textarea) {
+  cursor: move;
+}
+.react-flow .react-flow__node.selected :is(input, textarea) {
+  cursor: text;
+}
