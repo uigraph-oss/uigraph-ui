@@ -59,6 +59,16 @@ export function FloatingLeftSidebar() {
             }
           />
           <SidebarButton
+            name="Modeling"
+            icon={<LuWorkflow />}
+            isActive={sidebarActiveTool === 'modeling'}
+            onClick={() =>
+              setSidebarActiveTool((prev) =>
+                prev === 'modeling' ? null : 'modeling'
+              )
+            }
+          />
+          <SidebarButton
             name="Cloud Services"
             icon={<LuCloudy />}
             isActive={sidebarActiveTool === 'clouds'}
@@ -117,17 +127,6 @@ export function FloatingLeftSidebar() {
           />
 
           <Separator className="!w-8" />
-
-          <SidebarButton
-            name="Modeling"
-            icon={<LuWorkflow />}
-            isActive={sidebarActiveTool === 'modeling'}
-            onClick={() =>
-              setSidebarActiveTool((prev) =>
-                prev === 'modeling' ? null : 'modeling'
-              )
-            }
-          />
 
           <SidebarButton
             name="Data Sources"
