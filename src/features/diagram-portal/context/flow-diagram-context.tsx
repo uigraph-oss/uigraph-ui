@@ -48,6 +48,8 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       null
     )
 
+    const [toolMode, setToolMode] = useState<'select' | 'pan'>('select')
+
     const [showGrid, setShowGrid] = useLocalStorage(
       'flow-diagram-show-grid',
       true
@@ -149,6 +151,9 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
       sidebarActiveTool,
       setSidebarActiveTool,
+
+      toolMode,
+      setToolMode,
 
       isEdgeConnecting,
       setIsEdgeConnecting,
