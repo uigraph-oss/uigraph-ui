@@ -77,6 +77,8 @@ export function ReactFlowWrapper({
     sidebarActiveTool,
     setSidebarActiveTool,
 
+    toolMode,
+
     setIsEdgeConnecting,
 
     dataSources,
@@ -469,6 +471,12 @@ export function ReactFlowWrapper({
     <>
       {sidebarActiveTool === 'add-comment' && <VirtualCursor />}
 
+      <style>{`
+        .react-flow__pane.selection {
+          cursor: default;
+        }
+      `}</style>
+
       {isPreviewing && (
         <style>{`
           .diagram-preview-locked .react-flow__node,
@@ -486,6 +494,8 @@ export function ReactFlowWrapper({
         edgeTypes={CUSTOM_EDGE_TYPES}
         selectionMode={SelectionMode.Partial}
         selectNodesOnDrag={false}
+        panOnDrag={toolMode === 'pan' ? true : [1, 2]}
+        selectionOnDrag={toolMode === 'select'}
         noWheelClassName="skip-wheel"
         nodes={nodes}
         edges={edges}
