@@ -61,7 +61,6 @@ export function DiagramPicker({
   const teams = arrayNonNullable(teamsQuery.data?.teams ?? [])
   const items = arrayNonNullable(data?.diagrams?.items ?? [])
 
-  // A diagram embedding itself would render an infinite drill-down.
   const diagrams = items.filter((diagram) => diagram.id !== diagramId)
   const hasMore = items.length < (data?.diagrams?.totalCount ?? 0)
 
