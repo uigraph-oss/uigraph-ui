@@ -42,6 +42,7 @@ const STATUSES = [
 const TYPES = [
   { value: 'all', label: 'All agents' },
   { value: 'artifacts', label: 'Artifacts' },
+  { value: 'impact', label: 'Impact' },
 ]
 
 const VIEWS = [
