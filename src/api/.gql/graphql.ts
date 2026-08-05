@@ -4355,6 +4355,7 @@ export type TimelineEvent = {
   origin: Scalars['String']['output'];
   serviceId: Scalars['ID']['output'];
   sourceLabel?: Maybe<Scalars['String']['output']>;
+  sourceRef?: Maybe<Scalars['String']['output']>;
   sourceUrl?: Maybe<Scalars['String']['output']>;
   summary: Scalars['String']['output'];
   title: Scalars['String']['output'];
