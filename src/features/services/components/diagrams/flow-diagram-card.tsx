@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { serviceDiagramToLegacyWithMeta } from '@/features/services/api/service-diagram'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -33,6 +34,7 @@ export function FlowDiagramCard({
   diagram: NonNullable<ServiceDiagramWithMeta['diagram']>
   serviceDiagram: ServiceDiagramWithMeta['serviceDiagram']
 }) {
+  const { canWrite } = usePermissions()
   const { serviceId, service } = useServiceContext()
   const orgId = useCurrentOrganization().id
 
@@ -190,6 +192,7 @@ export function FlowDiagramCard({
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             variant="destructive"
+            disabled={!canWrite}
             onClick={() => setIsDeleteConfirmationOpen(true)}
           >
             Delete

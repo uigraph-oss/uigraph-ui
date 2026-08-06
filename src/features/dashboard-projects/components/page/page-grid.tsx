@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
@@ -45,6 +46,7 @@ export function PagesGrid({ pages }: { pages: DashboardFrame[] }) {
 }
 
 function PageCard({ page }: { page: DashboardFrame }) {
+  const { canWrite } = usePermissions()
   const organizationId = useCurrentOrganization()?.id
   const { mapId, deleteFrame, updateFrame, isFrameDeleting } =
     useSingleProject()
@@ -166,12 +168,16 @@ function PageCard({ page }: { page: DashboardFrame }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setEditPage(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setEditPage(true)}
+          >
             Edit
           </DropdownMenuItem>
 
           <DropdownMenuItem
             variant={'destructive'}
+            disabled={!canWrite}
             onClick={() => setDeletePage(true)}
           >
             Delete

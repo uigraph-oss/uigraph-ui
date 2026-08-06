@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { FrameLink } from '@/features/dashboard-pages/api/links'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
@@ -30,6 +31,7 @@ export function LinkedProjectDot({
   deleteProjectLink,
   updateProjectLink,
 }: LinkedProjectDotProps) {
+  const { canWrite } = usePermissions()
   const [isOpen, setIsOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -71,6 +73,7 @@ export function LinkedProjectDot({
               <Button
                 preset="outline"
                 className="size-8"
+                disabled={!canWrite}
                 onClick={() => setIsEditModalOpen(true)}
               >
                 <Pencil />
@@ -78,6 +81,7 @@ export function LinkedProjectDot({
               <Button
                 preset="destructive"
                 className="size-8"
+                disabled={!canWrite}
                 onClick={() => setIsDeleteModalOpen(true)}
               >
                 <Trash2 />

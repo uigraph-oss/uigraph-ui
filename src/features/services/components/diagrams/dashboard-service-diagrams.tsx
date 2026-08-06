@@ -9,6 +9,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -43,6 +44,7 @@ function getPageWindow(current: number, total: number): (number | '...')[] {
 }
 
 export function DashboardServiceDiagrams() {
+  const { canWrite } = usePermissions()
   const { serviceId, service } = useServiceContext()
   const orgId = useCurrentOrganization().id
   const [page, setPage] = useState(0)
@@ -111,7 +113,7 @@ export function DashboardServiceDiagrams() {
       >
         <Button
           preset="primary"
-          disabled={isCreatingServiceDiagram}
+          disabled={isCreatingServiceDiagram || !canWrite}
           onClick={handleCreateServiceDiagram}
         >
           {isCreatingServiceDiagram ? (

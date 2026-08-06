@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -124,6 +125,7 @@ function ProjectCard({
   teamName?: string
 }) {
   const orgId = useCurrentOrganization()?.id
+  const { canWrite } = usePermissions()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -238,11 +240,15 @@ function ProjectCard({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setIsEditModalOpen(true)}
+          >
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
+            disabled={!canWrite}
             onClick={() => setIsDeleteModalOpen(true)}
           >
             Delete
@@ -302,6 +308,7 @@ export function ProjectsTab() {
   })
   const teams = teamsData?.teams ?? []
   const teamNameById = new Map(teams.map((team) => [team.id, team.name]))
+  const { canWrite } = usePermissions()
   const [modalOpen, setModalOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
@@ -359,7 +366,7 @@ export function ProjectsTab() {
             Groups of models and experiments across your ML sources.
           </p>
         </div>
-        <Button onClick={() => setModalOpen(true)}>
+        <Button disabled={!canWrite} onClick={() => setModalOpen(true)}>
           <PlusIcon />
           New Project
         </Button>
@@ -431,7 +438,11 @@ export function ProjectsTab() {
               Create a project to group your models and experiments, or sync one
               from your ML source.
             </p>
-            <Button className="mt-1" onClick={() => setModalOpen(true)}>
+            <Button
+              className="mt-1"
+              disabled={!canWrite}
+              onClick={() => setModalOpen(true)}
+            >
               <PlusIcon />
               Create your first project
             </Button>

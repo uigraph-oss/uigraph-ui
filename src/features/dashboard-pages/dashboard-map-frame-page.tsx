@@ -4,6 +4,7 @@ import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { LuLink, LuX } from 'react-icons/lu'
 import { RxGroup } from 'react-icons/rx'
 import { CirclePlusIcon } from '../../assets/svgs/component-icons'
@@ -35,6 +36,7 @@ function FocalPointPageInner() {
     drawRectMode,
     setDrawRectMode,
   } = useFocalPointContext()
+  const { canWrite } = usePermissions()
 
   return (
     <DashboardPageSectionLayout
@@ -65,6 +67,7 @@ function FocalPointPageInner() {
           <div className="flex items-center gap-2">
             <Button
               preset={newPoint?.type === 'link' ? 'destructive' : 'primary'}
+              disabled={!canWrite}
               onClick={() =>
                 setNewPoint((prev) =>
                   prev ? null : { type: 'link', position: null }
@@ -86,6 +89,7 @@ function FocalPointPageInner() {
 
             <Button
               preset={drawRectMode ? 'destructive' : 'primary'}
+              disabled={!canWrite}
               onClick={() =>
                 setDrawRectMode((prev) =>
                   prev ? null : { type: 'group', position: null }
@@ -107,6 +111,7 @@ function FocalPointPageInner() {
 
             <Button
               preset={newPoint?.type === 'focal' ? 'destructive' : 'primary'}
+              disabled={!canWrite}
               onClick={() =>
                 setNewPoint((prev) =>
                   prev ? null : { type: 'focal', position: null }

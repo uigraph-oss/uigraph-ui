@@ -18,6 +18,7 @@ import type {
   DashboardService,
   ServiceStats,
 } from '@/features/services/api/services'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { objectOmitNull } from 'daily-code'
 import { format } from 'date-fns'
@@ -126,6 +127,7 @@ export function ServiceCard({
   deleteService,
   updateService,
 }: ServiceCardProps) {
+  const { canWrite } = usePermissions()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
@@ -306,11 +308,15 @@ export function ServiceCard({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setIsUpdateModalOpen(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setIsUpdateModalOpen(true)}
+          >
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
+            disabled={!canWrite}
             onClick={() => setIsDeleteModalOpen(true)}
           >
             Delete

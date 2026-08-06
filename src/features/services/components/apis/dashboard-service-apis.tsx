@@ -19,6 +19,7 @@ import {
   protocolTo,
   uploadSpecFile,
 } from '@/features/services/api/api-endpoints'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -31,6 +32,7 @@ import { ConfigureApiGroupModal } from './modals/configure-api-group-modal'
 import { ServiceApiEndpointGroupCard } from './service-api-group-card'
 
 export function DashboardServiceApis() {
+  const { canWrite } = usePermissions()
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id
   const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false)
@@ -99,7 +101,11 @@ export function DashboardServiceApis() {
         title="API & Behavior"
         description="Manage API groups, versions, endpoints, business logic, request/response samples, and test cases."
       >
-        <Button preset="primary" onClick={() => setIsAddGroupModalOpen(true)}>
+        <Button
+          preset="primary"
+          disabled={!canWrite}
+          onClick={() => setIsAddGroupModalOpen(true)}
+        >
           <CirclePlus className="h-4 w-4" />
           Add API Group
         </Button>

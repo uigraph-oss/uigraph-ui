@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Plus, X } from 'lucide-react'
@@ -18,6 +19,7 @@ import {
 // matches one of these key=value rules.
 export function TagRulesPanel({ serviceId }: { serviceId: string }) {
   const orgId = useCurrentOrganization()?.id as string
+  const { canWrite } = usePermissions()
   const [tagKey, setTagKey] = useState('')
   const [tagValue, setTagValue] = useState('')
 
@@ -85,6 +87,7 @@ export function TagRulesPanel({ serviceId }: { serviceId: string }) {
             </span>
             <button
               type="button"
+              disabled={!canWrite}
               onClick={() => void handleDelete(rule.id)}
               className="text-paragraph hover:text-foreground shrink-0"
               aria-label={`Remove rule ${rule.tagKey}:${rule.tagValue}`}
@@ -120,7 +123,7 @@ export function TagRulesPanel({ serviceId }: { serviceId: string }) {
         <Button
           preset="outline"
           className="h-9 px-3 text-xs"
-          disabled={creating || !tagKey.trim() || !tagValue.trim()}
+          disabled={creating || !tagKey.trim() || !tagValue.trim() || !canWrite}
           onClick={() => void handleAdd()}
         >
           <Plus className="mr-1 size-3.5" />

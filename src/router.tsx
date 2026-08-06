@@ -5,6 +5,7 @@ import {
   ProtectedServerAdminLayout,
   UnauthenticatedGuard,
 } from '@/features/auth/auth-guards'
+import { RequireOrgAdmin } from '@/features/auth/require-org-admin'
 import { lazy } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
@@ -587,18 +588,24 @@ export function AppRoutes() {
               element={<Navigate to="/settings/profile" replace />}
             />
             <Route path="profile" element={<ProfileSettings />} />
-            <Route path="teams" element={<TeamManagementPage />} />
-            <Route path="users" element={<UsersManagementPage />} />
-            <Route path="service-accounts" element={<ServiceAccountsPage />} />
-            <Route
-              path="service-accounts/:id"
-              element={<ServiceAccountDetailPage />}
-            />
-            <Route
-              path="cloud-connections"
-              element={<CloudConnectionsPage />}
-            />
             <Route path="security" element={<SecuritySettings />} />
+
+            <Route element={<RequireOrgAdmin />}>
+              <Route path="teams" element={<TeamManagementPage />} />
+              <Route path="users" element={<UsersManagementPage />} />
+              <Route
+                path="service-accounts"
+                element={<ServiceAccountsPage />}
+              />
+              <Route
+                path="service-accounts/:id"
+                element={<ServiceAccountDetailPage />}
+              />
+              <Route
+                path="cloud-connections"
+                element={<CloudConnectionsPage />}
+              />
+            </Route>
           </Route>
         </Route>
       </Route>

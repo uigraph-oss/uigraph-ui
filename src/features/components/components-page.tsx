@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { usePermissions } from '@/hooks/use-permissions'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { DashboardPageSectionLayout } from '../dashboard'
@@ -40,6 +41,8 @@ function ComponentsPageInner() {
     setSearch,
   } = useCustomComponentsContext()
 
+  const { canWrite } = usePermissions()
+
   const componentId = searchParams.get('component')
   const selectedComponent = customComponents.find(
     (component) => component.componentId === componentId
@@ -53,12 +56,19 @@ function ComponentsPageInner() {
       description="Create and manage your application components"
       crumbs={[{ to: '/dashboard/catalog', label: 'Catalog' }]}
       headerContent={
-        <Button asChild className="h-11 gap-2 rounded-[0.8125rem]">
-          <Link to="/dashboard/catalog?component=new">
+        canWrite ? (
+          <Button asChild className="h-11 gap-2 rounded-[0.8125rem]">
+            <Link to="/dashboard/catalog?component=new">
+              <CirclePlusIcon />
+              New Component
+            </Link>
+          </Button>
+        ) : (
+          <Button disabled className="h-11 gap-2 rounded-[0.8125rem]">
             <CirclePlusIcon />
             New Component
-          </Link>
-        </Button>
+          </Button>
+        )
       }
     >
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -93,7 +103,7 @@ function ComponentsPageInner() {
       )}
 
       <ConfigureComponentModal
-        open={Boolean(componentId || selectedComponent)}
+        open={canWrite && Boolean(componentId || selectedComponent)}
         onOpenChange={() => navigate('/dashboard/catalog')}
         nativeComponents={nativeComponents}
         selectedComponent={selectedComponent ?? null}

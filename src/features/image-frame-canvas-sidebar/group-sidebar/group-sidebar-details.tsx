@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { FrameGroup } from '@/features/dashboard-pages/api/frame-group'
 import { DashboardFrame } from '@/features/dashboard-projects/api'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { DeleteFocalPointConfirmationModal } from '../point-sidebar/delete-focal-point-confirm-modal'
@@ -34,6 +35,7 @@ export function GroupSidebarDetails({
   updateFrameGroup,
   deleteFrameGroup,
 }: GroupSidebarDetailsProps) {
+  const { canWrite } = usePermissions()
   const [isDeletingFrameGroup, setIsDeletingFrameGroup] = useState(false)
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
     useState(false)
@@ -55,7 +57,7 @@ export function GroupSidebarDetails({
           size="lg"
           variant="destructive"
           className="text-destructive ring-destructive w-full rounded-lg bg-white ring hover:text-white"
-          disabled={isDeletingFrameGroup}
+          disabled={isDeletingFrameGroup || !canWrite}
           onClick={async () => setIsDeleteConfirmModalOpen(true)}
         >
           <SuperCircleLoader loading={isDeletingFrameGroup} />

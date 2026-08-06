@@ -17,6 +17,7 @@ import {
   toCreateServiceInput,
   toUpdateServiceInput,
 } from '@/features/services/api/services'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { CirclePlus, Network } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -28,6 +29,7 @@ import { ServiceCard } from './service-card'
 
 export function DashboardServices() {
   const navigate = useNavigate()
+  const { canWrite } = usePermissions()
   const [createServiceOpen, setCreateServiceOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
@@ -86,7 +88,11 @@ export function DashboardServices() {
             <Network />
             Dependency graph
           </Button>
-          <Button preset="cta" onClick={() => setCreateServiceOpen(true)}>
+          <Button
+            preset="cta"
+            disabled={!canWrite}
+            onClick={() => setCreateServiceOpen(true)}
+          >
             <CirclePlus />
             Create Service
           </Button>

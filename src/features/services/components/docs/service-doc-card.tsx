@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -120,6 +121,7 @@ function DocCardThumbnail({
 }
 
 export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
+  const { canWrite } = usePermissions()
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id
 
@@ -287,6 +289,7 @@ export function ServiceDocCard({ doc }: { doc: ServiceLinkedDoc }) {
 
             <DropdownMenuItem
               variant="destructive"
+              disabled={!canWrite}
               onClick={() => setIsDeleteConfirmationOpen(true)}
             >
               <Trash2 className="h-4 w-4" />

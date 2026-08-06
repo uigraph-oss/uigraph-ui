@@ -9,6 +9,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -20,6 +21,7 @@ import { ServiceDocCard } from './components/docs/service-doc-card'
 import { useServiceContext } from './contexts/service-context'
 
 export function DashboardServiceDocs() {
+  const { canWrite } = usePermissions()
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id
   const [isAddDocModalOpen, setIsAddDocModalOpen] = useState(false)
@@ -50,7 +52,11 @@ export function DashboardServiceDocs() {
         title="Documentation"
         description="Upload and manage documentation files like PDFs, READMEs, HTML files, and more."
       >
-        <Button preset="primary" onClick={() => setIsAddDocModalOpen(true)}>
+        <Button
+          preset="primary"
+          disabled={!canWrite}
+          onClick={() => setIsAddDocModalOpen(true)}
+        >
           <CirclePlusIcon />
           Upload
         </Button>

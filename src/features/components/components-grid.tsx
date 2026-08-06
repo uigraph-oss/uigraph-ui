@@ -3,6 +3,7 @@ import { SuperCircleLoader } from '@/components/loader'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useTimeDistanceFromNow } from '@/hooks/use-time-distance-from-now'
 import { cn } from '@/lib/utils'
 import { Trash2 } from 'lucide-react'
@@ -42,6 +43,7 @@ function ComponentCard({
     includeSeconds: true,
   })
 
+  const { canWrite } = usePermissions()
   const [isDeleting, setIsDeleting] = useState(false)
   const { deleteCustomComponent } = useCustomComponentsContext()
 
@@ -80,7 +82,7 @@ function ComponentCard({
       <Button
         size="icon"
         variant="outline"
-        disabled={isDeleting}
+        disabled={isDeleting || !canWrite}
         className={cn(
           'hover:text-destructive hover:border-destructive absolute top-3 right-3 bg-[#1E2533] opacity-0 transition-all group-hover:opacity-100 hover:bg-red-500/10',
           isDeleting && 'opacity-100'

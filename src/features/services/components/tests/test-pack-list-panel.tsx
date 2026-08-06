@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { EllipsisVertical } from 'lucide-react'
@@ -27,6 +28,7 @@ export function TestPackListPanel({
   onEditPack,
   onDeletePack,
 }: TestPackListPanelProps) {
+  const { canWrite } = usePermissions()
   const {
     selectedPackId,
     testPacks,
@@ -74,7 +76,7 @@ export function TestPackListPanel({
               results.
             </p>
           </div>
-          <Button preset="primary" onClick={onCreatePack}>
+          <Button preset="primary" disabled={!canWrite} onClick={onCreatePack}>
             Create Test Pack
           </Button>
         </div>

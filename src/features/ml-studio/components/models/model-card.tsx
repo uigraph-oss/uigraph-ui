@@ -4,6 +4,7 @@ import { BetterDialogProvider } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TEAMS } from '@/features/dashboard-diagrams/api/teams'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useQuery } from '@apollo/client'
 import {
   AlertTriangle,
@@ -55,6 +56,7 @@ function Consideration({
 }
 
 export function ModelCard() {
+  const { canWrite } = usePermissions()
   const { model } = useModelContext()
   const { orgId, project } = useProject()
   const [editing, setEditing] = useState(false)
@@ -74,7 +76,11 @@ export function ModelCard() {
         description={model.description || 'No description.'}
         className="md:col-span-2"
         action={
-          <Button preset="outline" onClick={() => setEditing(true)}>
+          <Button
+            preset="outline"
+            disabled={!canWrite}
+            onClick={() => setEditing(true)}
+          >
             <PencilIcon />
             Edit
           </Button>

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select'
 import { uploadFile } from '@/features/uploads/api/uploads'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useScopedStorage } from '@/hooks/use-scoped-storage'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -45,6 +46,8 @@ function DashboardProjectContent() {
 
   const organizationId = useCurrentOrganization()?.id
   const { map, frames, mapId, createFrame } = useSingleProject()
+
+  const { canWrite } = usePermissions()
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isFigmaImportModalOpen, setIsFigmaImportModalOpen] = useState(false)
@@ -96,6 +99,7 @@ function DashboardProjectContent() {
       headerContent={
         <div className="flex">
           <Button
+            disabled={!canWrite}
             onClick={() => setIsCreateModalOpen(true)}
             className="h-11 rounded-[0.8rem] !rounded-r-none"
           >
@@ -112,6 +116,7 @@ function DashboardProjectContent() {
 
             <DropdownMenuContent align="end">
               <DropdownMenuItem
+                disabled={!canWrite}
                 onClick={() => {
                   setIsFigmaImportModalOpen(true)
                 }}

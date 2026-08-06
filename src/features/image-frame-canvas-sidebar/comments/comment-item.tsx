@@ -14,6 +14,7 @@ import {
   InputEditor,
   InputRenderer,
 } from '@/features/comments/components/input-editor'
+import { usePermissions } from '@/hooks/use-permissions'
 import { formatDistanceToNow } from 'date-fns'
 import {
   EditIcon,
@@ -40,6 +41,7 @@ export function CommentItem({ comment }: CommentItemProps) {
   )
   const parentName = parentComment?.authorName
 
+  const { canWrite } = usePermissions()
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(comment.text ?? '')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -93,6 +95,7 @@ export function CommentItem({ comment }: CommentItemProps) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
+                      disabled={!canWrite}
                       onClick={() => {
                         if (!comment.commentId) return
                         setReplyToCommentId(comment.commentId)
@@ -104,6 +107,7 @@ export function CommentItem({ comment }: CommentItemProps) {
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
+                      disabled={!canWrite}
                       onClick={() => {
                         setIsEditing(true)
                       }}
@@ -114,6 +118,7 @@ export function CommentItem({ comment }: CommentItemProps) {
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
+                      disabled={!canWrite}
                       onClick={() => {
                         if (!comment.commentId) return
                         setIsDeleteModalOpen(true)

@@ -7,6 +7,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { ArrowLeft } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { LuCloudUpload, LuColumns2 } from 'react-icons/lu'
@@ -36,6 +37,7 @@ export function ApiGroupEndpointsPage() {
 }
 
 function ApiGroupEndpointsPageContent() {
+  const { canWrite } = usePermissions()
   const navigate = useNavigate()
 
   const [isCreatingVersion, setIsCreatingVersion] = useState(false)
@@ -78,7 +80,11 @@ function ApiGroupEndpointsPageContent() {
               />
             )}
 
-            <Button preset="outline" onClick={() => setIsCreatingVersion(true)}>
+            <Button
+              preset="outline"
+              disabled={!canWrite}
+              onClick={() => setIsCreatingVersion(true)}
+            >
               <LuCloudUpload />
               Publish Release
             </Button>

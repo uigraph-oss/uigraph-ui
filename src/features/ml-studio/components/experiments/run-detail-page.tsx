@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useNow } from '@/hooks/use-now'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -75,6 +76,7 @@ function toArtifact(a: {
 }
 
 export function RunDetailPage() {
+  const { canWrite } = usePermissions()
   const { runId } = useParams<{
     runId: string
   }>()
@@ -169,7 +171,11 @@ export function RunDetailPage() {
         <div className="flex items-center gap-2">
           {run.source === 'manual' && (
             <>
-              <Button preset="outline" onClick={() => setEditOpen(true)}>
+              <Button
+                preset="outline"
+                disabled={!canWrite}
+                onClick={() => setEditOpen(true)}
+              >
                 <PencilIcon />
                 Edit
               </Button>

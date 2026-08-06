@@ -15,6 +15,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { arrayNonNullable } from 'daily-code'
@@ -27,6 +28,7 @@ import { NosqlBuilderModal } from './components/nosql-builder-modal'
 import { ServiceDatabaseCard } from './service-database-card'
 
 export function ServiceDatabaseListPage() {
+  const { canWrite } = usePermissions()
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization().id
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
@@ -52,6 +54,7 @@ export function ServiceDatabaseListPage() {
       >
         <div className="flex items-center">
           <Button
+            disabled={!canWrite}
             onClick={() => setIsUploadModalOpen(true)}
             preset="primary"
             className="rounded-r-none pr-3!"
@@ -72,6 +75,7 @@ export function ServiceDatabaseListPage() {
 
             <DropdownMenuContent side="bottom" align="end">
               <DropdownMenuItem
+                disabled={!canWrite}
                 onClick={() => setIsNosqlBuilderModalOpen(true)}
               >
                 <DynamoDBIcon className="h-4 w-4" />
