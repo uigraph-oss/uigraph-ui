@@ -490,6 +490,7 @@ export function ReactFlowWrapper({
         selectNodesOnDrag={false}
         panOnDrag={cursorMode === 'pan' ? true : [1, 2]}
         selectionOnDrag={cursorMode === 'select'}
+        panOnScroll={cursorMode === 'select'}
         noWheelClassName="skip-wheel"
         nodes={nodes}
         edges={edges}
