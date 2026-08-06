@@ -25,6 +25,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { BoxesIcon, FlaskConicalIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { CREATE_ML_PROJECT, UPDATE_ML_PROJECT } from '../../api/projects'
@@ -83,6 +84,7 @@ export function ProjectModal({
   }
 }) {
   const orgId = useCurrentOrganization()?.id
+  const navigate = useNavigate()
   const { data: teamsData } = useQuery(TEAMS, {
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -134,8 +136,12 @@ export function ProjectModal({
       onClose()
       return
     }
-    await createProject({ variables: { orgId, input } })
+    const created = await createProject({ variables: { orgId, input } })
     onClose()
+    const createdId = created.data?.createMlProject.id
+    if (createdId) {
+      void navigate(`/dashboard/ml-studio/projects/${createdId}`)
+    }
   }
 
   return (

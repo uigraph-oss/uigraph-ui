@@ -15,6 +15,7 @@ import { ComponentMetaThemeProvider } from '@/features/component-meta/theme'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CREATE_ML_MODEL, UPDATE_ML_MODEL_INFO } from '../../api/models'
 import type { Model } from '../../types'
 import { FormField, FormGrid } from '../form-field'
@@ -32,6 +33,7 @@ export function ModelModal({
   model?: Model | null
 }) {
   const orgId = useCurrentOrganization()?.id
+  const navigate = useNavigate()
   const [createModel] = useMutation(CREATE_ML_MODEL, {
     refetchQueries: ['MlStudioModels'],
     awaitRefetchQueries: true,
@@ -72,7 +74,7 @@ export function ModelModal({
           },
         })
       } else {
-        await createModel({
+        const created = await createModel({
           variables: {
             orgId,
             input: {
@@ -85,6 +87,14 @@ export function ModelModal({
             },
           },
         })
+        onClose()
+        const createdId = created.data?.createMlModel.id
+        if (createdId) {
+          void navigate(
+            `/dashboard/ml-studio/projects/${projectId}/models/${createdId}`
+          )
+        }
+        return
       }
       onClose()
     } finally {

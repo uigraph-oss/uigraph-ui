@@ -24,9 +24,9 @@ import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
-import { Boxes, Check, ChevronsUpDown, Folder, Users } from 'lucide-react'
+import { Boxes, Check, ChevronsUpDown, Folder, Plus, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   ML_MODEL_VERSIONS_EXPLORE,
   ML_STUDIO_MODEL_VERSION,
@@ -74,6 +74,16 @@ export function ModelVersionCombobox({
     (projectsQuery.data?.mlProjects ?? []).find((p) => p.id === routeProjectId)
       ?.teamId ?? ''
   const teamId = pickedTeamId !== '' ? pickedTeamId : routeTeamId || 'all'
+
+  const routeProject = (projectsQuery.data?.mlProjects ?? []).find(
+    (p) => p.id === routeProjectId
+  )
+  let createHref = '/dashboard/ml-studio?new=project'
+  let createLabel = 'Create a model project and a model inside it'
+  if (routeProject?.type === 'model') {
+    createHref = `/dashboard/ml-studio/projects/${routeProject.id}/models?new=model`
+    createLabel = 'Create a model in this project'
+  }
 
   const exploreQuery = useQuery(ML_MODEL_VERSIONS_EXPLORE, {
     fetchPolicy: 'cache-and-network',
@@ -275,6 +285,16 @@ export function ModelVersionCombobox({
               )}
               {!exploreQuery.loading && !search && teamId === 'all' && (
                 <span>No model versions yet.</span>
+              )}
+              {!exploreQuery.loading && (
+                <Link
+                  to={createHref}
+                  className="flex items-center gap-1.5 text-[13px] text-[#3B6BFF] hover:underline"
+                  onClick={() => handleOpenChange(false)}
+                >
+                  <Plus className="size-3.5" />
+                  {createLabel}
+                </Link>
               )}
             </div>
           ) : (

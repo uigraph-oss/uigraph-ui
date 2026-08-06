@@ -28,8 +28,8 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { format } from 'date-fns'
 import { PencilRulerIcon, PlusIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { DELETE_ML_PROJECT, ML_STUDIO_PROJECTS } from '../../api/projects'
 import { ProjectModal } from './project-modal'
@@ -310,6 +310,17 @@ export function ProjectsTab() {
   const teamNameById = new Map(teams.map((team) => [team.id, team.name]))
   const { canWrite } = usePermissions()
   const [modalOpen, setModalOpen] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('new') === 'project') {
+      setModalOpen(true)
+      const next = new URLSearchParams(searchParams)
+      next.delete('new')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
   const [search, setSearch] = useState('')
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const [activeType, setActiveType] = useState<string | null>(null)
