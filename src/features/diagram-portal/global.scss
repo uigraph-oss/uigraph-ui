@@ -3,6 +3,10 @@
   inherits: false;
 }
 
+.react-flow__pane.selection {
+  cursor: default !important;
+}
+
 .react-flow__node {
   padding: 0 !important;
   border-radius: 0 !important;
