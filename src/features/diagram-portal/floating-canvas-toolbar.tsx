@@ -48,8 +48,8 @@ export function FloatingCanvasToolbar() {
     selectedGroup,
     reactFlowInstance,
 
-    toolMode,
-    setToolMode,
+    cursorMode,
+    setCursorMode,
 
     showGrid,
     setShowGrid,
@@ -186,21 +186,16 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip="Hand tool — pan the canvas"
-          isActive={toolMode === 'pan'}
-          onClick={() => setToolMode('pan')}
+          tooltip={
+            cursorMode === 'pan'
+              ? 'Hand tool (switch to select)'
+              : 'Select tool (switch to pan)'
+          }
+          isActive={cursorMode === 'pan'}
+          onClick={() => setCursorMode(cursorMode === 'pan' ? 'select' : 'pan')}
         >
-          <icons.HandIcon />
-        </ToolbarButton>
-
-        <ToolbarButton
-          delayDuration={100}
-          tooltipPosition="top"
-          tooltip="Select tool"
-          isActive={toolMode === 'select'}
-          onClick={() => setToolMode('select')}
-        >
-          <icons.CursorIcon />
+          {cursorMode === 'pan' && <icons.HandIcon />}
+          {cursorMode === 'select' && <icons.CursorIcon />}
         </ToolbarButton>
 
         <ToolbarSeparator />
