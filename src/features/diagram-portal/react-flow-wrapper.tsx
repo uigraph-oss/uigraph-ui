@@ -77,6 +77,8 @@ export function ReactFlowWrapper({
     sidebarActiveTool,
     setSidebarActiveTool,
 
+    cursorMode,
+
     setIsEdgeConnecting,
 
     dataSources,
@@ -486,6 +488,8 @@ export function ReactFlowWrapper({
         edgeTypes={CUSTOM_EDGE_TYPES}
         selectionMode={SelectionMode.Partial}
         selectNodesOnDrag={false}
+        panOnDrag={cursorMode === 'pan' ? true : [1, 2]}
+        selectionOnDrag={cursorMode === 'select'}
         noWheelClassName="skip-wheel"
         nodes={nodes}
         edges={edges}

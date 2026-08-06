@@ -48,6 +48,9 @@ export function FloatingCanvasToolbar() {
     selectedGroup,
     reactFlowInstance,
 
+    cursorMode,
+    setCursorMode,
+
     showGrid,
     setShowGrid,
 
@@ -180,15 +183,22 @@ export function FloatingCanvasToolbar() {
   return (
     <div className="pointer-events-none absolute inset-x-0 top-3 flex items-center justify-center">
       <div className={diagramToolbarContainerClassName}>
-        {/* <ToolbarButton onClick={() => alert('Coming soon!')}>
-          <icons.HandIcon />
+        <ToolbarButton
+          delayDuration={100}
+          tooltipPosition="top"
+          tooltip={
+            cursorMode === 'pan'
+              ? 'Hand tool (switch to select)'
+              : 'Select tool (switch to pan)'
+          }
+          isActive={cursorMode === 'pan'}
+          onClick={() => setCursorMode(cursorMode === 'pan' ? 'select' : 'pan')}
+        >
+          {cursorMode === 'pan' && <icons.HandIcon />}
+          {cursorMode === 'select' && <icons.CursorIcon />}
         </ToolbarButton>
 
-        <ToolbarButton onClick={() => alert('Coming soon!')}>
-          <icons.CursorIcon />
-        </ToolbarButton> */}
-
-        {/* <ToolbarSeparator /> */}
+        <ToolbarSeparator />
 
         <ToolbarButton
           onClick={() => reactFlowInstance?.zoomIn()}
