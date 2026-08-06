@@ -24,6 +24,7 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import {
   CREATE_ML_EXPERIMENT,
@@ -57,6 +58,7 @@ export function ExperimentModal({
   projectId: string
 }) {
   const orgId = useCurrentOrganization()?.id
+  const navigate = useNavigate()
   const [createExperiment] = useMutation(CREATE_ML_EXPERIMENT, {
     refetchQueries: ['MlStudioExperiments'],
     awaitRefetchQueries: true,
@@ -103,7 +105,7 @@ export function ExperimentModal({
         },
       })
     } else {
-      await createExperiment({
+      const created = await createExperiment({
         variables: {
           orgId,
           input: {
@@ -115,6 +117,14 @@ export function ExperimentModal({
           },
         },
       })
+      onClose()
+      const createdId = created.data?.createMlExperiment.id
+      if (createdId) {
+        void navigate(
+          `/dashboard/ml-studio/projects/${projectId}/experiments/${createdId}`
+        )
+      }
+      return
     }
     onClose()
   }

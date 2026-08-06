@@ -15,8 +15,8 @@ import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns'
 import { EllipsisVertical, Pencil, PlusIcon, Trash2 } from 'lucide-react'
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ML_STUDIO_MODEL_VERSIONS } from '../../api/model-versions'
 import { DELETE_ML_MODEL, ML_STUDIO_MODELS } from '../../api/models'
 import type { Model } from '../../types'
@@ -46,6 +46,18 @@ export function ModelsTab() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingModel, setEditingModel] = useState<Model | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('new') === 'model') {
+      setEditingModel(null)
+      setModalOpen(true)
+      const next = new URLSearchParams(searchParams)
+      next.delete('new')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
   const [deletingModel, setDeletingModel] = useState<Model | null>(null)
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
