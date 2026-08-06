@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { mockConfigs } from '@/features/services/constants/mock-data'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useState } from 'react'
 
 interface ServiceConfigProps {
@@ -20,6 +21,7 @@ interface ServiceConfigProps {
 }
 
 export function ServiceConfig({}: ServiceConfigProps) {
+  const { canWrite } = usePermissions()
   const [searchQuery, setSearchQuery] = useState('')
   const [visibleValues, setVisibleValues] = useState<Set<string>>(new Set())
 
@@ -183,7 +185,7 @@ export function ServiceConfig({}: ServiceConfigProps) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" disabled={!canWrite}>
                       Edit
                     </Button>
                   </TableCell>

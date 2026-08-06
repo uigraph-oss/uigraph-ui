@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DIAGRAM } from '@/features/diagram-portal/api/diagram'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -34,6 +35,7 @@ type ServiceDatabaseCardProps = {
 }
 
 export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
+  const { canWrite } = usePermissions()
   const { serviceId, service } = useServiceContext()
   const orgId = useCurrentOrganization().id
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -173,6 +175,7 @@ export function ServiceDatabaseCard({ db }: ServiceDatabaseCardProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             variant="destructive"
+            disabled={!canWrite}
             onClick={() => setDeleteOpen(true)}
           >
             Delete Database

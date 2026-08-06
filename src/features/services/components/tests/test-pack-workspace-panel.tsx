@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { usePermissions } from '@/hooks/use-permissions'
 import { Info, Play, Plus, UploadCloud } from 'lucide-react'
 import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -36,6 +37,7 @@ export function TestPackWorkspacePanel({
   onViewTestCase,
 }: TestPackWorkspacePanelProps) {
   const navigate = useNavigate()
+  const { canWrite } = usePermissions()
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
   const {
@@ -169,6 +171,7 @@ export function TestPackWorkspacePanel({
             {activeTab === 'cases' && (
               <Button
                 preset="primary"
+                disabled={!canWrite}
                 onClick={() => setIsCreateTestPackOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -177,14 +180,18 @@ export function TestPackWorkspacePanel({
             )}
 
             {activeTab === 'runs' && isLoadPack && onImportResults && (
-              <Button preset="primary" onClick={onImportResults}>
+              <Button
+                preset="primary"
+                disabled={!canWrite}
+                onClick={onImportResults}
+              >
                 <UploadCloud className="h-4 w-4" />
                 Add Run
               </Button>
             )}
 
             {activeTab === 'runs' && !isLoadPack && onRunPack && (
-              <Button preset="primary" onClick={onRunPack}>
+              <Button preset="primary" disabled={!canWrite} onClick={onRunPack}>
                 <Play className="h-4 w-4" />
                 Run Pack
               </Button>
@@ -210,7 +217,11 @@ export function TestPackWorkspacePanel({
                 </p>
               </div>
               {onAddTestCase && (
-                <Button preset="primary" onClick={onAddTestCase}>
+                <Button
+                  preset="primary"
+                  disabled={!canWrite}
+                  onClick={onAddTestCase}
+                >
                   <Plus className="h-4 w-4" />
                   Add Test Case
                 </Button>

@@ -17,6 +17,8 @@ export function usePermissions() {
     isAdmin: role === 'admin',
     isEditor: role === 'editor',
     isViewer: role === 'viewer',
+    canWrite: role === 'admin' || role === 'editor',
+    canManage: role === 'admin',
     hasAccess,
   }
 }

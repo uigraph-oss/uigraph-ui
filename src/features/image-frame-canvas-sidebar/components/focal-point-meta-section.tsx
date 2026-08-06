@@ -14,6 +14,7 @@ import {
   COMPONENT_TEST_SUITE_ID,
 } from '@/constants/component-meta'
 import { CREATE_DIAGRAM } from '@/features/dashboard-diagrams/api/diagrams'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { arrayNonNullable } from 'daily-code'
@@ -71,9 +72,11 @@ export function FocalPointMetaSection({
   updatePointMeta,
   deletePointMeta,
   showFocalPointName,
-  disableCreatePointMeta,
+  disableCreatePointMeta: disableCreatePointMetaProp,
 }: FocalPointMetaSectionProps) {
   const organizationId = useCurrentOrganization()?.id
+  const { canWrite } = usePermissions()
+  const disableCreatePointMeta = disableCreatePointMetaProp || !canWrite
 
   const [isNewModal, setIsNewModal] = useState(false)
   const [deleteConfirmationPointMeta, setDeleteConfirmationPointMeta] =

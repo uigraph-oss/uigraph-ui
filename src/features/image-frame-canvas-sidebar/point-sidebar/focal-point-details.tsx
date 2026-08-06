@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FocalPoint } from '@/features/dashboard-pages/api/focal-point'
 import { useEffectState } from '@/hooks/use-effect-state'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { FocalPointComponentsSection } from '../components/focal-point-component-group'
@@ -50,6 +51,7 @@ export function FocalPointDetails({
   const { pointMeta, createPointMeta, updatePointMeta, deletePointMeta } =
     useFocalPointSidebarContext()
 
+  const { canWrite } = usePermissions()
   const [isUpdatingFocalPoint, setIsUpdatingFocalPoint] = useState(false)
   const [isDeletingFocalPoint, setIsDeletingFocalPoint] = useState(false)
 
@@ -97,6 +99,7 @@ export function FocalPointDetails({
                   size="lg"
                   variant="outline"
                   className="h-11 rounded-[0.75rem]"
+                  disabled={!canWrite}
                   onClick={async () => {
                     try {
                       setIsUpdatingFocalPoint(true)
@@ -136,7 +139,7 @@ export function FocalPointDetails({
         <Button
           preset="outline"
           className="text-destructive border-destructive/30 hover:bg-destructive w-full rounded-lg hover:text-white"
-          disabled={isDeletingFocalPoint}
+          disabled={isDeletingFocalPoint || !canWrite}
           onClick={async () => setIsDeleteConfirmModalOpen(true)}
         >
           <SuperCircleLoader loading={isDeletingFocalPoint} />

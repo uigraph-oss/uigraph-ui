@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
@@ -119,6 +120,7 @@ export function ProjectGrid({ projects }: { projects: DashboardMap[] }) {
 }
 
 export function ProjectCard({ project }: { project: DashboardMap }) {
+  const { canWrite } = usePermissions()
   const organizationId = useCurrentOrganization()?.id
 
   const [isEditOpen, setEditProject] = useState(false)
@@ -195,12 +197,16 @@ export function ProjectCard({ project }: { project: DashboardMap }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setEditProject(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setEditProject(true)}
+          >
             Edit
           </DropdownMenuItem>
 
           <DropdownMenuItem
             variant={'destructive'}
+            disabled={!canWrite}
             onClick={() => setDeleteProject(true)}
           >
             Delete

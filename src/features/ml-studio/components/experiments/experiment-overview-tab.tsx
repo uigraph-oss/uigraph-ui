@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useNow } from '@/hooks/use-now'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -104,6 +105,7 @@ const runStatusLabels: Record<RunStatus, string> = {
 }
 
 export function ExperimentOverviewTab() {
+  const { canWrite } = usePermissions()
   const { experiment, runs } = useExperimentContext()
   const { projectId, experimentId } = useParams<{
     projectId: string
@@ -239,7 +241,11 @@ export function ExperimentOverviewTab() {
             </p>
           </div>
           {experiment.source === 'manual' && (
-            <Button preset="outline" onClick={() => setEditOpen(true)}>
+            <Button
+              preset="outline"
+              disabled={!canWrite}
+              onClick={() => setEditOpen(true)}
+            >
               <PencilIcon />
               Edit
             </Button>

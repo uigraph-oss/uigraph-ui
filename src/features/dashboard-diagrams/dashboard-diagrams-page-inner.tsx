@@ -4,6 +4,7 @@ import { CirclePlusIcon } from '@/assets/svgs'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useState } from 'react'
 import { LuFolderPlus } from 'react-icons/lu'
@@ -35,6 +36,8 @@ function DashboardDiagramsPageContent() {
     teams,
   } = useDiagramsContext()
 
+  const { canWrite } = usePermissions()
+
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
   const [isCreateDiagramOpen, setIsCreateDiagramOpen] = useState(false)
 
@@ -45,12 +48,20 @@ function DashboardDiagramsPageContent() {
       crumbs={[{ to: '/dashboard/diagrams', label: 'Diagrams' }]}
       headerContent={
         <div className="flex items-center gap-2">
-          <Button preset="outline" onClick={() => setIsCreateFolderOpen(true)}>
+          <Button
+            preset="outline"
+            disabled={!canWrite}
+            onClick={() => setIsCreateFolderOpen(true)}
+          >
             <LuFolderPlus strokeWidth="1.5" />
             New Folder
           </Button>
 
-          <Button preset="cta" onClick={() => setIsCreateDiagramOpen(true)}>
+          <Button
+            preset="cta"
+            disabled={!canWrite}
+            onClick={() => setIsCreateDiagramOpen(true)}
+          >
             <CirclePlusIcon />
             Create Flow
           </Button>

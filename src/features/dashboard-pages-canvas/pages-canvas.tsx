@@ -2,6 +2,7 @@ import { GridScrollBody } from '@/components/grid-scroll-body'
 import { FocalPointSidebarContextProvider } from '@/features/image-frame-canvas-sidebar/contexts/focal-point-sidebar-context'
 import { GroupSidebar } from '@/features/image-frame-canvas-sidebar/group-sidebar/group-sidebar'
 import { FocalPointSidebar } from '@/features/image-frame-canvas-sidebar/point-sidebar/focal-point-sidebar'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import {
   applyNodeChanges,
@@ -31,6 +32,7 @@ export function PagesCanvas({ ...props }: PagesCanvasContextInput) {
 }
 
 function PagesReactFlowCanvas() {
+  const { canWrite } = usePermissions()
   const [rf, setRf] = useState<ReactFlowInstance | null>(null)
 
   const {
@@ -142,7 +144,7 @@ function PagesReactFlowCanvas() {
             await rf.zoomOut()
             setZoom(rf.getZoom())
           }}
-          isSaveLayoutDisabled={isLayoutSaved}
+          isSaveLayoutDisabled={isLayoutSaved || !canWrite}
           isResetLayoutDisabled={isLayoutSaved}
           onResetLayout={() => setNodes(memoizedBaseNodes)}
           isSaveLayoutLoading={isCreatePageCanvasLoading}

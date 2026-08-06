@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
 import { ConfigureFolderModal } from '@/features/dashboard-diagrams/configure-folder-modal'
 import { ConfigureServiceDocModal } from '@/features/services/components/docs/configure-service-doc-modal'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useState } from 'react'
 import { LuFolderPlus } from 'react-icons/lu'
@@ -26,6 +27,8 @@ function DashboardDocsPageContent() {
   const { createDoc, createFolder, selectedFolderId, selectedTeamId, teams } =
     useDocsContext()
 
+  const { canWrite } = usePermissions()
+
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
   const [isUploadDocOpen, setIsUploadDocOpen] = useState(false)
 
@@ -36,12 +39,20 @@ function DashboardDocsPageContent() {
       crumbs={[{ to: '/dashboard/docs', label: 'Docs' }]}
       headerContent={
         <div className="flex items-center gap-2">
-          <Button preset="outline" onClick={() => setIsCreateFolderOpen(true)}>
+          <Button
+            preset="outline"
+            disabled={!canWrite}
+            onClick={() => setIsCreateFolderOpen(true)}
+          >
             <LuFolderPlus strokeWidth="1.5" />
             New Folder
           </Button>
 
-          <Button preset="cta" onClick={() => setIsUploadDocOpen(true)}>
+          <Button
+            preset="cta"
+            disabled={!canWrite}
+            onClick={() => setIsUploadDocOpen(true)}
+          >
             <CirclePlusIcon />
             Upload
           </Button>

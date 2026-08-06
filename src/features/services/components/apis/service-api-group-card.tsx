@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import type { LegacyAPIGroupView } from '@/features/services/api/api-adapters'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { Network, Share2 } from 'lucide-react'
@@ -79,6 +80,7 @@ export function ServiceApiEndpointGroupCard({
 }: ServiceApiEndpointGroupCardProps) {
   const { serviceId } = useParams() as { serviceId: string }
   const navigate = useNavigate()
+  const { canWrite } = usePermissions()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -200,11 +202,17 @@ export function ServiceApiEndpointGroupCard({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="bg-[#141925]">
-          <DropdownMenuItem onClick={() => setIsUpdateModalOpen(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setIsUpdateModalOpen(true)}
+          >
             Edit
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

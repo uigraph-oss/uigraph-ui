@@ -18,6 +18,7 @@ import {
   dependenciesToGraph,
   type ServiceDependencyGraphData,
 } from '@/features/services/api/dependencies'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Settings2 } from 'lucide-react'
@@ -36,6 +37,7 @@ export function DashboardServiceDependencies({
   const [direction, setDirection] = useState('all')
   const [criticality, setCriticality] = useState('all')
   const [manageOpen, setManageOpen] = useState(false)
+  const { canWrite } = usePermissions()
   const graph = useQuery<ServiceDependencyGraphData>(SERVICE_DEPENDENCY_GRAPH, {
     variables: { orgId, serviceId },
     skip: !orgId,
@@ -64,7 +66,11 @@ export function DashboardServiceDependencies({
         title="Dependencies"
         description="Upstream and downstream service relationships, declared in .uigraph.yaml and validated against synced specs."
       >
-        <Button preset="outline" onClick={() => setManageOpen(true)}>
+        <Button
+          preset="outline"
+          disabled={!canWrite}
+          onClick={() => setManageOpen(true)}
+        >
           <Settings2 className="size-4" />
           Manage Dependencies
         </Button>

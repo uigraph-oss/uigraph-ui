@@ -17,6 +17,7 @@ import {
   getDocumentFileTypeIcon,
   getDocumentFileTypeLabel,
 } from '@/features/services/helpers/doc-file'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
@@ -267,6 +268,7 @@ function getFileTypeBadgeColor(
 }
 
 export function DocCard({ doc }: { doc: DashboardDoc }) {
+  const { canWrite } = usePermissions()
   const orgId = useCurrentOrganization().id
   const { updateDoc, deleteDoc } = useDocsContext()
 
@@ -395,13 +397,17 @@ export function DocCard({ doc }: { doc: DashboardDoc }) {
               </>
             )}
 
-            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+            <DropdownMenuItem
+              disabled={!canWrite}
+              onClick={() => setIsEditModalOpen(true)}
+            >
               <Pencil className="h-4 w-4" />
               Edit
             </DropdownMenuItem>
 
             <DropdownMenuItem
               variant="destructive"
+              disabled={!canWrite}
               onClick={() => setIsDeleteConfirmationOpen(true)}
             >
               <Trash2 className="h-4 w-4" />

@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { format } from 'date-fns'
@@ -28,6 +29,7 @@ type FlowDiagramCardProps = {
 }
 
 export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
+  const { canWrite } = usePermissions()
   const organizationId = useCurrentOrganization()?.id
   const { updateDiagram, deleteDiagram } = useDiagramsContext()
 
@@ -158,16 +160,23 @@ export function FlowDiagramCard({ diagram }: FlowDiagramCardProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setRenameOpen(true)}
+          >
             Edit
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setMoveToFolderOpen(true)}>
+          <DropdownMenuItem
+            disabled={!canWrite}
+            onClick={() => setMoveToFolderOpen(true)}
+          >
             Move
           </DropdownMenuItem>
 
           <DropdownMenuItem
             variant="destructive"
+            disabled={!canWrite}
             onClick={() => setDeleteOpen(true)}
           >
             Delete

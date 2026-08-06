@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { Folder, FolderOpen, MoreHorizontal } from 'lucide-react'
@@ -389,6 +390,7 @@ function AllFlowsCard({
 
 /** Regular folder chip */
 function FolderChip({ folder }: { folder: DashboardFolder }) {
+  const { canWrite } = usePermissions()
   const organizationId = useCurrentOrganization().id
   const {
     selectedFolderId,
@@ -495,11 +497,15 @@ function FolderChip({ folder }: { folder: DashboardFolder }) {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onClick={() => setIsRenameOpen(true)}>
+            <DropdownMenuItem
+              disabled={!canWrite}
+              onClick={() => setIsRenameOpen(true)}
+            >
               Rename
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
+              disabled={!canWrite}
               onClick={() => setIsDeleteOpen(true)}
             >
               Delete

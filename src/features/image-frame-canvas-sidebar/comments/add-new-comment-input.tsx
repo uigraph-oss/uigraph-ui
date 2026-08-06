@@ -1,6 +1,7 @@
 import { SuperCircleLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { InputEditor } from '@/features/comments/components/input-editor'
+import { usePermissions } from '@/hooks/use-permissions'
 import { Send } from 'lucide-react'
 import { useState } from 'react'
 import { useCommentsContext } from '../../comments/contexts/comments-context'
@@ -9,6 +10,7 @@ export function AddNewCommentInput() {
   const { comments, createComment, replyToCommentId, setReplyToCommentId } =
     useCommentsContext()
 
+  const { canWrite } = usePermissions()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [commentValue, setCommentValue] = useState('')
 
@@ -69,7 +71,7 @@ export function AddNewCommentInput() {
         <Button
           type="button"
           preset="primary"
-          disabled={isSubmitDisabled || isSubmitting}
+          disabled={isSubmitDisabled || isSubmitting || !canWrite}
           onClick={() => {
             void handleFormSubmit()
           }}

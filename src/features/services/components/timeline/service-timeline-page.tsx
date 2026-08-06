@@ -18,6 +18,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { CirclePlus } from 'lucide-react'
@@ -41,6 +42,7 @@ import type { TimelineEvent, TimelinePeriod, TimelineTypeFilter } from './types'
 type FormTarget = 'create' | TimelineEvent | null
 
 export function ServiceTimelinePage() {
+  const { canWrite } = usePermissions()
   const { serviceId } = useServiceContext()
   const orgId = useCurrentOrganization()?.id as string
 
@@ -100,7 +102,11 @@ export function ServiceTimelinePage() {
         title="Timeline"
         description="Releases, decisions, and incident postmortems for this service — synced from artifacts already in the repo, or logged by hand — each event links back to the graph nodes it touched."
       >
-        <Button preset="cta" onClick={() => setFormTarget('create')}>
+        <Button
+          preset="cta"
+          disabled={!canWrite}
+          onClick={() => setFormTarget('create')}
+        >
           <CirclePlus />
           Add event
         </Button>

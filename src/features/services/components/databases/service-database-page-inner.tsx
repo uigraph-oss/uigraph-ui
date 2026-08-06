@@ -15,6 +15,7 @@ import {
   DashboardSectionHeader,
 } from '@/features/dashboard'
 import { BetterTabController, useBetterTabs } from '@/hooks/use-better-tabs'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
@@ -39,6 +40,7 @@ export function ServiceDatabasePageInner() {
 }
 
 function ServiceDatabasePageContent() {
+  const { canWrite } = usePermissions()
   const navigate = useNavigate()
   const {
     serviceId,
@@ -69,6 +71,7 @@ function ServiceDatabasePageContent() {
             {selectedDbVersionId === null ? (
               <Button
                 preset="outline"
+                disabled={!canWrite}
                 onClick={() => setIsCreatingVersion(true)}
               >
                 <LuCloudUpload />

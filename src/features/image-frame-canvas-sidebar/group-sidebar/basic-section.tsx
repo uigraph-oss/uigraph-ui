@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FrameGroup } from '@/features/dashboard-pages/api/frame-group'
 import { useEffectState } from '@/hooks/use-effect-state'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -30,6 +31,7 @@ export function BasicSection({
   frameGroup,
   updateFrameGroup,
 }: BasicSectionProps) {
+  const { canWrite } = usePermissions()
   const [isUpdatingGroup, setIsUpdatingGroup] = useState(false)
 
   const [localName, setLocalName] = useEffectState(frameGroup.name || '')
@@ -70,6 +72,7 @@ export function BasicSection({
                 size="lg"
                 variant="outline"
                 className="h-11 rounded-[0.75rem]"
+                disabled={!canWrite}
                 onClick={async () => {
                   try {
                     setIsUpdatingGroup(true)

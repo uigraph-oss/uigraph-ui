@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { CirclePlus } from 'lucide-react'
 import { useState } from 'react'
@@ -37,6 +38,7 @@ export function DashboardProjects() {
     search,
     setSearch,
   } = useProjects()
+  const { canWrite } = usePermissions()
   const [createProjectOpen, setCreateProjectOpen] = useState(false)
 
   const totalPages = Math.ceil(totalCount / pageSize)
@@ -48,6 +50,7 @@ export function DashboardProjects() {
       crumbs={[{ to: '/dashboard/maps', label: 'Maps' }]}
       headerContent={
         <Button
+          disabled={!canWrite}
           onClick={() => setCreateProjectOpen(true)}
           className="h-11 rounded-[0.8rem]"
         >

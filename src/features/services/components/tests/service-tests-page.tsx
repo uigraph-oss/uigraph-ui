@@ -10,6 +10,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from '@/features/dashboard'
+import { usePermissions } from '@/hooks/use-permissions'
 import { CirclePlus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -42,6 +43,7 @@ export function ServiceTestsPage() {
 }
 
 function ServiceTestsPageContent() {
+  const { canWrite } = usePermissions()
   const {
     orgId,
     serviceId,
@@ -176,7 +178,11 @@ function ServiceTestsPageContent() {
         title="Tests"
         description="Manage smoke, regression, manual, and load test packs."
       >
-        <Button preset="primary" onClick={handleNewTestPack}>
+        <Button
+          preset="primary"
+          disabled={!canWrite}
+          onClick={handleNewTestPack}
+        >
           <CirclePlus className="h-4 w-4" />
           New Test Pack
         </Button>

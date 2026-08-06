@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -61,6 +62,7 @@ export function SelectedDatabaseQueriesSection({
 }: {
   db: ServiceDbSchema
 }) {
+  const { canWrite } = usePermissions()
   const serviceDbId = db.serviceDBId ?? 'unknown'
   const {
     team,
@@ -213,7 +215,12 @@ export function SelectedDatabaseQueriesSection({
 
         <div className="flex items-center gap-2">
           <DbTypeBadge type={db.dbType ?? db.dialect} />
-          <Button type="button" preset="outline" onClick={startCreate}>
+          <Button
+            type="button"
+            preset="outline"
+            disabled={!canWrite}
+            onClick={startCreate}
+          >
             <Plus className="h-4 w-4" />
             New Query
           </Button>
