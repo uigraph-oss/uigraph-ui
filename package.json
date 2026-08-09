@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
+    "deps": "pnpm install",
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest watch",
