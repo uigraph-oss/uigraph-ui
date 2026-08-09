@@ -91,8 +91,6 @@ export function RoleMappingsModal({
     }
   }
 
-  // Priorities are swapped rather than renumbered so a reorder touches exactly
-  // the two rules the admin moved.
   async function handleMove(index: number, direction: -1 | 1) {
     const current = mappings[index]
     const neighbour = mappings[index + direction]

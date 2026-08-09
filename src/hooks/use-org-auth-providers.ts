@@ -33,10 +33,6 @@ export async function discoverOrgs(email: string): Promise<DiscoveredOrg[]> {
   return data.orgs
 }
 
-// Provider lists are per-org, so nothing here is cached across orgs: a stale
-// cache would render another org's sign-in buttons.
-// A workspace with no configured providers is a normal state, not a failure, so
-// this never surfaces an error: the sign-in form simply falls back to password.
 export function useOrgAuthProviders(orgId: string | null) {
   const [isLoading, setIsLoading] = useState(false)
   const [providers, setProviders] = useState<OrgAuthProvider[]>([])

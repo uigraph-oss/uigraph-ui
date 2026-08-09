@@ -369,8 +369,6 @@ export function OrgAuthPage() {
   )
 }
 
-// The stored secret reads back as a mask; sending it unchanged would be
-// meaningless, so the field starts empty and blank means "keep what is there".
 function toFormValues(provider: AuthProvider): Partial<AuthProviderFormValues> {
   return {
     slug: provider.slug,

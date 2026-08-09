@@ -22,9 +22,6 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { AUTH_PROVIDER_SAML_METADATA } from './api/org-auth'
 
-// The slug is what every auth URL is built from, including the redirect URI and
-// Entity ID the admin registers at their IdP. It is checked exactly as typed and
-// never normalised, so what they enter is what they will have to register.
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 const schema = z

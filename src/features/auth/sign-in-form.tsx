@@ -116,7 +116,6 @@ export function SignInForm() {
       setEmail(values.email)
       setOrgs(found)
 
-      // One workspace is not a choice, so skip the picker entirely.
       if (found.length === 1) {
         selectOrg(found[0])
         return
