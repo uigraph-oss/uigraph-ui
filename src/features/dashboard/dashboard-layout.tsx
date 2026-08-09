@@ -2,8 +2,8 @@
 
 import { GridScrollBody } from '@/components/grid-scroll-body'
 import { DASHBOARD_SETTINGS_NAV_LINKS } from '@/constants'
+import { env } from '@/env'
 import { OrgOnboardingDialog } from '@/features/org-onboarding/org-onboarding-dialog'
-import { useInstanceInfo } from '@/hooks/use-instance-info'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth-store'
@@ -26,7 +26,6 @@ export function DashboardLayout({ children }: PropsWithChildren) {
 export function DashboardSettingsLayout({ children }: PropsWithChildren) {
   const { pathname } = useLocation()
   const { isAdmin } = usePermissions()
-  const { enterpriseEnabled, billingUrl } = useInstanceInfo()
   const currentOrganizationId = useAuthStore(
     (state) => state.currentOrganizationId
   )
@@ -83,23 +82,25 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
               )
             })}
 
-            {enterpriseEnabled && isAdmin && billingUrl && (
-              <li className="block *:transition-all">
-                <a
-                  href={
-                    currentOrganizationId
-                      ? `${billingUrl}?orgId=${currentOrganizationId}`
-                      : billingUrl
-                  }
-                  className="flex h-[2.4375rem] items-center rounded-[0.5rem] bg-transparent px-3 py-2 hover:bg-white/[0.06]"
-                >
-                  <span className="block text-base">
-                    <LuCreditCard />
-                  </span>
-                  <span className="ml-2 block text-sm">Billing</span>
-                </a>
-              </li>
-            )}
+            {env.VITE_FEATURE_ENABLE_BILLING &&
+              env.VITE_BILLING_URL &&
+              isAdmin && (
+                <li className="block *:transition-all">
+                  <a
+                    href={
+                      currentOrganizationId
+                        ? `${env.VITE_BILLING_URL}?orgId=${currentOrganizationId}`
+                        : env.VITE_BILLING_URL
+                    }
+                    className="flex h-[2.4375rem] items-center rounded-[0.5rem] bg-transparent px-3 py-2 hover:bg-white/[0.06]"
+                  >
+                    <span className="block text-base">
+                      <LuCreditCard />
+                    </span>
+                    <span className="ml-2 block text-sm">Billing</span>
+                  </a>
+                </li>
+              )}
           </ul>
         </aside>
 
