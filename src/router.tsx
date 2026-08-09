@@ -604,7 +604,7 @@ export function AppRoutes() {
                 path="cloud-connections"
                 element={<CloudConnectionsPage />}
               />
-              <Route path="authentication" element={<OrgAuthPage />} />
+              <Route path="sso" element={<OrgAuthPage />} />
             </Route>
           </Route>
         </Route>

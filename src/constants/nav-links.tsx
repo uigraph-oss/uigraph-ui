@@ -152,8 +152,8 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     adminOnly: true,
   },
   {
-    id: '/settings/authentication',
-    label: 'Authentication',
+    id: '/settings/sso',
+    label: 'SSO',
     icon: <LuFingerprint />,
     adminOnly: true,
   }

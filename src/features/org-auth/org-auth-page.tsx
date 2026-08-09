@@ -89,7 +89,7 @@ export function OrgAuthPage() {
   return (
     <>
       <SettingsHeader
-        title="Authentication"
+        title="SSO"
         description="Identity providers, role mapping, and the email domains that lead here."
         cta={
           <Button
@@ -103,7 +103,7 @@ export function OrgAuthPage() {
       />
 
       {providersQuery.loading && !providersQuery.data ? (
-        <SectionLoader label="Loading authentication settings..." />
+        <SectionLoader label="Loading SSO settings..." />
       ) : (
         <div className="space-y-8 px-6 py-6">
           <section className="space-y-4">
