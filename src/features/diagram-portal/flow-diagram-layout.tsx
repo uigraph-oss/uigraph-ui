@@ -14,6 +14,7 @@ import {
 import { DASHBOARD_NAV_LINKS } from '@/constants'
 import { env } from '@/env'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth-store'
 import { PropsWithChildren, useEffect, useRef } from 'react'
 import { LuMenu } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
@@ -30,6 +31,7 @@ import { FloatingProperties } from './properties'
 export function FlowDiagramLayout({ children }: PropsWithChildren) {
   const { viewport, diagramName, setDiagramName, isPreviewing } =
     useFlowDiagramContext()
+  const isServerAdmin = useAuthStore((state) => state.user?.isServerAdmin)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -87,7 +89,9 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
               </SheetHeader>
 
               <div className="p-3">
-                {DASHBOARD_NAV_LINKS.map((item) => {
+                {DASHBOARD_NAV_LINKS.filter(
+                  (item) => !item.serverAdminOnly || isServerAdmin
+                ).map((item) => {
                   const link = (
                     <Link
                       to={item.disabled ? '' : item.id}
