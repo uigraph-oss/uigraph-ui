@@ -251,6 +251,96 @@ export type AuthConfigInput = {
   type: Scalars['String']['input'];
 };
 
+export type AuthProvider = {
+  allowSignUp: Scalars['Boolean']['output'];
+  allowedDomains: Scalars['String']['output'];
+  apiUrl: Scalars['String']['output'];
+  authUrl: Scalars['String']['output'];
+  clientId: Scalars['String']['output'];
+  clientSecret: Scalars['String']['output'];
+  createdAt: Scalars['Time']['output'];
+  defaultRole: Scalars['String']['output'];
+  displayName: Scalars['String']['output'];
+  emailAttribute: Scalars['String']['output'];
+  emailClaim: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  groupsAttribute: Scalars['String']['output'];
+  groupsClaim: Scalars['String']['output'];
+  iconUrl: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  idpCert: Scalars['String']['output'];
+  idpEntityId: Scalars['String']['output'];
+  idpMetadataUrl: Scalars['String']['output'];
+  idpMetadataXml: Scalars['String']['output'];
+  idpSsoUrl: Scalars['String']['output'];
+  kind: Scalars['String']['output'];
+  nameAttribute: Scalars['String']['output'];
+  nameClaim: Scalars['String']['output'];
+  nameIdFormat: Scalars['String']['output'];
+  orgId: Scalars['ID']['output'];
+  scopes: Scalars['String']['output'];
+  signRequests: Scalars['Boolean']['output'];
+  slug: Scalars['String']['output'];
+  spCert: Scalars['String']['output'];
+  spEntityId: Scalars['String']['output'];
+  spKey: Scalars['String']['output'];
+  subClaim: Scalars['String']['output'];
+  tokenUrl: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['Time']['output'];
+  userinfoUrl: Scalars['String']['output'];
+};
+
+export type AuthProviderInput = {
+  allowSignUp: Scalars['Boolean']['input'];
+  allowedDomains?: InputMaybe<Scalars['String']['input']>;
+  apiUrl?: InputMaybe<Scalars['String']['input']>;
+  authUrl?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['String']['input']>;
+  clientSecret?: InputMaybe<Scalars['String']['input']>;
+  defaultRole: Scalars['String']['input'];
+  displayName: Scalars['String']['input'];
+  emailAttribute?: InputMaybe<Scalars['String']['input']>;
+  emailClaim?: InputMaybe<Scalars['String']['input']>;
+  enabled: Scalars['Boolean']['input'];
+  groupsAttribute?: InputMaybe<Scalars['String']['input']>;
+  groupsClaim?: InputMaybe<Scalars['String']['input']>;
+  idpCert?: InputMaybe<Scalars['String']['input']>;
+  idpEntityId?: InputMaybe<Scalars['String']['input']>;
+  idpMetadataUrl?: InputMaybe<Scalars['String']['input']>;
+  idpMetadataXml?: InputMaybe<Scalars['String']['input']>;
+  idpSsoUrl?: InputMaybe<Scalars['String']['input']>;
+  kind: Scalars['String']['input'];
+  nameAttribute?: InputMaybe<Scalars['String']['input']>;
+  nameClaim?: InputMaybe<Scalars['String']['input']>;
+  nameIdFormat?: InputMaybe<Scalars['String']['input']>;
+  scopes?: InputMaybe<Scalars['String']['input']>;
+  signRequests?: InputMaybe<Scalars['Boolean']['input']>;
+  slug: Scalars['String']['input'];
+  subClaim?: InputMaybe<Scalars['String']['input']>;
+  tokenUrl?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+  userinfoUrl?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AuthRoleMapping = {
+  attributeKey: Scalars['String']['output'];
+  attributeValue: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  operator: Scalars['String']['output'];
+  priority: Scalars['Int']['output'];
+  providerId: Scalars['ID']['output'];
+  role: Scalars['String']['output'];
+};
+
+export type AuthRoleMappingInput = {
+  attributeKey: Scalars['String']['input'];
+  attributeValue?: InputMaybe<Scalars['String']['input']>;
+  operator: Scalars['String']['input'];
+  priority: Scalars['Int']['input'];
+  role: Scalars['String']['input'];
+};
+
 export type Canvas = {
   framePositions: Scalars['String']['output'];
   mapId: Scalars['ID']['output'];
@@ -653,15 +743,6 @@ export type CreateMlRunInput = {
 
 export type CreateOrgInput = {
   name: Scalars['String']['input'];
-};
-
-export type CreateRoleMappingInput = {
-  claimKey: Scalars['String']['input'];
-  claimValue: Scalars['String']['input'];
-  resourceId?: InputMaybe<Scalars['String']['input']>;
-  resourceType?: InputMaybe<Scalars['String']['input']>;
-  role: Scalars['String']['input'];
-  scope: Scalars['String']['input'];
 };
 
 export type CreateSavedQueryFolderInput = {
@@ -1456,6 +1537,11 @@ export type ManualTestCaseInput = {
   testData?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type MappingOperator = {
+  name: Scalars['String']['output'];
+  takesValue: Scalars['Boolean']['output'];
+};
+
 export type Me = {
   authProvider: Scalars['String']['output'];
   avatarUrl?: Maybe<Scalars['String']['output']>;
@@ -1712,6 +1798,8 @@ export type Mutation = {
   createAPIEndpoint: ApiEndpoint;
   createAPIGroup: ApiGroup;
   createAssetUpload: AssetUpload;
+  createAuthProvider: AuthProvider;
+  createAuthRoleMapping: AuthRoleMapping;
   createChatMessage: ChatMessage;
   createChatSession: ChatSession;
   createCloudConnection: CloudConnection;
@@ -1739,7 +1827,7 @@ export type Mutation = {
   createMlRun: MlRun;
   createMlVersionDeploymentUpdate: MlVersionDeploymentUpdate;
   createOrg: Org;
-  createRoleMapping: Scalars['Boolean']['output'];
+  createOrgDomain: OrgDomain;
   createSavedQuery: SavedQuery;
   createSavedQueryFolder: SavedQueryFolder;
   createServerOrg: Org;
@@ -1760,6 +1848,8 @@ export type Mutation = {
   createUser: User;
   deleteAPIEndpoint: Scalars['Boolean']['output'];
   deleteAPIGroup: Scalars['Boolean']['output'];
+  deleteAuthProvider: Scalars['Boolean']['output'];
+  deleteAuthRoleMapping: Scalars['Boolean']['output'];
   deleteChatSession: Scalars['Boolean']['output'];
   deleteCloudConnection: Scalars['Boolean']['output'];
   deleteComment: Scalars['Boolean']['output'];
@@ -1783,9 +1873,8 @@ export type Mutation = {
   deleteMlModel: Scalars['Boolean']['output'];
   deleteMlProject: Scalars['Boolean']['output'];
   deleteMlRun: Scalars['Boolean']['output'];
-  deleteOAuthProvider: Scalars['Boolean']['output'];
   deleteOrg: Scalars['Boolean']['output'];
-  deleteRoleMapping: Scalars['Boolean']['output'];
+  deleteOrgDomain: Scalars['Boolean']['output'];
   deleteSavedQuery: Scalars['Boolean']['output'];
   deleteSavedQueryFolder: Scalars['Boolean']['output'];
   deleteServerOrg: Scalars['Boolean']['output'];
@@ -1802,22 +1891,22 @@ export type Mutation = {
   disableUser: Scalars['Boolean']['output'];
   generateDiagramThumbnail: Scalars['Boolean']['output'];
   linkMlVersionEvaluations: Array<MlEvaluation>;
+  prepareAuthProviderIconUpload: AssetUpload;
   prepareDiagramThumbnailUpload: DiagramThumbnailUpload;
-  prepareOAuthProviderIconUpload: AssetUpload;
   prepareServerOrgLogoUpload: AssetUpload;
   prepareServiceAccountAvatarUpload: AssetUpload;
   prepareUserAvatarUpload: AssetUpload;
+  removeAuthProviderIcon: Scalars['Boolean']['output'];
   removeMember: Scalars['Boolean']['output'];
-  removeOAuthProviderIcon: Scalars['Boolean']['output'];
   removeServerOrgLogo: Scalars['Boolean']['output'];
   removeTeamMember: Scalars['Boolean']['output'];
   restoreAPIGroupVersion: ApiGroup;
   restoreDiagramVersion: Diagram;
   restoreServiceDBVersion: ServiceDb;
   revokeServiceAccountToken: Scalars['Boolean']['output'];
+  setAuthProviderIcon: Scalars['Boolean']['output'];
   setMlModelVersionRun: MlModelVersion;
   setMyAvatar: Scalars['Boolean']['output'];
-  setOAuthProviderIcon: Scalars['Boolean']['output'];
   setServerOrgLogo: Scalars['Boolean']['output'];
   setServiceAccountAvatar: Scalars['Boolean']['output'];
   switchOrg: Scalars['Boolean']['output'];
@@ -1829,6 +1918,8 @@ export type Mutation = {
   testCloudConnection: TestCloudConnectionResult;
   updateAPIEndpoint: ApiEndpoint;
   updateAPIGroup: ApiGroup;
+  updateAuthProvider: AuthProvider;
+  updateAuthRoleMapping: AuthRoleMapping;
   updateChatSession: ChatSession;
   updateComment: Comment;
   updateCustomComponent: Component;
@@ -1868,8 +1959,6 @@ export type Mutation = {
   updateUser: User;
   upsertCanvas: Canvas;
   upsertLDAP: Scalars['Boolean']['output'];
-  upsertOAuthProvider: Scalars['Boolean']['output'];
-  upsertSAML: Scalars['Boolean']['output'];
 };
 
 
@@ -1916,6 +2005,19 @@ export type MutationCreateApiGroupArgs = {
 
 export type MutationCreateAssetUploadArgs = {
   orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateAuthProviderArgs = {
+  input: AuthProviderInput;
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateAuthRoleMappingArgs = {
+  input: AuthRoleMappingInput;
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
 };
 
 
@@ -2098,8 +2200,9 @@ export type MutationCreateOrgArgs = {
 };
 
 
-export type MutationCreateRoleMappingArgs = {
-  input: CreateRoleMappingInput;
+export type MutationCreateOrgDomainArgs = {
+  domain: Scalars['String']['input'];
+  orgId: Scalars['ID']['input'];
 };
 
 
@@ -2238,6 +2341,19 @@ export type MutationDeleteApiGroupArgs = {
   id: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteAuthProviderArgs = {
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteAuthRoleMappingArgs = {
+  mappingId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
 };
 
 
@@ -2383,18 +2499,14 @@ export type MutationDeleteMlRunArgs = {
 };
 
 
-export type MutationDeleteOAuthProviderArgs = {
-  provider: Scalars['String']['input'];
-};
-
-
 export type MutationDeleteOrgArgs = {
   id: Scalars['ID']['input'];
 };
 
 
-export type MutationDeleteRoleMappingArgs = {
-  id: Scalars['ID']['input'];
+export type MutationDeleteOrgDomainArgs = {
+  domainId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
 };
 
 
@@ -2504,14 +2616,15 @@ export type MutationLinkMlVersionEvaluationsArgs = {
 };
 
 
-export type MutationPrepareDiagramThumbnailUploadArgs = {
-  diagramId: Scalars['ID']['input'];
+export type MutationPrepareAuthProviderIconUploadArgs = {
   orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
 };
 
 
-export type MutationPrepareOAuthProviderIconUploadArgs = {
-  provider: Scalars['String']['input'];
+export type MutationPrepareDiagramThumbnailUploadArgs = {
+  diagramId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
 };
 
 
@@ -2526,14 +2639,15 @@ export type MutationPrepareServiceAccountAvatarUploadArgs = {
 };
 
 
-export type MutationRemoveMemberArgs = {
+export type MutationRemoveAuthProviderIconArgs = {
   orgId: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
 };
 
 
-export type MutationRemoveOAuthProviderIconArgs = {
-  provider: Scalars['String']['input'];
+export type MutationRemoveMemberArgs = {
+  orgId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -2579,15 +2693,16 @@ export type MutationRevokeServiceAccountTokenArgs = {
 };
 
 
+export type MutationSetAuthProviderIconArgs = {
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
 export type MutationSetMlModelVersionRunArgs = {
   orgId: Scalars['ID']['input'];
   runId?: InputMaybe<Scalars['ID']['input']>;
   versionId: Scalars['ID']['input'];
-};
-
-
-export type MutationSetOAuthProviderIconArgs = {
-  provider: Scalars['String']['input'];
 };
 
 
@@ -2653,6 +2768,21 @@ export type MutationUpdateApiGroupArgs = {
   input: UpdateApiGroupInput;
   orgId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateAuthProviderArgs = {
+  input: AuthProviderInput;
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateAuthRoleMappingArgs = {
+  input: AuthRoleMappingInput;
+  mappingId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
 };
 
 
@@ -2948,39 +3078,6 @@ export type MutationUpsertLdapArgs = {
   input: UpsertLdapInput;
 };
 
-
-export type MutationUpsertOAuthProviderArgs = {
-  input: UpsertOAuthInput;
-  provider: Scalars['String']['input'];
-};
-
-
-export type MutationUpsertSamlArgs = {
-  input: UpsertSamlInput;
-};
-
-export type OAuthProvider = {
-  allowSignUp: Scalars['Boolean']['output'];
-  allowedDomains: Scalars['String']['output'];
-  apiUrl: Scalars['String']['output'];
-  authUrl: Scalars['String']['output'];
-  clientId: Scalars['String']['output'];
-  clientSecret: Scalars['String']['output'];
-  createdAt: Scalars['Time']['output'];
-  displayName: Scalars['String']['output'];
-  emailClaim: Scalars['String']['output'];
-  iconUrl: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  nameClaim: Scalars['String']['output'];
-  providerName: Scalars['String']['output'];
-  scopes: Scalars['String']['output'];
-  subClaim: Scalars['String']['output'];
-  tokenUrl: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  updatedAt: Scalars['Time']['output'];
-  userinfoUrl: Scalars['String']['output'];
-};
-
 export type Org = {
   autoJoin: Scalars['Boolean']['output'];
   createdAt: Scalars['Time']['output'];
@@ -2988,6 +3085,14 @@ export type Org = {
   id: Scalars['ID']['output'];
   logoUrl?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  updatedAt: Scalars['Time']['output'];
+};
+
+export type OrgDomain = {
+  createdAt: Scalars['Time']['output'];
+  domain: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  orgId: Scalars['ID']['output'];
   updatedAt: Scalars['Time']['output'];
 };
 
@@ -3014,6 +3119,10 @@ export type Query = {
   apiGroups: Array<ApiGroup>;
   assetUrl?: Maybe<Scalars['String']['output']>;
   assetUrls: Array<AssetUrl>;
+  authProvider: AuthProvider;
+  authProviderSamlMetadata: SamlSpMetadata;
+  authProviders: Array<AuthProvider>;
+  authRoleMappings: Array<AuthRoleMapping>;
   canvas: Canvas;
   chatMessages: Array<ChatMessage>;
   chatSession: ChatSessionWithMessages;
@@ -3052,6 +3161,7 @@ export type Query = {
   frames: FramePage;
   ldap?: Maybe<LdapConfig>;
   map: UiMap;
+  mappingOperators: Array<MappingOperator>;
   maps: UiMapPage;
   me: Me;
   members: Array<Member>;
@@ -3080,12 +3190,10 @@ export type Query = {
   mlVersionEvaluations: Array<MlEvaluation>;
   mlVersionEvaluationsPage: MlEvaluationPage;
   myOrgs: Array<OrgSummary>;
-  oauthProviders: Array<OAuthProvider>;
   org: Org;
+  orgDomains: Array<OrgDomain>;
   orgs: Array<Org>;
   resourceDailyCosts: Array<ResourceDailyCost>;
-  roleMappings: Array<RoleMapping>;
-  saml?: Maybe<SamlConfig>;
   savedQueries: Array<SavedQuery>;
   savedQueryFolders: Array<SavedQueryFolder>;
   scim?: Maybe<ScimConfig>;
@@ -3214,6 +3322,29 @@ export type QueryAssetUrlArgs = {
 export type QueryAssetUrlsArgs = {
   assetIds: Array<Scalars['ID']['input']>;
   orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryAuthProviderArgs = {
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryAuthProviderSamlMetadataArgs = {
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryAuthProvidersArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryAuthRoleMappingsArgs = {
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
 };
 
 
@@ -3656,6 +3787,11 @@ export type QueryOrgArgs = {
 };
 
 
+export type QueryOrgDomainsArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
 export type QueryResourceDailyCostsArgs = {
   days?: InputMaybe<Scalars['Int']['input']>;
   orgId: Scalars['ID']['input'];
@@ -3880,40 +4016,15 @@ export type ResourceDailyCost = {
   date: Scalars['String']['output'];
 };
 
-export type RoleMapping = {
-  claimKey: Scalars['String']['output'];
-  claimValue: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  organizationId: Scalars['ID']['output'];
-  resourceId: Scalars['String']['output'];
-  resourceType: Scalars['String']['output'];
-  role: Scalars['String']['output'];
-  scope: Scalars['String']['output'];
-};
-
-export type SamlConfig = {
-  allowSignUp: Scalars['Boolean']['output'];
-  createdAt: Scalars['Time']['output'];
-  emailAttribute: Scalars['String']['output'];
-  groupsAttribute: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  idpCert: Scalars['String']['output'];
-  idpEntityId: Scalars['String']['output'];
-  idpMetadataUrl: Scalars['String']['output'];
-  idpMetadataXml: Scalars['String']['output'];
-  idpSsoUrl: Scalars['String']['output'];
-  loginAttribute: Scalars['String']['output'];
-  nameAttribute: Scalars['String']['output'];
-  nameIdFormat: Scalars['String']['output'];
-  signRequests: Scalars['Boolean']['output'];
-  spCert: Scalars['String']['output'];
-  spEntityId: Scalars['String']['output'];
-  spKey: Scalars['String']['output'];
-  updatedAt: Scalars['Time']['output'];
-};
-
 export type ScimConfig = {
   id: Scalars['ID']['output'];
+};
+
+export type SamlSpMetadata = {
+  acsUrl: Scalars['String']['output'];
+  entityId: Scalars['String']['output'];
+  metadata: Scalars['String']['output'];
+  metadataUrl: Scalars['String']['output'];
 };
 
 export type SavedQuery = {
@@ -4777,37 +4888,6 @@ export type UpsertLdapInput = {
   startTls: Scalars['Boolean']['input'];
   useSsl: Scalars['Boolean']['input'];
   usernameAttribute: Scalars['String']['input'];
-};
-
-export type UpsertOAuthInput = {
-  allowSignUp: Scalars['Boolean']['input'];
-  allowedDomains?: InputMaybe<Scalars['String']['input']>;
-  apiUrl?: InputMaybe<Scalars['String']['input']>;
-  authUrl?: InputMaybe<Scalars['String']['input']>;
-  clientId: Scalars['String']['input'];
-  clientSecret?: InputMaybe<Scalars['String']['input']>;
-  displayName: Scalars['String']['input'];
-  emailClaim: Scalars['String']['input'];
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
-  nameClaim: Scalars['String']['input'];
-  scopes: Scalars['String']['input'];
-  subClaim: Scalars['String']['input'];
-  tokenUrl?: InputMaybe<Scalars['String']['input']>;
-  type: Scalars['String']['input'];
-  userinfoUrl?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpsertSamlInput = {
-  allowSignUp: Scalars['Boolean']['input'];
-  emailAttribute: Scalars['String']['input'];
-  groupsAttribute?: InputMaybe<Scalars['String']['input']>;
-  idpMetadataUrl?: InputMaybe<Scalars['String']['input']>;
-  idpMetadataXml?: InputMaybe<Scalars['String']['input']>;
-  loginAttribute: Scalars['String']['input'];
-  nameAttribute: Scalars['String']['input'];
-  nameIdFormat: Scalars['String']['input'];
-  signRequests: Scalars['Boolean']['input'];
-  spEntityId: Scalars['String']['input'];
 };
 
 export type User = {
@@ -6316,6 +6396,134 @@ export type DeleteMlRunMutationVariables = Exact<{
 
 export type DeleteMlRunMutation = { deleteMlRun: boolean };
 
+export type AuthProvidersQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type AuthProvidersQuery = { authProviders: Array<{ id: string, slug: string, orgId: string, kind: string, type: string, displayName: string, iconUrl: string, enabled: boolean, allowSignUp: boolean, allowedDomains: string, defaultRole: string, clientId: string, clientSecret: string, authUrl: string, tokenUrl: string, userinfoUrl: string, apiUrl: string, scopes: string, emailClaim: string, nameClaim: string, subClaim: string, groupsClaim: string, idpMetadataUrl: string, idpMetadataXml: string, idpEntityId: string, idpSsoUrl: string, idpCert: string, spEntityId: string, spCert: string, spKey: string, signRequests: boolean, nameIdFormat: string, emailAttribute: string, nameAttribute: string, groupsAttribute: string }> };
+
+export type AuthProviderSamlMetadataQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type AuthProviderSamlMetadataQuery = { authProviderSamlMetadata: { entityId: string, acsUrl: string, metadataUrl: string, metadata: string } };
+
+export type AuthRoleMappingsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
+}>;
+
+
+export type AuthRoleMappingsQuery = { authRoleMappings: Array<{ id: string, providerId: string, priority: number, attributeKey: string, operator: string, attributeValue: string, role: string }> };
+
+export type OrgDomainsQueryVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+}>;
+
+
+export type OrgDomainsQuery = { orgDomains: Array<{ id: string, orgId: string, domain: string }> };
+
+export type MappingOperatorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MappingOperatorsQuery = { mappingOperators: Array<{ name: string, takesValue: boolean }> };
+
+export type CreateAuthProviderMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  input: AuthProviderInput;
+}>;
+
+
+export type CreateAuthProviderMutation = { createAuthProvider: { id: string } };
+
+export type UpdateAuthProviderMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+  input: AuthProviderInput;
+}>;
+
+
+export type UpdateAuthProviderMutation = { updateAuthProvider: { id: string } };
+
+export type DeleteAuthProviderMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type DeleteAuthProviderMutation = { deleteAuthProvider: boolean };
+
+export type PrepareAuthProviderIconUploadMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type PrepareAuthProviderIconUploadMutation = { prepareAuthProviderIconUpload: { assetId: string, uploadUrl: string } };
+
+export type SetAuthProviderIconMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type SetAuthProviderIconMutation = { setAuthProviderIcon: boolean };
+
+export type RemoveAuthProviderIconMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type RemoveAuthProviderIconMutation = { removeAuthProviderIcon: boolean };
+
+export type CreateAuthRoleMappingMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
+  input: AuthRoleMappingInput;
+}>;
+
+
+export type CreateAuthRoleMappingMutation = { createAuthRoleMapping: { id: string } };
+
+export type UpdateAuthRoleMappingMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
+  mappingId: Scalars['ID']['input'];
+  input: AuthRoleMappingInput;
+}>;
+
+
+export type UpdateAuthRoleMappingMutation = { updateAuthRoleMapping: { id: string } };
+
+export type DeleteAuthRoleMappingMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  providerSlug: Scalars['String']['input'];
+  mappingId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteAuthRoleMappingMutation = { deleteAuthRoleMapping: boolean };
+
+export type CreateOrgDomainMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  domain: Scalars['String']['input'];
+}>;
+
+
+export type CreateOrgDomainMutation = { createOrgDomain: { id: string } };
+
+export type DeleteOrgDomainMutationVariables = Exact<{
+  orgId: Scalars['ID']['input'];
+  domainId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteOrgDomainMutation = { deleteOrgDomain: boolean };
+
 export type CompleteOnboardingMutationVariables = Exact<{
   orgId: Scalars['ID']['input'];
 }>;
@@ -6375,81 +6583,6 @@ export type DeleteServerOrgMutationVariables = Exact<{
 
 
 export type DeleteServerOrgMutation = { deleteServerOrg: boolean };
-
-export type OAuthProvidersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type OAuthProvidersQuery = { oauthProviders: Array<{ id: string, providerName: string, type: string, displayName: string, iconUrl: string, clientId: string, clientSecret: string, authUrl: string, tokenUrl: string, userinfoUrl: string, apiUrl: string, scopes: string, allowedDomains: string, allowSignUp: boolean, emailClaim: string, nameClaim: string, subClaim: string }> };
-
-export type PrepareOAuthProviderIconUploadMutationVariables = Exact<{
-  provider: Scalars['String']['input'];
-}>;
-
-
-export type PrepareOAuthProviderIconUploadMutation = { prepareOAuthProviderIconUpload: { assetId: string, uploadUrl: string } };
-
-export type SetOAuthProviderIconMutationVariables = Exact<{
-  provider: Scalars['String']['input'];
-}>;
-
-
-export type SetOAuthProviderIconMutation = { setOAuthProviderIcon: boolean };
-
-export type RemoveOAuthProviderIconMutationVariables = Exact<{
-  provider: Scalars['String']['input'];
-}>;
-
-
-export type RemoveOAuthProviderIconMutation = { removeOAuthProviderIcon: boolean };
-
-export type UpsertOAuthProviderMutationVariables = Exact<{
-  provider: Scalars['String']['input'];
-  input: UpsertOAuthInput;
-}>;
-
-
-export type UpsertOAuthProviderMutation = { upsertOAuthProvider: boolean };
-
-export type DeleteOAuthProviderMutationVariables = Exact<{
-  provider: Scalars['String']['input'];
-}>;
-
-
-export type DeleteOAuthProviderMutation = { deleteOAuthProvider: boolean };
-
-export type LdapConfigQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type LdapConfigQuery = { ldap?: { id: string, host: string, port: number, useSsl: boolean, startTls: boolean, skipTlsVerify: boolean, bindDn: string, searchBaseDn: string, searchFilter: string, usernameAttribute: string, emailAttribute: string, nameAttribute: string, memberOfAttribute: string, allowSignUp: boolean } | null };
-
-export type SamlConfigQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type SamlConfigQuery = { saml?: { id: string, spEntityId: string, spCert: string, idpEntityId: string, idpMetadataUrl: string, idpMetadataXml: string, nameIdFormat: string, loginAttribute: string, emailAttribute: string, nameAttribute: string, groupsAttribute: string, signRequests: boolean, allowSignUp: boolean } | null };
-
-export type ScimStatusQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ScimStatusQuery = { scim?: { id: string } | null };
-
-export type UpsertLdapMutationVariables = Exact<{
-  input: UpsertLdapInput;
-}>;
-
-
-export type UpsertLdapMutation = { upsertLDAP: boolean };
-
-export type DeleteLdapMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DeleteLdapMutation = { deleteLDAP: boolean };
-
-export type UpsertSamlMutationVariables = Exact<{
-  input: UpsertSamlInput;
-}>;
-
-
-export type UpsertSamlMutation = { upsertSAML: boolean };
 
 export type ServerUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7341,6 +7474,22 @@ export const MlStudioExperimentRunsPageDocument = {"kind":"Document","definition
 export const CreateMlRunDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMlRun"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"experimentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMlRunInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMlRun"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"experimentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"experimentId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateMlRunMutation, CreateMlRunMutationVariables>;
 export const UpdateMlRunDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMlRun"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMlRunInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMlRun"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateMlRunMutation, UpdateMlRunMutationVariables>;
 export const DeleteMlRunDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMlRun"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMlRun"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMlRunMutation, DeleteMlRunMutationVariables>;
+export const AuthProvidersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AuthProviders"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authProviders"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"iconUrl"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowSignUp"}},{"kind":"Field","name":{"kind":"Name","value":"allowedDomains"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRole"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientSecret"}},{"kind":"Field","name":{"kind":"Name","value":"authUrl"}},{"kind":"Field","name":{"kind":"Name","value":"tokenUrl"}},{"kind":"Field","name":{"kind":"Name","value":"userinfoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"apiUrl"}},{"kind":"Field","name":{"kind":"Name","value":"scopes"}},{"kind":"Field","name":{"kind":"Name","value":"emailClaim"}},{"kind":"Field","name":{"kind":"Name","value":"nameClaim"}},{"kind":"Field","name":{"kind":"Name","value":"subClaim"}},{"kind":"Field","name":{"kind":"Name","value":"groupsClaim"}},{"kind":"Field","name":{"kind":"Name","value":"idpMetadataUrl"}},{"kind":"Field","name":{"kind":"Name","value":"idpMetadataXml"}},{"kind":"Field","name":{"kind":"Name","value":"idpEntityId"}},{"kind":"Field","name":{"kind":"Name","value":"idpSsoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"idpCert"}},{"kind":"Field","name":{"kind":"Name","value":"spEntityId"}},{"kind":"Field","name":{"kind":"Name","value":"spCert"}},{"kind":"Field","name":{"kind":"Name","value":"spKey"}},{"kind":"Field","name":{"kind":"Name","value":"signRequests"}},{"kind":"Field","name":{"kind":"Name","value":"nameIdFormat"}},{"kind":"Field","name":{"kind":"Name","value":"emailAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"nameAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"groupsAttribute"}}]}}]}}]} as unknown as DocumentNode<AuthProvidersQuery, AuthProvidersQueryVariables>;
+export const AuthProviderSamlMetadataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AuthProviderSamlMetadata"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authProviderSamlMetadata"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"acsUrl"}},{"kind":"Field","name":{"kind":"Name","value":"metadataUrl"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]}}]} as unknown as DocumentNode<AuthProviderSamlMetadataQuery, AuthProviderSamlMetadataQueryVariables>;
+export const AuthRoleMappingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AuthRoleMappings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authRoleMappings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"providerSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"providerId"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"attributeKey"}},{"kind":"Field","name":{"kind":"Name","value":"operator"}},{"kind":"Field","name":{"kind":"Name","value":"attributeValue"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<AuthRoleMappingsQuery, AuthRoleMappingsQueryVariables>;
+export const OrgDomainsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"OrgDomains"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"orgDomains"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}}]}}]}}]} as unknown as DocumentNode<OrgDomainsQuery, OrgDomainsQueryVariables>;
+export const MappingOperatorsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MappingOperators"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mappingOperators"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"takesValue"}}]}}]}}]} as unknown as DocumentNode<MappingOperatorsQuery, MappingOperatorsQueryVariables>;
+export const CreateAuthProviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAuthProvider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthProviderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAuthProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateAuthProviderMutation, CreateAuthProviderMutationVariables>;
+export const UpdateAuthProviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAuthProvider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthProviderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAuthProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateAuthProviderMutation, UpdateAuthProviderMutationVariables>;
+export const DeleteAuthProviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteAuthProvider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteAuthProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}]}]}}]} as unknown as DocumentNode<DeleteAuthProviderMutation, DeleteAuthProviderMutationVariables>;
+export const PrepareAuthProviderIconUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PrepareAuthProviderIconUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prepareAuthProviderIconUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<PrepareAuthProviderIconUploadMutation, PrepareAuthProviderIconUploadMutationVariables>;
+export const SetAuthProviderIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SetAuthProviderIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setAuthProviderIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}]}]}}]} as unknown as DocumentNode<SetAuthProviderIconMutation, SetAuthProviderIconMutationVariables>;
+export const RemoveAuthProviderIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveAuthProviderIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeAuthProviderIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}]}]}}]} as unknown as DocumentNode<RemoveAuthProviderIconMutation, RemoveAuthProviderIconMutationVariables>;
+export const CreateAuthRoleMappingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAuthRoleMapping"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthRoleMappingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAuthRoleMapping"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"providerSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateAuthRoleMappingMutation, CreateAuthRoleMappingMutationVariables>;
+export const UpdateAuthRoleMappingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAuthRoleMapping"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthRoleMappingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAuthRoleMapping"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"providerSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"mappingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateAuthRoleMappingMutation, UpdateAuthRoleMappingMutationVariables>;
+export const DeleteAuthRoleMappingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteAuthRoleMapping"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteAuthRoleMapping"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"providerSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"mappingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}}}]}]}}]} as unknown as DocumentNode<DeleteAuthRoleMappingMutation, DeleteAuthRoleMappingMutationVariables>;
+export const CreateOrgDomainDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateOrgDomain"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"domain"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOrgDomain"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"domain"},"value":{"kind":"Variable","name":{"kind":"Name","value":"domain"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateOrgDomainMutation, CreateOrgDomainMutationVariables>;
+export const DeleteOrgDomainDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteOrgDomain"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"domainId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteOrgDomain"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"domainId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"domainId"}}}]}]}}]} as unknown as DocumentNode<DeleteOrgDomainMutation, DeleteOrgDomainMutationVariables>;
 export const CompleteOnboardingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CompleteOnboarding"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"completeOnboarding"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}]}]}}]} as unknown as DocumentNode<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
 export const ServerOverviewDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serverOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalUsers"}},{"kind":"Field","name":{"kind":"Name","value":"activeUsers"}},{"kind":"Field","name":{"kind":"Name","value":"totalOrgs"}}]}},{"kind":"Field","name":{"kind":"Name","value":"serverConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageBackend"}},{"kind":"Field","name":{"kind":"Name","value":"storageBucket"}},{"kind":"Field","name":{"kind":"Name","value":"storageEndpoint"}},{"kind":"Field","name":{"kind":"Name","value":"vectorBackend"}},{"kind":"Field","name":{"kind":"Name","value":"embeddingBackend"}},{"kind":"Field","name":{"kind":"Name","value":"embeddingModel"}}]}}]}}]} as unknown as DocumentNode<ServerOverviewQuery, ServerOverviewQueryVariables>;
 export const ServerOrgsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerOrgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"orgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"autoJoin"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ServerOrgsQuery, ServerOrgsQueryVariables>;
@@ -7350,18 +7499,6 @@ export const RemoveServerOrgLogoDocument = {"kind":"Document","definitions":[{"k
 export const CreateServerOrgDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateServerOrg"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateServerOrgInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createServerOrg"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"autoJoin"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateServerOrgMutation, CreateServerOrgMutationVariables>;
 export const UpdateServerOrgDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateServerOrg"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateServerOrgInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServerOrg"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"autoJoin"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateServerOrgMutation, UpdateServerOrgMutationVariables>;
 export const DeleteServerOrgDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteServerOrg"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteServerOrg"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteServerOrgMutation, DeleteServerOrgMutationVariables>;
-export const OAuthProvidersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"OAuthProviders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"oauthProviders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"providerName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"iconUrl"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientSecret"}},{"kind":"Field","name":{"kind":"Name","value":"authUrl"}},{"kind":"Field","name":{"kind":"Name","value":"tokenUrl"}},{"kind":"Field","name":{"kind":"Name","value":"userinfoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"apiUrl"}},{"kind":"Field","name":{"kind":"Name","value":"scopes"}},{"kind":"Field","name":{"kind":"Name","value":"allowedDomains"}},{"kind":"Field","name":{"kind":"Name","value":"allowSignUp"}},{"kind":"Field","name":{"kind":"Name","value":"emailClaim"}},{"kind":"Field","name":{"kind":"Name","value":"nameClaim"}},{"kind":"Field","name":{"kind":"Name","value":"subClaim"}}]}}]}}]} as unknown as DocumentNode<OAuthProvidersQuery, OAuthProvidersQueryVariables>;
-export const PrepareOAuthProviderIconUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PrepareOAuthProviderIconUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"provider"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prepareOAuthProviderIconUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"provider"},"value":{"kind":"Variable","name":{"kind":"Name","value":"provider"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<PrepareOAuthProviderIconUploadMutation, PrepareOAuthProviderIconUploadMutationVariables>;
-export const SetOAuthProviderIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SetOAuthProviderIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"provider"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setOAuthProviderIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"provider"},"value":{"kind":"Variable","name":{"kind":"Name","value":"provider"}}}]}]}}]} as unknown as DocumentNode<SetOAuthProviderIconMutation, SetOAuthProviderIconMutationVariables>;
-export const RemoveOAuthProviderIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveOAuthProviderIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"provider"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeOAuthProviderIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"provider"},"value":{"kind":"Variable","name":{"kind":"Name","value":"provider"}}}]}]}}]} as unknown as DocumentNode<RemoveOAuthProviderIconMutation, RemoveOAuthProviderIconMutationVariables>;
-export const UpsertOAuthProviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpsertOAuthProvider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"provider"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertOAuthInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upsertOAuthProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"provider"},"value":{"kind":"Variable","name":{"kind":"Name","value":"provider"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<UpsertOAuthProviderMutation, UpsertOAuthProviderMutationVariables>;
-export const DeleteOAuthProviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteOAuthProvider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"provider"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteOAuthProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"provider"},"value":{"kind":"Variable","name":{"kind":"Name","value":"provider"}}}]}]}}]} as unknown as DocumentNode<DeleteOAuthProviderMutation, DeleteOAuthProviderMutationVariables>;
-export const LdapConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LdapConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ldap"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"host"}},{"kind":"Field","name":{"kind":"Name","value":"port"}},{"kind":"Field","name":{"kind":"Name","value":"useSsl"}},{"kind":"Field","name":{"kind":"Name","value":"startTls"}},{"kind":"Field","name":{"kind":"Name","value":"skipTlsVerify"}},{"kind":"Field","name":{"kind":"Name","value":"bindDn"}},{"kind":"Field","name":{"kind":"Name","value":"searchBaseDn"}},{"kind":"Field","name":{"kind":"Name","value":"searchFilter"}},{"kind":"Field","name":{"kind":"Name","value":"usernameAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"emailAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"nameAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"memberOfAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"allowSignUp"}}]}}]}}]} as unknown as DocumentNode<LdapConfigQuery, LdapConfigQueryVariables>;
-export const SamlConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SamlConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"saml"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"spEntityId"}},{"kind":"Field","name":{"kind":"Name","value":"spCert"}},{"kind":"Field","name":{"kind":"Name","value":"idpEntityId"}},{"kind":"Field","name":{"kind":"Name","value":"idpMetadataUrl"}},{"kind":"Field","name":{"kind":"Name","value":"idpMetadataXml"}},{"kind":"Field","name":{"kind":"Name","value":"nameIdFormat"}},{"kind":"Field","name":{"kind":"Name","value":"loginAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"emailAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"nameAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"groupsAttribute"}},{"kind":"Field","name":{"kind":"Name","value":"signRequests"}},{"kind":"Field","name":{"kind":"Name","value":"allowSignUp"}}]}}]}}]} as unknown as DocumentNode<SamlConfigQuery, SamlConfigQueryVariables>;
-export const ScimStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScimStatus"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"scim"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ScimStatusQuery, ScimStatusQueryVariables>;
-export const UpsertLdapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpsertLdap"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertLDAPInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upsertLDAP"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<UpsertLdapMutation, UpsertLdapMutationVariables>;
-export const DeleteLdapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteLdap"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteLDAP"}}]}}]} as unknown as DocumentNode<DeleteLdapMutation, DeleteLdapMutationVariables>;
-export const UpsertSamlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpsertSaml"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertSAMLInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upsertSAML"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<UpsertSamlMutation, UpsertSamlMutationVariables>;
 export const ServerUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"login"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"lastSeenAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ServerUsersQuery, ServerUsersQueryVariables>;
 export const CreateServerUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateServerUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"login"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"lastSeenAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateServerUserMutation, CreateServerUserMutationVariables>;
 export const UpdateServerUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateServerUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"login"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"lastSeenAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateServerUserMutation, UpdateServerUserMutationVariables>;

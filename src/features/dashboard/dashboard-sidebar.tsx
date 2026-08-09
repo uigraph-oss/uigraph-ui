@@ -17,9 +17,12 @@ export function DashboardSidebar() {
   const hasOrganization = useAuthStore(
     (state) => state.organizations.length > 0
   )
+  const isServerAdmin = useAuthStore((state) => state.user?.isServerAdmin)
 
   const navLinks = DASHBOARD_NAV_LINKS.filter(
-    (item) => hasOrganization || item.id !== '/server'
+    (item) =>
+      (hasOrganization || item.id !== '/server') &&
+      (!item.serverAdminOnly || isServerAdmin)
   )
 
   return (

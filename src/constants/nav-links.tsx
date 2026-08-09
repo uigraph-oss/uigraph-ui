@@ -19,6 +19,7 @@ type NavLinkMeta = {
   icon: ReactNode
   disabled?: boolean | string
   adminOnly?: boolean
+  serverAdminOnly?: boolean
 }
 
 export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
@@ -98,6 +99,7 @@ export const DASHBOARD_NAV_LINKS = generateNavItems<NavLinkMeta>(
     label: 'Admin',
     icon: <GoShieldLock />,
     nested: true,
+    serverAdminOnly: true,
   }
 )
 
@@ -116,11 +118,6 @@ export const SERVER_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/server/users',
     label: 'Users',
     icon: <UserListIcon />,
-  },
-  {
-    id: '/server/sso',
-    label: 'SSO',
-    icon: <LuFingerprint />,
   }
 )
 
@@ -152,6 +149,12 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     id: '/settings/cloud-connections',
     label: 'Cloud Connections',
     icon: <LuCloud />,
+    adminOnly: true,
+  },
+  {
+    id: '/settings/authentication',
+    label: 'Authentication',
+    icon: <LuFingerprint />,
     adminOnly: true,
   }
   /* {

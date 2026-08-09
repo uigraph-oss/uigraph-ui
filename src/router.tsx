@@ -208,9 +208,9 @@ const ServerOrgsPage = lazy(() =>
     default: mod.ServerOrgsPage,
   }))
 )
-const ServerSSOPage = lazy(() =>
-  import('@/features/server-sso/server-sso-page').then((mod) => ({
-    default: mod.ServerSSOPage,
+const OrgAuthPage = lazy(() =>
+  import('@/features/org-auth/org-auth-page').then((mod) => ({
+    default: mod.OrgAuthPage,
   }))
 )
 const ServerUsersPage = lazy(() =>
@@ -429,7 +429,6 @@ export function AppRoutes() {
           <Route path="overview" element={<ServerOverviewPage />} />
           <Route path="orgs" element={<ServerOrgsPage />} />
           <Route path="users" element={<ServerUsersPage />} />
-          <Route path="sso" element={<ServerSSOPage />} />
         </Route>
       </Route>
 
@@ -605,6 +604,7 @@ export function AppRoutes() {
                 path="cloud-connections"
                 element={<CloudConnectionsPage />}
               />
+              <Route path="authentication" element={<OrgAuthPage />} />
             </Route>
           </Route>
         </Route>

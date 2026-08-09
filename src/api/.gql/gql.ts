@@ -185,6 +185,22 @@ type Documents = {
     "\n  mutation CreateMlRun(\n    $orgId: ID!\n    $experimentId: ID!\n    $input: CreateMlRunInput!\n  ) {\n    createMlRun(orgId: $orgId, experimentId: $experimentId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateMlRunDocument,
     "\n  mutation UpdateMlRun($orgId: ID!, $id: ID!, $input: UpdateMlRunInput!) {\n    updateMlRun(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateMlRunDocument,
     "\n  mutation DeleteMlRun($orgId: ID!, $id: ID!) {\n    deleteMlRun(orgId: $orgId, id: $id)\n  }\n": typeof types.DeleteMlRunDocument,
+    "\n  query AuthProviders($orgId: ID!) {\n    authProviders(orgId: $orgId) {\n      id\n      slug\n      orgId\n      kind\n      type\n      displayName\n      iconUrl\n      enabled\n      allowSignUp\n      allowedDomains\n      defaultRole\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      emailClaim\n      nameClaim\n      subClaim\n      groupsClaim\n      idpMetadataUrl\n      idpMetadataXml\n      idpEntityId\n      idpSsoUrl\n      idpCert\n      spEntityId\n      spCert\n      spKey\n      signRequests\n      nameIdFormat\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n    }\n  }\n": typeof types.AuthProvidersDocument,
+    "\n  query AuthProviderSamlMetadata($orgId: ID!, $slug: String!) {\n    authProviderSamlMetadata(orgId: $orgId, slug: $slug) {\n      entityId\n      acsUrl\n      metadataUrl\n      metadata\n    }\n  }\n": typeof types.AuthProviderSamlMetadataDocument,
+    "\n  query AuthRoleMappings($orgId: ID!, $providerSlug: String!) {\n    authRoleMappings(orgId: $orgId, providerSlug: $providerSlug) {\n      id\n      providerId\n      priority\n      attributeKey\n      operator\n      attributeValue\n      role\n    }\n  }\n": typeof types.AuthRoleMappingsDocument,
+    "\n  query OrgDomains($orgId: ID!) {\n    orgDomains(orgId: $orgId) {\n      id\n      orgId\n      domain\n    }\n  }\n": typeof types.OrgDomainsDocument,
+    "\n  query MappingOperators {\n    mappingOperators {\n      name\n      takesValue\n    }\n  }\n": typeof types.MappingOperatorsDocument,
+    "\n  mutation CreateAuthProvider($orgId: ID!, $input: AuthProviderInput!) {\n    createAuthProvider(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": typeof types.CreateAuthProviderDocument,
+    "\n  mutation UpdateAuthProvider(\n    $orgId: ID!\n    $slug: String!\n    $input: AuthProviderInput!\n  ) {\n    updateAuthProvider(orgId: $orgId, slug: $slug, input: $input) {\n      id\n    }\n  }\n": typeof types.UpdateAuthProviderDocument,
+    "\n  mutation DeleteAuthProvider($orgId: ID!, $slug: String!) {\n    deleteAuthProvider(orgId: $orgId, slug: $slug)\n  }\n": typeof types.DeleteAuthProviderDocument,
+    "\n  mutation PrepareAuthProviderIconUpload($orgId: ID!, $slug: String!) {\n    prepareAuthProviderIconUpload(orgId: $orgId, slug: $slug) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareAuthProviderIconUploadDocument,
+    "\n  mutation SetAuthProviderIcon($orgId: ID!, $slug: String!) {\n    setAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n": typeof types.SetAuthProviderIconDocument,
+    "\n  mutation RemoveAuthProviderIcon($orgId: ID!, $slug: String!) {\n    removeAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n": typeof types.RemoveAuthProviderIconDocument,
+    "\n  mutation CreateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $input: AuthRoleMappingInput!\n  ) {\n    createAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.CreateAuthRoleMappingDocument,
+    "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.UpdateAuthRoleMappingDocument,
+    "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": typeof types.DeleteAuthRoleMappingDocument,
+    "\n  mutation CreateOrgDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n": typeof types.CreateOrgDomainDocument,
+    "\n  mutation DeleteOrgDomain($orgId: ID!, $domainId: ID!) {\n    deleteOrgDomain(orgId: $orgId, domainId: $domainId)\n  }\n": typeof types.DeleteOrgDomainDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": typeof types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
@@ -194,18 +210,6 @@ type Documents = {
     "\n  mutation CreateServerOrg($input: CreateServerOrgInput!) {\n    createServerOrg(input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateServerOrgDocument,
     "\n  mutation UpdateServerOrg($id: ID!, $input: UpdateServerOrgInput!) {\n    updateServerOrg(id: $id, input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateServerOrgDocument,
     "\n  mutation DeleteServerOrg($id: ID!) {\n    deleteServerOrg(id: $id)\n  }\n": typeof types.DeleteServerOrgDocument,
-    "\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n": typeof types.OAuthProvidersDocument,
-    "\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareOAuthProviderIconUploadDocument,
-    "\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n": typeof types.SetOAuthProviderIconDocument,
-    "\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n": typeof types.RemoveOAuthProviderIconDocument,
-    "\n  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {\n    upsertOAuthProvider(provider: $provider, input: $input)\n  }\n": typeof types.UpsertOAuthProviderDocument,
-    "\n  mutation DeleteOAuthProvider($provider: String!) {\n    deleteOAuthProvider(provider: $provider)\n  }\n": typeof types.DeleteOAuthProviderDocument,
-    "\n  query LdapConfig {\n    ldap {\n      id\n      host\n      port\n      useSsl\n      startTls\n      skipTlsVerify\n      bindDn\n      searchBaseDn\n      searchFilter\n      usernameAttribute\n      emailAttribute\n      nameAttribute\n      memberOfAttribute\n      allowSignUp\n    }\n  }\n": typeof types.LdapConfigDocument,
-    "\n  query SamlConfig {\n    saml {\n      id\n      spEntityId\n      spCert\n      idpEntityId\n      idpMetadataUrl\n      idpMetadataXml\n      nameIdFormat\n      loginAttribute\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n      signRequests\n      allowSignUp\n    }\n  }\n": typeof types.SamlConfigDocument,
-    "\n  query ScimStatus {\n    scim {\n      id\n    }\n  }\n": typeof types.ScimStatusDocument,
-    "\n  mutation UpsertLdap($input: UpsertLDAPInput!) {\n    upsertLDAP(input: $input)\n  }\n": typeof types.UpsertLdapDocument,
-    "\n  mutation DeleteLdap {\n    deleteLDAP\n  }\n": typeof types.DeleteLdapDocument,
-    "\n  mutation UpsertSaml($input: UpsertSAMLInput!) {\n    upsertSAML(input: $input)\n  }\n": typeof types.UpsertSamlDocument,
     "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      avatarUrl\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerUsersDocument,
     "\n  mutation CreateServerUser($input: CreateUserInput!) {\n    createUser(input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateServerUserDocument,
     "\n  mutation UpdateServerUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateServerUserDocument,
@@ -459,6 +463,22 @@ const documents: Documents = {
     "\n  mutation CreateMlRun(\n    $orgId: ID!\n    $experimentId: ID!\n    $input: CreateMlRunInput!\n  ) {\n    createMlRun(orgId: $orgId, experimentId: $experimentId, input: $input) {\n      id\n    }\n  }\n": types.CreateMlRunDocument,
     "\n  mutation UpdateMlRun($orgId: ID!, $id: ID!, $input: UpdateMlRunInput!) {\n    updateMlRun(orgId: $orgId, id: $id, input: $input) {\n      id\n    }\n  }\n": types.UpdateMlRunDocument,
     "\n  mutation DeleteMlRun($orgId: ID!, $id: ID!) {\n    deleteMlRun(orgId: $orgId, id: $id)\n  }\n": types.DeleteMlRunDocument,
+    "\n  query AuthProviders($orgId: ID!) {\n    authProviders(orgId: $orgId) {\n      id\n      slug\n      orgId\n      kind\n      type\n      displayName\n      iconUrl\n      enabled\n      allowSignUp\n      allowedDomains\n      defaultRole\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      emailClaim\n      nameClaim\n      subClaim\n      groupsClaim\n      idpMetadataUrl\n      idpMetadataXml\n      idpEntityId\n      idpSsoUrl\n      idpCert\n      spEntityId\n      spCert\n      spKey\n      signRequests\n      nameIdFormat\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n    }\n  }\n": types.AuthProvidersDocument,
+    "\n  query AuthProviderSamlMetadata($orgId: ID!, $slug: String!) {\n    authProviderSamlMetadata(orgId: $orgId, slug: $slug) {\n      entityId\n      acsUrl\n      metadataUrl\n      metadata\n    }\n  }\n": types.AuthProviderSamlMetadataDocument,
+    "\n  query AuthRoleMappings($orgId: ID!, $providerSlug: String!) {\n    authRoleMappings(orgId: $orgId, providerSlug: $providerSlug) {\n      id\n      providerId\n      priority\n      attributeKey\n      operator\n      attributeValue\n      role\n    }\n  }\n": types.AuthRoleMappingsDocument,
+    "\n  query OrgDomains($orgId: ID!) {\n    orgDomains(orgId: $orgId) {\n      id\n      orgId\n      domain\n    }\n  }\n": types.OrgDomainsDocument,
+    "\n  query MappingOperators {\n    mappingOperators {\n      name\n      takesValue\n    }\n  }\n": types.MappingOperatorsDocument,
+    "\n  mutation CreateAuthProvider($orgId: ID!, $input: AuthProviderInput!) {\n    createAuthProvider(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n": types.CreateAuthProviderDocument,
+    "\n  mutation UpdateAuthProvider(\n    $orgId: ID!\n    $slug: String!\n    $input: AuthProviderInput!\n  ) {\n    updateAuthProvider(orgId: $orgId, slug: $slug, input: $input) {\n      id\n    }\n  }\n": types.UpdateAuthProviderDocument,
+    "\n  mutation DeleteAuthProvider($orgId: ID!, $slug: String!) {\n    deleteAuthProvider(orgId: $orgId, slug: $slug)\n  }\n": types.DeleteAuthProviderDocument,
+    "\n  mutation PrepareAuthProviderIconUpload($orgId: ID!, $slug: String!) {\n    prepareAuthProviderIconUpload(orgId: $orgId, slug: $slug) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareAuthProviderIconUploadDocument,
+    "\n  mutation SetAuthProviderIcon($orgId: ID!, $slug: String!) {\n    setAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n": types.SetAuthProviderIconDocument,
+    "\n  mutation RemoveAuthProviderIcon($orgId: ID!, $slug: String!) {\n    removeAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n": types.RemoveAuthProviderIconDocument,
+    "\n  mutation CreateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $input: AuthRoleMappingInput!\n  ) {\n    createAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.CreateAuthRoleMappingDocument,
+    "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.UpdateAuthRoleMappingDocument,
+    "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": types.DeleteAuthRoleMappingDocument,
+    "\n  mutation CreateOrgDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n": types.CreateOrgDomainDocument,
+    "\n  mutation DeleteOrgDomain($orgId: ID!, $domainId: ID!) {\n    deleteOrgDomain(orgId: $orgId, domainId: $domainId)\n  }\n": types.DeleteOrgDomainDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
@@ -468,18 +488,6 @@ const documents: Documents = {
     "\n  mutation CreateServerOrg($input: CreateServerOrgInput!) {\n    createServerOrg(input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateServerOrgDocument,
     "\n  mutation UpdateServerOrg($id: ID!, $input: UpdateServerOrgInput!) {\n    updateServerOrg(id: $id, input: $input) {\n      id\n      name\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateServerOrgDocument,
     "\n  mutation DeleteServerOrg($id: ID!) {\n    deleteServerOrg(id: $id)\n  }\n": types.DeleteServerOrgDocument,
-    "\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n": types.OAuthProvidersDocument,
-    "\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareOAuthProviderIconUploadDocument,
-    "\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n": types.SetOAuthProviderIconDocument,
-    "\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n": types.RemoveOAuthProviderIconDocument,
-    "\n  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {\n    upsertOAuthProvider(provider: $provider, input: $input)\n  }\n": types.UpsertOAuthProviderDocument,
-    "\n  mutation DeleteOAuthProvider($provider: String!) {\n    deleteOAuthProvider(provider: $provider)\n  }\n": types.DeleteOAuthProviderDocument,
-    "\n  query LdapConfig {\n    ldap {\n      id\n      host\n      port\n      useSsl\n      startTls\n      skipTlsVerify\n      bindDn\n      searchBaseDn\n      searchFilter\n      usernameAttribute\n      emailAttribute\n      nameAttribute\n      memberOfAttribute\n      allowSignUp\n    }\n  }\n": types.LdapConfigDocument,
-    "\n  query SamlConfig {\n    saml {\n      id\n      spEntityId\n      spCert\n      idpEntityId\n      idpMetadataUrl\n      idpMetadataXml\n      nameIdFormat\n      loginAttribute\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n      signRequests\n      allowSignUp\n    }\n  }\n": types.SamlConfigDocument,
-    "\n  query ScimStatus {\n    scim {\n      id\n    }\n  }\n": types.ScimStatusDocument,
-    "\n  mutation UpsertLdap($input: UpsertLDAPInput!) {\n    upsertLDAP(input: $input)\n  }\n": types.UpsertLdapDocument,
-    "\n  mutation DeleteLdap {\n    deleteLDAP\n  }\n": types.DeleteLdapDocument,
-    "\n  mutation UpsertSaml($input: UpsertSAMLInput!) {\n    upsertSAML(input: $input)\n  }\n": types.UpsertSamlDocument,
     "\n  query ServerUsers {\n    users {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      avatarUrl\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerUsersDocument,
     "\n  mutation CreateServerUser($input: CreateUserInput!) {\n    createUser(input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateServerUserDocument,
     "\n  mutation UpdateServerUser($id: ID!, $input: UpdateUserInput!) {\n    updateUser(id: $id, input: $input) {\n      id\n      email\n      name\n      login\n      disabled\n      role\n      lastSeenAt\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateServerUserDocument,
@@ -1263,6 +1271,70 @@ export function graphql(source: "\n  mutation DeleteMlRun($orgId: ID!, $id: ID!)
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query AuthProviders($orgId: ID!) {\n    authProviders(orgId: $orgId) {\n      id\n      slug\n      orgId\n      kind\n      type\n      displayName\n      iconUrl\n      enabled\n      allowSignUp\n      allowedDomains\n      defaultRole\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      emailClaim\n      nameClaim\n      subClaim\n      groupsClaim\n      idpMetadataUrl\n      idpMetadataXml\n      idpEntityId\n      idpSsoUrl\n      idpCert\n      spEntityId\n      spCert\n      spKey\n      signRequests\n      nameIdFormat\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n    }\n  }\n"): (typeof documents)["\n  query AuthProviders($orgId: ID!) {\n    authProviders(orgId: $orgId) {\n      id\n      slug\n      orgId\n      kind\n      type\n      displayName\n      iconUrl\n      enabled\n      allowSignUp\n      allowedDomains\n      defaultRole\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      emailClaim\n      nameClaim\n      subClaim\n      groupsClaim\n      idpMetadataUrl\n      idpMetadataXml\n      idpEntityId\n      idpSsoUrl\n      idpCert\n      spEntityId\n      spCert\n      spKey\n      signRequests\n      nameIdFormat\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AuthProviderSamlMetadata($orgId: ID!, $slug: String!) {\n    authProviderSamlMetadata(orgId: $orgId, slug: $slug) {\n      entityId\n      acsUrl\n      metadataUrl\n      metadata\n    }\n  }\n"): (typeof documents)["\n  query AuthProviderSamlMetadata($orgId: ID!, $slug: String!) {\n    authProviderSamlMetadata(orgId: $orgId, slug: $slug) {\n      entityId\n      acsUrl\n      metadataUrl\n      metadata\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AuthRoleMappings($orgId: ID!, $providerSlug: String!) {\n    authRoleMappings(orgId: $orgId, providerSlug: $providerSlug) {\n      id\n      providerId\n      priority\n      attributeKey\n      operator\n      attributeValue\n      role\n    }\n  }\n"): (typeof documents)["\n  query AuthRoleMappings($orgId: ID!, $providerSlug: String!) {\n    authRoleMappings(orgId: $orgId, providerSlug: $providerSlug) {\n      id\n      providerId\n      priority\n      attributeKey\n      operator\n      attributeValue\n      role\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query OrgDomains($orgId: ID!) {\n    orgDomains(orgId: $orgId) {\n      id\n      orgId\n      domain\n    }\n  }\n"): (typeof documents)["\n  query OrgDomains($orgId: ID!) {\n    orgDomains(orgId: $orgId) {\n      id\n      orgId\n      domain\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MappingOperators {\n    mappingOperators {\n      name\n      takesValue\n    }\n  }\n"): (typeof documents)["\n  query MappingOperators {\n    mappingOperators {\n      name\n      takesValue\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateAuthProvider($orgId: ID!, $input: AuthProviderInput!) {\n    createAuthProvider(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateAuthProvider($orgId: ID!, $input: AuthProviderInput!) {\n    createAuthProvider(orgId: $orgId, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateAuthProvider(\n    $orgId: ID!\n    $slug: String!\n    $input: AuthProviderInput!\n  ) {\n    updateAuthProvider(orgId: $orgId, slug: $slug, input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateAuthProvider(\n    $orgId: ID!\n    $slug: String!\n    $input: AuthProviderInput!\n  ) {\n    updateAuthProvider(orgId: $orgId, slug: $slug, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteAuthProvider($orgId: ID!, $slug: String!) {\n    deleteAuthProvider(orgId: $orgId, slug: $slug)\n  }\n"): (typeof documents)["\n  mutation DeleteAuthProvider($orgId: ID!, $slug: String!) {\n    deleteAuthProvider(orgId: $orgId, slug: $slug)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation PrepareAuthProviderIconUpload($orgId: ID!, $slug: String!) {\n    prepareAuthProviderIconUpload(orgId: $orgId, slug: $slug) {\n      assetId\n      uploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation PrepareAuthProviderIconUpload($orgId: ID!, $slug: String!) {\n    prepareAuthProviderIconUpload(orgId: $orgId, slug: $slug) {\n      assetId\n      uploadUrl\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SetAuthProviderIcon($orgId: ID!, $slug: String!) {\n    setAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n"): (typeof documents)["\n  mutation SetAuthProviderIcon($orgId: ID!, $slug: String!) {\n    setAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RemoveAuthProviderIcon($orgId: ID!, $slug: String!) {\n    removeAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n"): (typeof documents)["\n  mutation RemoveAuthProviderIcon($orgId: ID!, $slug: String!) {\n    removeAuthProviderIcon(orgId: $orgId, slug: $slug)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $input: AuthRoleMappingInput!\n  ) {\n    createAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      input: $input\n    ) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $input: AuthRoleMappingInput!\n  ) {\n    createAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      input: $input\n    ) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n"): (typeof documents)["\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateOrgDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateOrgDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteOrgDomain($orgId: ID!, $domainId: ID!) {\n    deleteOrgDomain(orgId: $orgId, domainId: $domainId)\n  }\n"): (typeof documents)["\n  mutation DeleteOrgDomain($orgId: ID!, $domainId: ID!) {\n    deleteOrgDomain(orgId: $orgId, domainId: $domainId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"): (typeof documents)["\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -1296,54 +1368,6 @@ export function graphql(source: "\n  mutation UpdateServerOrg($id: ID!, $input: 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteServerOrg($id: ID!) {\n    deleteServerOrg(id: $id)\n  }\n"): (typeof documents)["\n  mutation DeleteServerOrg($id: ID!) {\n    deleteServerOrg(id: $id)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n"): (typeof documents)["\n  query OAuthProviders {\n    oauthProviders {\n      id\n      providerName\n      type\n      displayName\n      iconUrl\n      clientId\n      clientSecret\n      authUrl\n      tokenUrl\n      userinfoUrl\n      apiUrl\n      scopes\n      allowedDomains\n      allowSignUp\n      emailClaim\n      nameClaim\n      subClaim\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation PrepareOAuthProviderIconUpload($provider: String!) {\n    prepareOAuthProviderIconUpload(provider: $provider) {\n      assetId\n      uploadUrl\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n"): (typeof documents)["\n  mutation SetOAuthProviderIcon($provider: String!) {\n    setOAuthProviderIcon(provider: $provider)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n"): (typeof documents)["\n  mutation RemoveOAuthProviderIcon($provider: String!) {\n    removeOAuthProviderIcon(provider: $provider)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {\n    upsertOAuthProvider(provider: $provider, input: $input)\n  }\n"): (typeof documents)["\n  mutation UpsertOAuthProvider($provider: String!, $input: UpsertOAuthInput!) {\n    upsertOAuthProvider(provider: $provider, input: $input)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation DeleteOAuthProvider($provider: String!) {\n    deleteOAuthProvider(provider: $provider)\n  }\n"): (typeof documents)["\n  mutation DeleteOAuthProvider($provider: String!) {\n    deleteOAuthProvider(provider: $provider)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query LdapConfig {\n    ldap {\n      id\n      host\n      port\n      useSsl\n      startTls\n      skipTlsVerify\n      bindDn\n      searchBaseDn\n      searchFilter\n      usernameAttribute\n      emailAttribute\n      nameAttribute\n      memberOfAttribute\n      allowSignUp\n    }\n  }\n"): (typeof documents)["\n  query LdapConfig {\n    ldap {\n      id\n      host\n      port\n      useSsl\n      startTls\n      skipTlsVerify\n      bindDn\n      searchBaseDn\n      searchFilter\n      usernameAttribute\n      emailAttribute\n      nameAttribute\n      memberOfAttribute\n      allowSignUp\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query SamlConfig {\n    saml {\n      id\n      spEntityId\n      spCert\n      idpEntityId\n      idpMetadataUrl\n      idpMetadataXml\n      nameIdFormat\n      loginAttribute\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n      signRequests\n      allowSignUp\n    }\n  }\n"): (typeof documents)["\n  query SamlConfig {\n    saml {\n      id\n      spEntityId\n      spCert\n      idpEntityId\n      idpMetadataUrl\n      idpMetadataXml\n      nameIdFormat\n      loginAttribute\n      emailAttribute\n      nameAttribute\n      groupsAttribute\n      signRequests\n      allowSignUp\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query ScimStatus {\n    scim {\n      id\n    }\n  }\n"): (typeof documents)["\n  query ScimStatus {\n    scim {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation UpsertLdap($input: UpsertLDAPInput!) {\n    upsertLDAP(input: $input)\n  }\n"): (typeof documents)["\n  mutation UpsertLdap($input: UpsertLDAPInput!) {\n    upsertLDAP(input: $input)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation DeleteLdap {\n    deleteLDAP\n  }\n"): (typeof documents)["\n  mutation DeleteLdap {\n    deleteLDAP\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation UpsertSaml($input: UpsertSAMLInput!) {\n    upsertSAML(input: $input)\n  }\n"): (typeof documents)["\n  mutation UpsertSaml($input: UpsertSAMLInput!) {\n    upsertSAML(input: $input)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
