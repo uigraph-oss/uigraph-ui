@@ -2,7 +2,7 @@
 
 [![license](https://img.shields.io/badge/license-BUSL--1.1-blue)](LICENSE)
 
-Web application for [UiGraph](https://github.com/uigraph-oss) — visualize architecture, manage service catalogs, edit diagrams and system maps, and collaborate on technical documentation.
+Web application for [UIGraph](https://github.com/uigraph-oss) — visualize architecture, manage service catalogs, edit diagrams and system maps, and collaborate on technical documentation.
 
 Built with React, TypeScript, Vite, and [React Flow](https://reactflow.dev/). Uses GraphQL via [uigraph-graphql](https://github.com/uigraph-oss/uigraph-graphql) and the [@uigraph/sdk](https://github.com/uigraph-oss/uigraph-sdk) for diagram conversion and schema parsing.
 
