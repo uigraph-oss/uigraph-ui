@@ -1,32 +1,31 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useMutation, useQuery } from '@apollo/client'
-import { ArrowDown, ArrowUp, CircleHelp, Plus, Trash2 } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  CircleHelp,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
   AUTH_ROLE_MAPPINGS,
-  CREATE_AUTH_ROLE_MAPPING,
   DELETE_AUTH_ROLE_MAPPING,
-  MAPPING_OPERATORS,
   UPDATE_AUTH_ROLE_MAPPING,
   type AuthProvider,
+  type AuthRoleMapping,
 } from './api/org-auth'
+import { RoleMappingModal } from './role-mapping-modal'
 
 export function RoleMappingsPanel({
   orgId,
@@ -37,13 +36,8 @@ export function RoleMappingsPanel({
 }) {
   const variables = { orgId, providerSlug: provider.slug }
   const mappingsQuery = useQuery(AUTH_ROLE_MAPPINGS, { variables })
-  const operatorsQuery = useQuery(MAPPING_OPERATORS)
 
   const refetchQueries = [{ query: AUTH_ROLE_MAPPINGS, variables }]
-  const [createMapping] = useMutation(CREATE_AUTH_ROLE_MAPPING, {
-    awaitRefetchQueries: true,
-    refetchQueries,
-  })
   const [updateMapping] = useMutation(UPDATE_AUTH_ROLE_MAPPING, {
     awaitRefetchQueries: true,
     refetchQueries,
@@ -53,47 +47,10 @@ export function RoleMappingsPanel({
     refetchQueries,
   })
 
-  const [attributeKey, setAttributeKey] = useState(
-    provider.kind === 'saml' ? provider.groupsAttribute : provider.groupsClaim
-  )
-  const [operator, setOperator] = useState('contains')
-  const [attributeValue, setAttributeValue] = useState('')
-  const [role, setRole] = useState('editor')
+  const [ruleOpen, setRuleOpen] = useState(false)
+  const [editing, setEditing] = useState<AuthRoleMapping | null>(null)
 
   const mappings = mappingsQuery.data?.authRoleMappings ?? []
-  const operators = operatorsQuery.data?.mappingOperators ?? []
-  const takesValue =
-    operators.find((o) => o.name === operator)?.takesValue ?? true
-
-  async function handleAdd() {
-    if (attributeKey.trim().length === 0) {
-      toast.error('Attribute key is required')
-      return
-    }
-    if (takesValue && attributeValue.trim().length === 0) {
-      toast.error(`The "${operator}" operator needs a value`)
-      return
-    }
-
-    try {
-      await createMapping({
-        variables: {
-          ...variables,
-          input: {
-            priority: mappings.length,
-            attributeKey: attributeKey.trim(),
-            operator,
-            attributeValue: takesValue ? attributeValue.trim() : '',
-            role,
-          },
-        },
-      })
-      setAttributeValue('')
-      toast.success('Rule added')
-    } catch (error) {
-      toast.error((error as Error).message)
-    }
-  }
 
   async function handleMove(index: number, direction: -1 | 1) {
     const current = mappings[index]
@@ -134,25 +91,40 @@ export function RoleMappingsPanel({
   }
 
   return (
-    <div className="max-w-2xl space-y-5">
-      <div className="flex items-center gap-1.5">
-        <Label className="text-sm font-medium text-[#D2D9E6]">
-          Role Mapping
-        </Label>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
-            >
-              <CircleHelp className="size-3.5" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs">
-            Evaluated top to bottom, first match wins. Rules apply as soon as
-            you add them, without saving the provider.
-          </TooltipContent>
-        </Tooltip>
+    <div className="max-w-2xl space-y-3">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5">
+          <Label className="text-sm font-medium text-[#D2D9E6]">
+            Role Mapping
+          </Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label="How role mapping works"
+                className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+              >
+                <CircleHelp className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              Evaluated top to bottom, first match wins. Rules apply as soon as
+              you save them, without saving the provider.
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        <Button
+          type="button"
+          preset="outline"
+          onClick={() => {
+            setEditing(null)
+            setRuleOpen(true)
+          }}
+        >
+          <Plus className="size-4" />
+          Add Rule
+        </Button>
       </div>
 
       {mappingsQuery.loading && !mappingsQuery.data ? (
@@ -206,6 +178,16 @@ export function RoleMappingsPanel({
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  setEditing(mapping)
+                  setRuleOpen(true)
+                }}
+                className="flex size-8 items-center justify-center rounded-md border border-[#2A3242] text-[#D2D9E6] transition-colors hover:border-[#3A4252]"
+              >
+                <Pencil className="size-4" />
+              </button>
+              <button
+                type="button"
                 onClick={async () => {
                   try {
                     await deleteMapping({
@@ -225,93 +207,15 @@ export function RoleMappingsPanel({
         </ul>
       )}
 
-      <div className="space-y-4 rounded-[16px] border border-[#2A3242] bg-[#161C28] px-4 py-5">
-        <p className="text-sm font-semibold text-[#F4F7FC]">Add a rule</p>
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5">
-            <Label className="text-sm font-medium text-[#D2D9E6]">
-              {provider.kind === 'saml' ? 'Attribute' : 'Claim'}
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
-                >
-                  <CircleHelp className="size-3.5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                Dot notation reads nested values, e.g. realm_access.roles
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <Input
-            value={attributeKey}
-            onChange={(event) => setAttributeKey(event.target.value)}
-            placeholder="groups"
-            className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
-            autoComplete="off"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-[#D2D9E6]">
-              Operator
-            </Label>
-            <Select value={operator} onValueChange={setOperator}>
-              <SelectTrigger className="h-[48px] w-full rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {operators.map((op) => (
-                  <SelectItem key={op.name} value={op.name}>
-                    {op.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-[#D2D9E6]">Role</Label>
-            <Select value={role} onValueChange={setRole}>
-              <SelectTrigger className="h-[48px] w-full rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="editor">Editor</SelectItem>
-                <SelectItem value="viewer">Viewer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {takesValue && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-[#D2D9E6]">Value</Label>
-            <Input
-              value={attributeValue}
-              onChange={(event) => setAttributeValue(event.target.value)}
-              placeholder="platform-engineers"
-              className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
-              autoComplete="off"
-            />
-          </div>
-        )}
-
-        <Button
-          type="button"
-          className="h-11 w-full rounded-[0.75rem] text-sm"
-          onClick={() => void handleAdd()}
-        >
-          <Plus className="mr-0.5 h-4 w-4" />
-          Add Rule
-        </Button>
-      </div>
+      {ruleOpen && (
+        <RoleMappingModal
+          orgId={orgId}
+          provider={provider}
+          mapping={editing}
+          nextPriority={mappings.length}
+          onOpenChange={setRuleOpen}
+        />
+      )}
     </div>
   )
 }
