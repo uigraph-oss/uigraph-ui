@@ -213,6 +213,11 @@ const OrgAuthPage = lazy(() =>
     default: mod.OrgAuthPage,
   }))
 )
+const AuthProviderDetailPage = lazy(() =>
+  import('@/features/org-auth/auth-provider-detail-page').then((mod) => ({
+    default: mod.AuthProviderDetailPage,
+  }))
+)
 const ServerUsersPage = lazy(() =>
   import('@/features/server-users/server-users-page').then((mod) => ({
     default: mod.ServerUsersPage,
@@ -342,6 +347,11 @@ const ProfileSettings = lazy(() =>
   import('@/features/dashboard-settings').then((mod) => ({
     default: mod.ProfileSettings,
   }))
+)
+const OrganizationSettingsPage = lazy(() =>
+  import('@/features/dashboard-settings/organization/organization-settings-page').then(
+    (mod) => ({ default: mod.OrganizationSettingsPage })
+  )
 )
 const SecuritySettings = lazy(() =>
   import('@/features/dashboard-settings').then((mod) => ({
@@ -590,6 +600,10 @@ export function AppRoutes() {
             <Route path="security" element={<SecuritySettings />} />
 
             <Route element={<RequireOrgAdmin />}>
+              <Route
+                path="organization"
+                element={<OrganizationSettingsPage />}
+              />
               <Route path="teams" element={<TeamManagementPage />} />
               <Route path="users" element={<UsersManagementPage />} />
               <Route
@@ -605,6 +619,7 @@ export function AppRoutes() {
                 element={<CloudConnectionsPage />}
               />
               <Route path="sso" element={<OrgAuthPage />} />
+              <Route path="sso/:slug" element={<AuthProviderDetailPage />} />
             </Route>
           </Route>
         </Route>

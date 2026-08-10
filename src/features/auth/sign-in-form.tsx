@@ -74,6 +74,7 @@ export function SignInForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showPasswordLogin, setShowPasswordLogin] = useState(false)
 
   const [email, setEmail] = useState('')
   const [orgs, setOrgs] = useState<DiscoveredOrg[]>([])
@@ -104,6 +105,7 @@ export function SignInForm() {
 
   function selectOrg(org: DiscoveredOrg) {
     setSelectedOrg(org)
+    setShowPasswordLogin(false)
     setStep('provider')
   }
 
@@ -166,6 +168,7 @@ export function SignInForm() {
 
   function back() {
     setError('')
+    setShowPasswordLogin(false)
     if (step === 'provider' && orgs.length > 1) {
       setSelectedOrg(null)
       setStep('org')
@@ -212,39 +215,41 @@ export function SignInForm() {
         }}
       >
         {/* Logo + wordmark */}
-        <div className="mb-6 flex items-center gap-2.5">
-          <UigraphMark />
-          <span
-            style={{
-              fontFamily:
-                'var(--font-space-grotesk, var(--font-poppins), sans-serif)',
-              fontSize: 17,
-              fontWeight: 600,
-              color: '#F4F7FC',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            UIGraph
-          </span>
-        </div>
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <UigraphMark />
+            <span
+              style={{
+                fontFamily:
+                  'var(--font-space-grotesk, var(--font-poppins), sans-serif)',
+                fontSize: 17,
+                fontWeight: 600,
+                color: '#F4F7FC',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              UIGraph
+            </span>
+          </div>
 
-        {step !== 'email' && (
-          <button
-            type="button"
-            onClick={back}
-            className="mb-4 flex cursor-pointer items-center gap-1.5"
-            style={{
-              fontSize: 12,
-              color: '#828DA3',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
-          >
-            <ArrowLeft size={13} />
-            Back
-          </button>
-        )}
+          {step !== 'email' && (
+            <button
+              type="button"
+              onClick={back}
+              className="flex cursor-pointer items-center gap-1.5"
+              style={{
+                fontSize: 12,
+                color: '#828DA3',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+              }}
+            >
+              <ArrowLeft size={13} />
+              Back
+            </button>
+          )}
+        </div>
 
         {/* Heading */}
         <h1
@@ -411,7 +416,17 @@ export function SignInForm() {
               </div>
             )}
 
-            {providers.length > 0 && (
+            {providers.length > 0 && !showPasswordLogin && (
+              <button
+                type="button"
+                onClick={() => setShowPasswordLogin(true)}
+                className="mb-1 w-full cursor-pointer border-none bg-transparent py-1 text-center text-xs text-[#828DA3] transition-colors hover:text-[#D2D9E6]"
+              >
+                Login with password
+              </button>
+            )}
+
+            {providers.length > 0 && showPasswordLogin && (
               <div className="mb-3.5 flex items-center gap-3">
                 <div style={{ flex: 1, height: 1, background: '#2A3242' }} />
                 <span
@@ -429,105 +444,114 @@ export function SignInForm() {
               </div>
             )}
 
-            <form onSubmit={passwordForm.handleSubmit(onLogin)}>
-              <div style={{ marginBottom: 16 }}>
-                <div className="mb-1.5 flex items-baseline justify-between">
-                  <label
-                    htmlFor="password"
-                    style={{ fontSize: 13, fontWeight: 500, color: '#D2D9E6' }}
-                  >
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleForgotPassword}
-                    style={{
-                      fontSize: 12,
-                      color: '#5C84FF',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                    }}
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-                <div className="relative">
-                  <Lock
-                    size={15}
-                    className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
-                    style={{ color: '#586378' }}
-                  />
-                  <Controller
-                    name="password"
-                    control={passwordForm.control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Enter your password"
-                        autoComplete="current-password"
-                        className={cn(signInInputClassName, 'pr-10 pl-[38px]')}
-                      />
-                    )}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#586378',
-                      padding: 2,
-                    }}
-                  >
-                    {showPassword ? (
-                      <EyeIcon size={16} />
-                    ) : (
-                      <EyeOff size={16} />
-                    )}
-                  </button>
-                </div>
-                {passwordForm.formState.errors.password && (
-                  <p className="mt-1 text-xs text-red-400">
-                    {passwordForm.formState.errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
-                style={primaryButtonStyle}
-              >
-                {loading ? (
-                  <CircleLoader />
-                ) : (
-                  <>
-                    Sign in
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+            {(providers.length === 0 || showPasswordLogin) && (
+              <form onSubmit={passwordForm.handleSubmit(onLogin)}>
+                <div style={{ marginBottom: 16 }}>
+                  <div className="mb-1.5 flex items-baseline justify-between">
+                    <label
+                      htmlFor="password"
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 500,
+                        color: '#D2D9E6',
+                      }}
                     >
-                      <path d="M5 12h14" />
-                      <path d="m12 5 7 7-7 7" />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </form>
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      style={{
+                        fontSize: 12,
+                        color: '#5C84FF',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                      }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Lock
+                      size={15}
+                      className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+                      style={{ color: '#586378' }}
+                    />
+                    <Controller
+                      name="password"
+                      control={passwordForm.control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Enter your password"
+                          autoComplete="current-password"
+                          className={cn(
+                            signInInputClassName,
+                            'pr-10 pl-[38px]'
+                          )}
+                        />
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#586378',
+                        padding: 2,
+                      }}
+                    >
+                      {showPassword ? (
+                        <EyeIcon size={16} />
+                      ) : (
+                        <EyeOff size={16} />
+                      )}
+                    </button>
+                  </div>
+                  {passwordForm.formState.errors.password && (
+                    <p className="mt-1 text-xs text-red-400">
+                      {passwordForm.formState.errors.password.message}
+                    </p>
+                  )}
+                </div>
+
+                {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+                  style={primaryButtonStyle}
+                >
+                  {loading ? (
+                    <CircleLoader />
+                  ) : (
+                    <>
+                      Sign in
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </>
         )}
       </div>

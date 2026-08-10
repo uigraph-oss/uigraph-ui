@@ -103,6 +103,48 @@ export const AUTH_PROVIDERS = graphql(`
   }
 `)
 
+export const AUTH_PROVIDER = graphql(`
+  query AuthProvider($orgId: ID!, $slug: String!) {
+    authProvider(orgId: $orgId, slug: $slug) {
+      id
+      slug
+      orgId
+      kind
+      type
+      displayName
+      iconUrl
+      enabled
+      allowSignUp
+      allowedDomains
+      defaultRole
+      clientId
+      clientSecret
+      authUrl
+      tokenUrl
+      userinfoUrl
+      apiUrl
+      scopes
+      emailClaim
+      nameClaim
+      subClaim
+      groupsClaim
+      idpMetadataUrl
+      idpMetadataXml
+      idpEntityId
+      idpSsoUrl
+      idpCert
+      spEntityId
+      spCert
+      spKey
+      signRequests
+      nameIdFormat
+      emailAttribute
+      nameAttribute
+      groupsAttribute
+    }
+  }
+`)
+
 export const AUTH_PROVIDER_SAML_METADATA = graphql(`
   query AuthProviderSamlMetadata($orgId: ID!, $slug: String!) {
     authProviderSamlMetadata(orgId: $orgId, slug: $slug) {
@@ -124,16 +166,6 @@ export const AUTH_ROLE_MAPPINGS = graphql(`
       operator
       attributeValue
       role
-    }
-  }
-`)
-
-export const ORG_DOMAINS = graphql(`
-  query OrgDomains($orgId: ID!) {
-    orgDomains(orgId: $orgId) {
-      id
-      orgId
-      domain
     }
   }
 `)
@@ -239,20 +271,6 @@ export const DELETE_AUTH_ROLE_MAPPING = graphql(`
       providerSlug: $providerSlug
       mappingId: $mappingId
     )
-  }
-`)
-
-export const CREATE_ORG_DOMAIN = graphql(`
-  mutation CreateOrgDomain($orgId: ID!, $domain: String!) {
-    createOrgDomain(orgId: $orgId, domain: $domain) {
-      id
-    }
-  }
-`)
-
-export const DELETE_ORG_DOMAIN = graphql(`
-  mutation DeleteOrgDomain($orgId: ID!, $domainId: ID!) {
-    deleteOrgDomain(orgId: $orgId, domainId: $domainId)
   }
 `)
 

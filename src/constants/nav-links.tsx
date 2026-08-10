@@ -128,6 +128,12 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     icon: <UserIcon />,
   },
   {
+    id: '/settings/organization',
+    label: 'Organization',
+    icon: <GoOrganization />,
+    adminOnly: true,
+  },
+  {
     id: '/settings/teams',
     label: 'Teams',
     icon: <AiOutlineTeam />,
@@ -156,6 +162,7 @@ export const DASHBOARD_SETTINGS_NAV_LINKS = generateNavItems<NavLinkMeta>(
     label: 'SSO',
     icon: <LuFingerprint />,
     adminOnly: true,
+    nested: true,
   }
   /* {
     id: '/settings/security',
