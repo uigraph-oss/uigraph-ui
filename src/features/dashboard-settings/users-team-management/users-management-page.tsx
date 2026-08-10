@@ -2,6 +2,9 @@
 
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
+import { env } from '@/env'
+import { useAuthStore } from '@/store/auth-store'
+import { ApolloError } from '@apollo/client'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -21,6 +24,9 @@ export function UsersManagementPage() {
 function UsersManagementContent() {
   const { createTeamMember } = useTeamContext()
   const [isUserModalOpen, setIsUserModalOpen] = useState(false)
+  const currentOrganizationId = useAuthStore(
+    (state) => state.currentOrganizationId
+  )
 
   return (
     <>
@@ -57,8 +63,39 @@ function UsersManagementContent() {
 
               setIsUserModalOpen(false)
               toast.success('User added successfully')
-            } catch {
-              toast.error('Failed to add user')
+            } catch (err) {
+              const code =
+                err instanceof ApolloError
+                  ? err.graphQLErrors[0]?.extensions?.code
+                  : undefined
+
+              if (code === 'seat_limit_reached') {
+                const message =
+                  err instanceof ApolloError
+                    ? err.graphQLErrors[0]?.message
+                    : undefined
+                const billingURL =
+                  env.VITE_FEATURE_ENABLE_BILLING && env.VITE_BILLING_URL
+                    ? env.VITE_BILLING_URL
+                    : undefined
+                toast.error(
+                  message ?? 'Your organization has reached its seat limit.',
+                  {
+                    action: billingURL
+                      ? {
+                          label: 'Upgrade',
+                          onClick: () => {
+                            window.location.href = currentOrganizationId
+                              ? `${billingURL}?orgId=${currentOrganizationId}`
+                              : billingURL
+                          },
+                        }
+                      : undefined,
+                  }
+                )
+              } else {
+                toast.error('Failed to add user')
+              }
             }
           }}
         />
