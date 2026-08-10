@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  BetterDialogContent,
-  BetterDialogProvider,
-} from '@/components/better-dialog'
+import { BetterDialogContent } from '@/components/better-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -13,7 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useMutation, useQuery } from '@apollo/client'
+import { CircleHelp } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -24,6 +27,10 @@ import {
   type AuthProvider,
   type AuthRoleMapping,
 } from './api/org-auth'
+
+const labelClass = 'text-sm font-medium text-[#D2D9E6]'
+const controlClass =
+  'h-11 rounded-lg border border-[#2A3242] bg-[#0F1420]/70 px-3.5 shadow-none hover:border-[#3A455A] focus-visible:border-[#5475F7] focus-visible:ring-[#5475F7]/20'
 
 function initialValues(
   provider: AuthProvider,
@@ -61,13 +68,13 @@ export function RoleMappingModal({
   provider,
   mapping,
   nextPriority,
-  onOpenChange,
+  onSaved,
 }: {
   orgId: string
   provider: AuthProvider
   mapping: AuthRoleMapping | null
   nextPriority: number
-  onOpenChange: (open: boolean) => void
+  onSaved: () => void
 }) {
   const variables = { orgId, providerSlug: provider.slug }
   const operatorsQuery = useQuery(MAPPING_OPERATORS)
@@ -96,7 +103,7 @@ export function RoleMappingModal({
   async function handleSubmit() {
     if (attributeKey.trim().length === 0) {
       toast.error(
-        `${provider.kind === 'saml' ? 'Attribute' : 'Claim'} name is required`
+        `${provider.kind === 'saml' ? 'Attribute' : 'Claim'} is required`
       )
       return
     }
@@ -132,7 +139,7 @@ export function RoleMappingModal({
         })
         toast.success('Rule updated')
       }
-      onOpenChange(false)
+      onSaved()
     } catch (error) {
       toast.error((error as Error).message)
     } finally {
@@ -141,157 +148,102 @@ export function RoleMappingModal({
   }
 
   return (
-    <BetterDialogProvider
-      open
-      onOpenChange={onOpenChange}
-      className="shadow-[0_24px_80px_rgba(0,0,0,0.55)] sm:max-w-[36rem]"
+    <BetterDialogContent
+      title={mapping === null ? 'Add Rule' : 'Edit Rule'}
+      footerSubmit={mapping === null ? 'Add Rule' : 'Save Rule'}
+      footerSubmitLoading={saving}
+      onFooterSubmitClick={() => void handleSubmit()}
+      footerCancel
     >
-      <BetterDialogContent
-        title={mapping === null ? 'Add role mapping' : 'Edit role mapping'}
-        description={
-          mapping === null
-            ? `Assign a role when a ${provider.kind === 'saml' ? 'SAML attribute' : 'token claim'} matches.`
-            : 'Update the match condition and its assigned role.'
-        }
-        footerSubmit={mapping === null ? 'Add Rule' : 'Save Rule'}
-        footerSubmitLoading={saving}
-        onFooterSubmitClick={() => void handleSubmit()}
-        footerCancel
-      >
-        <div className="space-y-7">
-          <section className="space-y-4" aria-labelledby="match-heading">
-            <div>
-              <p
-                id="match-heading"
-                className="text-xs font-semibold tracking-[0.08em] text-[#6F8FFF] uppercase"
-              >
-                When
-              </p>
-              <p className="mt-1 text-sm text-[#828DA3]">
-                Match a value from the identity provider.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="role-mapping-attribute"
-                className="text-sm font-medium text-[#D2D9E6]"
-              >
-                {provider.kind === 'saml' ? 'Attribute' : 'Claim'} name
-              </Label>
-              <Input
-                id="role-mapping-attribute"
-                value={attributeKey}
-                onChange={(event) => setAttributeKey(event.target.value)}
-                placeholder="groups"
-                aria-describedby="role-mapping-attribute-help"
-                className="h-11 rounded-lg border border-[#2A3242] bg-[#0F1420]/70 px-3.5 shadow-none hover:border-[#3A455A] focus-visible:border-[#5475F7] focus-visible:ring-[#5475F7]/20"
-                autoComplete="off"
-              />
-              <p
-                id="role-mapping-attribute-help"
-                className="text-xs leading-5 text-[#68758C]"
-              >
-                Use dot notation for nested values, such as{' '}
-                <span className="font-mono text-[#8E9AB0]">
-                  realm_access.roles
-                </span>
-                .
-              </p>
-            </div>
-
-            <div
-              className={
-                takesValue
-                  ? 'grid gap-4 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]'
-                  : 'grid'
-              }
-            >
-              <div className="space-y-2">
-                <Label
-                  htmlFor="role-mapping-operator"
-                  className="text-sm font-medium text-[#D2D9E6]"
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <Label htmlFor="role-mapping-attribute" className={labelClass}>
+              {provider.kind === 'saml' ? 'Attribute' : 'Claim'}
+            </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="How the key is read"
+                  className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
                 >
-                  Operator
-                </Label>
-                <Select value={operator} onValueChange={setOperator}>
-                  <SelectTrigger
-                    id="role-mapping-operator"
-                    className="h-11 w-full rounded-lg border border-[#2A3242] bg-[#0F1420]/70 px-3.5 shadow-none hover:border-[#3A455A] focus-visible:border-[#5475F7] focus-visible:ring-[#5475F7]/20"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="border-[#2A3242] bg-[#171D29]">
-                    {operators.map((op) => (
-                      <SelectItem key={op.name} value={op.name}>
-                        {op.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {takesValue && (
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="role-mapping-value"
-                    className="text-sm font-medium text-[#D2D9E6]"
-                  >
-                    Value
-                  </Label>
-                  <Input
-                    id="role-mapping-value"
-                    value={attributeValue}
-                    onChange={(event) => setAttributeValue(event.target.value)}
-                    placeholder="platform-engineers"
-                    className="h-11 rounded-lg border border-[#2A3242] bg-[#0F1420]/70 px-3.5 shadow-none hover:border-[#3A455A] focus-visible:border-[#5475F7] focus-visible:ring-[#5475F7]/20"
-                    autoComplete="off"
-                  />
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section
-            className="space-y-4 border-t border-[#252D3C] pt-6"
-            aria-labelledby="role-heading"
-          >
-            <div>
-              <p
-                id="role-heading"
-                className="text-xs font-semibold tracking-[0.08em] text-[#6F8FFF] uppercase"
-              >
-                Then
-              </p>
-              <p className="mt-1 text-sm text-[#828DA3]">
-                Give matching users this workspace role.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="role-mapping-role"
-                className="text-sm font-medium text-[#D2D9E6]"
-              >
-                Assigned role
-              </Label>
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger
-                  id="role-mapping-role"
-                  className="h-11 w-full rounded-lg border border-[#2A3242] bg-[#0F1420]/70 px-3.5 shadow-none hover:border-[#3A455A] focus-visible:border-[#5475F7] focus-visible:ring-[#5475F7]/20"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="border-[#2A3242] bg-[#171D29]">
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="editor">Editor</SelectItem>
-                  <SelectItem value="viewer">Viewer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
+                  <CircleHelp className="size-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                Dot notation reads nested values, e.g. realm_access.roles
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <Input
+            id="role-mapping-attribute"
+            value={attributeKey}
+            onChange={(event) => setAttributeKey(event.target.value)}
+            placeholder="groups"
+            className={controlClass}
+            autoComplete="off"
+          />
         </div>
-      </BetterDialogContent>
-    </BetterDialogProvider>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="role-mapping-operator" className={labelClass}>
+              Operator
+            </Label>
+            <Select value={operator} onValueChange={setOperator}>
+              <SelectTrigger
+                id="role-mapping-operator"
+                className={`${controlClass} w-full`}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="border-[#2A3242] bg-[#171D29]">
+                {operators.map((op) => (
+                  <SelectItem key={op.name} value={op.name}>
+                    {op.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="role-mapping-role" className={labelClass}>
+              Role
+            </Label>
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger
+                id="role-mapping-role"
+                className={`${controlClass} w-full`}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="border-[#2A3242] bg-[#171D29]">
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="editor">Editor</SelectItem>
+                <SelectItem value="viewer">Viewer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {takesValue && (
+          <div className="space-y-2">
+            <Label htmlFor="role-mapping-value" className={labelClass}>
+              Value
+            </Label>
+            <Input
+              id="role-mapping-value"
+              value={attributeValue}
+              onChange={(event) => setAttributeValue(event.target.value)}
+              placeholder="platform-engineers"
+              className={controlClass}
+              autoComplete="off"
+            />
+          </div>
+        )}
+      </div>
+    </BetterDialogContent>
   )
 }

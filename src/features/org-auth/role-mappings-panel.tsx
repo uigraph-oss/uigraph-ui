@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
@@ -207,15 +208,17 @@ export function RoleMappingsPanel({
         </ul>
       )}
 
-      {ruleOpen && (
-        <RoleMappingModal
-          orgId={orgId}
-          provider={provider}
-          mapping={editing}
-          nextPriority={mappings.length}
-          onOpenChange={setRuleOpen}
-        />
-      )}
+      <BetterDialogProvider open={ruleOpen} onOpenChange={setRuleOpen}>
+        {ruleOpen && (
+          <RoleMappingModal
+            orgId={orgId}
+            provider={provider}
+            mapping={editing}
+            nextPriority={mappings.length}
+            onSaved={() => setRuleOpen(false)}
+          />
+        )}
+      </BetterDialogProvider>
     </div>
   )
 }
