@@ -349,7 +349,7 @@ function ProviderDetail({
 
       <div className="px-6 py-6">
         {activeTab === 'general' && (
-          <div className="max-w-2xl space-y-8">
+          <div className="space-y-8">
             <div className="space-y-5">
               <div className="flex items-center gap-5 rounded-[16px] border border-[#2A3242] bg-[#161C28] px-4 py-4">
                 <button
@@ -498,7 +498,7 @@ function ProviderDetail({
         )}
 
         {activeTab === 'configuration' && (
-          <div className="max-w-2xl space-y-5">
+          <div className="space-y-5">
             {provider.kind === 'saml' && samlMetadata.loading && (
               <p className="text-sm text-[#828DA3]">Loading…</p>
             )}
@@ -791,7 +791,7 @@ function ProviderDetail({
         )}
 
         {activeTab === 'attributes' && (
-          <div className="max-w-2xl space-y-5">
+          <div className="space-y-5">
             {provider.kind === 'oidc' && (
               <>
                 <div className="space-y-2">
@@ -914,7 +914,7 @@ function ProviderDetail({
         )}
 
         {activeTab === 'users' && (
-          <div className="max-w-2xl space-y-5">
+          <div className="space-y-5">
             <Controller
               name="allowSignUp"
               control={form.control}
@@ -968,7 +968,7 @@ function ProviderDetail({
         )}
 
         {form.formState.isDirty && (
-          <div className="bg-card sticky bottom-0 -mx-6 mt-8 flex items-center justify-between gap-4 border-t border-[#2A3242] px-6 py-4">
+          <div className="bg-card sticky bottom-0 -mx-6 mt-8 flex items-center justify-between gap-4 px-6 py-4">
             <p className="text-sm text-[#828DA3]">You have unsaved changes.</p>
             <div className="flex items-center gap-3">
               <Button

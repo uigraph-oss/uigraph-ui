@@ -155,7 +155,7 @@ export function ConfigureRoleMappingModal({
                 htmlFor={`${id}-operator`}
                 className="text-sm font-medium text-[#D2D9E6]"
               >
-                Operator
+                Condition
               </Label>
               <Select value={operator} onValueChange={setOperator}>
                 <SelectTrigger

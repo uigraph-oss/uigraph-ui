@@ -239,7 +239,7 @@ export function CreateAuthProviderPage() {
           }
           void form.handleSubmit(handleCreate, handleInvalid)()
         }}
-        className="max-w-2xl space-y-5"
+        className="space-y-5"
       >
         {step === 0 && (
           <>
@@ -402,7 +402,7 @@ export function CreateAuthProviderPage() {
               </div>
             )}
 
-            <div className="space-y-5 border-t border-[#2A3242] pt-5">
+            <div className="space-y-5 pt-2">
               {kind === 'oidc' && (
                 <>
                   <Controller
@@ -787,7 +787,7 @@ export function CreateAuthProviderPage() {
           </>
         )}
 
-        <div className="flex items-center justify-between border-t border-[#2A3242] pt-5">
+        <div className="flex items-center justify-between pt-2">
           <Button
             type="button"
             preset="outline"
