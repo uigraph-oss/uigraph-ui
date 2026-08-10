@@ -1,9 +1,12 @@
 'use client'
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
+import { CopyButton } from '@/components/copy-button'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -11,18 +14,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useSearchParamsState } from '@/hooks/use-search-params-state'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, ShieldCheck, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import {
+  ArrowLeft,
+  CircleHelp,
+  ImageIcon,
+  ShieldCheck,
+  Trash2,
+  Upload,
+} from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   AUTH_PROVIDER,
+  AUTH_PROVIDER_SAML_METADATA,
   AUTH_PROVIDERS,
   DELETE_AUTH_PROVIDER,
   removeAuthProviderIcon,
@@ -31,23 +49,13 @@ import {
   type AuthProvider,
 } from './api/org-auth'
 import {
-  ProviderAttributeFields,
-  ProviderConnectionFields,
-} from './provider-field-groups'
-import {
-  CopyRow,
-  Field,
-  IconUploadField,
   oidcRedirectUri,
-  SamlServiceProviderPanel,
   schema,
   signInUrl,
-  TextField,
   toFormValues,
-  ToggleField,
   toInput,
   type AuthProviderFormValues,
-} from './provider-form-fields'
+} from './provider-form'
 import { RoleMappingsPanel } from './role-mappings-panel'
 
 const TABS = [
@@ -88,6 +96,20 @@ const TAB_FIELDS: Record<string, string[]> = {
   ],
   users: ['allowSignUp', 'defaultRole'],
 }
+
+const labelClass = 'text-sm font-medium text-[#D2D9E6]'
+const inputClass =
+  'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4'
+const readOnlyInputClass =
+  'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs'
+const copyButtonClass =
+  'size-[48px] shrink-0 rounded-[12px] border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#1E2533]'
+const textareaClass =
+  'rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 py-3 font-mono text-xs'
+const toggleRowClass =
+  'flex items-center justify-between rounded-[12px] border border-[#2A3242] px-4 py-3'
+const errorClass = 'text-destructive text-sm'
+const hintIconClass = 'text-[#586378] transition-colors hover:text-[#D2D9E6]'
 
 export function AuthProviderDetailPage() {
   const orgId = useCurrentOrganization()?.id as string
@@ -145,12 +167,23 @@ function ProviderDetail({
   const navigate = useNavigate()
   const [{ tab }, setSearchParams] = useSearchParamsState('tab')
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [iconBusy, setIconBusy] = useState(false)
+  const iconInputRef = useRef<HTMLInputElement>(null)
 
   const activeTab = TABS.find((item) => item.id === tab)?.id ?? 'general'
 
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: toFormValues(provider) as AuthProviderFormValues,
+    defaultValues: toFormValues(provider),
+  })
+
+  const errors = form.formState.errors
+  const type = form.watch('type')
+  const derivedPlaceholder = `Derived from the ${type === 'entra' ? 'directory ID' : 'Okta domain'}`
+
+  const samlMetadata = useQuery(AUTH_PROVIDER_SAML_METADATA, {
+    variables: { orgId, slug: provider.slug },
+    skip: provider.kind !== 'saml',
   })
 
   const [updateProvider] = useMutation(UPDATE_AUTH_PROVIDER, {
@@ -168,7 +201,7 @@ function ProviderDetail({
         variables: { orgId, slug: provider.slug, input: toInput(values) },
       })
       const updated = await onSaved()
-      form.reset(toFormValues(updated) as AuthProviderFormValues)
+      form.reset(toFormValues(updated))
       toast.success('Provider updated')
     } catch (error) {
       const message = (error as Error).message
@@ -209,14 +242,36 @@ function ProviderDetail({
     }
   }
 
-  async function handleUploadIcon(file: File) {
-    await setAuthProviderIcon(orgId, provider.slug, file)
-    await onSaved()
+  async function handleIconSelected(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    setIconBusy(true)
+    try {
+      await setAuthProviderIcon(orgId, provider.slug, file)
+      await onSaved()
+      toast.success('Logo updated')
+    } catch {
+      toast.error('Failed to upload the logo')
+    } finally {
+      setIconBusy(false)
+    }
   }
 
-  async function handleRemoveIcon() {
-    await removeAuthProviderIcon(orgId, provider.slug)
-    await onSaved()
+  async function handleIconRemove() {
+    setIconBusy(true)
+    try {
+      await removeAuthProviderIcon(orgId, provider.slug)
+      await onSaved()
+      toast.success('Logo removed')
+    } catch {
+      toast.error('Failed to remove the logo')
+    } finally {
+      setIconBusy(false)
+    }
   }
 
   return (
@@ -296,77 +351,146 @@ function ProviderDetail({
         {activeTab === 'general' && (
           <div className="max-w-2xl space-y-8">
             <div className="space-y-5">
-              <IconUploadField
-                iconUrl={provider.iconUrl}
-                displayName={provider.displayName}
-                onUploadIcon={handleUploadIcon}
-                onRemoveIcon={handleRemoveIcon}
-              />
+              <div className="flex items-center gap-5 rounded-[16px] border border-[#2A3242] bg-[#161C28] px-4 py-4">
+                <button
+                  type="button"
+                  onClick={() => iconInputRef.current?.click()}
+                  disabled={iconBusy}
+                  className="group relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[#2A3242] bg-[#1E2533] transition-colors hover:border-[#015AEB] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {provider.iconUrl ? (
+                    <img
+                      src={provider.iconUrl}
+                      alt=""
+                      className="size-full object-contain"
+                    />
+                  ) : (
+                    <ImageIcon className="size-6 text-[#828DA3]" />
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                    <Upload className="size-4 text-white" />
+                  </div>
+                </button>
 
-              <Controller
-                name="displayName"
-                control={form.control}
-                render={({ field }) => (
-                  <TextField
-                    label="Display Name"
-                    message={form.formState.errors.displayName?.message}
-                    hint="Shown on the sign-in button."
-                    field={field}
-                  />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-[#D2D9E6]">Logo</p>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button
+                    type="button"
+                    preset="outline"
+                    disabled={iconBusy}
+                    onClick={() => iconInputRef.current?.click()}
+                  >
+                    {provider.iconUrl ? 'Replace' : 'Upload'}
+                  </Button>
+                  {provider.iconUrl && (
+                    <Button
+                      type="button"
+                      preset="ghost"
+                      disabled={iconBusy}
+                      className="text-red-500 hover:bg-red-500/10 hover:text-red-500"
+                      onClick={() => void handleIconRemove()}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  )}
+                </div>
+
+                <input
+                  ref={iconInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleIconSelected}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className={labelClass}>Display Name</Label>
+                <Input
+                  {...form.register('displayName')}
+                  className={inputClass}
+                  autoComplete="off"
+                />
+                {errors.displayName && (
+                  <p className={errorClass}>{errors.displayName.message}</p>
                 )}
-              />
+              </div>
 
-              <CopyRow
-                label="Sign-in URL"
-                hint="Send members here to sign in through this provider. The slug in this URL is fixed — your identity provider is already configured with it."
-                value={signInUrl(orgId, provider.slug)}
-              />
+              <div className="space-y-2">
+                <Label className={labelClass}>Sign-in URL</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    readOnly
+                    value={signInUrl(orgId, provider.slug)}
+                    className={readOnlyInputClass}
+                  />
+                  <CopyButton
+                    text={signInUrl(orgId, provider.slug)}
+                    className={copyButtonClass}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <Label className={labelClass}>Allowed Email Domains</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" className={hintIconClass}>
+                        <CircleHelp className="size-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      Restricts who may sign in through this provider. It is not
+                      the organization&apos;s email domain list.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Input
+                  {...form.register('allowedDomains')}
+                  placeholder="acme.com, acme.co.uk"
+                  className={inputClass}
+                  autoComplete="off"
+                />
+              </div>
 
               <Controller
                 name="enabled"
                 control={form.control}
                 render={({ field }) => (
-                  <ToggleField
-                    label="Enabled"
-                    hint="When off, this provider is hidden from the sign-in page."
-                    checked={field.value}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-
-              <Controller
-                name="allowedDomains"
-                control={form.control}
-                render={({ field }) => (
-                  <TextField
-                    label="Allowed Email Domains"
-                    message={form.formState.errors.allowedDomains?.message}
-                    hint="Comma-separated. Leave blank to accept any domain. This only restricts who may sign in through this provider — it is not the organization's email domain list."
-                    field={field}
-                  />
+                  <div className={toggleRowClass}>
+                    <Label className={labelClass}>
+                      Show on the sign-in page
+                    </Label>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
                 )}
               />
             </div>
 
-            <section className="space-y-4 rounded-[16px] border border-red-500/30 px-4 py-5">
-              <div>
-                <p className="text-sm font-semibold text-[#F4F7FC]">
+            <section className="flex items-center justify-between gap-4 rounded-[16px] border border-red-500/30 px-4 py-4">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[#D2D9E6]">
                   Remove this provider
                 </p>
                 <p className="mt-1 text-sm text-[#828DA3]">
-                  Its role mapping rules are removed with it, and members can no
-                  longer sign in through it.
+                  Members can no longer sign in through it.
                 </p>
               </div>
               <Button
                 type="button"
                 preset="outline"
-                className="border-red-500/30 text-red-500 hover:border-red-500/40 hover:bg-red-500/10"
+                className="shrink-0 border-red-500/30 text-red-500 hover:border-red-500/40 hover:bg-red-500/10"
                 onClick={() => setDeleteOpen(true)}
               >
                 <Trash2 className="size-4" />
-                Remove provider
+                Remove
               </Button>
             </section>
           </div>
@@ -375,51 +499,437 @@ function ProviderDetail({
         {activeTab === 'configuration' && (
           <div className="max-w-2xl space-y-8">
             <section className="space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold text-[#D2D9E6]">
-                  Give these to your identity provider
-                </h3>
-                <p className="mt-1 text-sm text-[#828DA3]">
-                  Register them there, then fill in what it gives you back.
-                </p>
-              </div>
+              <h3 className="text-sm font-semibold text-[#F4F7FC]">
+                Give these to your identity provider
+              </h3>
 
-              {provider.kind === 'saml' && (
-                <SamlServiceProviderPanel orgId={orgId} slug={provider.slug} />
+              {provider.kind === 'saml' && samlMetadata.loading && (
+                <p className="text-sm text-[#828DA3]">Loading…</p>
+              )}
+
+              {provider.kind === 'saml' && samlMetadata.error && (
+                <p className="text-sm text-red-400">
+                  {samlMetadata.error.message}
+                </p>
+              )}
+
+              {provider.kind === 'saml' && samlMetadata.data && (
+                <>
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Entity ID (Audience)</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        readOnly
+                        value={
+                          samlMetadata.data.authProviderSamlMetadata.entityId
+                        }
+                        className={readOnlyInputClass}
+                      />
+                      <CopyButton
+                        text={
+                          samlMetadata.data.authProviderSamlMetadata.entityId
+                        }
+                        className={copyButtonClass}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>ACS URL (Reply URL)</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        readOnly
+                        value={
+                          samlMetadata.data.authProviderSamlMetadata.acsUrl
+                        }
+                        className={readOnlyInputClass}
+                      />
+                      <CopyButton
+                        text={samlMetadata.data.authProviderSamlMetadata.acsUrl}
+                        className={copyButtonClass}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Metadata URL</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        readOnly
+                        value={
+                          samlMetadata.data.authProviderSamlMetadata.metadataUrl
+                        }
+                        className={readOnlyInputClass}
+                      />
+                      <CopyButton
+                        text={
+                          samlMetadata.data.authProviderSamlMetadata.metadataUrl
+                        }
+                        className={copyButtonClass}
+                      />
+                    </div>
+                  </div>
+                </>
               )}
 
               {provider.kind === 'oidc' && (
-                <CopyRow
-                  label="Redirect URI (Callback URL)"
-                  hint="Add this to the allowed redirect URIs of your OIDC application."
-                  value={oidcRedirectUri(orgId, provider.slug)}
-                />
+                <div className="space-y-2">
+                  <Label className={labelClass}>
+                    Redirect URI (Callback URL)
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={oidcRedirectUri(orgId, provider.slug)}
+                      className={readOnlyInputClass}
+                    />
+                    <CopyButton
+                      text={oidcRedirectUri(orgId, provider.slug)}
+                      className={copyButtonClass}
+                    />
+                  </div>
+                </div>
               )}
             </section>
 
-            <section className="space-y-4 border-t border-[#2A3242] pt-8">
-              <div>
-                <h3 className="text-sm font-semibold text-[#D2D9E6]">
-                  What your identity provider gave you
-                </h3>
-                <p className="mt-1 text-sm text-[#828DA3]">
-                  The credentials and endpoints we use to reach it.
-                </p>
-              </div>
+            <section className="space-y-5 border-t border-[#2A3242] pt-8">
+              <h3 className="text-sm font-semibold text-[#F4F7FC]">
+                What your identity provider gave you
+              </h3>
 
-              <ProviderConnectionFields form={form} mode="edit" />
+              {provider.kind === 'oidc' && (
+                <>
+                  <Controller
+                    name="type"
+                    control={form.control}
+                    render={({ field }) => (
+                      <div className="space-y-2">
+                        <Label className={labelClass}>Provider Type</Label>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className={cn(inputClass, 'w-full')}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="generic">
+                              Generic OIDC
+                            </SelectItem>
+                            <SelectItem value="entra">
+                              Microsoft Entra ID
+                            </SelectItem>
+                            <SelectItem value="okta">Okta</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  />
+
+                  {type !== 'generic' && (
+                    <div className="space-y-2">
+                      <Label className={labelClass}>
+                        {type === 'entra'
+                          ? 'Directory (Tenant) ID'
+                          : 'Okta Domain'}
+                      </Label>
+                      <Input
+                        {...form.register('apiUrl')}
+                        placeholder={
+                          type === 'entra'
+                            ? '00000000-0000-0000-0000-000000000000'
+                            : 'your-org.okta.com'
+                        }
+                        className={inputClass}
+                        autoComplete="off"
+                      />
+                      {errors.apiUrl && (
+                        <p className={errorClass}>{errors.apiUrl.message}</p>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Client ID</Label>
+                    <Input
+                      {...form.register('clientId')}
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                    {errors.clientId && (
+                      <p className={errorClass}>{errors.clientId.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Client Secret</Label>
+                    <Input
+                      {...form.register('clientSecret')}
+                      type="password"
+                      placeholder="Leave blank to keep the current secret"
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Authorization URL</Label>
+                    <Input
+                      {...form.register('authUrl')}
+                      placeholder={
+                        type === 'generic'
+                          ? 'https://idp.example.com/oauth2/authorize'
+                          : derivedPlaceholder
+                      }
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                    {errors.authUrl && (
+                      <p className={errorClass}>{errors.authUrl.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Token URL</Label>
+                    <Input
+                      {...form.register('tokenUrl')}
+                      placeholder={
+                        type === 'generic'
+                          ? 'https://idp.example.com/oauth2/token'
+                          : derivedPlaceholder
+                      }
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                    {errors.tokenUrl && (
+                      <p className={errorClass}>{errors.tokenUrl.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Userinfo URL</Label>
+                    <Input
+                      {...form.register('userinfoUrl')}
+                      placeholder={
+                        type === 'generic'
+                          ? 'https://idp.example.com/oauth2/userinfo'
+                          : derivedPlaceholder
+                      }
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>Scopes</Label>
+                    <Input
+                      {...form.register('scopes')}
+                      placeholder="openid email profile"
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                  </div>
+                </>
+              )}
+
+              {provider.kind === 'saml' && (
+                <>
+                  <div className="space-y-2">
+                    <Label className={labelClass}>IdP Metadata URL</Label>
+                    <Input
+                      {...form.register('idpMetadataUrl')}
+                      placeholder="https://idp.example.com/metadata"
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                    {errors.idpMetadataUrl && (
+                      <p className={errorClass}>
+                        {errors.idpMetadataUrl.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>IdP Metadata XML</Label>
+                    <Textarea
+                      {...form.register('idpMetadataXml')}
+                      placeholder="<EntityDescriptor ...>"
+                      className={cn(textareaClass, 'min-h-32')}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>IdP Entity ID</Label>
+                    <Input
+                      {...form.register('idpEntityId')}
+                      placeholder="Read from the metadata when blank"
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>IdP SSO URL</Label>
+                    <Input
+                      {...form.register('idpSsoUrl')}
+                      placeholder="Read from the metadata when blank"
+                      className={inputClass}
+                      autoComplete="off"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className={labelClass}>
+                      IdP Signing Certificate
+                    </Label>
+                    <Textarea
+                      {...form.register('idpCert')}
+                      placeholder="Read from the metadata when blank"
+                      className={cn(textareaClass, 'min-h-24')}
+                    />
+                  </div>
+
+                  <Controller
+                    name="signRequests"
+                    control={form.control}
+                    render={({ field }) => (
+                      <div className={toggleRowClass}>
+                        <Label className={labelClass}>
+                          Sign authentication requests
+                        </Label>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
+                    )}
+                  />
+                </>
+              )}
             </section>
           </div>
         )}
 
         {activeTab === 'attributes' && (
           <div className="max-w-2xl space-y-5">
-            <p className="text-sm text-[#828DA3]">
-              Where each person&apos;s details come from in what your identity
-              provider sends back.
-            </p>
+            {provider.kind === 'oidc' && (
+              <>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <Label className={labelClass}>Email Claim</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className={hintIconClass}>
+                          <CircleHelp className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        The account key. Sign-in fails when this claim is
+                        missing from the token.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <Input
+                    {...form.register('emailClaim')}
+                    placeholder="email"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
 
-            <ProviderAttributeFields form={form} />
+                <div className="space-y-2">
+                  <Label className={labelClass}>Name Claim</Label>
+                  <Input
+                    {...form.register('nameClaim')}
+                    placeholder="name"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <Label className={labelClass}>Subject Claim</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className={hintIconClass}>
+                          <CircleHelp className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        The stable identifier that keeps an account linked to
+                        this provider. Changing it relinks everyone.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <Input
+                    {...form.register('subClaim')}
+                    placeholder="sub"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+              </>
+            )}
+
+            {provider.kind === 'saml' && (
+              <>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <Label className={labelClass}>Email Attribute</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className={hintIconClass}>
+                          <CircleHelp className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        The account key. Sign-in fails when this attribute is
+                        missing from the assertion.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <Input
+                    {...form.register('emailAttribute')}
+                    placeholder="email"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Name Attribute</Label>
+                  <Input
+                    {...form.register('nameAttribute')}
+                    placeholder="displayName"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <Label className={labelClass}>Name ID Format</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className={hintIconClass}>
+                          <CircleHelp className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        The format we ask for the Name ID in. The Name ID is
+                        what keeps an account linked to this provider.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <Input
+                    {...form.register('nameIdFormat')}
+                    className={cn(inputClass, 'font-mono text-xs')}
+                    autoComplete="off"
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -430,12 +940,15 @@ function ProviderDetail({
                 name="allowSignUp"
                 control={form.control}
                 render={({ field }) => (
-                  <ToggleField
-                    label="Allow new users to sign up"
-                    hint="When off, only people who already have an account can sign in."
-                    checked={field.value}
-                    onChange={field.onChange}
-                  />
+                  <div className={toggleRowClass}>
+                    <Label className={labelClass}>
+                      Allow new users to sign up
+                    </Label>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
                 )}
               />
 
@@ -443,12 +956,22 @@ function ProviderDetail({
                 name="defaultRole"
                 control={form.control}
                 render={({ field }) => (
-                  <Field
-                    label="Default Role"
-                    hint="The role everyone gets, unless a rule below matches."
-                  >
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Label className={labelClass}>Default Role</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className={hintIconClass}>
+                            <CircleHelp className="size-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          Applies when no role mapping rule below matches.
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-[48px] w-full rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4">
+                      <SelectTrigger className={cn(inputClass, 'w-full')}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -457,13 +980,13 @@ function ProviderDetail({
                         <SelectItem value="viewer">Viewer</SelectItem>
                       </SelectContent>
                     </Select>
-                  </Field>
+                  </div>
                 )}
               />
             </div>
 
             <section className="space-y-4 border-t border-[#2A3242] pt-8">
-              <h3 className="text-sm font-semibold text-[#D2D9E6]">
+              <h3 className="text-sm font-semibold text-[#F4F7FC]">
                 Role mapping
               </h3>
 
@@ -479,9 +1002,7 @@ function ProviderDetail({
               <Button
                 type="button"
                 preset="outline"
-                onClick={() =>
-                  form.reset(toFormValues(provider) as AuthProviderFormValues)
-                }
+                onClick={() => form.reset(toFormValues(provider))}
               >
                 Discard
               </Button>
