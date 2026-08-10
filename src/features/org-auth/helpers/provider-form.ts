@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { type AuthProvider } from './api/org-auth'
+import { type AuthProvider } from '../api/org-auth'
 
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
 

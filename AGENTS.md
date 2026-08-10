@@ -1,3 +1,2 @@
-- Run `typecheck` and `lint` to verify changes.
-- Run `lint:fix` to automatically fix linting issues where possible.
 - Avoid excessive checks after code changes.
+- Run `typecheck` and `lint` to verify changes and `lint:fix` to automatically fix linting issues where possible. Combine them into one command when possible, eg: `nr typecheck && nr lint:fix`.

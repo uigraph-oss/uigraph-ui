@@ -26,6 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ArrowRight, Check, CircleHelp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm, type FieldPath } from 'react-hook-form'
+import { FaFileSignature, FaOpenid } from 'react-icons/fa6'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { AUTH_PROVIDERS, CREATE_AUTH_PROVIDER } from '../api/org-auth'
@@ -38,7 +39,7 @@ import {
   signInUrl,
   toInput,
   type AuthProviderFormValues,
-} from '../provider-form'
+} from '../helpers/provider-form'
 
 const STEPS = [
   { label: 'General' },
@@ -266,30 +267,76 @@ export function CreateAuthProviderModal() {
               render={({ field }) => (
                 <div className="space-y-2">
                   <Label className={labelClass}>Protocol</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <button
                       type="button"
+                      aria-pressed={field.value === 'oidc'}
                       onClick={() => field.onChange('oidc')}
                       className={cn(
-                        'rounded-[12px] border px-4 py-3 text-sm font-medium transition-colors',
+                        'relative flex min-h-20 items-center gap-3 rounded-[12px] border p-4 text-left transition-colors',
                         field.value === 'oidc'
                           ? 'border-[#015AEB] bg-[#015AEB]/10 text-[#F4F7FC]'
-                          : 'border-[#2A3242] bg-[#1E2533] text-[#828DA3] hover:border-[#3A4252]'
+                          : 'border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#222A3A]'
                       )}
                     >
-                      OpenID Connect
+                      <span
+                        className={cn(
+                          'flex size-10 shrink-0 items-center justify-center rounded-lg border',
+                          field.value === 'oidc'
+                            ? 'border-[#015AEB]/40 bg-[#015AEB]/15 text-[#6E8DFF]'
+                            : 'border-[#2A3242] bg-[#141925] text-[#828DA3]'
+                        )}
+                      >
+                        <FaOpenid className="size-5" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium">
+                          OpenID Connect
+                        </span>
+                        <span className="mt-0.5 block text-xs font-normal text-[#828DA3]">
+                          OAuth 2.0 identity tokens
+                        </span>
+                      </span>
+                      {field.value === 'oidc' && (
+                        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[#015AEB] text-white">
+                          <Check className="size-3" />
+                        </span>
+                      )}
                     </button>
                     <button
                       type="button"
+                      aria-pressed={field.value === 'saml'}
                       onClick={() => field.onChange('saml')}
                       className={cn(
-                        'rounded-[12px] border px-4 py-3 text-sm font-medium transition-colors',
+                        'relative flex min-h-20 items-center gap-3 rounded-[12px] border p-4 text-left transition-colors',
                         field.value === 'saml'
                           ? 'border-[#015AEB] bg-[#015AEB]/10 text-[#F4F7FC]'
-                          : 'border-[#2A3242] bg-[#1E2533] text-[#828DA3] hover:border-[#3A4252]'
+                          : 'border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#222A3A]'
                       )}
                     >
-                      SAML 2.0
+                      <span
+                        className={cn(
+                          'flex size-10 shrink-0 items-center justify-center rounded-lg border',
+                          field.value === 'saml'
+                            ? 'border-[#015AEB]/40 bg-[#015AEB]/15 text-[#6E8DFF]'
+                            : 'border-[#2A3242] bg-[#141925] text-[#828DA3]'
+                        )}
+                      >
+                        <FaFileSignature className="size-5" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium">
+                          SAML 2.0
+                        </span>
+                        <span className="mt-0.5 block text-xs font-normal text-[#828DA3]">
+                          Signed identity assertions
+                        </span>
+                      </span>
+                      {field.value === 'saml' && (
+                        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[#015AEB] text-white">
+                          <Check className="size-3" />
+                        </span>
+                      )}
                     </button>
                   </div>
                 </div>

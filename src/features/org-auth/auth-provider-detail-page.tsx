@@ -56,7 +56,7 @@ import {
   toFormValues,
   toInput,
   type AuthProviderFormValues,
-} from './provider-form'
+} from './helpers/provider-form'
 
 const TABS = [
   { id: 'general', label: 'General' },
