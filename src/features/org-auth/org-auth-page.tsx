@@ -46,7 +46,7 @@ export function OrgAuthPage() {
       {providersQuery.loading && !providersQuery.data ? (
         <SectionLoader label="Loading SSO settings..." />
       ) : (
-        <div className="space-y-7 py-4 px-6">
+        <div className="space-y-7 px-6 py-4">
           <section className="space-y-4">
             <h3 className="text-sm font-semibold text-[#D2D9E6]">
               Identity providers

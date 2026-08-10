@@ -96,6 +96,7 @@ type Documents = {
     "\n  mutation UpdateOrganizationSettings($id: ID!, $input: UpdateOrgInput!) {\n    updateOrg(id: $id, input: $input) {\n      id\n      name\n      logoUrl\n    }\n  }\n": typeof types.UpdateOrganizationSettingsDocument,
     "\n  query OrganizationDomains($orgId: ID!) {\n    orgDomains(orgId: $orgId) {\n      id\n      orgId\n      domain\n    }\n  }\n": typeof types.OrganizationDomainsDocument,
     "\n  mutation CreateOrganizationDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n": typeof types.CreateOrganizationDomainDocument,
+    "\n  mutation UpdateOrganizationDomain(\n    $orgId: ID!\n    $domainId: ID!\n    $domain: String!\n  ) {\n    updateOrgDomain(orgId: $orgId, domainId: $domainId, domain: $domain) {\n      id\n      domain\n    }\n  }\n": typeof types.UpdateOrganizationDomainDocument,
     "\n  mutation DeleteOrganizationDomain($orgId: ID!, $domainId: ID!) {\n    deleteOrgDomain(orgId: $orgId, domainId: $domainId)\n  }\n": typeof types.DeleteOrganizationDomainDocument,
     "\n  mutation PrepareOrganizationLogoUpload($orgId: ID!) {\n    prepareOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareOrganizationLogoUploadDocument,
     "\n  mutation SetOrganizationLogo($orgId: ID!) {\n    setOrgLogo(orgId: $orgId)\n  }\n": typeof types.SetOrganizationLogoDocument,
@@ -379,6 +380,7 @@ const documents: Documents = {
     "\n  mutation UpdateOrganizationSettings($id: ID!, $input: UpdateOrgInput!) {\n    updateOrg(id: $id, input: $input) {\n      id\n      name\n      logoUrl\n    }\n  }\n": types.UpdateOrganizationSettingsDocument,
     "\n  query OrganizationDomains($orgId: ID!) {\n    orgDomains(orgId: $orgId) {\n      id\n      orgId\n      domain\n    }\n  }\n": types.OrganizationDomainsDocument,
     "\n  mutation CreateOrganizationDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n": types.CreateOrganizationDomainDocument,
+    "\n  mutation UpdateOrganizationDomain(\n    $orgId: ID!\n    $domainId: ID!\n    $domain: String!\n  ) {\n    updateOrgDomain(orgId: $orgId, domainId: $domainId, domain: $domain) {\n      id\n      domain\n    }\n  }\n": types.UpdateOrganizationDomainDocument,
     "\n  mutation DeleteOrganizationDomain($orgId: ID!, $domainId: ID!) {\n    deleteOrgDomain(orgId: $orgId, domainId: $domainId)\n  }\n": types.DeleteOrganizationDomainDocument,
     "\n  mutation PrepareOrganizationLogoUpload($orgId: ID!) {\n    prepareOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareOrganizationLogoUploadDocument,
     "\n  mutation SetOrganizationLogo($orgId: ID!) {\n    setOrgLogo(orgId: $orgId)\n  }\n": types.SetOrganizationLogoDocument,
@@ -922,6 +924,10 @@ export function graphql(source: "\n  query OrganizationDomains($orgId: ID!) {\n 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateOrganizationDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateOrganizationDomain($orgId: ID!, $domain: String!) {\n    createOrgDomain(orgId: $orgId, domain: $domain) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateOrganizationDomain(\n    $orgId: ID!\n    $domainId: ID!\n    $domain: String!\n  ) {\n    updateOrgDomain(orgId: $orgId, domainId: $domainId, domain: $domain) {\n      id\n      domain\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateOrganizationDomain(\n    $orgId: ID!\n    $domainId: ID!\n    $domain: String!\n  ) {\n    updateOrgDomain(orgId: $orgId, domainId: $domainId, domain: $domain) {\n      id\n      domain\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

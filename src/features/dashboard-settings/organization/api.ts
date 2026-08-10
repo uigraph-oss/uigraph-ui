@@ -30,6 +30,19 @@ export const CREATE_ORGANIZATION_DOMAIN = graphql(`
   }
 `)
 
+export const UPDATE_ORGANIZATION_DOMAIN = graphql(`
+  mutation UpdateOrganizationDomain(
+    $orgId: ID!
+    $domainId: ID!
+    $domain: String!
+  ) {
+    updateOrgDomain(orgId: $orgId, domainId: $domainId, domain: $domain) {
+      id
+      domain
+    }
+  }
+`)
+
 export const DELETE_ORGANIZATION_DOMAIN = graphql(`
   mutation DeleteOrganizationDomain($orgId: ID!, $domainId: ID!) {
     deleteOrgDomain(orgId: $orgId, domainId: $domainId)

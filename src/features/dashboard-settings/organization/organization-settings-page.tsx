@@ -17,6 +17,7 @@ import {
   ORGANIZATION_DOMAINS,
   removeOrganizationLogo,
   UPDATE_ORGANIZATION,
+  UPDATE_ORGANIZATION_DOMAIN,
   uploadOrganizationLogo,
 } from './api'
 
@@ -40,7 +41,7 @@ function OrganizationSettings({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isEditMode, setIsEditMode] = useState(false)
   const [name, setName] = useState(organization.name)
-  const [newDomain, setNewDomain] = useState('')
+  const [domainName, setDomainName] = useState('')
   const [isUpdatingLogo, setIsUpdatingLogo] = useState(false)
   const [updateOrganization, { loading: isUpdating }] =
     useMutation(UPDATE_ORGANIZATION)
@@ -65,6 +66,10 @@ function OrganizationSettings({
     DELETE_ORGANIZATION_DOMAIN,
     domainRefetch
   )
+  const [updateDomain, { loading: isUpdatingDomain }] = useMutation(
+    UPDATE_ORGANIZATION_DOMAIN,
+    domainRefetch
+  )
   const domains = domainsQuery.data?.orgDomains ?? []
   const domain = domains[0]
 
@@ -84,8 +89,39 @@ function OrganizationSettings({
           input: { name: trimmedName },
         },
       })
+
+      const normalizedDomain = domainName.trim().toLowerCase()
+      const currentDomain = domains[0]
+      if (currentDomain && !normalizedDomain) {
+        await deleteDomain({
+          variables: {
+            orgId: organization.id,
+            domainId: currentDomain.id,
+          },
+        })
+      }
+      if (
+        currentDomain &&
+        normalizedDomain &&
+        normalizedDomain !== currentDomain.domain
+      ) {
+        await updateDomain({
+          variables: {
+            orgId: organization.id,
+            domainId: currentDomain.id,
+            domain: normalizedDomain,
+          },
+        })
+      }
+      if (!currentDomain && normalizedDomain) {
+        await createDomain({
+          variables: { orgId: organization.id, domain: normalizedDomain },
+        })
+      }
+
       await refreshOrganizations()
       setName(trimmedName)
+      setDomainName(normalizedDomain)
       setIsEditMode(false)
       toast.success('Organization updated successfully')
     } catch (error) {
@@ -136,28 +172,6 @@ function OrganizationSettings({
     }
   }
 
-  async function handleAddDomain(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const domain = newDomain.trim().toLowerCase()
-
-    if (!domain) {
-      toast.error('Enter a domain')
-      return
-    }
-
-    try {
-      await createDomain({
-        variables: { orgId: organization.id, domain },
-      })
-      setNewDomain('')
-      toast.success('Domain added')
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to add domain'
-      )
-    }
-  }
-
   const initials = organization.name
     .split(' ')
     .filter(Boolean)
@@ -179,9 +193,16 @@ function OrganizationSettings({
                 className="border-border text-muted-foreground h-[44px] rounded-[12.85px] bg-transparent text-sm leading-[1.33] hover:bg-[#1E2533]"
                 onClick={() => {
                   setName(organization.name)
+                  setDomainName(domain?.domain ?? '')
                   setIsEditMode(false)
                 }}
-                disabled={isUpdating || isUpdatingLogo}
+                disabled={
+                  isUpdating ||
+                  isUpdatingLogo ||
+                  isCreatingDomain ||
+                  isUpdatingDomain ||
+                  isDeletingDomain
+                }
               >
                 <X className="h-4 w-4" />
                 Cancel
@@ -190,7 +211,13 @@ function OrganizationSettings({
                 type="submit"
                 form="organization-settings-form"
                 className="h-[44px] rounded-[12.85px] bg-[#015AEB] text-sm leading-[1.33] text-white hover:bg-blue-700"
-                disabled={isUpdating || isUpdatingLogo}
+                disabled={
+                  isUpdating ||
+                  isUpdatingLogo ||
+                  isCreatingDomain ||
+                  isUpdatingDomain ||
+                  isDeletingDomain
+                }
               >
                 {isUpdating ? 'Updating...' : 'Update Organization'}
               </Button>
@@ -246,89 +273,46 @@ function OrganizationSettings({
             )}
           </div>
 
-          <div className="flex-1 space-y-6">
-            <form id="organization-settings-form" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <Label htmlFor="organization-name" className="text-textPrimary">
-                  Organization name
-                </Label>
-                <Input
-                  id="organization-name"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  className="h-14 rounded-[12px] border border-[#2A3242]"
-                  disabled={isUpdating || isUpdatingLogo}
-                  autoComplete="organization"
-                />
-              </div>
-            </form>
-
-            <div className="space-y-4 border-t border-[#2A3242] pt-6">
-              <div>
-                <Label className="text-textPrimary">Domain name</Label>
-                <p className="mt-1 text-sm text-[#828DA3]">
-                  People with an email address at these domains can find this
-                  organization when signing in.
-                </p>
-              </div>
-
-              {!domain ? (
-                <form
-                  className="flex flex-col gap-3 sm:flex-row sm:items-center"
-                  onSubmit={handleAddDomain}
-                >
-                  <Input
-                    value={newDomain}
-                    onChange={(event) => setNewDomain(event.target.value)}
-                    placeholder="example.com"
-                    aria-label="Domain name"
-                    className="h-11 rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 sm:max-w-sm"
-                    autoComplete="off"
-                    disabled={isCreatingDomain || isDeletingDomain}
-                  />
-                  <Button
-                    type="submit"
-                    className="h-11 rounded-[0.75rem] px-6 text-sm"
-                    disabled={isCreatingDomain || isDeletingDomain}
-                  >
-                    {isCreatingDomain ? 'Adding...' : 'Add domain'}
-                  </Button>
-                </form>
-              ) : (
-                <div className="flex items-center justify-between rounded-[12px] border border-[#2A3242] px-6 py-3">
-                  <p className="font-mono text-sm text-[#F4F7FC]">
-                    {domain.domain}
-                  </p>
-                  <button
-                    type="button"
-                    aria-label={`Remove ${domain.domain}`}
-                    title={`Remove ${domain.domain}`}
-                    className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10"
-                    disabled={isCreatingDomain || isDeletingDomain}
-                    onClick={async () => {
-                      try {
-                        await deleteDomain({
-                          variables: {
-                            orgId: organization.id,
-                            domainId: domain.id,
-                          },
-                        })
-                        toast.success('Domain removed')
-                      } catch (error) {
-                        toast.error(
-                          error instanceof Error
-                            ? error.message
-                            : 'Failed to remove domain'
-                        )
-                      }
-                    }}
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
-                </div>
-              )}
+          <form
+            id="organization-settings-form"
+            className="flex-1 space-y-6"
+            onSubmit={handleSubmit}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="organization-name" className="text-textPrimary">
+                Organization name
+              </Label>
+              <Input
+                id="organization-name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="h-14 rounded-[12px] border border-[#2A3242]"
+                disabled={isUpdating || isUpdatingLogo}
+                autoComplete="organization"
+              />
             </div>
-          </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="domain-name" className="text-textPrimary">
+                Domain name
+              </Label>
+              <Input
+                id="domain-name"
+                value={domainName}
+                onChange={(event) => setDomainName(event.target.value)}
+                placeholder="example.com"
+                className="h-14 rounded-[12px] border border-[#2A3242]"
+                disabled={
+                  isUpdating ||
+                  isUpdatingLogo ||
+                  isCreatingDomain ||
+                  isUpdatingDomain ||
+                  isDeletingDomain
+                }
+                autoComplete="off"
+              />
+            </div>
+          </form>
         </div>
       </>
     )
@@ -342,7 +326,10 @@ function OrganizationSettings({
         cta={
           <Button
             className="h-[44px] rounded-[12.85px] bg-[#015AEB] text-sm leading-[1.33] text-white hover:bg-blue-700"
-            onClick={() => setIsEditMode(true)}
+            onClick={() => {
+              setDomainName(domain?.domain ?? '')
+              setIsEditMode(true)
+            }}
           >
             <SquarePen className="mr-0.5 h-4 w-4" />
             Edit Organization
@@ -371,7 +358,10 @@ function OrganizationSettings({
             </div>
             <button
               className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] font-normal text-[#D2D9E6] hover:bg-[#3B4658]"
-              onClick={() => setIsEditMode(true)}
+              onClick={() => {
+                setDomainName(domain?.domain ?? '')
+                setIsEditMode(true)
+              }}
             >
               <SquarePen className="mr-0.5 h-4 w-4" />
               Edit
@@ -385,7 +375,10 @@ function OrganizationSettings({
             </h3>
             <button
               className="flex h-11 items-center gap-2 rounded-[12.85px] bg-[#2A3242] px-3 text-sm leading-[1.33] font-normal text-[#D2D9E6] hover:bg-[#3B4658]"
-              onClick={() => setIsEditMode(true)}
+              onClick={() => {
+                setDomainName(domain?.domain ?? '')
+                setIsEditMode(true)
+              }}
             >
               <SquarePen className="mr-0.5 h-4 w-4" />
               Edit
@@ -406,11 +399,21 @@ function OrganizationSettings({
               <Label className="text-sm leading-[1.33] font-normal text-[#828DA3]">
                 Domain name
               </Label>
-              <p className="text-[1rem] leading-[1.33] font-normal text-[#F4F7FC]">
-                {domainsQuery.loading
-                  ? 'Loading...'
-                  : domain?.domain || 'Not configured'}
-              </p>
+              {domainsQuery.loading && (
+                <p className="text-sm leading-[1.33] font-normal text-[#828DA3]">
+                  Loading...
+                </p>
+              )}
+              {!domainsQuery.loading && domain && (
+                <p className="text-[1rem] leading-[1.33] font-normal text-[#F4F7FC]">
+                  {domain.domain}
+                </p>
+              )}
+              {!domainsQuery.loading && !domain && (
+                <p className="text-sm leading-[1.33] font-normal text-[#828DA3]">
+                  Not configured
+                </p>
+              )}
             </div>
           </div>
         </div>
