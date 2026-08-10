@@ -9,24 +9,24 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useMutation, useQuery } from '@apollo/client'
-import {
-  ArrowDown,
-  ArrowUp,
-  CircleHelp,
-  Pencil,
-  Plus,
-  Trash2,
-} from 'lucide-react'
+import { CircleHelp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
   AUTH_ROLE_MAPPINGS,
+  CREATE_AUTH_ROLE_MAPPING,
   DELETE_AUTH_ROLE_MAPPING,
   UPDATE_AUTH_ROLE_MAPPING,
   type AuthProvider,
-  type AuthRoleMapping,
 } from './api/org-auth'
-import { RoleMappingModal } from './role-mapping-modal'
+import { ConfigureRoleMappingModal } from './configure-role-mapping-modal'
+import { RoleMappingRow } from './role-mapping-row'
+
+function getGroupsField(provider: AuthProvider) {
+  if (provider.kind === 'saml') return provider.groupsAttribute
+  if (provider.kind === 'oidc') return provider.groupsClaim
+  throw new Error(`unknown provider kind ${provider.kind}`)
+}
 
 export function RoleMappingsPanel({
   orgId,
@@ -47,9 +47,12 @@ export function RoleMappingsPanel({
     awaitRefetchQueries: true,
     refetchQueries,
   })
+  const [createMapping] = useMutation(CREATE_AUTH_ROLE_MAPPING, {
+    awaitRefetchQueries: true,
+    refetchQueries,
+  })
 
-  const [ruleOpen, setRuleOpen] = useState(false)
-  const [editing, setEditing] = useState<AuthRoleMapping | null>(null)
+  const [addOpen, setAddOpen] = useState(false)
 
   const mappings = mappingsQuery.data?.authRoleMappings ?? []
 
@@ -91,6 +94,15 @@ export function RoleMappingsPanel({
     }
   }
 
+  async function handleDelete(mappingId: string) {
+    try {
+      await deleteMapping({ variables: { ...variables, mappingId } })
+      toast.success('Rule removed')
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
   return (
     <div className="max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-4">
@@ -115,14 +127,7 @@ export function RoleMappingsPanel({
           </Tooltip>
         </div>
 
-        <Button
-          type="button"
-          preset="outline"
-          onClick={() => {
-            setEditing(null)
-            setRuleOpen(true)
-          }}
-        >
+        <Button type="button" preset="outline" onClick={() => setAddOpen(true)}>
           <Plus className="size-4" />
           Add Rule
         </Button>
@@ -139,85 +144,50 @@ export function RoleMappingsPanel({
       ) : (
         <ul className="space-y-2">
           {mappings.map((mapping, index) => (
-            <li
+            <RoleMappingRow
               key={mapping.id}
-              className="flex items-center gap-3 rounded-[12px] border border-[#2A3242] px-4 py-3"
-            >
-              <span className="w-5 shrink-0 text-xs text-[#828DA3]">
-                {index + 1}
-              </span>
-              <p className="min-w-0 flex-1 text-sm text-[#D2D9E6]">
-                <span className="font-mono text-[#F4F7FC]">
-                  {mapping.attributeKey}
-                </span>{' '}
-                <span className="text-[#828DA3]">{mapping.operator}</span>{' '}
-                {mapping.attributeValue && (
-                  <span className="font-mono text-[#F4F7FC]">
-                    {mapping.attributeValue}
-                  </span>
-                )}
-                <span className="text-[#828DA3]"> → </span>
-                <span className="font-medium text-[#F4F7FC]">
-                  {mapping.role}
-                </span>
-              </p>
-              <button
-                type="button"
-                disabled={index === 0}
-                onClick={() => void handleMove(index, -1)}
-                className="flex size-8 items-center justify-center rounded-md border border-[#2A3242] text-[#D2D9E6] transition-colors hover:border-[#3A4252] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ArrowUp className="size-4" />
-              </button>
-              <button
-                type="button"
-                disabled={index === mappings.length - 1}
-                onClick={() => void handleMove(index, 1)}
-                className="flex size-8 items-center justify-center rounded-md border border-[#2A3242] text-[#D2D9E6] transition-colors hover:border-[#3A4252] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ArrowDown className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditing(mapping)
-                  setRuleOpen(true)
-                }}
-                className="flex size-8 items-center justify-center rounded-md border border-[#2A3242] text-[#D2D9E6] transition-colors hover:border-[#3A4252]"
-              >
-                <Pencil className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  try {
-                    await deleteMapping({
-                      variables: { ...variables, mappingId: mapping.id },
-                    })
-                    toast.success('Rule removed')
-                  } catch (error) {
-                    toast.error((error as Error).message)
-                  }
-                }}
-                className="flex size-8 items-center justify-center rounded-md border border-red-500/30 text-red-600 transition-colors hover:border-red-500/40 hover:bg-red-500/10"
-              >
-                <Trash2 className="size-4" />
-              </button>
-            </li>
+              orgId={orgId}
+              provider={provider}
+              mapping={mapping}
+              index={index}
+              isFirst={index === 0}
+              isLast={index === mappings.length - 1}
+              onMoveUp={() => void handleMove(index, -1)}
+              onMoveDown={() => void handleMove(index, 1)}
+              onDelete={() => void handleDelete(mapping.id)}
+            />
           ))}
         </ul>
       )}
 
-      <BetterDialogProvider open={ruleOpen} onOpenChange={setRuleOpen}>
-        {ruleOpen && (
-          <RoleMappingModal
-            orgId={orgId}
-            provider={provider}
-            mapping={editing}
-            nextPriority={mappings.length}
-            onSaved={() => setRuleOpen(false)}
-          />
-        )}
+      <BetterDialogProvider
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        className="sm:max-w-[36rem]"
+      >
+        <ConfigureRoleMappingModal
+          id="create-role-mapping"
+          open={addOpen}
+          providerKind={provider.kind}
+          title="Add Rule"
+          ctaLabel="Add Rule"
+          initialValues={{
+            attributeKey: getGroupsField(provider),
+            operator: 'contains',
+            attributeValue: '',
+            role: 'editor',
+          }}
+          submitForm={async (values) => {
+            await createMapping({
+              variables: {
+                ...variables,
+                input: { ...values, priority: mappings.length },
+              },
+            })
+            toast.success('Rule added')
+            setAddOpen(false)
+          }}
+        />
       </BetterDialogProvider>
     </div>
   )

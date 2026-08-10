@@ -81,13 +81,12 @@ export function DashboardServiceDependencies({
         onOpenChange={setManageOpen}
         className="sm:max-w-[min(56rem,90vw)]"
       >
-        {manageOpen && (
-          <ManageDependenciesModal
-            serviceId={serviceId}
-            onClose={() => setManageOpen(false)}
-          />
-        )}
+        <ManageDependenciesModal
+          serviceId={serviceId}
+          onClose={() => setManageOpen(false)}
+        />
       </BetterDialogProvider>
+
       <DashboardSectionContent className="gap-4 px-3 pt-3.5 pb-4">
         <div className="relative min-h-0 flex-1">
           <div className="absolute top-4 right-4 z-10 flex flex-wrap gap-3">

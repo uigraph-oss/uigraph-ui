@@ -98,12 +98,7 @@ export function ServiceAccountsPage() {
       </div>
 
       <BetterDialogProvider open={createOpen} onOpenChange={setCreateOpen}>
-        {createOpen && (
-          <ServiceAccountModal
-            availableScopes={scopes}
-            onSubmit={handleCreate}
-          />
-        )}
+        <ServiceAccountModal availableScopes={scopes} onSubmit={handleCreate} />
       </BetterDialogProvider>
 
       <BetterDialogProvider
