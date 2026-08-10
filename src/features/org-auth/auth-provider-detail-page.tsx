@@ -97,18 +97,6 @@ const TAB_FIELDS: Record<string, string[]> = {
   users: ['allowSignUp', 'defaultRole'],
 }
 
-const labelClass = 'text-sm font-medium text-[#D2D9E6]'
-const inputClass =
-  'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4'
-const readOnlyInputClass =
-  'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs'
-const textareaClass =
-  'rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 py-3 font-mono text-xs'
-const toggleRowClass =
-  'flex items-center justify-between rounded-[12px] border border-[#2A3242] px-4 py-3'
-const errorClass = 'text-destructive text-sm'
-const hintIconClass = 'text-[#586378] transition-colors hover:text-[#D2D9E6]'
-
 export function AuthProviderDetailPage() {
   const orgId = useCurrentOrganization()?.id as string
   const { slug } = useParams<{ slug: string }>()
@@ -406,24 +394,30 @@ function ProviderDetail({
               </div>
 
               <div className="space-y-2">
-                <Label className={labelClass}>Display Name</Label>
+                <Label className="text-sm font-medium text-[#D2D9E6]">
+                  Display Name
+                </Label>
                 <Input
                   {...form.register('displayName')}
-                  className={inputClass}
+                  className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                   autoComplete="off"
                 />
                 {errors.displayName && (
-                  <p className={errorClass}>{errors.displayName.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.displayName.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label className={labelClass}>Sign-in URL</Label>
+                <Label className="text-sm font-medium text-[#D2D9E6]">
+                  Sign-in URL
+                </Label>
                 <div className="flex items-center gap-2">
                   <Input
                     readOnly
                     value={signInUrl(orgId, provider.slug)}
-                    className={readOnlyInputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs"
                   />
                   <CopyButton
                     text={signInUrl(orgId, provider.slug)}
@@ -434,10 +428,15 @@ function ProviderDetail({
 
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
-                  <Label className={labelClass}>Allowed Email Domains</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Allowed Email Domains
+                  </Label>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button type="button" className={hintIconClass}>
+                      <button
+                        type="button"
+                        className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                      >
                         <CircleHelp className="size-3.5" />
                       </button>
                     </TooltipTrigger>
@@ -451,7 +450,7 @@ function ProviderDetail({
                 <Input
                   {...form.register('allowedDomains')}
                   placeholder="acme.com, acme.co.uk"
-                  className={inputClass}
+                  className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                   autoComplete="off"
                 />
               </div>
@@ -460,8 +459,8 @@ function ProviderDetail({
                 name="enabled"
                 control={form.control}
                 render={({ field }) => (
-                  <div className={toggleRowClass}>
-                    <Label className={labelClass}>
+                  <div className="flex items-center justify-between rounded-[12px] border border-[#2A3242] px-4 py-3">
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
                       Show on the sign-in page
                     </Label>
                     <Switch
@@ -510,14 +509,16 @@ function ProviderDetail({
             {provider.kind === 'saml' && samlMetadata.data && (
               <>
                 <div className="space-y-2">
-                  <Label className={labelClass}>Entity ID (Audience)</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Entity ID (Audience)
+                  </Label>
                   <div className="flex items-center gap-2">
                     <Input
                       readOnly
                       value={
                         samlMetadata.data.authProviderSamlMetadata.entityId
                       }
-                      className={readOnlyInputClass}
+                      className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs"
                     />
                     <CopyButton
                       text={samlMetadata.data.authProviderSamlMetadata.entityId}
@@ -527,12 +528,14 @@ function ProviderDetail({
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>ACS URL (Reply URL)</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    ACS URL (Reply URL)
+                  </Label>
                   <div className="flex items-center gap-2">
                     <Input
                       readOnly
                       value={samlMetadata.data.authProviderSamlMetadata.acsUrl}
-                      className={readOnlyInputClass}
+                      className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs"
                     />
                     <CopyButton
                       text={samlMetadata.data.authProviderSamlMetadata.acsUrl}
@@ -542,14 +545,16 @@ function ProviderDetail({
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Metadata URL</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Metadata URL
+                  </Label>
                   <div className="flex items-center gap-2">
                     <Input
                       readOnly
                       value={
                         samlMetadata.data.authProviderSamlMetadata.metadataUrl
                       }
-                      className={readOnlyInputClass}
+                      className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs"
                     />
                     <CopyButton
                       text={
@@ -564,14 +569,14 @@ function ProviderDetail({
 
             {provider.kind === 'oidc' && (
               <div className="space-y-2">
-                <Label className={labelClass}>
+                <Label className="text-sm font-medium text-[#D2D9E6]">
                   Redirect URI (Callback URL)
                 </Label>
                 <div className="flex items-center gap-2">
                   <Input
                     readOnly
                     value={oidcRedirectUri(orgId, provider.slug)}
-                    className={readOnlyInputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs"
                   />
                   <CopyButton
                     text={oidcRedirectUri(orgId, provider.slug)}
@@ -587,12 +592,14 @@ function ProviderDetail({
                   control={form.control}
                   render={({ field }) => (
                     <div className="space-y-2">
-                      <Label className={labelClass}>Provider Type</Label>
+                      <Label className="text-sm font-medium text-[#D2D9E6]">
+                        Provider Type
+                      </Label>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger className={cn(inputClass, 'w-full')}>
+                        <SelectTrigger className="h-[48px] w-full rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -609,7 +616,7 @@ function ProviderDetail({
 
                 {type !== 'generic' && (
                   <div className="space-y-2">
-                    <Label className={labelClass}>
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
                       {type === 'entra'
                         ? 'Directory (Tenant) ID'
                         : 'Okta Domain'}
@@ -621,40 +628,50 @@ function ProviderDetail({
                           ? '00000000-0000-0000-0000-000000000000'
                           : 'your-org.okta.com'
                       }
-                      className={inputClass}
+                      className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                       autoComplete="off"
                     />
                     {errors.apiUrl && (
-                      <p className={errorClass}>{errors.apiUrl.message}</p>
+                      <p className="text-destructive text-sm">
+                        {errors.apiUrl.message}
+                      </p>
                     )}
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Client ID</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Client ID
+                  </Label>
                   <Input
                     {...form.register('clientId')}
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                   {errors.clientId && (
-                    <p className={errorClass}>{errors.clientId.message}</p>
+                    <p className="text-destructive text-sm">
+                      {errors.clientId.message}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Client Secret</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Client Secret
+                  </Label>
                   <Input
                     {...form.register('clientSecret')}
                     type="password"
                     placeholder="Leave blank to keep the current secret"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Authorization URL</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Authorization URL
+                  </Label>
                   <Input
                     {...form.register('authUrl')}
                     placeholder={
@@ -662,16 +679,20 @@ function ProviderDetail({
                         ? 'https://idp.example.com/oauth2/authorize'
                         : derivedPlaceholder
                     }
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                   {errors.authUrl && (
-                    <p className={errorClass}>{errors.authUrl.message}</p>
+                    <p className="text-destructive text-sm">
+                      {errors.authUrl.message}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Token URL</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Token URL
+                  </Label>
                   <Input
                     {...form.register('tokenUrl')}
                     placeholder={
@@ -679,16 +700,20 @@ function ProviderDetail({
                         ? 'https://idp.example.com/oauth2/token'
                         : derivedPlaceholder
                     }
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                   {errors.tokenUrl && (
-                    <p className={errorClass}>{errors.tokenUrl.message}</p>
+                    <p className="text-destructive text-sm">
+                      {errors.tokenUrl.message}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Userinfo URL</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Userinfo URL
+                  </Label>
                   <Input
                     {...form.register('userinfoUrl')}
                     placeholder={
@@ -696,17 +721,19 @@ function ProviderDetail({
                         ? 'https://idp.example.com/oauth2/userinfo'
                         : derivedPlaceholder
                     }
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Scopes</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Scopes
+                  </Label>
                   <Input
                     {...form.register('scopes')}
                     placeholder="openid email profile"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
@@ -716,55 +743,65 @@ function ProviderDetail({
             {provider.kind === 'saml' && (
               <>
                 <div className="space-y-2">
-                  <Label className={labelClass}>IdP Metadata URL</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    IdP Metadata URL
+                  </Label>
                   <Input
                     {...form.register('idpMetadataUrl')}
                     placeholder="https://idp.example.com/metadata"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                   {errors.idpMetadataUrl && (
-                    <p className={errorClass}>
+                    <p className="text-destructive text-sm">
                       {errors.idpMetadataUrl.message}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>IdP Metadata XML</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    IdP Metadata XML
+                  </Label>
                   <Textarea
                     {...form.register('idpMetadataXml')}
                     placeholder="<EntityDescriptor ...>"
-                    className={cn(textareaClass, 'min-h-32')}
+                    className="min-h-32 rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 py-3 font-mono text-xs"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>IdP Entity ID</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    IdP Entity ID
+                  </Label>
                   <Input
                     {...form.register('idpEntityId')}
                     placeholder="Read from the metadata when blank"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>IdP SSO URL</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    IdP SSO URL
+                  </Label>
                   <Input
                     {...form.register('idpSsoUrl')}
                     placeholder="Read from the metadata when blank"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>IdP Signing Certificate</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    IdP Signing Certificate
+                  </Label>
                   <Textarea
                     {...form.register('idpCert')}
                     placeholder="Read from the metadata when blank"
-                    className={cn(textareaClass, 'min-h-24')}
+                    className="min-h-24 rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 py-3 font-mono text-xs"
                   />
                 </div>
 
@@ -772,8 +809,8 @@ function ProviderDetail({
                   name="signRequests"
                   control={form.control}
                   render={({ field }) => (
-                    <div className={toggleRowClass}>
-                      <Label className={labelClass}>
+                    <div className="flex items-center justify-between rounded-[12px] border border-[#2A3242] px-4 py-3">
+                      <Label className="text-sm font-medium text-[#D2D9E6]">
                         Sign authentication requests
                       </Label>
                       <Switch
@@ -794,10 +831,15 @@ function ProviderDetail({
               <>
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
-                    <Label className={labelClass}>Email Claim</Label>
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
+                      Email Claim
+                    </Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className={hintIconClass}>
+                        <button
+                          type="button"
+                          className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                        >
                           <CircleHelp className="size-3.5" />
                         </button>
                       </TooltipTrigger>
@@ -810,27 +852,34 @@ function ProviderDetail({
                   <Input
                     {...form.register('emailClaim')}
                     placeholder="email"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Name Claim</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Name Claim
+                  </Label>
                   <Input
                     {...form.register('nameClaim')}
                     placeholder="name"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
-                    <Label className={labelClass}>Subject Claim</Label>
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
+                      Subject Claim
+                    </Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className={hintIconClass}>
+                        <button
+                          type="button"
+                          className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                        >
                           <CircleHelp className="size-3.5" />
                         </button>
                       </TooltipTrigger>
@@ -843,7 +892,7 @@ function ProviderDetail({
                   <Input
                     {...form.register('subClaim')}
                     placeholder="sub"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
@@ -854,10 +903,15 @@ function ProviderDetail({
               <>
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
-                    <Label className={labelClass}>Email Attribute</Label>
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
+                      Email Attribute
+                    </Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className={hintIconClass}>
+                        <button
+                          type="button"
+                          className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                        >
                           <CircleHelp className="size-3.5" />
                         </button>
                       </TooltipTrigger>
@@ -870,27 +924,34 @@ function ProviderDetail({
                   <Input
                     {...form.register('emailAttribute')}
                     placeholder="email"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={labelClass}>Name Attribute</Label>
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
+                    Name Attribute
+                  </Label>
                   <Input
                     {...form.register('nameAttribute')}
                     placeholder="displayName"
-                    className={inputClass}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
                     autoComplete="off"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
-                    <Label className={labelClass}>Name ID Format</Label>
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
+                      Name ID Format
+                    </Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className={hintIconClass}>
+                        <button
+                          type="button"
+                          className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                        >
                           <CircleHelp className="size-3.5" />
                         </button>
                       </TooltipTrigger>
@@ -902,7 +963,7 @@ function ProviderDetail({
                   </div>
                   <Input
                     {...form.register('nameIdFormat')}
-                    className={cn(inputClass, 'font-mono text-xs')}
+                    className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs"
                     autoComplete="off"
                   />
                 </div>
@@ -917,8 +978,8 @@ function ProviderDetail({
               name="allowSignUp"
               control={form.control}
               render={({ field }) => (
-                <div className={toggleRowClass}>
-                  <Label className={labelClass}>
+                <div className="flex items-center justify-between rounded-[12px] border border-[#2A3242] px-4 py-3">
+                  <Label className="text-sm font-medium text-[#D2D9E6]">
                     Allow new users to sign up
                   </Label>
                   <Switch
@@ -935,10 +996,15 @@ function ProviderDetail({
               render={({ field }) => (
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
-                    <Label className={labelClass}>Default Role</Label>
+                    <Label className="text-sm font-medium text-[#D2D9E6]">
+                      Default Role
+                    </Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className={hintIconClass}>
+                        <button
+                          type="button"
+                          className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                        >
                           <CircleHelp className="size-3.5" />
                         </button>
                       </TooltipTrigger>
@@ -948,7 +1014,7 @@ function ProviderDetail({
                     </Tooltip>
                   </div>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className={cn(inputClass, 'w-full')}>
+                    <SelectTrigger className="h-[48px] w-full rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
