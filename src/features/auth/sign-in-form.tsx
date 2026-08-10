@@ -215,39 +215,41 @@ export function SignInForm() {
         }}
       >
         {/* Logo + wordmark */}
-        <div className="mb-6 flex items-center gap-2.5">
-          <UigraphMark />
-          <span
-            style={{
-              fontFamily:
-                'var(--font-space-grotesk, var(--font-poppins), sans-serif)',
-              fontSize: 17,
-              fontWeight: 600,
-              color: '#F4F7FC',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            UIGraph
-          </span>
-        </div>
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <UigraphMark />
+            <span
+              style={{
+                fontFamily:
+                  'var(--font-space-grotesk, var(--font-poppins), sans-serif)',
+                fontSize: 17,
+                fontWeight: 600,
+                color: '#F4F7FC',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              UIGraph
+            </span>
+          </div>
 
-        {step !== 'email' && (
-          <button
-            type="button"
-            onClick={back}
-            className="mb-4 flex cursor-pointer items-center gap-1.5"
-            style={{
-              fontSize: 12,
-              color: '#828DA3',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
-          >
-            <ArrowLeft size={13} />
-            Back
-          </button>
-        )}
+          {step !== 'email' && (
+            <button
+              type="button"
+              onClick={back}
+              className="flex cursor-pointer items-center gap-1.5"
+              style={{
+                fontSize: 12,
+                color: '#828DA3',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+              }}
+            >
+              <ArrowLeft size={13} />
+              Back
+            </button>
+          )}
+        </div>
 
         {/* Heading */}
         <h1
