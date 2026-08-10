@@ -266,25 +266,24 @@ export function CreateAuthProviderModal() {
               control={form.control}
               render={({ field }) => (
                 <div className="space-y-2">
-                  <Label className={labelClass}>Protocol</Label>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <button
                       type="button"
                       aria-pressed={field.value === 'oidc'}
                       onClick={() => field.onChange('oidc')}
                       className={cn(
-                        'relative flex min-h-20 items-center gap-3 rounded-[12px] border p-4 text-left transition-colors',
+                        'border-border relative flex min-h-20 items-center gap-3 rounded-[12px] border bg-transparent p-4 text-left transition-colors',
                         field.value === 'oidc'
-                          ? 'border-[#015AEB] bg-[#015AEB]/10 text-[#F4F7FC]'
-                          : 'border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#222A3A]'
+                          ? 'border-primary/20 bg-primary/10 text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-primary/5'
                       )}
                     >
                       <span
                         className={cn(
-                          'flex size-10 shrink-0 items-center justify-center rounded-lg border',
+                          'border-border flex size-10 shrink-0 items-center justify-center rounded-lg border bg-transparent',
                           field.value === 'oidc'
-                            ? 'border-[#015AEB]/40 bg-[#015AEB]/15 text-[#6E8DFF]'
-                            : 'border-[#2A3242] bg-[#141925] text-[#828DA3]'
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground'
                         )}
                       >
                         <FaOpenid className="size-5" />
@@ -298,8 +297,8 @@ export function CreateAuthProviderModal() {
                         </span>
                       </span>
                       {field.value === 'oidc' && (
-                        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[#015AEB] text-white">
-                          <Check className="size-3" />
+                        <span className="border-primary/60 absolute top-3 right-3 flex size-5 items-center justify-center rounded-full border">
+                          <span className="bg-primary size-2 rounded-full" />
                         </span>
                       )}
                     </button>
@@ -308,18 +307,18 @@ export function CreateAuthProviderModal() {
                       aria-pressed={field.value === 'saml'}
                       onClick={() => field.onChange('saml')}
                       className={cn(
-                        'relative flex min-h-20 items-center gap-3 rounded-[12px] border p-4 text-left transition-colors',
+                        'border-border relative flex min-h-20 items-center gap-3 rounded-[12px] border bg-transparent p-4 text-left transition-colors',
                         field.value === 'saml'
-                          ? 'border-[#015AEB] bg-[#015AEB]/10 text-[#F4F7FC]'
-                          : 'border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#222A3A]'
+                          ? 'border-primary/20 bg-primary/10 text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-primary/5'
                       )}
                     >
                       <span
                         className={cn(
-                          'flex size-10 shrink-0 items-center justify-center rounded-lg border',
+                          'border-border flex size-10 shrink-0 items-center justify-center rounded-lg border bg-transparent',
                           field.value === 'saml'
-                            ? 'border-[#015AEB]/40 bg-[#015AEB]/15 text-[#6E8DFF]'
-                            : 'border-[#2A3242] bg-[#141925] text-[#828DA3]'
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground'
                         )}
                       >
                         <svg
@@ -344,8 +343,8 @@ export function CreateAuthProviderModal() {
                         </span>
                       </span>
                       {field.value === 'saml' && (
-                        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[#015AEB] text-white">
-                          <Check className="size-3" />
+                        <span className="border-primary/60 absolute top-3 right-3 flex size-5 items-center justify-center rounded-full border">
+                          <span className="bg-primary size-2 rounded-full" />
                         </span>
                       )}
                     </button>
