@@ -170,16 +170,6 @@ export const AUTH_ROLE_MAPPINGS = graphql(`
   }
 `)
 
-export const ORG_DOMAINS = graphql(`
-  query OrgDomains($orgId: ID!) {
-    orgDomains(orgId: $orgId) {
-      id
-      orgId
-      domain
-    }
-  }
-`)
-
 export const MAPPING_OPERATORS = graphql(`
   query MappingOperators {
     mappingOperators {
@@ -281,20 +271,6 @@ export const DELETE_AUTH_ROLE_MAPPING = graphql(`
       providerSlug: $providerSlug
       mappingId: $mappingId
     )
-  }
-`)
-
-export const CREATE_ORG_DOMAIN = graphql(`
-  mutation CreateOrgDomain($orgId: ID!, $domain: String!) {
-    createOrgDomain(orgId: $orgId, domain: $domain) {
-      id
-    }
-  }
-`)
-
-export const DELETE_ORG_DOMAIN = graphql(`
-  mutation DeleteOrgDomain($orgId: ID!, $domainId: ID!) {
-    deleteOrgDomain(orgId: $orgId, domainId: $domainId)
   }
 `)
 

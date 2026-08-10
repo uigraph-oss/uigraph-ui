@@ -348,6 +348,11 @@ const ProfileSettings = lazy(() =>
     default: mod.ProfileSettings,
   }))
 )
+const OrganizationSettingsPage = lazy(() =>
+  import('@/features/dashboard-settings/organization/organization-settings-page').then(
+    (mod) => ({ default: mod.OrganizationSettingsPage })
+  )
+)
 const SecuritySettings = lazy(() =>
   import('@/features/dashboard-settings').then((mod) => ({
     default: mod.SecuritySettings,
@@ -595,6 +600,10 @@ export function AppRoutes() {
             <Route path="security" element={<SecuritySettings />} />
 
             <Route element={<RequireOrgAdmin />}>
+              <Route
+                path="organization"
+                element={<OrganizationSettingsPage />}
+              />
               <Route path="teams" element={<TeamManagementPage />} />
               <Route path="users" element={<UsersManagementPage />} />
               <Route
