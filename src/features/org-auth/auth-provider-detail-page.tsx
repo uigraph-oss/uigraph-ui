@@ -444,8 +444,9 @@ function ProviderDetail({
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      Restricts who may sign in through this provider. It is not
-                      the organization&apos;s email domain list.
+                      Comma-separated. Only these domains may sign in through
+                      this provider; leave blank to accept any. It is not the
+                      organization&apos;s email domain list.
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -497,316 +498,295 @@ function ProviderDetail({
         )}
 
         {activeTab === 'configuration' && (
-          <div className="max-w-2xl space-y-8">
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-[#F4F7FC]">
-                Give these to your identity provider
-              </h3>
+          <div className="max-w-2xl space-y-5">
+            {provider.kind === 'saml' && samlMetadata.loading && (
+              <p className="text-sm text-[#828DA3]">Loading…</p>
+            )}
 
-              {provider.kind === 'saml' && samlMetadata.loading && (
-                <p className="text-sm text-[#828DA3]">Loading…</p>
-              )}
+            {provider.kind === 'saml' && samlMetadata.error && (
+              <p className="text-sm text-red-400">
+                {samlMetadata.error.message}
+              </p>
+            )}
 
-              {provider.kind === 'saml' && samlMetadata.error && (
-                <p className="text-sm text-red-400">
-                  {samlMetadata.error.message}
-                </p>
-              )}
-
-              {provider.kind === 'saml' && samlMetadata.data && (
-                <>
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Entity ID (Audience)</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        readOnly
-                        value={
-                          samlMetadata.data.authProviderSamlMetadata.entityId
-                        }
-                        className={readOnlyInputClass}
-                      />
-                      <CopyButton
-                        text={
-                          samlMetadata.data.authProviderSamlMetadata.entityId
-                        }
-                        className={copyButtonClass}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>ACS URL (Reply URL)</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        readOnly
-                        value={
-                          samlMetadata.data.authProviderSamlMetadata.acsUrl
-                        }
-                        className={readOnlyInputClass}
-                      />
-                      <CopyButton
-                        text={samlMetadata.data.authProviderSamlMetadata.acsUrl}
-                        className={copyButtonClass}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Metadata URL</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        readOnly
-                        value={
-                          samlMetadata.data.authProviderSamlMetadata.metadataUrl
-                        }
-                        className={readOnlyInputClass}
-                      />
-                      <CopyButton
-                        text={
-                          samlMetadata.data.authProviderSamlMetadata.metadataUrl
-                        }
-                        className={copyButtonClass}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {provider.kind === 'oidc' && (
+            {provider.kind === 'saml' && samlMetadata.data && (
+              <>
                 <div className="space-y-2">
-                  <Label className={labelClass}>
-                    Redirect URI (Callback URL)
-                  </Label>
+                  <Label className={labelClass}>Entity ID (Audience)</Label>
                   <div className="flex items-center gap-2">
                     <Input
                       readOnly
-                      value={oidcRedirectUri(orgId, provider.slug)}
+                      value={
+                        samlMetadata.data.authProviderSamlMetadata.entityId
+                      }
                       className={readOnlyInputClass}
                     />
                     <CopyButton
-                      text={oidcRedirectUri(orgId, provider.slug)}
+                      text={samlMetadata.data.authProviderSamlMetadata.entityId}
                       className={copyButtonClass}
                     />
                   </div>
                 </div>
-              )}
-            </section>
 
-            <section className="space-y-5 border-t border-[#2A3242] pt-8">
-              <h3 className="text-sm font-semibold text-[#F4F7FC]">
-                What your identity provider gave you
-              </h3>
+                <div className="space-y-2">
+                  <Label className={labelClass}>ACS URL (Reply URL)</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={samlMetadata.data.authProviderSamlMetadata.acsUrl}
+                      className={readOnlyInputClass}
+                    />
+                    <CopyButton
+                      text={samlMetadata.data.authProviderSamlMetadata.acsUrl}
+                      className={copyButtonClass}
+                    />
+                  </div>
+                </div>
 
-              {provider.kind === 'oidc' && (
-                <>
-                  <Controller
-                    name="type"
-                    control={form.control}
-                    render={({ field }) => (
-                      <div className="space-y-2">
-                        <Label className={labelClass}>Provider Type</Label>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className={cn(inputClass, 'w-full')}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="generic">
-                              Generic OIDC
-                            </SelectItem>
-                            <SelectItem value="entra">
-                              Microsoft Entra ID
-                            </SelectItem>
-                            <SelectItem value="okta">Okta</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
+                <div className="space-y-2">
+                  <Label className={labelClass}>Metadata URL</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={
+                        samlMetadata.data.authProviderSamlMetadata.metadataUrl
+                      }
+                      className={readOnlyInputClass}
+                    />
+                    <CopyButton
+                      text={
+                        samlMetadata.data.authProviderSamlMetadata.metadataUrl
+                      }
+                      className={copyButtonClass}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {provider.kind === 'oidc' && (
+              <div className="space-y-2">
+                <Label className={labelClass}>
+                  Redirect URI (Callback URL)
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    readOnly
+                    value={oidcRedirectUri(orgId, provider.slug)}
+                    className={readOnlyInputClass}
                   />
-
-                  {type !== 'generic' && (
+                  <CopyButton
+                    text={oidcRedirectUri(orgId, provider.slug)}
+                    className={copyButtonClass}
+                  />
+                </div>
+              </div>
+            )}
+            {provider.kind === 'oidc' && (
+              <>
+                <Controller
+                  name="type"
+                  control={form.control}
+                  render={({ field }) => (
                     <div className="space-y-2">
-                      <Label className={labelClass}>
-                        {type === 'entra'
-                          ? 'Directory (Tenant) ID'
-                          : 'Okta Domain'}
-                      </Label>
-                      <Input
-                        {...form.register('apiUrl')}
-                        placeholder={
-                          type === 'entra'
-                            ? '00000000-0000-0000-0000-000000000000'
-                            : 'your-org.okta.com'
-                        }
-                        className={inputClass}
-                        autoComplete="off"
-                      />
-                      {errors.apiUrl && (
-                        <p className={errorClass}>{errors.apiUrl.message}</p>
-                      )}
+                      <Label className={labelClass}>Provider Type</Label>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className={cn(inputClass, 'w-full')}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="generic">Generic OIDC</SelectItem>
+                          <SelectItem value="entra">
+                            Microsoft Entra ID
+                          </SelectItem>
+                          <SelectItem value="okta">Okta</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   )}
+                />
 
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Client ID</Label>
-                    <Input
-                      {...form.register('clientId')}
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                    {errors.clientId && (
-                      <p className={errorClass}>{errors.clientId.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Client Secret</Label>
-                    <Input
-                      {...form.register('clientSecret')}
-                      type="password"
-                      placeholder="Leave blank to keep the current secret"
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Authorization URL</Label>
-                    <Input
-                      {...form.register('authUrl')}
-                      placeholder={
-                        type === 'generic'
-                          ? 'https://idp.example.com/oauth2/authorize'
-                          : derivedPlaceholder
-                      }
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                    {errors.authUrl && (
-                      <p className={errorClass}>{errors.authUrl.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Token URL</Label>
-                    <Input
-                      {...form.register('tokenUrl')}
-                      placeholder={
-                        type === 'generic'
-                          ? 'https://idp.example.com/oauth2/token'
-                          : derivedPlaceholder
-                      }
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                    {errors.tokenUrl && (
-                      <p className={errorClass}>{errors.tokenUrl.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Userinfo URL</Label>
-                    <Input
-                      {...form.register('userinfoUrl')}
-                      placeholder={
-                        type === 'generic'
-                          ? 'https://idp.example.com/oauth2/userinfo'
-                          : derivedPlaceholder
-                      }
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>Scopes</Label>
-                    <Input
-                      {...form.register('scopes')}
-                      placeholder="openid email profile"
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                  </div>
-                </>
-              )}
-
-              {provider.kind === 'saml' && (
-                <>
-                  <div className="space-y-2">
-                    <Label className={labelClass}>IdP Metadata URL</Label>
-                    <Input
-                      {...form.register('idpMetadataUrl')}
-                      placeholder="https://idp.example.com/metadata"
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                    {errors.idpMetadataUrl && (
-                      <p className={errorClass}>
-                        {errors.idpMetadataUrl.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>IdP Metadata XML</Label>
-                    <Textarea
-                      {...form.register('idpMetadataXml')}
-                      placeholder="<EntityDescriptor ...>"
-                      className={cn(textareaClass, 'min-h-32')}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>IdP Entity ID</Label>
-                    <Input
-                      {...form.register('idpEntityId')}
-                      placeholder="Read from the metadata when blank"
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className={labelClass}>IdP SSO URL</Label>
-                    <Input
-                      {...form.register('idpSsoUrl')}
-                      placeholder="Read from the metadata when blank"
-                      className={inputClass}
-                      autoComplete="off"
-                    />
-                  </div>
-
+                {type !== 'generic' && (
                   <div className="space-y-2">
                     <Label className={labelClass}>
-                      IdP Signing Certificate
+                      {type === 'entra'
+                        ? 'Directory (Tenant) ID'
+                        : 'Okta Domain'}
                     </Label>
-                    <Textarea
-                      {...form.register('idpCert')}
-                      placeholder="Read from the metadata when blank"
-                      className={cn(textareaClass, 'min-h-24')}
+                    <Input
+                      {...form.register('apiUrl')}
+                      placeholder={
+                        type === 'entra'
+                          ? '00000000-0000-0000-0000-000000000000'
+                          : 'your-org.okta.com'
+                      }
+                      className={inputClass}
+                      autoComplete="off"
                     />
-                  </div>
-
-                  <Controller
-                    name="signRequests"
-                    control={form.control}
-                    render={({ field }) => (
-                      <div className={toggleRowClass}>
-                        <Label className={labelClass}>
-                          Sign authentication requests
-                        </Label>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </div>
+                    {errors.apiUrl && (
+                      <p className={errorClass}>{errors.apiUrl.message}</p>
                     )}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Client ID</Label>
+                  <Input
+                    {...form.register('clientId')}
+                    className={inputClass}
+                    autoComplete="off"
                   />
-                </>
-              )}
-            </section>
+                  {errors.clientId && (
+                    <p className={errorClass}>{errors.clientId.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Client Secret</Label>
+                  <Input
+                    {...form.register('clientSecret')}
+                    type="password"
+                    placeholder="Leave blank to keep the current secret"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Authorization URL</Label>
+                  <Input
+                    {...form.register('authUrl')}
+                    placeholder={
+                      type === 'generic'
+                        ? 'https://idp.example.com/oauth2/authorize'
+                        : derivedPlaceholder
+                    }
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                  {errors.authUrl && (
+                    <p className={errorClass}>{errors.authUrl.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Token URL</Label>
+                  <Input
+                    {...form.register('tokenUrl')}
+                    placeholder={
+                      type === 'generic'
+                        ? 'https://idp.example.com/oauth2/token'
+                        : derivedPlaceholder
+                    }
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                  {errors.tokenUrl && (
+                    <p className={errorClass}>{errors.tokenUrl.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Userinfo URL</Label>
+                  <Input
+                    {...form.register('userinfoUrl')}
+                    placeholder={
+                      type === 'generic'
+                        ? 'https://idp.example.com/oauth2/userinfo'
+                        : derivedPlaceholder
+                    }
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>Scopes</Label>
+                  <Input
+                    {...form.register('scopes')}
+                    placeholder="openid email profile"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+              </>
+            )}
+
+            {provider.kind === 'saml' && (
+              <>
+                <div className="space-y-2">
+                  <Label className={labelClass}>IdP Metadata URL</Label>
+                  <Input
+                    {...form.register('idpMetadataUrl')}
+                    placeholder="https://idp.example.com/metadata"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                  {errors.idpMetadataUrl && (
+                    <p className={errorClass}>
+                      {errors.idpMetadataUrl.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>IdP Metadata XML</Label>
+                  <Textarea
+                    {...form.register('idpMetadataXml')}
+                    placeholder="<EntityDescriptor ...>"
+                    className={cn(textareaClass, 'min-h-32')}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>IdP Entity ID</Label>
+                  <Input
+                    {...form.register('idpEntityId')}
+                    placeholder="Read from the metadata when blank"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>IdP SSO URL</Label>
+                  <Input
+                    {...form.register('idpSsoUrl')}
+                    placeholder="Read from the metadata when blank"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={labelClass}>IdP Signing Certificate</Label>
+                  <Textarea
+                    {...form.register('idpCert')}
+                    placeholder="Read from the metadata when blank"
+                    className={cn(textareaClass, 'min-h-24')}
+                  />
+                </div>
+
+                <Controller
+                  name="signRequests"
+                  control={form.control}
+                  render={({ field }) => (
+                    <div className={toggleRowClass}>
+                      <Label className={labelClass}>
+                        Sign authentication requests
+                      </Label>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              </>
+            )}
           </div>
         )}
 
@@ -934,64 +914,56 @@ function ProviderDetail({
         )}
 
         {activeTab === 'users' && (
-          <div className="max-w-2xl space-y-8">
-            <div className="space-y-5">
-              <Controller
-                name="allowSignUp"
-                control={form.control}
-                render={({ field }) => (
-                  <div className={toggleRowClass}>
-                    <Label className={labelClass}>
-                      Allow new users to sign up
-                    </Label>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+          <div className="max-w-2xl space-y-5">
+            <Controller
+              name="allowSignUp"
+              control={form.control}
+              render={({ field }) => (
+                <div className={toggleRowClass}>
+                  <Label className={labelClass}>
+                    Allow new users to sign up
+                  </Label>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </div>
+              )}
+            />
+
+            <Controller
+              name="defaultRole"
+              control={form.control}
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <Label className={labelClass}>Default Role</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className={hintIconClass}>
+                          <CircleHelp className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        Applies when no role mapping rule below matches.
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
-                )}
-              />
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className={cn(inputClass, 'w-full')}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="editor">Editor</SelectItem>
+                      <SelectItem value="viewer">Viewer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            />
 
-              <Controller
-                name="defaultRole"
-                control={form.control}
-                render={({ field }) => (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <Label className={labelClass}>Default Role</Label>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button type="button" className={hintIconClass}>
-                            <CircleHelp className="size-3.5" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          Applies when no role mapping rule below matches.
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className={cn(inputClass, 'w-full')}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="editor">Editor</SelectItem>
-                        <SelectItem value="viewer">Viewer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              />
-            </div>
-
-            <section className="space-y-4 border-t border-[#2A3242] pt-8">
-              <h3 className="text-sm font-semibold text-[#F4F7FC]">
-                Role mapping
-              </h3>
-
-              <RoleMappingsPanel orgId={orgId} provider={provider} />
-            </section>
+            <RoleMappingsPanel orgId={orgId} provider={provider} />
           </div>
         )}
 

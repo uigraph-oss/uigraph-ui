@@ -10,8 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useMutation, useQuery } from '@apollo/client'
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, CircleHelp, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -130,11 +135,25 @@ export function RoleMappingsPanel({
 
   return (
     <div className="max-w-2xl space-y-5">
-      <p className="text-sm text-[#828DA3]">
-        Rules are evaluated top to bottom. The first match wins; when nothing
-        matches, the default role ({provider.defaultRole}) applies. Rules take
-        effect as soon as you add them.
-      </p>
+      <div className="flex items-center gap-1.5">
+        <Label className="text-sm font-medium text-[#D2D9E6]">
+          Role Mapping
+        </Label>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+            >
+              <CircleHelp className="size-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            Evaluated top to bottom, first match wins. Rules apply as soon as
+            you add them, without saving the provider.
+          </TooltipContent>
+        </Tooltip>
+      </div>
 
       {mappingsQuery.loading && !mappingsQuery.data ? (
         <p className="text-muted-foreground py-6 text-center text-sm">
@@ -142,7 +161,7 @@ export function RoleMappingsPanel({
         </p>
       ) : mappings.length === 0 ? (
         <div className="rounded-[12px] border border-dashed border-[#2A3242] px-6 py-8 text-center text-sm text-[#828DA3]">
-          No rules yet. Everyone who signs in gets the default role.
+          No rules. Everyone gets the {provider.defaultRole} role.
         </div>
       ) : (
         <ul className="space-y-2">
@@ -210,9 +229,24 @@ export function RoleMappingsPanel({
         <p className="text-sm font-semibold text-[#F4F7FC]">Add a rule</p>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[#D2D9E6]">
-            {provider.kind === 'saml' ? 'Attribute' : 'Claim'}
-          </Label>
+          <div className="flex items-center gap-1.5">
+            <Label className="text-sm font-medium text-[#D2D9E6]">
+              {provider.kind === 'saml' ? 'Attribute' : 'Claim'}
+            </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-[#586378] transition-colors hover:text-[#D2D9E6]"
+                >
+                  <CircleHelp className="size-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                Dot notation reads nested values, e.g. realm_access.roles
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Input
             value={attributeKey}
             onChange={(event) => setAttributeKey(event.target.value)}
@@ -220,10 +254,6 @@ export function RoleMappingsPanel({
             className="h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4"
             autoComplete="off"
           />
-          <p className="text-sm text-[#828DA3]">
-            Dot notation reads nested values, e.g.{' '}
-            <span className="font-mono">realm_access.roles</span>
-          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

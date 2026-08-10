@@ -40,16 +40,10 @@ import {
 } from './provider-form'
 
 const STEPS = [
-  { label: 'General', note: 'Name it and choose how members will sign in.' },
-  {
-    label: 'Configuration',
-    note: 'Register our URLs in your identity provider, then fill in what it gives you back.',
-  },
-  {
-    label: 'Attributes',
-    note: "Where each person's details come from in the response.",
-  },
-  { label: 'User Management', note: 'Who becomes a member, and as what.' },
+  { label: 'General' },
+  { label: 'Configuration' },
+  { label: 'Attributes' },
+  { label: 'User Management' },
 ]
 
 const OIDC_CONNECTION_FIELDS: FieldPath<AuthProviderFormValues>[] = [
@@ -184,9 +178,6 @@ export function CreateAuthProviderPage() {
           <h2 className="text-[1rem] leading-[1.33] font-semibold text-[#F4F7FC]">
             Add an identity provider
           </h2>
-          <p className="text-paragraph mt-1.5 text-sm leading-[1.33]">
-            {STEPS[step].note}
-          </p>
         </div>
 
         <Button
@@ -358,10 +349,6 @@ export function CreateAuthProviderPage() {
 
         {step === 1 && (
           <>
-            <h3 className="text-sm font-semibold text-[#F4F7FC]">
-              Give these to your identity provider
-            </h3>
-
             {kind === 'saml' && (
               <>
                 <div className="space-y-2">
@@ -416,10 +403,6 @@ export function CreateAuthProviderPage() {
             )}
 
             <div className="space-y-5 border-t border-[#2A3242] pt-5">
-              <h3 className="text-sm font-semibold text-[#F4F7FC]">
-                What your identity provider gave you
-              </h3>
-
               {kind === 'oidc' && (
                 <>
                   <Controller
