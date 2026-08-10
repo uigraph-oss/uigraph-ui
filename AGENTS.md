@@ -1,0 +1,2 @@
+- Run `typecheck` and `lint` to verify changes.
+- Run `lint:fix` to automatically fix linting issues where possible.
