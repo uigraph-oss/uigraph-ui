@@ -85,8 +85,6 @@ const inputClass =
   'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4'
 const readOnlyInputClass =
   'h-[48px] rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 font-mono text-xs'
-const copyButtonClass =
-  'size-[48px] shrink-0 rounded-[12px] border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#1E2533] [&_svg]:size-[18px]!'
 const textareaClass =
   'rounded-[12px] border border-[#2A3242] bg-[#1E2533] px-4 py-3 font-mono text-xs'
 const toggleRowClass =
@@ -435,7 +433,7 @@ export function CreateAuthProviderModal() {
                     />
                     <CopyButton
                       text={samlMetadataUrl(orgId, previewSlug)}
-                      className={copyButtonClass}
+                      className="size-[48px] shrink-0 rounded-[12px] border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#1E2533] [&_svg]:size-[18px]!"
                     />
                   </div>
                 </div>
@@ -450,7 +448,7 @@ export function CreateAuthProviderModal() {
                     />
                     <CopyButton
                       text={samlAcsUrl(orgId, previewSlug)}
-                      className={copyButtonClass}
+                      className="size-[48px] shrink-0 rounded-[12px] border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#1E2533] [&_svg]:size-[18px]!"
                     />
                   </div>
                 </div>
@@ -470,7 +468,7 @@ export function CreateAuthProviderModal() {
                   />
                   <CopyButton
                     text={oidcRedirectUri(orgId, previewSlug)}
-                    className={copyButtonClass}
+                    className="size-[48px] shrink-0 rounded-[12px] border border-[#2A3242] bg-[#1E2533] text-[#D2D9E6] hover:border-[#3A4252] hover:bg-[#1E2533] [&_svg]:size-[18px]!"
                   />
                 </div>
               </div>
