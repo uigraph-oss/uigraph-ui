@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,7 @@ import {
   ORG_DOMAINS,
   type AuthProvider,
 } from './api/org-auth'
+import { CreateAuthProviderModal } from './components/create-auth-provider-modal'
 
 export function OrgAuthPage() {
   const orgId = useCurrentOrganization()?.id as string
@@ -43,6 +45,7 @@ export function OrgAuthPage() {
   const [deleteDomain] = useMutation(DELETE_ORG_DOMAIN, domainRefetch)
 
   const [newDomain, setNewDomain] = useState('')
+  const [createOpen, setCreateOpen] = useState(false)
 
   const providers = (providersQuery.data?.authProviders ?? []) as AuthProvider[]
   const domains = domainsQuery.data?.orgDomains ?? []
@@ -73,7 +76,7 @@ export function OrgAuthPage() {
         cta={
           <Button
             className="h-11 rounded-[0.75rem] px-6 text-sm"
-            onClick={() => navigate('/settings/sso/new')}
+            onClick={() => setCreateOpen(true)}
           >
             <Plus className="mr-0.5 h-4 w-4" />
             Add provider
@@ -233,6 +236,14 @@ export function OrgAuthPage() {
           </section>
         </div>
       )}
+
+      <BetterDialogProvider
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        className="sm:max-w-[48rem]"
+      >
+        {createOpen && <CreateAuthProviderModal />}
+      </BetterDialogProvider>
     </>
   )
 }

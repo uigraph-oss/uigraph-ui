@@ -10,7 +10,7 @@ import {
   UPDATE_AUTH_ROLE_MAPPING,
   type AuthProvider,
   type AuthRoleMapping,
-} from './api/org-auth'
+} from '../api/org-auth'
 import { ConfigureRoleMappingModal } from './configure-role-mapping-modal'
 
 export function RoleMappingRow({

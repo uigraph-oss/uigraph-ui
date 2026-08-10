@@ -48,6 +48,7 @@ import {
   UPDATE_AUTH_PROVIDER,
   type AuthProvider,
 } from './api/org-auth'
+import { RoleMappingsPanel } from './components/role-mappings-panel'
 import {
   oidcRedirectUri,
   schema,
@@ -56,7 +57,6 @@ import {
   toInput,
   type AuthProviderFormValues,
 } from './provider-form'
-import { RoleMappingsPanel } from './role-mappings-panel'
 
 const TABS = [
   { id: 'general', label: 'General' },

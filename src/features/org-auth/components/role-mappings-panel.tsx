@@ -18,7 +18,7 @@ import {
   DELETE_AUTH_ROLE_MAPPING,
   UPDATE_AUTH_ROLE_MAPPING,
   type AuthProvider,
-} from './api/org-auth'
+} from '../api/org-auth'
 import { ConfigureRoleMappingModal } from './configure-role-mapping-modal'
 import { RoleMappingRow } from './role-mapping-row'
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { BetterDialogContent } from '@/components/better-dialog'
 import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,7 +28,7 @@ import { useState } from 'react'
 import { Controller, useForm, type FieldPath } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { AUTH_PROVIDERS, CREATE_AUTH_PROVIDER } from './api/org-auth'
+import { AUTH_PROVIDERS, CREATE_AUTH_PROVIDER } from '../api/org-auth'
 import {
   AUTH_PROVIDER_DEFAULTS,
   oidcRedirectUri,
@@ -37,7 +38,7 @@ import {
   signInUrl,
   toInput,
   type AuthProviderFormValues,
-} from './provider-form'
+} from '../provider-form'
 
 const STEPS = [
   { label: 'General' },
@@ -92,7 +93,7 @@ const toggleRowClass =
 const errorClass = 'text-destructive text-sm'
 const hintIconClass = 'text-[#586378] transition-colors hover:text-[#D2D9E6]'
 
-export function CreateAuthProviderPage() {
+export function CreateAuthProviderModal() {
   const orgId = useCurrentOrganization()?.id as string
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
@@ -172,25 +173,40 @@ export function CreateAuthProviderPage() {
   }
 
   return (
-    <div className="px-6 py-6">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <h2 className="text-[1rem] leading-[1.33] font-semibold text-[#F4F7FC]">
-            Add an identity provider
-          </h2>
+    <BetterDialogContent
+      title="Add identity provider"
+      description="Configure how members sign in and which access they receive."
+      _footerContent={
+        <div className="flex w-full items-center justify-between gap-3 p-6 pt-3">
+          <Button
+            type="button"
+            preset="outline"
+            disabled={step === 0}
+            onClick={() => setStep(step - 1)}
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </Button>
+
+          {step < STEPS.length - 1 ? (
+            <Button type="submit" form="create-auth-provider-form">
+              Next
+              <ArrowRight className="size-4" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              form="create-auth-provider-form"
+              disabled={form.formState.isSubmitting}
+            >
+              <Plus className="size-4" />
+              Create provider
+            </Button>
+          )}
         </div>
-
-        <Button
-          preset="outline"
-          className="shrink-0"
-          onClick={() => navigate('/settings/sso')}
-        >
-          <ArrowLeft className="size-4" />
-          Back to SSO
-        </Button>
-      </div>
-
-      <ol className="mb-8 flex items-center gap-3">
+      }
+    >
+      <ol className="mb-6 flex items-center gap-3">
         {STEPS.map((item, index) => (
           <li key={item.label} className="flex flex-1 items-center gap-3">
             <button
@@ -231,6 +247,7 @@ export function CreateAuthProviderPage() {
       </ol>
 
       <form
+        id="create-auth-provider-form"
         onSubmit={(event) => {
           event.preventDefault()
           if (step < STEPS.length - 1) {
@@ -786,31 +803,7 @@ export function CreateAuthProviderPage() {
             />
           </>
         )}
-
-        <div className="flex items-center justify-between pt-2">
-          <Button
-            type="button"
-            preset="outline"
-            disabled={step === 0}
-            onClick={() => setStep(step - 1)}
-          >
-            <ArrowLeft className="size-4" />
-            Back
-          </Button>
-
-          {step < STEPS.length - 1 ? (
-            <Button type="submit">
-              Next
-              <ArrowRight className="size-4" />
-            </Button>
-          ) : (
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              <Plus className="size-4" />
-              Create provider
-            </Button>
-          )}
-        </div>
       </form>
-    </div>
+    </BetterDialogContent>
   )
 }

@@ -19,7 +19,7 @@ import { useQuery } from '@apollo/client'
 import { CircleHelp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { MAPPING_OPERATORS, type AuthProvider } from './api/org-auth'
+import { MAPPING_OPERATORS, type AuthProvider } from '../api/org-auth'
 
 export type RoleMappingFormValues = {
   attributeKey: string

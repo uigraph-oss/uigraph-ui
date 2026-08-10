@@ -213,11 +213,6 @@ const OrgAuthPage = lazy(() =>
     default: mod.OrgAuthPage,
   }))
 )
-const CreateAuthProviderPage = lazy(() =>
-  import('@/features/org-auth/create-auth-provider-page').then((mod) => ({
-    default: mod.CreateAuthProviderPage,
-  }))
-)
 const AuthProviderDetailPage = lazy(() =>
   import('@/features/org-auth/auth-provider-detail-page').then((mod) => ({
     default: mod.AuthProviderDetailPage,
@@ -615,7 +610,6 @@ export function AppRoutes() {
                 element={<CloudConnectionsPage />}
               />
               <Route path="sso" element={<OrgAuthPage />} />
-              <Route path="sso/new" element={<CreateAuthProviderPage />} />
               <Route path="sso/:slug" element={<AuthProviderDetailPage />} />
             </Route>
           </Route>
