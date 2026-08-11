@@ -10,14 +10,12 @@ jobs:
     strategy:
       matrix:
         include:
-          # Public self-hosted build: billing compiled out, tags/behavior unchanged.
           # No build_args -- the Dockerfile's own ARG defaults (both "") already do that.
           - variant: self-hosted
             tag_suffix: ''
             enable_latest: true
-          # Managed/enterprise build: same source, billing link + seat-limit upgrade
-          # prompt compiled in. Never tagged `latest` or a bare version -- always
-          # suffixed -- so a self-hosted `docker pull` can never resolve to it.
+          # Never tagged `latest` or a bare version, so a self-hosted `docker pull`
+          # can never resolve to this variant.
           - variant: enterprise
             tag_suffix: '-enterprise'
             enable_latest: false
