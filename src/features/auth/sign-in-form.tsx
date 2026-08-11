@@ -232,7 +232,7 @@ export function SignInForm() {
             </span>
           </div>
 
-          {step !== 'email' && (
+          {step !== 'email' && !(step === 'org' && orgs.length === 0) && (
             <button
               type="button"
               onClick={back}
@@ -265,12 +265,20 @@ export function SignInForm() {
           }}
         >
           {step === 'email' && 'Welcome back'}
-          {step === 'org' && 'Choose a workspace'}
+          {step === 'org' && orgs.length === 0 && 'No workspace found'}
+          {step === 'org' && orgs.length > 0 && 'Choose a workspace'}
           {step === 'provider' && (selectedOrg?.name ?? 'Sign in')}
         </h1>
         <p style={{ fontSize: 14, color: '#828DA3', marginBottom: 22 }}>
           {step === 'email' && 'Sign in to your UIGraph workspace'}
-          {step === 'org' && `Workspaces available for ${email}`}
+          {step === 'org' && orgs.length === 0 && (
+            <>
+              for <span style={{ color: '#D2D9E6' }}>{email}</span>
+            </>
+          )}
+          {step === 'org' &&
+            orgs.length > 0 &&
+            `Workspaces available for ${email}`}
           {step === 'provider' &&
             (providersLoading || providers.length > 0
               ? 'Choose how you want to sign in'
@@ -347,11 +355,39 @@ export function SignInForm() {
         )}
 
         {step === 'org' && orgs.length === 0 && (
-          <p style={{ fontSize: 13, color: '#828DA3' }}>
-            No workspaces are associated with this email address. Ask an
-            administrator to invite you, or add your email domain to the
-            workspace.
-          </p>
+          <div className="flex flex-col items-center py-2 text-center">
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: '#1A2030',
+                border: '1px solid #2A3242',
+                marginBottom: 14,
+              }}
+            >
+              <Building2 size={22} style={{ color: '#586378' }} />
+            </div>
+            <p
+              style={{
+                fontSize: 13,
+                color: '#828DA3',
+                lineHeight: 1.5,
+                marginBottom: 20,
+              }}
+            >
+              Ask an admin to invite you to a workspace.
+            </p>
+            <button
+              type="button"
+              onClick={back}
+              className="w-full cursor-pointer"
+              style={primaryButtonStyle}
+            >
+              Try another email
+            </button>
+          </div>
         )}
 
         {step === 'org' && orgs.length > 0 && (
