@@ -7,6 +7,25 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # Public self-hosted build: billing compiled out, tags/behavior unchanged.
+          - variant: self-hosted
+            tag_suffix: ''
+            enable_latest: true
+            build_args: |
+              VITE_FEATURE_ENABLE_BILLING=
+              VITE_BILLING_URL=
+          # Managed/enterprise build: same source, billing link + seat-limit upgrade
+          # prompt compiled in. Never tagged `latest` or a bare version -- always
+          # suffixed -- so a self-hosted `docker pull` can never resolve to it.
+          - variant: enterprise
+            tag_suffix: '-enterprise'
+            enable_latest: false
+            build_args: |
+              VITE_FEATURE_ENABLE_BILLING=true
+              VITE_BILLING_URL=${{ vars.ENTERPRISE_BILLING_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,18 +42,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata
+      - name: Extract metadata (${{ matrix.variant }})
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/uigraph-ui
+          flavor: |
+            suffix=${{ matrix.tag_suffix }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ matrix.enable_latest }}
 
-      - name: Build and push
+      - name: Build and push (${{ matrix.variant }})
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -42,3 +63,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ matrix.build_args }}
