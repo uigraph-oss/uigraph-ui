@@ -323,7 +323,17 @@ export function ProjectsTab() {
 
   const [search, setSearch] = useState('')
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
+  const [selectedSource, setSelectedSource] = useState<string | null>(null)
   const [activeType, setActiveType] = useState<string | null>(null)
+
+  const sources = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const p of projects) {
+      const key = p.sourceType ? p.sourceType.toLowerCase() : 'manual'
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    }
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
+  }, [projects])
 
   const types = useMemo(() => {
     const counts = new Map<string, number>()
@@ -353,6 +363,13 @@ export function ProjectsTab() {
       if (selectedTeamId && p.teamId !== selectedTeamId) {
         return false
       }
+      if (
+        selectedSource &&
+        (p.sourceType ? p.sourceType.toLowerCase() : 'manual') !==
+          selectedSource
+      ) {
+        return false
+      }
       if (query) {
         const haystack = [p.name, p.description, p.sourceUrl]
           .filter(Boolean)
@@ -364,7 +381,7 @@ export function ProjectsTab() {
       }
       return true
     })
-  }, [projects, search, selectedTeamId, activeType])
+  }, [projects, search, selectedTeamId, selectedSource, activeType])
 
   return (
     <div className="flex flex-col">
@@ -408,6 +425,31 @@ export function ProjectsTab() {
                   {teams.map((t) => (
                     <SelectItem key={t.id} value={t.id}>
                       {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {sources.length > 0 && (
+              <Select
+                value={selectedSource ?? '__all__'}
+                onValueChange={(v) =>
+                  setSelectedSource(v === '__all__' ? null : v)
+                }
+              >
+                <SelectTrigger className="h-10 w-40 shrink-0 rounded-lg border-[#2A3242] bg-[#1E2533] text-[13px] shadow-none">
+                  <SelectValue placeholder="All Sources" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Sources</SelectItem>
+                  {sources.map(([source]) => (
+                    <SelectItem key={source} value={source}>
+                      <SourceIcon
+                        sourceType={source}
+                        className="size-3.5 shrink-0 text-[#828DA3]"
+                      />
+                      {getSourceLabel(source)}
                     </SelectItem>
                   ))}
                 </SelectContent>
