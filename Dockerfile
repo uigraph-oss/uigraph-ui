@@ -4,6 +4,11 @@ RUN corepack enable
 
 ENV NODE_OPTIONS=--max-old-space-size=4096
 
+ARG VITE_FEATURE_ENABLE_BILLING=""
+ARG VITE_BILLING_URL=""
+ENV VITE_FEATURE_ENABLE_BILLING=$VITE_FEATURE_ENABLE_BILLING
+ENV VITE_BILLING_URL=$VITE_BILLING_URL
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
