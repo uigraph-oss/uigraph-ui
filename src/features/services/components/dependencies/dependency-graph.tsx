@@ -75,6 +75,7 @@ type DependencyEdgeData = {
   dependencyServiceId?: string
   hard: boolean
   showDetails: boolean
+  labelOffsetY: number
 }
 
 type DependencyFlowEdge = Edge<DependencyEdgeData, 'dependency'>
@@ -309,6 +310,7 @@ function DependencyEdge({
   const showDetails = data?.showDetails ?? true
   const Icon = typeIcon(data?.edgeType)
   const hasTooltip = Boolean(data?.edgeType)
+  const offsetY = data?.labelOffsetY ?? 0
 
   return (
     <>
@@ -323,7 +325,7 @@ function DependencyEdge({
           <div
             style={{
               position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY + offsetY}px)`,
               pointerEvents: 'all',
             }}
           >
@@ -363,7 +365,7 @@ function DependencyEdge({
           <div
             style={{
               position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY + offsetY}px)`,
               pointerEvents: 'all',
             }}
           >
@@ -466,7 +468,7 @@ export function DependencyGraph({
 
   const layout = new dagre.graphlib.Graph()
   layout.setDefaultEdgeLabel(() => ({}))
-  layout.setGraph({ rankdir: 'LR', nodesep: 42, ranksep: 180 })
+  layout.setGraph({ rankdir: 'LR', nodesep: 42, ranksep: 240 })
 
   for (const node of nodes)
     layout.setNode(node.id, { width: nodeWidth, height: 128 })
@@ -639,79 +641,127 @@ export function DependencyGraph({
       ]
     : undefined
 
-  const flowEdges: DependencyFlowEdge[] = edges.map((edge) => {
-    const hard = edge.criticality?.toLowerCase() === 'hard'
-
+  const labelLayouts = edges.map((edge) => {
     const endpoints = edge.apiEndpointNames ?? []
     const labelText =
       endpoints.length > 0
-        ? endpoints.join(', ')
+        ? endpoints[0]
         : edge.databaseName
           ? edge.databaseName
           : edge.type
+    const shortText =
+      labelText && labelText.length > 14
+        ? labelText.slice(0, 13).trimEnd() + '…'
+        : labelText
     const detailText =
-      endpoints.length > 1
-        ? `${endpoints[0]} and ${endpoints.length - 1} more`
-        : labelText && labelText.length > 20
-          ? labelText.slice(0, 19).trimEnd() + '…'
-          : labelText
+      endpoints.length > 1 ? `${shortText} +${endpoints.length - 1}` : shortText
 
-    const marker = {
-      type: MarkerType.ArrowClosed,
-      color: hard ? '#C2703F' : '#64748B',
-    }
-
-    let caller: string
-    let callee: string
-    if (edge.direction === 'downstream') {
-      caller = edge.source
-      callee = edge.target
-    } else if (edge.direction === 'upstream') {
-      caller = edge.target
-      callee = edge.source
-    } else {
-      throw new Error(`unknown dependency direction: ${edge.direction}`)
-    }
-
-    let source: string
-    let target: string
-    let markerStart = undefined
-    let markerEnd = undefined
-    if (layout.node(caller).x <= layout.node(callee).x) {
-      source = caller
-      target = callee
-      markerEnd = marker
-    } else {
-      source = callee
-      target = caller
-      markerStart = marker
-    }
+    const source = layout.node(edge.source)
+    const target = layout.node(edge.target)
+    const labelled = showDetails && Boolean(detailText)
 
     return {
-      id: edge.id,
-      source,
-      target,
-      type: 'dependency',
-      markerStart,
-      markerEnd,
-      data: {
-        detailText,
-        edgeType: edge.type,
-        criticality: edge.criticality,
-        apiGroupName: edge.apiGroupName,
-        databaseName: edge.databaseName,
-        endpoints,
-        dependencyServiceId: edge.target,
-        hard,
-        showDetails,
-      },
-      style: {
-        stroke: hard ? '#C2703F' : '#64748B',
-        strokeWidth: hard ? 2 : 1.5,
-        strokeDasharray: hard ? undefined : '5 4',
-      },
+      edge,
+      endpoints,
+      detailText,
+      x: (source.x + target.x) / 2,
+      y: (source.y + target.y) / 2,
+      width: labelled ? (detailText?.length ?? 0) * 5.8 + 32 : 22,
+      height: labelled ? 18 : 22,
+      offsetY: 0,
     }
   })
+
+  const placedLabels: { x0: number; x1: number; y0: number; y1: number }[] = []
+  for (const label of [...labelLayouts].sort((a, b) => a.y - b.y)) {
+    const x0 = label.x - label.width / 2
+    const x1 = label.x + label.width / 2
+    let y = label.y
+    for (let pass = 0; pass <= placedLabels.length; pass++) {
+      let shifted = false
+      for (const placed of placedLabels) {
+        const overlapsX = x0 < placed.x1 + 6 && x1 > placed.x0 - 6
+        const overlapsY =
+          y - label.height / 2 < placed.y1 + 6 &&
+          y + label.height / 2 > placed.y0 - 6
+        if (overlapsX && overlapsY) {
+          y = placed.y1 + 6 + label.height / 2
+          shifted = true
+        }
+      }
+      if (!shifted) break
+    }
+    placedLabels.push({
+      x0,
+      x1,
+      y0: y - label.height / 2,
+      y1: y + label.height / 2,
+    })
+    label.offsetY = y - label.y
+  }
+
+  const flowEdges: DependencyFlowEdge[] = labelLayouts.map(
+    ({ edge, endpoints, detailText, offsetY }) => {
+      const hard = edge.criticality?.toLowerCase() === 'hard'
+
+      const marker = {
+        type: MarkerType.ArrowClosed,
+        color: hard ? '#C2703F' : '#64748B',
+      }
+
+      let caller: string
+      let callee: string
+      if (edge.direction === 'downstream') {
+        caller = edge.source
+        callee = edge.target
+      } else if (edge.direction === 'upstream') {
+        caller = edge.target
+        callee = edge.source
+      } else {
+        throw new Error(`unknown dependency direction: ${edge.direction}`)
+      }
+
+      let source: string
+      let target: string
+      let markerStart = undefined
+      let markerEnd = undefined
+      if (layout.node(caller).x <= layout.node(callee).x) {
+        source = caller
+        target = callee
+        markerEnd = marker
+      } else {
+        source = callee
+        target = caller
+        markerStart = marker
+      }
+
+      return {
+        id: edge.id,
+        source,
+        target,
+        type: 'dependency',
+        markerStart,
+        markerEnd,
+        data: {
+          detailText,
+          edgeType: edge.type,
+          criticality: edge.criticality,
+          apiGroupName: edge.apiGroupName,
+          databaseName: edge.databaseName,
+          endpoints,
+          dependencyServiceId: edge.target,
+          hard,
+          showDetails,
+          labelOffsetY: offsetY,
+        },
+        style: {
+          stroke: hard ? '#C2703F' : '#64748B',
+          strokeWidth: hard ? 2 : 1.5,
+          strokeDasharray: hard ? undefined : '5 4',
+        },
+      }
+    }
+  )
 
   return (
     <div
