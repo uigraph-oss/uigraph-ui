@@ -18,15 +18,23 @@ function getInitials(value: string | null | undefined): string {
 
 function ServerOrgRowActions({
   org,
+  onOpen,
   onEdit,
   onDelete,
 }: {
   org: ServerOrg
+  onOpen: (org: ServerOrg) => void
   onEdit: (org: ServerOrg) => void
   onDelete: (org: ServerOrg) => void
 }) {
   return (
     <div className="flex items-center gap-[10px]">
+      <button
+        className="text-sm text-[#D2D9E6] transition-colors hover:text-[#F4F7FC]"
+        onClick={() => onOpen(org)}
+      >
+        Open
+      </button>
       <button
         className="text-sm text-blue-600 transition-colors hover:text-blue-700"
         onClick={() => onEdit(org)}
@@ -46,6 +54,7 @@ function ServerOrgRowActions({
 const columnHelper = createColumnHelper<ServerOrg>()
 
 function buildColumns(
+  onOpen: (org: ServerOrg) => void,
   onEdit: (org: ServerOrg) => void,
   onDelete: (org: ServerOrg) => void
 ) {
@@ -96,6 +105,7 @@ function buildColumns(
       cell: ({ row }) => (
         <ServerOrgRowActions
           org={row.original}
+          onOpen={onOpen}
           onEdit={onEdit}
           onDelete={onDelete}
         />
@@ -106,16 +116,18 @@ function buildColumns(
 
 export function ServerOrgsTable({
   orgs,
+  onOpen,
   onEdit,
   onDelete,
 }: {
   orgs: ServerOrg[]
+  onOpen: (org: ServerOrg) => void
   onEdit: (org: ServerOrg) => void
   onDelete: (org: ServerOrg) => void
 }) {
   const table = useReactTable({
     data: orgs,
-    columns: buildColumns(onEdit, onDelete),
+    columns: buildColumns(onOpen, onEdit, onDelete),
     getCoreRowModel: getCoreRowModel(),
   })
 
