@@ -443,7 +443,14 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedDashboardLayout />}>
-        <Route path="/diagram/:diagramId" element={<DiagramPortalPage />} />
+        <Route
+          path="/diagram/:diagramId"
+          element={<DiagramPortalPage embedded={false} />}
+        />
+        <Route
+          path="/diagram/:diagramId/embed"
+          element={<DiagramPortalPage embedded />}
+        />
 
         <Route
           element={

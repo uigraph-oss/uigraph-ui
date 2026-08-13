@@ -41,6 +41,7 @@ export function FlowDiagramPreview({
       }}
       organizationId={null}
       diagramId={null}
+      isEmbedded={false}
       folderId={null}
       teamId={null}
     >

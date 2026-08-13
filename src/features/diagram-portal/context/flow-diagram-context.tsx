@@ -3,6 +3,7 @@ import { TableAST } from '@uigraph/sdk'
 import { ReactFlowInstance } from '@xyflow/react'
 import { createContext } from 'daily-code/react'
 import { useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import z from 'zod'
 import {
   MongoCollectionSchema,
@@ -25,6 +26,7 @@ type TFlowDiagramProviderProps = {
   organizationId: string | null
   folderId: string | null
   teamId: string | null
+  isEmbedded: boolean
 }
 
 export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
@@ -35,6 +37,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
     organizationId,
     folderId,
     teamId,
+    isEmbedded,
   }: TFlowDiagramProviderProps) => {
     const diagramData = useDiagramData(initialData)
     const [diagramName, setDiagramName] = useState(
@@ -50,6 +53,26 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
     )
 
     const [cursorMode, setCursorMode] = useState<'select' | 'pan'>('select')
+
+    const [searchParams, setSearchParams] = useSearchParams()
+    const childDiagramIds = (searchParams.get('children') ?? '')
+      .split(',')
+      .filter((id) => id.length > 0)
+
+    function setChildDiagramIds(ids: string[]) {
+      const params = new URLSearchParams(searchParams)
+
+      if (ids.length === 0) params.delete('children')
+      if (ids.length > 0) params.set('children', ids.join(','))
+
+      setSearchParams(params)
+    }
+
+    function openChildDiagram(childId: string) {
+      if (isEmbedded) return window.parent.__uigraphOpenChild?.(childId)
+
+      setChildDiagramIds([...childDiagramIds, childId])
+    }
 
     const [showGrid, setShowGrid] = useLocalStorage(
       'flow-diagram-show-grid',
@@ -148,6 +171,11 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       organizationId,
       diagramName,
       setDiagramName,
+
+      isEmbedded,
+      childDiagramIds,
+      setChildDiagramIds,
+      openChildDiagram,
 
       selectedGroup,
       dataTablesMap,

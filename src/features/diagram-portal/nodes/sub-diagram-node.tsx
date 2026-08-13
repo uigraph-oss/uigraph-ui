@@ -4,7 +4,12 @@ import { useMutation, useQuery } from '@apollo/client'
 import { Node, NodeProps, NodeResizeControl, useStore } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-import { LuExternalLink, LuImageOff, LuLayoutTemplate } from 'react-icons/lu'
+import {
+  LuExternalLink,
+  LuImageOff,
+  LuLayoutTemplate,
+  LuMaximize2,
+} from 'react-icons/lu'
 import { toast } from 'sonner'
 import { DIAGRAM } from '../api/diagram'
 import { GENERATE_DIAGRAM_THUMBNAIL } from '../api/thumbnail'
@@ -39,7 +44,7 @@ export function SubDiagramNode({
   data,
   selected,
 }: NodeProps<TSubDiagramNode>) {
-  const { organizationId } = useFlowDiagramContext()
+  const { organizationId, openChildDiagram } = useFlowDiagramContext()
 
   const nodeWidth = useStore(
     (store) => store.nodeLookup.get(id)?.measured.width
@@ -79,6 +84,13 @@ export function SubDiagramNode({
 
   const isGenerating = isRequesting || previewStatus === 'pending'
   const hasThumbnail = !!thumbnailUrl && !hasImageError
+
+  function openDialog() {
+    if (!organizationId) return
+    if (!data.diagramId) return
+
+    openChildDiagram(data.diagramId)
+  }
 
   async function requestThumbnail() {
     if (!organizationId || !data.diagramId) return
@@ -122,6 +134,10 @@ export function SubDiagramNode({
 
       <NodeCard
         selected={!!selected}
+        onDoubleClick={(e) => {
+          e.stopPropagation()
+          openDialog()
+        }}
         className="border-stock bg-shading flex w-full flex-col overflow-hidden rounded-[0.5rem] border outline-transparent"
       >
         {!data.hideThumbnail && (
@@ -168,19 +184,38 @@ export function SubDiagramNode({
             )}
 
             {data.diagramId && hasThumbnail && (
-              <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/65 opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-black/65 opacity-0 transition-opacity group-hover:opacity-100">
+                {organizationId && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="pointer-events-auto"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openDialog()
+                    }}
+                  >
+                    <LuMaximize2 className="size-3.5" />
+                    Open
+                  </Button>
+                )}
+
                 <Button
                   type="button"
                   size="sm"
-                  className="pointer-events-auto"
+                  variant="secondary"
+                  title="Open in new tab"
+                  className="pointer-events-auto size-8 p-0"
                   onMouseDown={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation()
                     openSubDiagram(data.diagramId!)
                   }}
                 >
                   <LuExternalLink className="size-3.5" />
-                  Open in new tab
                 </Button>
               </span>
             )}
@@ -208,19 +243,41 @@ export function SubDiagramNode({
           </span>
 
           {data.hideThumbnail && data.diagramId && (
-            <button
-              type="button"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation()
-                openSubDiagram(data.diagramId!)
-              }}
-              className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
-            >
-              <LuExternalLink
-                style={{ width: 12 * titleScale, height: 12 * titleScale }}
-              />
-            </button>
+            <>
+              {organizationId && (
+                <button
+                  type="button"
+                  title="Open"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openDialog()
+                  }}
+                  className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
+                >
+                  <LuMaximize2
+                    style={{ width: 12 * titleScale, height: 12 * titleScale }}
+                  />
+                </button>
+              )}
+
+              <button
+                type="button"
+                title="Open in new tab"
+                onMouseDown={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  openSubDiagram(data.diagramId!)
+                }}
+                className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
+              >
+                <LuExternalLink
+                  style={{ width: 12 * titleScale, height: 12 * titleScale }}
+                />
+              </button>
+            </>
           )}
         </div>
       </NodeCard>
