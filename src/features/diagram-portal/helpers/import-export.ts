@@ -78,6 +78,7 @@ export function exportDiagramToMermaid(
   diagramName: string
 ) {
   const isC4 = isC4ReactFlowDiagram(nodes)
+  const isSequence = isSequenceDiagram(nodes)
 
   const baseName =
     diagramName
@@ -85,11 +86,15 @@ export function exportDiagramToMermaid(
       .replace(/[\\/:*?"<>|]+/g, '-')
       .replace(/\s+/g, ' ') || 'uigraph-diagram'
 
-  const exported = isC4
-    ? convertReactFlowToC4UiGraph(nodes, edges)
-    : isSequenceDiagram(nodes)
-      ? convertReactFlowToSequenceUiGraph(nodes, edges)
-      : convertUiGraphToMermaid({ nodes, edges })
+  let exported: ReturnType<typeof convertUiGraphToMermaid>
+
+  if (isC4) {
+    exported = convertReactFlowToC4UiGraph(nodes, edges)
+  } else if (isSequence) {
+    exported = convertReactFlowToSequenceUiGraph(nodes, edges)
+  } else {
+    exported = convertUiGraphToMermaid({ nodes, edges })
+  }
 
   const mermaidBlob = new Blob([exported.mermaid], {
     type: 'text/plain;charset=utf-8',
@@ -111,6 +116,4 @@ export function exportDiagramToMermaid(
   URL.revokeObjectURL(contextUrl)
 
   URL.revokeObjectURL(mermaidUrl)
-
-  return { isC4 }
 }

@@ -91,15 +91,11 @@ export function FloatingCanvasToolbar() {
 
   function handleExportMermaid() {
     try {
-      const { isC4 } = exportDiagramToMermaid(nodes, edges, diagramName)
+      exportDiagramToMermaid(nodes, edges, diagramName)
 
-      toast.success(
-        isC4
-          ? 'C4 Mermaid exported successfully'
-          : 'Mermaid and context exported successfully'
-      )
+      toast.success('Diagram exported successfully')
     } catch {
-      toast.error('Failed to export Mermaid and context files')
+      toast.error('Failed to export the diagram')
     }
   }
 
