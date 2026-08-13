@@ -1,5 +1,6 @@
 'use client'
 
+import { TagList } from '@/components/common/tag-list'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -427,14 +428,12 @@ export function EndpointSchemaView({ data }: { data: EndpointSchemaData }) {
               Deprecated
             </span>
           )}
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-[#1E2533] px-2 py-1 text-xs font-medium text-[#828DA3]"
-            >
-              {tag}
-            </span>
-          ))}
+          <TagList
+            tags={tags}
+            max={8}
+            className="gap-2"
+            tagClassName="rounded-md bg-[#1E2533] px-2 py-1 text-xs font-medium text-[#828DA3]"
+          />
         </div>
       )}
 

@@ -2,8 +2,8 @@
 
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
+import { TagList } from '@/components/common/tag-list'
 import { SectionLoader } from '@/components/section-loader'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -217,18 +217,7 @@ export function ModelsTab() {
                   </p>
                 )}
 
-                {model.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {model.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                {model.tags.length > 0 && <TagList tags={model.tags} />}
 
                 <div className="border-stock mt-auto flex items-end justify-between gap-3 border-t pt-4">
                   <div className="min-w-0">

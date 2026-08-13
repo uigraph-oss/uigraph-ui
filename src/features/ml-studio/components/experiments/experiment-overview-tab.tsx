@@ -1,6 +1,7 @@
 'use client'
 
 import { BetterDialogProvider } from '@/components/better-dialog'
+import { TagList } from '@/components/common/tag-list'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -256,16 +257,7 @@ export function ExperimentOverviewTab() {
             Tags
           </div>
           {experiment.tags.length > 0 ? (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {experiment.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="border-stock rounded-md border px-2 py-1 text-xs text-[#828DA3]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <TagList tags={experiment.tags} max={8} className="mt-2" />
           ) : (
             <p className="mt-1 text-sm text-[#586378]">No tags yet.</p>
           )}

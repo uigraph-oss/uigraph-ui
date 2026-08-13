@@ -18,10 +18,20 @@ export const DIAGRAM = graphql(`
   }
 `)
 
-export const DIAGRAM_CONTENT = graphql(`
-  query DiagramContent($orgId: ID!, $id: ID!) {
-    diagramContent(orgId: $orgId, id: $id) {
-      diagramId
+export const DIAGRAM_WITH_CONTENT = graphql(`
+  query DiagramWithContent($orgId: ID!, $id: ID!) {
+    diagram(orgId: $orgId, id: $id) {
+      id
+      orgId
+      folderId
+      teamId
+      name
+      previewAssetId
+      previewImageUrl
+      previewContentHash
+      previewStatus
+      createdAt
+      updatedAt
       content
     }
   }

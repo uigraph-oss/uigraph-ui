@@ -3,7 +3,7 @@
 import { BetterDeleteConfirmationModal } from '@/components/better-delete-confirmation-modal'
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
-import { Badge } from '@/components/ui/badge'
+import { TagList } from '@/components/common/tag-list'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -275,16 +275,7 @@ export function ExperimentRunsTab() {
                     </TableCell>
                     <TableCell>
                       {run.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {run.tags.map((tag) => (
-                            <Badge
-                              key={tag}
-                              className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
+                        <TagList tags={run.tags} className="max-w-[320px]" />
                       ) : (
                         <span className="text-xs text-[#828DA3]">—</span>
                       )}

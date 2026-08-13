@@ -145,21 +145,19 @@ export function useDiagramPortalMutation({
         }
 
         if (thumbnail) {
-          uploadThumbnailFile(
-            organizationId,
-            diagramId,
-            thumbnail.thumbnailFile,
-            thumbnail.updateHash
-          )
-            .then(() => {
-              setLastUpdatedAt(Date.now())
-              CACHED_THUMBNAIL_FILES.set(diagramId, thumbnail.updateHash)
-            })
-            .catch(() => {
-              toast.error(
-                'Failed to upload diagram thumbnail. Please try again.'
-              )
-            })
+          try {
+            await uploadThumbnailFile(
+              organizationId,
+              diagramId,
+              thumbnail.thumbnailFile,
+              thumbnail.updateHash
+            )
+
+            setLastUpdatedAt(Date.now())
+            CACHED_THUMBNAIL_FILES.set(diagramId, thumbnail.updateHash)
+          } catch {
+            toast.error('Failed to upload diagram thumbnail. Please try again.')
+          }
         }
       } catch {
         toast.error('Failed to update diagram. Please try again.')

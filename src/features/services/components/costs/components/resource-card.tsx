@@ -1,3 +1,4 @@
+import { TagList } from '@/components/common/tag-list'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { MapPin, RefreshCw } from 'lucide-react'
@@ -80,21 +81,18 @@ export function ResourceCard({
       </div>
 
       {resource.tags.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-1">
-          {resource.tags.map((tag) => (
-            <span
-              key={tag}
-              className={cn(
-                'rounded-full px-2 py-0.5 text-[11px] font-medium',
-                resource.matchedLabels.includes(tag)
-                  ? 'bg-primary/10 text-primary'
-                  : 'bg-muted/40 text-paragraph'
-              )}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <TagList
+          tags={resource.tags}
+          className="mt-3 gap-1"
+          tagClassName={(tag) =>
+            cn(
+              'max-w-[150px] rounded-full px-2 py-0.5 text-[11px] font-medium',
+              resource.matchedLabels.includes(tag)
+                ? 'bg-primary/10 text-primary'
+                : 'bg-muted/40 text-paragraph'
+            )
+          }
+        />
       ) : null}
 
       <div className="border-stock text-paragraph/70 mt-3 flex items-center gap-1 border-t pt-2.5 text-xs">

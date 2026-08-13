@@ -1,22 +1,19 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
-import { Node, NodeProps, NodeResizer, useStore } from '@xyflow/react'
-import { useEffect, useRef, useState } from 'react'
+import { Node, NodeProps, NodeResizeControl, useStore } from '@xyflow/react'
+import { useEffect, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import {
   LuExternalLink,
   LuImageOff,
   LuLayoutTemplate,
-  LuX,
+  LuMaximize2,
 } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { DIAGRAM } from '../api/diagram'
 import { GENERATE_DIAGRAM_THUMBNAIL } from '../api/thumbnail'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
-import { EmbedFrame } from '../embed/embed-frame'
-import { useEmbedFrameContext } from '../embed/embed-frame-context'
-import { isCyclicEmbed } from '../embed/embed-protocol'
 import { NodeCard } from './components/node-card'
 import { NodeDataGenerator } from './types/node.types'
 
@@ -41,22 +38,13 @@ export function openSubDiagram(diagramId: string) {
 
 const BASE_WIDTH = 260
 const MAX_TITLE_SCALE = 4
-const EMBED_MIN_HEIGHT = 320
 
 export function SubDiagramNode({
   id,
   data,
   selected,
 }: NodeProps<TSubDiagramNode>) {
-  const {
-    organizationId,
-    diagramId: hostDiagramId,
-    activeEmbed,
-    activateEmbed,
-    deactivateEmbed,
-  } = useFlowDiagramContext()
-
-  const { ancestors } = useEmbedFrameContext()
+  const { organizationId, openChildDiagram } = useFlowDiagramContext()
 
   const nodeWidth = useStore(
     (store) => store.nodeLookup.get(id)?.measured.width
@@ -65,14 +53,6 @@ export function SubDiagramNode({
   const titleScale = nodeWidth
     ? Math.min(Math.max(nodeWidth / BASE_WIDTH, 1), MAX_TITLE_SCALE)
     : 1
-
-  const embedAncestors = hostDiagramId
-    ? [...ancestors, hostDiagramId]
-    : ancestors
-  const isCyclic =
-    !!data.diagramId && isCyclicEmbed(data.diagramId, embedAncestors)
-
-  const isActive = activeEmbed?.nodeId === id
 
   const query = useQuery(DIAGRAM, {
     variables: { orgId: organizationId!, id: data.diagramId! },
@@ -105,35 +85,11 @@ export function SubDiagramNode({
   const isGenerating = isRequesting || previewStatus === 'pending'
   const hasThumbnail = !!thumbnailUrl && !hasImageError
 
-  const { refetch } = query
-  const wasActiveRef = useRef(false)
-  useEffect(() => {
-    if (isActive) {
-      wasActiveRef.current = true
-      return
-    }
-
-    if (!wasActiveRef.current) return
-
-    wasActiveRef.current = false
-    void refetch()
-  }, [isActive, refetch])
-
-  useEffect(() => {
-    if (!isActive) return
-    if (selected) return
-
-    deactivateEmbed()
-  }, [isActive, selected, deactivateEmbed])
-
-  function handleActivate() {
+  function openDialog() {
+    if (!organizationId) return
     if (!data.diagramId) return
-    if (isCyclic) {
-      toast.error('This diagram is already open further up')
-      return
-    }
 
-    activateEmbed(id, data.diagramId)
+    openChildDiagram(data.diagramId)
   }
 
   async function requestThumbnail() {
@@ -151,24 +107,40 @@ export function SubDiagramNode({
 
   return (
     <>
-      <NodeResizer minWidth={180} minHeight={140} isVisible={!!selected} />
+      {selected && (
+        <>
+          <NodeResizeControl
+            resizeDirection="horizontal"
+            position="top-left"
+            minWidth={180}
+          />
+          <NodeResizeControl
+            resizeDirection="horizontal"
+            position="top-right"
+            minWidth={180}
+          />
+          <NodeResizeControl
+            resizeDirection="horizontal"
+            position="bottom-left"
+            minWidth={180}
+          />
+          <NodeResizeControl
+            resizeDirection="horizontal"
+            position="bottom-right"
+            minWidth={180}
+          />
+        </>
+      )}
 
       <NodeCard
         selected={!!selected}
-        onDoubleClick={handleActivate}
-        style={{ minHeight: isActive ? EMBED_MIN_HEIGHT : undefined }}
-        className="border-stock bg-shading flex size-full w-full flex-col overflow-hidden rounded-[0.5rem] border outline-transparent"
+        onDoubleClick={(e) => {
+          e.stopPropagation()
+          openDialog()
+        }}
+        className="border-stock bg-shading flex w-full flex-col overflow-hidden rounded-[0.5rem] border outline-transparent"
       >
-        {isActive && data.diagramId && (
-          <EmbedFrame
-            nodeId={id}
-            diagramId={data.diagramId}
-            diagramName={name}
-            isClosing={activeEmbed.isClosing}
-          />
-        )}
-
-        {!isActive && !data.hideThumbnail && (
+        {!data.hideThumbnail && (
           <div className="group relative bg-[#0F131C]">
             {!data.diagramId ? (
               <div className="text-paragraph flex flex-col items-center justify-center gap-1.5 py-10">
@@ -212,19 +184,38 @@ export function SubDiagramNode({
             )}
 
             {data.diagramId && hasThumbnail && (
-              <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/65 opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-black/65 opacity-0 transition-opacity group-hover:opacity-100">
+                {organizationId && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="pointer-events-auto"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openDialog()
+                    }}
+                  >
+                    <LuMaximize2 className="size-3.5" />
+                    Open
+                  </Button>
+                )}
+
                 <Button
                   type="button"
                   size="sm"
-                  className="pointer-events-auto"
+                  variant="secondary"
+                  title="Open in new tab"
+                  className="pointer-events-auto size-8 p-0"
                   onMouseDown={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation()
                     openSubDiagram(data.diagramId!)
                   }}
                 >
                   <LuExternalLink className="size-3.5" />
-                  Open in new tab
                 </Button>
               </span>
             )}
@@ -240,7 +231,7 @@ export function SubDiagramNode({
           }}
           className={cn(
             'flex shrink-0 items-center',
-            (!data.hideThumbnail || isActive) && 'border-stock border-t'
+            !data.hideThumbnail && 'border-stock border-t'
           )}
         >
           <LuLayoutTemplate
@@ -251,38 +242,42 @@ export function SubDiagramNode({
             {name}
           </span>
 
-          {isActive && (
-            <button
-              type="button"
-              onMouseDown={(e) => e.stopPropagation()}
-              onDoubleClick={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation()
-                deactivateEmbed()
-              }}
-              className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
-            >
-              <LuX
-                style={{ width: 12 * titleScale, height: 12 * titleScale }}
-              />
-            </button>
-          )}
+          {data.hideThumbnail && data.diagramId && (
+            <>
+              {organizationId && (
+                <button
+                  type="button"
+                  title="Open"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openDialog()
+                  }}
+                  className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
+                >
+                  <LuMaximize2
+                    style={{ width: 12 * titleScale, height: 12 * titleScale }}
+                  />
+                </button>
+              )}
 
-          {!isActive && data.hideThumbnail && data.diagramId && (
-            <button
-              type="button"
-              onMouseDown={(e) => e.stopPropagation()}
-              onDoubleClick={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation()
-                openSubDiagram(data.diagramId!)
-              }}
-              className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
-            >
-              <LuExternalLink
-                style={{ width: 12 * titleScale, height: 12 * titleScale }}
-              />
-            </button>
+              <button
+                type="button"
+                title="Open in new tab"
+                onMouseDown={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  openSubDiagram(data.diagramId!)
+                }}
+                className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
+              >
+                <LuExternalLink
+                  style={{ width: 12 * titleScale, height: 12 * titleScale }}
+                />
+              </button>
+            </>
           )}
         </div>
       </NodeCard>

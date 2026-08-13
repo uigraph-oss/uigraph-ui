@@ -1,7 +1,7 @@
 import { BetterDialogContent } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { VersionLayout } from '@/components/version-layout'
-import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM_WITH_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { ServerDiagramData } from '@/features/diagram-portal/types/diagram'
@@ -33,33 +33,24 @@ function DiagramCompareSide({ selectedVersion }: DiagramCompareSideProps) {
 
   const skip = !selectedDiagramId || !orgId
 
-  const { loading } = useQuery(DIAGRAM, {
+  const { data, loading } = useQuery(DIAGRAM_WITH_CONTENT, {
     variables: { orgId: orgId!, id: selectedDiagramId! },
     skip,
     fetchPolicy: 'cache-first',
   })
 
-  const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT,
-    {
-      variables: { orgId: orgId!, id: selectedDiagramId! },
-      skip,
-      fetchPolicy: 'cache-first',
-    }
-  )
-
   const diagramData = useMemo<ServerDiagramData | null>(() => {
-    const content = contentData?.diagramContent?.content
+    const content = data?.diagram?.content
     if (!content) return null
     return convertDiagramServerData(content)
-  }, [contentData?.diagramContent?.content])
+  }, [data?.diagram?.content])
 
   const versionName = useMemo(() => {
     if (selectedVersion === null) return 'Latest'
     return `Version ${selectedVersion}`
   }, [selectedVersion])
 
-  if (loading || contentLoading) {
+  if (loading) {
     return (
       <div className="flex size-full items-center justify-center">
         <SectionLoader />
