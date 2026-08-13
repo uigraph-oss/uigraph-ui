@@ -14,10 +14,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ServerSectionHeader } from '@/features/server-dashboard/server-section-header'
+import { changeOrganization, refreshOrganizations } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import Fuse from 'fuse.js'
 import { Plus, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   CREATE_SERVER_ORG,
@@ -32,6 +34,7 @@ import { ConfigureServerOrgModal } from './configure-server-org-modal'
 import { ServerOrgsTable } from './server-orgs-table'
 
 export function ServerOrgsPage() {
+  const navigate = useNavigate()
   const { data, loading, error, refetch } = useQuery(SERVER_ORGS)
 
   const refetchQueries = [{ query: SERVER_ORGS }]
@@ -49,7 +52,7 @@ export function ServerOrgsPage() {
     refetchQueries,
   })
 
-  const orgs = useMemo<ServerOrg[]>(() => data?.orgs ?? [], [data])
+  const orgs = useMemo<ServerOrg[]>(() => data?.serverOrgs ?? [], [data])
 
   const [searchTerm, setSearchTerm] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(20)
@@ -145,6 +148,11 @@ export function ServerOrgsPage() {
             ) : (
               <ServerOrgsTable
                 orgs={paginatedOrgs}
+                onOpen={async (org) => {
+                  await refreshOrganizations()
+                  changeOrganization(org.id)
+                  void navigate('/dashboard')
+                }}
                 onEdit={setEditOrg}
                 onDelete={setRemoveOrg}
               />
@@ -173,6 +181,7 @@ export function ServerOrgsPage() {
           onSubmit={async (values) => {
             try {
               await createOrg({ variables: { input: values } })
+              await refreshOrganizations()
               setIsCreateOpen(false)
               toast.success('Organization created successfully')
             } catch (error) {
@@ -204,13 +213,13 @@ export function ServerOrgsPage() {
             onUploadLogo={async (file) => {
               await setServerOrgLogo(editOrg.id, file)
               const { data } = await refetch()
-              const updated = data.orgs.find((o) => o.id === editOrg.id)
+              const updated = data.serverOrgs.find((o) => o.id === editOrg.id)
               if (updated) setEditOrg(updated)
             }}
             onRemoveLogo={async () => {
               await removeServerOrgLogo(editOrg.id)
               const { data } = await refetch()
-              const updated = data.orgs.find((o) => o.id === editOrg.id)
+              const updated = data.serverOrgs.find((o) => o.id === editOrg.id)
               if (updated) setEditOrg(updated)
             }}
             onSubmit={async (values) => {
@@ -248,6 +257,7 @@ export function ServerOrgsPage() {
           if (!removeOrg) return
           try {
             await deleteOrg({ variables: { id: removeOrg.id } })
+            await refreshOrganizations()
             setRemoveOrg(null)
             toast.success('Organization deleted')
           } catch (error) {

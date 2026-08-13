@@ -209,7 +209,7 @@ type Documents = {
     "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": typeof types.DeleteAuthRoleMappingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": typeof types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
-    "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
+    "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareServerOrgLogoUploadDocument,
     "\n  mutation SetServerOrgLogo($orgId: ID!) {\n    setServerOrgLogo(orgId: $orgId)\n  }\n": typeof types.SetServerOrgLogoDocument,
     "\n  mutation RemoveServerOrgLogo($orgId: ID!) {\n    removeServerOrgLogo(orgId: $orgId)\n  }\n": typeof types.RemoveServerOrgLogoDocument,
@@ -493,7 +493,7 @@ const documents: Documents = {
     "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": types.DeleteAuthRoleMappingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": types.CompleteOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
-    "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
+    "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareServerOrgLogoUploadDocument,
     "\n  mutation SetServerOrgLogo($orgId: ID!) {\n    setServerOrgLogo(orgId: $orgId)\n  }\n": types.SetServerOrgLogoDocument,
     "\n  mutation RemoveServerOrgLogo($orgId: ID!) {\n    removeServerOrgLogo(orgId: $orgId)\n  }\n": types.RemoveServerOrgLogoDocument,
@@ -1379,7 +1379,7 @@ export function graphql(source: "\n  query ServerOverview {\n    serverOverview 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ServerOrgs {\n    orgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n"];
+export function graphql(source: "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

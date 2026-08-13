@@ -11,16 +11,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import {
-  convertMermaidToReactFlow,
-  convertMermaidToReactFlowWithContext,
-  convertReactFlowToSequenceUiGraph,
-  convertUiGraphToMermaid,
-  isSequenceDiagram,
-} from '@uigraph/sdk'
+import { isSequenceDiagram } from '@uigraph/sdk'
 import { useNodesInitialized } from '@xyflow/react'
-import { openFileExplorer } from 'daily-code/browser'
-import { parse } from 'jsonc-parser'
 import { ComponentProps, ReactNode, useState } from 'react'
 import { BsCamera } from 'react-icons/bs'
 import { LuImport } from 'react-icons/lu'
@@ -31,6 +23,10 @@ import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
 import { beautifyDiagram } from './helpers/beautify-diagram'
 import { downloadFlowDiagramImage } from './helpers/download-image'
+import {
+  exportDiagramToMermaid,
+  importMermaidFromFilePicker,
+} from './helpers/import-export'
 
 export const diagramToolbarContainerClassName =
   'pointer-events-auto flex items-center gap-2 rounded-[0.75rem] border border-[#2A3242] bg-[#141925] p-1 shadow-sm'
@@ -79,104 +75,27 @@ export function FloatingCanvasToolbar() {
   }
 
   async function handleImportMermaid() {
-    const [...files] = await openFileExplorer({
-      multiple: true,
-      accept: '.mmd,.txt,.json,.jsonc',
-    })
-
-    const mermaidFile =
-      files.find((file) => file.name.toLowerCase().endsWith('.mmd')) ??
-      files.find((file) => file.name.toLowerCase().endsWith('.txt'))
-
-    if (!mermaidFile) {
-      return toast.error('No Mermaid file found')
-    }
-
-    const contextFile =
-      files.find((file) => file.name.toLowerCase().endsWith('.json')) ??
-      files.find((file) => file.name.toLowerCase().endsWith('.jsonc'))
-
     try {
-      const mermaidText = await mermaidFile.text()
-
-      if (contextFile) {
-        const parsedContext: unknown = parse(await contextFile.text())
-
-        if (
-          parsedContext === null ||
-          typeof parsedContext !== 'object' ||
-          Array.isArray(parsedContext)
-        ) {
-          return toast.error('Invalid Mermaid context file')
-        }
-
-        const diagram = await convertMermaidToReactFlowWithContext(
-          mermaidText,
-          parsedContext,
-          { repositionNodes: true }
-        )
-
-        if (diagram === null) {
-          return toast.error('Failed to convert Mermaid diagram to React Flow')
-        }
-
-        setNodes(diagram.nodes)
-        setEdges(diagram.edges)
-        return
-      }
-
-      const diagram = await convertMermaidToReactFlow(mermaidText)
-
-      if (diagram === null) {
-        return toast.error('Failed to convert Mermaid diagram to React Flow')
-      }
+      const diagram = await importMermaidFromFilePicker()
 
       setNodes(diagram.nodes)
       setEdges(diagram.edges)
-    } catch {
-      toast.error('Failed to import Mermaid diagram')
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to import Mermaid diagram'
+      )
     }
   }
 
   function handleExportMermaid() {
     try {
-      const baseName =
-        diagramName
-          .trim()
-          .replace(/[\\/:*?"<>|]+/g, '-')
-          .replace(/\s+/g, ' ') || 'uigraph-diagram'
+      exportDiagramToMermaid(nodes, edges, diagramName)
 
-      const exported = isSequenceDiagram(nodes)
-        ? convertReactFlowToSequenceUiGraph(nodes, edges)
-        : convertUiGraphToMermaid({ nodes, edges })
-
-      const mermaidBlob = new Blob([exported.mermaid], {
-        type: 'text/plain;charset=utf-8',
-      })
-      const mermaidUrl = URL.createObjectURL(mermaidBlob)
-      const mermaidLink = document.createElement('a')
-      mermaidLink.href = mermaidUrl
-      mermaidLink.download = `${baseName}.mmd`
-      mermaidLink.click()
-
-      const contextBlob = new Blob(
-        [JSON.stringify(exported.context, null, 2)],
-        {
-          type: 'application/json;charset=utf-8',
-        }
-      )
-      const contextUrl = URL.createObjectURL(contextBlob)
-      const contextLink = document.createElement('a')
-      contextLink.href = contextUrl
-      contextLink.download = `${baseName}-context.json`
-      contextLink.click()
-
-      URL.revokeObjectURL(mermaidUrl)
-      URL.revokeObjectURL(contextUrl)
-
-      toast.success('Mermaid and context exported successfully')
+      toast.success('Diagram exported successfully')
     } catch {
-      toast.error('Failed to export Mermaid and context files')
+      toast.error('Failed to export the diagram')
     }
   }
 

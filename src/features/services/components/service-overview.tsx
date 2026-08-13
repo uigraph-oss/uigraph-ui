@@ -233,75 +233,71 @@ export function ServiceOverview() {
           ))}
         </div>
 
-        <div className="mt-6 border-t border-[#2A3242] pt-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h4 className="text-[13px] font-semibold text-[#F4F7FC]">
-                Service dependencies
-              </h4>
-              <p className="mt-0.5 text-[11px] text-[#828DA3]">
-                Declared in .uigraph.yaml, validated against synced specs
-              </p>
-            </div>
-            <Link
-              to={Paths.services.graph}
-              className="shrink-0 text-[12px] font-medium text-[#5B9DF9] hover:text-[#7DB2FB]"
-            >
-              View full graph →
-            </Link>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {[
-              {
-                heading: `↓ Downstream · calls (${downstreamDependencies.length})`,
-                dependencies: downstreamDependencies,
-              },
-              {
-                heading: `↑ Upstream · called by (${upstreamDependencies.length})`,
-                dependencies: upstreamDependencies,
-              },
-            ].map((summary) => (
+        {dependencies.length > 0 && (
+          <div className="mt-6 border-t border-[#2A3242] pt-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h4 className="text-[13px] font-semibold text-[#F4F7FC]">
+                  Service dependencies
+                </h4>
+                <p className="mt-0.5 text-[11px] text-[#828DA3]">
+                  Declared in .uigraph.yaml, validated against synced specs
+                </p>
+              </div>
               <Link
-                key={summary.heading}
-                to={Paths.services.dependencies(service.id)}
-                className="rounded-xl border border-[#2A3242] bg-[#1E2533] px-4 py-3 transition-colors hover:border-[#3B4658] hover:bg-[#252E3E]"
+                to={Paths.services.graph}
+                className="shrink-0 text-[12px] font-medium text-[#5B9DF9] hover:text-[#7DB2FB]"
               >
-                <span className="text-[12px] font-semibold text-[#D2D9E6]">
-                  {summary.heading}
-                </span>
-                {dependenciesRes.loading ? (
-                  <p className="mt-2 text-[11px] text-[#828DA3]">Loading…</p>
-                ) : summary.dependencies.length === 0 ? (
-                  <p className="mt-2 text-[11px] text-[#828DA3]">
-                    No dependencies
-                  </p>
-                ) : (
-                  summary.dependencies.map((dependency) => (
-                    <div
-                      key={dependency.id}
-                      className="mt-2 flex items-center justify-between gap-2 text-[12px]"
-                    >
-                      <span className="truncate text-[#F4F7FC]">
-                        {dependency.dependency?.name ??
-                          dependency.dependencyName}
-                      </span>
-                      <span
-                        className={cn(
-                          'shrink-0 rounded-md px-2 py-0.5 text-[11px] capitalize',
-                          dependency.criticality === 'hard'
-                            ? 'bg-[#3A1D1D] text-[#F29B9B]'
-                            : 'bg-[#232B3A] text-[#9AA6BC]'
-                        )}
-                      >
-                        {dependency.criticality} · {dependency.type}
-                      </span>
-                    </div>
-                  ))
-                )}
+                View full graph →
               </Link>
-            ))}
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  heading: `↓ Downstream · calls (${downstreamDependencies.length})`,
+                  dependencies: downstreamDependencies,
+                },
+                {
+                  heading: `↑ Upstream · called by (${upstreamDependencies.length})`,
+                  dependencies: upstreamDependencies,
+                },
+              ]
+                .filter((summary) => summary.dependencies.length > 0)
+                .map((summary) => (
+                  <Link
+                    key={summary.heading}
+                    to={Paths.services.dependencies(service.id)}
+                    className="rounded-xl border border-[#2A3242] bg-[#1E2533] px-4 py-3 transition-colors hover:border-[#3B4658] hover:bg-[#252E3E]"
+                  >
+                    <span className="text-[12px] font-semibold text-[#D2D9E6]">
+                      {summary.heading}
+                    </span>
+                    {summary.dependencies.map((dependency) => (
+                      <div
+                        key={dependency.id}
+                        className="mt-2 flex items-center justify-between gap-2 text-[12px]"
+                      >
+                        <span className="truncate text-[#F4F7FC]">
+                          {dependency.dependency?.name ??
+                            dependency.dependencyName}
+                        </span>
+                        <span
+                          className={cn(
+                            'shrink-0 rounded-md px-2 py-0.5 text-[11px] capitalize',
+                            dependency.criticality === 'hard'
+                              ? 'bg-[#3A1D1D] text-[#F29B9B]'
+                              : 'bg-[#232B3A] text-[#9AA6BC]'
+                          )}
+                        >
+                          {dependency.criticality} · {dependency.type}
+                        </span>
+                      </div>
+                    ))}
+                  </Link>
+                ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Integrations */}
         {integrations.length > 0 && (

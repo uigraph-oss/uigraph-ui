@@ -388,6 +388,11 @@ const DiagramPortalPage = lazy(() =>
     default: mod.DiagramPortalPage,
   }))
 )
+const DiagramEmbedPage = lazy(() =>
+  import('@/routes/diagram-embed-page').then((mod) => ({
+    default: mod.DiagramEmbedPage,
+  }))
+)
 
 export function AppRoutes() {
   return (
@@ -444,6 +449,10 @@ export function AppRoutes() {
 
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/diagram/:diagramId" element={<DiagramPortalPage />} />
+        <Route
+          path="/diagram-embed/:diagramId"
+          element={<DiagramEmbedPage />}
+        />
 
         <Route
           element={

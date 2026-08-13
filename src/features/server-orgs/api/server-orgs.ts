@@ -14,7 +14,7 @@ export type ServerOrg = {
 
 export const SERVER_ORGS = graphql(`
   query ServerOrgs {
-    orgs {
+    serverOrgs {
       id
       name
       logoUrl

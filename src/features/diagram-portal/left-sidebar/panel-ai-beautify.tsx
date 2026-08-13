@@ -2,12 +2,11 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { useNodesInitialized } from '@xyflow/react'
-import { useState, type FormEvent } from 'react'
+import { type FormEvent } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { BsStars } from 'react-icons/bs'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
-import { useAiBeautify } from '../hooks/use-ai-beautify'
 import { SidebarLayout } from './sidebar-layout'
 
 const PRESETS = [
@@ -49,10 +48,14 @@ const PRESETS = [
 ]
 
 export function SidebarAiBeautify() {
-  const { nodes } = useFlowDiagramContext()
+  const {
+    nodes,
+    beautify,
+    isBeautifying,
+    beautifyPrompt: prompt,
+    setBeautifyPrompt: setPrompt,
+  } = useFlowDiagramContext()
   const nodesInitialized = useNodesInitialized()
-  const { beautify, isBeautifying } = useAiBeautify()
-  const [prompt, setPrompt] = useState('')
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()

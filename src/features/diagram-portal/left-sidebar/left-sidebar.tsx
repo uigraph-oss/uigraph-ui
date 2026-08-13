@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { BsDatabase, BsStars } from 'react-icons/bs'
 import { GoComment } from 'react-icons/go'
 import {
@@ -32,7 +33,8 @@ import { SidebarText } from './panel-text'
 import { SidebarLayout } from './sidebar-layout'
 
 export function FloatingLeftSidebar() {
-  const { sidebarActiveTool, setSidebarActiveTool } = useFlowDiagramContext()
+  const { sidebarActiveTool, setSidebarActiveTool, isBeautifying } =
+    useFlowDiagramContext()
 
   return (
     <>
@@ -142,9 +144,16 @@ export function FloatingLeftSidebar() {
           <Separator className="!w-8" />
 
           <SidebarButton
-            name="Beautify with AI"
-            icon={<BsStars />}
+            name={isBeautifying ? 'Beautifying with AI' : 'Beautify with AI'}
+            icon={
+              isBeautifying ? (
+                <AiOutlineLoading3Quarters className="animate-spin" />
+              ) : (
+                <BsStars />
+              )
+            }
             isActive={sidebarActiveTool === 'beautify-ai'}
+            isBusy={isBeautifying}
             onClick={() =>
               setSidebarActiveTool((prev) =>
                 prev === 'beautify-ai' ? null : 'beautify-ai'
@@ -174,11 +183,13 @@ function SidebarButton({
   icon,
   name,
   isActive,
+  isBusy,
   onClick,
 }: {
   name: string
   icon: React.ReactNode
   isActive?: boolean
+  isBusy?: boolean
   onClick: () => void
 }) {
   return (
@@ -189,7 +200,8 @@ function SidebarButton({
             onClick={onClick}
             className={cn(
               'flex h-10 w-10 items-center justify-center rounded-[0.5rem] border border-[#2A3242] bg-transparent text-[#F4F7FC] transition-all hover:bg-[#1E2533] [&>svg]:!size-5',
-              isActive && 'border-primary/30 bg-primary/10 text-primary'
+              isActive && 'border-primary/30 bg-primary/10 text-primary',
+              isBusy && 'border-primary/40 bg-primary/10 text-primary'
             )}
           >
             {icon}

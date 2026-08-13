@@ -5,14 +5,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  convertMermaidToReactFlow,
-  convertMermaidToReactFlowWithContext,
-} from '@uigraph/sdk'
 import { useState } from 'react'
 import { LuCode } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from '../context/flow-diagram-context'
+import { importMermaidText } from '../helpers/import-export'
 
 export function DiagramTestingOptions() {
   const { setNodes, setEdges } = useFlowDiagramContext()
@@ -46,19 +43,13 @@ export function DiagramTestingOptions() {
 
             setIsImporting(true)
             try {
-              if (contextCode.trim()) {
-                const diagram = await convertMermaidToReactFlowWithContext(
-                  mermaidCode,
-                  JSON.parse(contextCode),
-                  { repositionNodes: true }
-                )
-                setNodes(diagram.nodes)
-                setEdges(diagram.edges)
-              } else {
-                const diagram = await convertMermaidToReactFlow(mermaidCode)
-                setNodes(diagram.nodes)
-                setEdges(diagram.edges)
-              }
+              const diagram = await importMermaidText(
+                mermaidCode,
+                contextCode.trim() || undefined
+              )
+
+              setNodes(diagram.nodes)
+              setEdges(diagram.edges)
 
               setIsInsertCodeOpen(false)
               setMermaidCode('')
