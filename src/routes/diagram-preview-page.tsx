@@ -1,4 +1,4 @@
-import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM_WITH_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -17,28 +17,19 @@ export function DiagramPreviewPage() {
 
   const skip = !diagramId || !organizationId
 
-  const { data, loading } = useQuery(DIAGRAM, {
+  const { data, loading } = useQuery(DIAGRAM_WITH_CONTENT, {
     variables: { orgId: organizationId!, id: diagramId! },
     fetchPolicy: 'cache-first',
     skip,
   })
 
-  const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT,
-    {
-      variables: { orgId: organizationId!, id: diagramId! },
-      fetchPolicy: 'cache-first',
-      skip,
-    }
-  )
-
   const diagramData = useMemo(() => {
-    const content = contentData?.diagramContent?.content
+    const content = data?.diagram?.content
     if (!content) return null
     return convertDiagramServerData(content)
-  }, [contentData?.diagramContent?.content])
+  }, [data?.diagram?.content])
 
-  if (loading || contentLoading) return <div>Loading diagram...</div>
+  if (loading) return <div>Loading diagram...</div>
   if (!diagramData) return <div>No diagram found</div>
 
   return (

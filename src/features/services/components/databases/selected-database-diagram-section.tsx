@@ -1,6 +1,6 @@
 import { SectionLoader } from '@/components/section-loader'
 import { Button } from '@/components/ui/button'
-import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM_WITH_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useCurrentOrganization } from '@/store/auth-store'
@@ -19,23 +19,14 @@ export function SelectedDatabaseDiagramSection({
   const diagramId = db.dbDiagramId
   const skip = !diagramId || !orgId
 
-  const { data, loading } = useQuery(DIAGRAM, {
+  const { data, loading } = useQuery(DIAGRAM_WITH_CONTENT, {
     variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'cache-first',
     skip,
   })
 
-  const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT,
-    {
-      variables: { orgId: orgId!, id: diagramId! },
-      fetchPolicy: 'cache-first',
-      skip,
-    }
-  )
-
   const diagramData = useMemo(() => {
-    const content = contentData?.diagramContent?.content
+    const content = data?.diagram?.content
     if (!content) return null
 
     const result = convertDiagramServerData(content)
@@ -48,7 +39,7 @@ export function SelectedDatabaseDiagramSection({
       ...result,
       nodes: resultNodes,
     }
-  }, [contentData?.diagramContent?.content])
+  }, [data?.diagram?.content])
 
   if (!diagramId) {
     return (
@@ -58,7 +49,7 @@ export function SelectedDatabaseDiagramSection({
     )
   }
 
-  if (loading || contentLoading) return <SectionLoader />
+  if (loading) return <SectionLoader />
 
   if (!diagramData) {
     return (

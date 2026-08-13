@@ -1,5 +1,5 @@
 import { BetterDialogContent } from '@/components/better-dialog'
-import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM_WITH_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { FlowDiagramPreview } from '@/features/diagram-portal/flow-diagram-preview'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useQuery } from '@apollo/client'
@@ -16,23 +16,15 @@ export function DiagramDetailsModal({
   orgId,
   diagramId,
 }: DiagramDetailsModalProps) {
-  const { data, loading } = useQuery(DIAGRAM, {
+  const { data, loading } = useQuery(DIAGRAM_WITH_CONTENT, {
     variables: { orgId, id: diagramId },
     fetchPolicy: 'cache-first',
   })
 
-  const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT,
-    {
-      variables: { orgId, id: diagramId },
-      fetchPolicy: 'cache-first',
-    }
-  )
-
   const diagram = data?.diagram
 
   const diagramData = useMemo(() => {
-    const content = contentData?.diagramContent?.content
+    const content = data?.diagram?.content
     if (!content) return null
 
     const result = convertDiagramServerData(content)
@@ -45,9 +37,9 @@ export function DiagramDetailsModal({
       ...result,
       nodes: resultNodes,
     }
-  }, [contentData?.diagramContent?.content])
+  }, [data?.diagram?.content])
 
-  if (loading || contentLoading) {
+  if (loading) {
     return (
       <BetterDialogContent title="Diagram">
         <div className="flex items-center gap-2 py-6">

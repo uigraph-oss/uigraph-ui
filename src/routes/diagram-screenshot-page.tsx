@@ -1,4 +1,4 @@
-import { DIAGRAM, DIAGRAM_CONTENT } from '@/features/diagram-portal/api/diagram'
+import { DIAGRAM_WITH_CONTENT } from '@/features/diagram-portal/api/diagram'
 import { convertDiagramServerData } from '@/features/diagram-portal/helpers/diagram-data'
 import { useAuthStore } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
@@ -29,23 +29,17 @@ export function DiagramScreenshotPage() {
 
   const skip = !diagramId || !orgId
 
-  const { data } = useQuery(DIAGRAM, {
-    variables: { orgId: orgId!, id: diagramId! },
-    fetchPolicy: 'no-cache',
-    skip,
-  })
-
-  const { data: contentData } = useQuery(DIAGRAM_CONTENT, {
+  const { data } = useQuery(DIAGRAM_WITH_CONTENT, {
     variables: { orgId: orgId!, id: diagramId! },
     fetchPolicy: 'no-cache',
     skip,
   })
 
   const diagramData = useMemo(() => {
-    const content = contentData?.diagramContent?.content
+    const content = data?.diagram?.content
     if (!content) return null
     return convertDiagramServerData(content)
-  }, [contentData?.diagramContent?.content])
+  }, [data?.diagram?.content])
 
   if (!diagramData) return null
 

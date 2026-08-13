@@ -8,7 +8,7 @@ import { useQuery } from '@apollo/client'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { DIAGRAM, DIAGRAM_CONTENT } from './api/diagram'
+import { DIAGRAM_WITH_CONTENT } from './api/diagram'
 import { DataSourcesProvider } from './context/data-sources-context'
 import { FlowDiagramProvider } from './context/flow-diagram-context'
 import { FlowDiagramLayout } from './flow-diagram-layout'
@@ -21,32 +21,22 @@ export function DiagramPortalPage({ embedded }: { embedded: boolean }) {
 
   const { diagramId } = useParams() as { diagramId: string }
 
-  const { data, loading } = useQuery(DIAGRAM, {
+  const { data, loading } = useQuery(DIAGRAM_WITH_CONTENT, {
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
     skip: !organization.id,
     variables: { orgId: organization.id, id: String(diagramId) },
   })
 
-  const { data: contentData, loading: contentLoading } = useQuery(
-    DIAGRAM_CONTENT,
-    {
-      errorPolicy: 'ignore',
-      fetchPolicy: 'cache-first',
-      skip: !organization.id,
-      variables: { orgId: organization.id, id: String(diagramId) },
-    }
-  )
-
   const initialDiagramData = useMemo<ServerDiagramData>(() => {
-    return convertDiagramServerData(contentData?.diagramContent?.content)
-  }, [contentData?.diagramContent?.content])
+    return convertDiagramServerData(data?.diagram?.content ?? undefined)
+  }, [data?.diagram?.content])
 
   const lastUpdatedAt = useMemo(() => {
     return data?.diagram?.updatedAt ?? undefined
   }, [data?.diagram?.updatedAt])
 
-  if (loading || contentLoading) return <GlobalLoader />
+  if (loading) return <GlobalLoader />
 
   return (
     <FlowDiagramProvider
