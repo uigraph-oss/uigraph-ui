@@ -16,7 +16,7 @@ import { convertDiagramServerData } from './helpers/diagram-data'
 import { ReactFlowWrapper } from './react-flow-wrapper'
 import { ServerDiagramData } from './types/diagram'
 
-export function DiagramPortalPage() {
+export function DiagramPortalPage({ embedded }: { embedded: boolean }) {
   const organization = useCurrentOrganization()
 
   const { diagramId } = useParams() as { diagramId: string }
@@ -51,6 +51,7 @@ export function DiagramPortalPage() {
   return (
     <FlowDiagramProvider
       diagramId={diagramId}
+      isEmbedded={embedded}
       organizationId={organization.id}
       folderId={data?.diagram?.folderId ?? null}
       teamId={data?.diagram?.teamId ?? null}
