@@ -48,7 +48,10 @@ export function ModelingSubDiagramSection() {
                       diagramId: diagram.id,
                       diagramName: name,
                     },
-                    { width: SUB_DIAGRAM_TOOL.recommendedSize.width },
+                    {
+                      width: SUB_DIAGRAM_TOOL.recommendedSize.width,
+                      height: SUB_DIAGRAM_TOOL.recommendedSize.height,
+                    },
                     name
                   )
                 }}

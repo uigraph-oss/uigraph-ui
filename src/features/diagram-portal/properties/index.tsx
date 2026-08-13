@@ -108,9 +108,20 @@ export function FloatingProperties() {
     document.body.style.cursor = 'ew-resize'
   }
 
-  const { setSelectedNodeIds, setSelectedEdgeIds } = useFlowDiagramContext()
+  const { setSelectedNodeIds, setSelectedEdgeIds, activeEmbed } =
+    useFlowDiagramContext()
   const { node, updateData } = useSingleSelectedNode()
   const { edge } = useSingleSelectedEdge()
+
+  function clearSelectedNodes() {
+    if (activeEmbed) return activeEmbed.setSelectedNodeIds([])
+    setSelectedNodeIds([])
+  }
+
+  function clearSelectedEdges() {
+    if (activeEmbed) return activeEmbed.setSelectedEdgeIds([])
+    setSelectedEdgeIds([])
+  }
 
   return (
     <>
@@ -149,7 +160,7 @@ export function FloatingProperties() {
                 </button>
 
                 <CrossButton
-                  onClick={() => setSelectedNodeIds([])}
+                  onClick={clearSelectedNodes}
                   className="size-[1.375rem] rounded-sm"
                 />
               </div>
@@ -223,7 +234,7 @@ export function FloatingProperties() {
               </h3>
 
               <button
-                onClick={() => setSelectedEdgeIds([])}
+                onClick={clearSelectedEdges}
                 className="hover:bg-destructive flex size-[1.375rem] items-center justify-center rounded-md bg-[#1E2533] text-sm text-[#828DA3] transition-all hover:text-white"
               >
                 <CrossIcon />

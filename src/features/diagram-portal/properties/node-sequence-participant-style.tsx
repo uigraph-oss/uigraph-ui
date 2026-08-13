@@ -14,8 +14,11 @@ const FONT_SIZE_MIN = 8
 const FONT_SIZE_MAX = 40
 
 export function NodeSequenceParticipantStyle() {
-  const { nodes, setNodes } = useFlowDiagramContext()
+  const ctx = useFlowDiagramContext()
   const { data, updateData } = useSingleSelectedNode<TSequenceParticipantNode>()
+
+  const nodes = ctx.activeEmbed ? ctx.activeEmbed.mirror.nodes : ctx.nodes
+  const setNodes = ctx.activeEmbed ? ctx.activeEmbed.setNodes : ctx.setNodes
 
   const [localColor, setLocalColor] = useEffectState<string>(
     data?.color ?? SEQUENCE_PARTICIPANT_COLOR

@@ -29,7 +29,7 @@ import { FloatingLeftSidebar } from './left-sidebar/left-sidebar'
 import { FloatingProperties } from './properties'
 
 export function FlowDiagramLayout({ children }: PropsWithChildren) {
-  const { viewport, diagramName, setDiagramName, isPreviewing } =
+  const { viewport, diagramName, setDiagramName, isPreviewing, activeEmbed } =
     useFlowDiagramContext()
   const isServerAdmin = useAuthStore((state) => state.user?.isServerAdmin)
 
@@ -158,7 +158,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
           <FloatingCanvasToolbar />
           {!isPreviewing && <FloatingLeftSidebar />}
           {!isPreviewing && <FloatingProperties />}
-          {!isPreviewing && <FloatingSelectionToolbar />}
+          {!isPreviewing && !activeEmbed && <FloatingSelectionToolbar />}
           <AiBeautifyPreviewBar />
         </div>
       </div>

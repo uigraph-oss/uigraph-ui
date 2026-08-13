@@ -8,6 +8,7 @@ import {
   MongoCollectionSchema,
   MongoEditorSchema,
 } from '../components/nosql-editor/nosql-schema'
+import { useEmbedHost } from '../embed/use-embed-host'
 import { useAiBeautify } from '../hooks/use-ai-beautify'
 import { useDiagramData } from '../hooks/use-diagram-data'
 import { useDiagramPortalMutation } from '../hooks/use-diagram-mutation'
@@ -123,6 +124,14 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       components: diagramData.latestData.components,
     })
 
+    const {
+      activeEmbed,
+      activateEmbed,
+      deactivateEmbed,
+      registerEmbedFrame,
+      forwardToEmbedFrame,
+    } = useEmbedHost()
+
     const { beautify, isBeautifying, beautifyPrompt, setBeautifyPrompt } =
       useAiBeautify({
         latestData: diagramData.latestData,
@@ -134,6 +143,12 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
     return {
       ...diagramData,
+
+      activeEmbed,
+      activateEmbed,
+      deactivateEmbed,
+      registerEmbedFrame,
+      forwardToEmbedFrame,
 
       beautify,
       isBeautifying,
