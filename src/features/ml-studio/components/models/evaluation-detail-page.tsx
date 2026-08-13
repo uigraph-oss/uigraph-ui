@@ -1,5 +1,6 @@
 'use client'
 
+import { TagList } from '@/components/common/tag-list'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -86,16 +87,7 @@ export function EvaluationDetailPage() {
             {evaluation.summary || evaluation.description}
           </p>
           {evaluation.tags.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {evaluation.tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            <TagList tags={evaluation.tags} max={8} className="mt-2" />
           )}
         </div>
         <Button preset="outline" onClick={() => navigate(-1)}>

@@ -2,7 +2,7 @@
 
 import { BetterDialogProvider } from '@/components/better-dialog'
 import { FunctionalPagination } from '@/components/common/functional-pagination'
-import { Badge } from '@/components/ui/badge'
+import { TagList } from '@/components/common/tag-list'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -223,16 +223,10 @@ export function ModelEvaluationsTable() {
                       </TableCell>
                       <TableCell>
                         {evaluation.tags.length > 0 ? (
-                          <div className="flex flex-wrap gap-1.5">
-                            {evaluation.tags.map((tag) => (
-                              <Badge
-                                key={tag}
-                                className="border-stock rounded-md border bg-[#1E2533] text-[#828DA3]"
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
+                          <TagList
+                            tags={evaluation.tags}
+                            className="max-w-[320px]"
+                          />
                         ) : (
                           <span className="text-xs text-[#828DA3]">—</span>
                         )}

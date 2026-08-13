@@ -7,6 +7,7 @@ import {
   BetterDialogProvider,
 } from '@/components/better-dialog'
 import { CodeMirrorRaw } from '@/components/code-mirror'
+import { TagList } from '@/components/common/tag-list'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -789,14 +790,11 @@ function QueryCard({
                 {folderName}
               </span>
             )}
-            {query.tags.map((tag) => (
-              <span
-                key={tag}
-                className="border-primary/30 bg-primary/10 text-primary-foreground rounded-full border px-1.5 py-0.5"
-              >
-                {tag}
-              </span>
-            ))}
+            <TagList
+              tags={query.tags}
+              className="gap-1"
+              tagClassName="border-primary/30 bg-primary/10 text-primary-foreground max-w-[140px] rounded-full border px-1.5 py-0.5"
+            />
           </div>
         </div>
 

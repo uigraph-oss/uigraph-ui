@@ -2,6 +2,7 @@ import { GT } from '@/api'
 import { MethodBadge } from '@/components/api/method-badge'
 import { BetterDialogContent } from '@/components/better-dialog'
 import { CodeMirrorRaw } from '@/components/code-mirror'
+import { TagList } from '@/components/common/tag-list'
 import {
   CodeMirrorWrapped,
   ComponentInputType,
@@ -193,14 +194,11 @@ function ApiContractDetailsModalContent({
             {protocolLabel}
           </span>
 
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-[#1E2533] px-2 py-1 text-xs font-medium text-[#828DA3]"
-            >
-              {tag}
-            </span>
-          ))}
+          <TagList
+            tags={tags}
+            max={8}
+            tagClassName="rounded-md bg-[#1E2533] px-2 py-1 text-xs font-medium text-[#828DA3]"
+          />
         </div>
 
         {visibleFields.length > 0 && (
