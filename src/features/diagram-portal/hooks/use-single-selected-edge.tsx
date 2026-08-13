@@ -4,13 +4,27 @@ import { useFlowDiagramContext } from '../context/flow-diagram-context'
 
 export function useSingleSelectedEdge<T extends Edge>() {
   const ctx = useFlowDiagramContext()
+  const embed = ctx.activeEmbed
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const edge =
-    ctx.selectedEdgeIds.length === 1
-      ? ((ctx.reactFlowInstance?.getEdge(ctx.selectedEdgeIds[0]) as T) ?? null)
-      : null
+  function resolveEdge() {
+    if (embed) {
+      if (embed.selectedEdgeIds.length !== 1) return null
+
+      const found = embed.mirror.edges.find(
+        (item) => item.id === embed.selectedEdgeIds[0]
+      )
+
+      return (found as T) ?? null
+    }
+
+    if (ctx.selectedEdgeIds.length !== 1) return null
+
+    return (ctx.reactFlowInstance?.getEdge(ctx.selectedEdgeIds[0]) as T) ?? null
+  }
+
+  const edge = resolveEdge()
 
   function updateEdge(newEdge: Partial<T>) {
     const edgeId = edge!.id!
@@ -19,6 +33,10 @@ export function useSingleSelectedEdge<T extends Edge>() {
     const clonedEdge = structuredClone(newEdge)
 
     function runTimeout() {
+      if (embed) {
+        return embed.patchEdge(edgeId, clonedEdge)
+      }
+
       let merged: Edge | undefined
 
       ctx.setEdges((prevValue) => {
@@ -30,7 +48,6 @@ export function useSingleSelectedEdge<T extends Edge>() {
       })
 
       if (merged) {
-        console.log('Updating edge:', merged)
         ctx.reactFlowInstance?.updateEdge(edgeId!, merged)
       }
     }
