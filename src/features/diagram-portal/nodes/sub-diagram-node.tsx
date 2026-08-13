@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
-import { Node, NodeProps, NodeResizeControl } from '@xyflow/react'
+import { Node, NodeProps, NodeResizeControl, useStore } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { LuExternalLink, LuImageOff, LuLayoutTemplate } from 'react-icons/lu'
@@ -31,8 +31,23 @@ export function openSubDiagram(diagramId: string) {
   window.open(`/diagram/${diagramId}`, '_blank', 'noopener,noreferrer')
 }
 
-export function SubDiagramNode({ data, selected }: NodeProps<TSubDiagramNode>) {
+const BASE_WIDTH = 260
+const MAX_TITLE_SCALE = 4
+
+export function SubDiagramNode({
+  id,
+  data,
+  selected,
+}: NodeProps<TSubDiagramNode>) {
   const { organizationId } = useFlowDiagramContext()
+
+  const nodeWidth = useStore(
+    (store) => store.nodeLookup.get(id)?.measured.width
+  )
+
+  const titleScale = nodeWidth
+    ? Math.min(Math.max(nodeWidth / BASE_WIDTH, 1), MAX_TITLE_SCALE)
+    : 1
 
   const query = useQuery(DIAGRAM, {
     variables: { orgId: organizationId!, id: data.diagramId! },
@@ -173,13 +188,22 @@ export function SubDiagramNode({ data, selected }: NodeProps<TSubDiagramNode>) {
         )}
 
         <div
+          style={{
+            height: 28 * titleScale,
+            paddingInline: 10 * titleScale,
+            gap: 6 * titleScale,
+            fontSize: 12 * titleScale,
+          }}
           className={cn(
-            'flex h-7 shrink-0 items-center gap-1.5 px-2.5',
+            'flex shrink-0 items-center',
             !data.hideThumbnail && 'border-stock border-t'
           )}
         >
-          <LuLayoutTemplate className="text-paragraph size-3 shrink-0" />
-          <span className="min-w-0 flex-1 truncate text-xs font-medium text-[#F4F7FC]">
+          <LuLayoutTemplate
+            style={{ width: 12 * titleScale, height: 12 * titleScale }}
+            className="text-paragraph shrink-0"
+          />
+          <span className="min-w-0 flex-1 truncate font-medium text-[#F4F7FC]">
             {name}
           </span>
 
@@ -193,7 +217,9 @@ export function SubDiagramNode({ data, selected }: NodeProps<TSubDiagramNode>) {
               }}
               className="text-paragraph shrink-0 transition-colors hover:text-[#F4F7FC]"
             >
-              <LuExternalLink className="size-3" />
+              <LuExternalLink
+                style={{ width: 12 * titleScale, height: 12 * titleScale }}
+              />
             </button>
           )}
         </div>
