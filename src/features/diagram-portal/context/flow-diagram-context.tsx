@@ -8,6 +8,7 @@ import {
   MongoCollectionSchema,
   MongoEditorSchema,
 } from '../components/nosql-editor/nosql-schema'
+import { useAiBeautify } from '../hooks/use-ai-beautify'
 import { useDiagramData } from '../hooks/use-diagram-data'
 import { useDiagramPortalMutation } from '../hooks/use-diagram-mutation'
 import { DataSource } from '../types/db-flow'
@@ -122,8 +123,22 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       components: diagramData.latestData.components,
     })
 
+    const { beautify, isBeautifying, beautifyPrompt, setBeautifyPrompt } =
+      useAiBeautify({
+        latestData: diagramData.latestData,
+        isPreviewing: diagramData.isPreviewing,
+        setAiPreviewState: diagramData.setAiPreviewState,
+        setSidebarActiveTool,
+        reactFlowInstance: rfInstance,
+      })
+
     return {
       ...diagramData,
+
+      beautify,
+      isBeautifying,
+      beautifyPrompt,
+      setBeautifyPrompt,
 
       reactFLowRef,
       isMetaUpdating,

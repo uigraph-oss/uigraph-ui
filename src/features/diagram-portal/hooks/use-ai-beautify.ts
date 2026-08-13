@@ -1,19 +1,25 @@
+import type { Edge, Node, ReactFlowInstance } from '@xyflow/react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { beautifyDiagramWithAI } from '../api/beautify'
-import { useFlowDiagramContext } from '../context/flow-diagram-context'
 import { beautifyDiagram } from '../helpers/beautify-diagram'
+import { useDiagramData } from './use-diagram-data'
 
-export function useAiBeautify() {
-  const {
-    latestData,
-    isPreviewing,
-    setAiPreviewState,
-    setSidebarActiveTool,
-    reactFlowInstance,
-  } = useFlowDiagramContext()
-
+export function useAiBeautify({
+  latestData,
+  isPreviewing,
+  setAiPreviewState,
+  setSidebarActiveTool,
+  reactFlowInstance,
+}: {
+  latestData: { nodes: Node[]; edges: Edge[] }
+  isPreviewing: boolean
+  setAiPreviewState: ReturnType<typeof useDiagramData>['setAiPreviewState']
+  setSidebarActiveTool: (tool: string | null) => void
+  reactFlowInstance: ReactFlowInstance | null
+}) {
   const [isBeautifying, setIsBeautifying] = useState(false)
+  const [beautifyPrompt, setBeautifyPrompt] = useState('')
 
   async function beautify(prompt: string) {
     if (latestData.nodes.length === 0) {
@@ -69,5 +75,5 @@ export function useAiBeautify() {
     }
   }
 
-  return { beautify, isBeautifying }
+  return { beautify, isBeautifying, beautifyPrompt, setBeautifyPrompt }
 }
