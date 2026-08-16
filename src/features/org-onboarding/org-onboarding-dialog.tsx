@@ -198,7 +198,15 @@ function OrgOnboardingWizard({ orgID }: { orgID: string }) {
         />
       )}
       {step === 'progress' && batchID && (
-        <ProgressStep orgID={orgID} batchID={batchID} />
+        <ProgressStep
+          orgID={orgID}
+          batchID={batchID}
+          onMissing={() => {
+            localStorage.removeItem(batchStorageKey(orgID))
+            setBatchID(null)
+            setStep('welcome')
+          }}
+        />
       )}
     </div>
   )
@@ -662,9 +670,11 @@ export function RepositoriesStep({
 export function ProgressStep({
   orgID,
   batchID,
+  onMissing,
 }: {
   orgID: string
   batchID: string
+  onMissing: () => void
 }) {
   const completedRef = useRef(false)
   const apolloClient = useApolloClient()
@@ -694,6 +704,12 @@ export function ProgressStep({
   const allCompleted =
     repositories.length > 0 &&
     repositories.every((item) => isCompleted(item.status))
+
+  useEffect(() => {
+    if (batchQuery.error?.message.toLowerCase().includes('not found')) {
+      onMissing()
+    }
+  }, [batchQuery.error, onMissing])
 
   useEffect(() => {
     if (!batch) return
