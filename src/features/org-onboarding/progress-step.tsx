@@ -394,7 +394,9 @@ export function ProgressStep({
                           ))}
                         </ul>
                         <p className="text-xs">
-                          Secrets and variables both work. Either{' '}
+                          <code className={codeClass}>AI_PROVIDER_API_KEY</code>{' '}
+                          must be a secret. The rest work as a secret or a
+                          variable, and either{' '}
                           <code className={codeClass}>AI_PROVIDER_API_URL</code>{' '}
                           or <code className={codeClass}>AI_PROVIDER_NPM</code>{' '}
                           is enough.
