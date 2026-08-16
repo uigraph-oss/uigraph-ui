@@ -394,14 +394,10 @@ export function ProgressStep({
                           ))}
                         </ul>
                         <p className="text-xs">
-                          <code className={codeClass}>AI_PROVIDER_API_KEY</code>{' '}
-                          is a secret.{' '}
-                          <code className={codeClass}>AI_PROVIDER_MODEL</code>{' '}
-                          and{' '}
+                          Secrets and variables both work. Either{' '}
                           <code className={codeClass}>AI_PROVIDER_API_URL</code>{' '}
-                          are variables.{' '}
-                          <code className={codeClass}>AI_PROVIDER_NPM</code> is
-                          optional.
+                          or <code className={codeClass}>AI_PROVIDER_NPM</code>{' '}
+                          is enough.
                         </p>
                         <Button
                           preset="outline"

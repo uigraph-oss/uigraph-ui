@@ -50,7 +50,7 @@ export function GitHubStep({
 }) {
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState('')
-  const popupRef = useRef<Window | null>(null)
+  const tabRef = useRef<Window | null>(null)
   const installationQuery = useQuery(GITHUB_APP, {
     variables: { orgID },
     fetchPolicy: 'network-only',
@@ -58,8 +58,8 @@ export function GitHubStep({
     onCompleted: (data) => {
       if (!data.githubApp) return
       if (!isInstallationConnected(data.githubApp.status)) return
-      popupRef.current?.close()
-      popupRef.current = null
+      tabRef.current?.close()
+      tabRef.current = null
       setIsConnecting(false)
     },
   })
@@ -76,20 +76,16 @@ export function GitHubStep({
   const isLoadingInstallation =
     installationQuery.loading && !installationQuery.data
 
-  useEffect(() => () => popupRef.current?.close(), [])
+  useEffect(() => () => tabRef.current?.close(), [])
 
   async function handleConnect() {
     setError('')
-    const popup = window.open(
-      '',
-      'uigraph-github-app',
-      'popup,width=720,height=760'
-    )
-    if (!popup) {
-      setError('Allow popups for UIGraph, then try again.')
+    const tab = window.open('', 'uigraph-github-app')
+    if (!tab) {
+      setError('Allow UIGraph to open new tabs, then try again.')
       return
     }
-    popupRef.current = popup
+    tabRef.current = tab
 
     try {
       const result = await getInstallURL({ variables: { orgID } })
@@ -100,13 +96,13 @@ export function GitHubStep({
       if (url.protocol !== 'https:') {
         throw new Error('GitHub returned an invalid installation URL')
       }
-      popup.opener = null
-      popup.location.href = url.href
+      tab.opener = null
+      tab.location.href = url.href
       setIsConnecting(true)
       await installationQuery.refetch()
     } catch (caught) {
-      popup.close()
-      popupRef.current = null
+      tab.close()
+      tabRef.current = null
       setError(
         caught instanceof Error ? caught.message : 'Could not connect GitHub'
       )
@@ -183,8 +179,8 @@ export function GitHubStep({
             </Button>
             {isConnecting && (
               <p className="text-paragraph text-center text-xs">
-                Finish the installation in the GitHub window. This step updates
-                on its own.
+                Finish the installation in the GitHub tab. This step updates on
+                its own.
               </p>
             )}
           </div>
