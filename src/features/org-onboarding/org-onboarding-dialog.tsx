@@ -6,8 +6,11 @@ import { TeamContextProvider } from '@/features/dashboard-settings/context/team-
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { useCallback, useState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { LATEST_REPOSITORY_ONBOARDING } from './api'
 import { GitHubStep } from './github-step'
 import { ProgressStep } from './progress-step'
 import { RepositoriesStep } from './repositories-step'
@@ -22,10 +25,6 @@ const STEPS = [
   'progress',
 ] as const
 type Step = (typeof STEPS)[number]
-
-function batchStorageKey(orgID: string) {
-  return `org-onboarding:${orgID}:batch`
-}
 
 export function OrgOnboardingDialog() {
   const organization = useCurrentOrganization()
@@ -53,32 +52,41 @@ export function OrgOnboardingDialog() {
 }
 
 function OrgOnboardingWizard({ orgID }: { orgID: string }) {
-  const [batchID, setBatchID] = useState(() =>
-    localStorage.getItem(batchStorageKey(orgID))
-  )
-  const [step, setStep] = useState<Step>(batchID ? 'progress' : 'welcome')
+  const [step, setStep] = useState<Step | null>(null)
+  const [startedBatchID, setStartedBatchID] = useState<string | null>(null)
+  const [ignoreOpenBatch, setIgnoreOpenBatch] = useState(false)
   const [team, setTeam] = useState<{ id: string; name: string } | null>(null)
 
-  const handleRestart = useCallback(() => {
-    localStorage.removeItem(batchStorageKey(orgID))
-    setBatchID(null)
-    setStep('welcome')
-  }, [orgID])
+  const latestQuery = useQuery(LATEST_REPOSITORY_ONBOARDING, {
+    variables: { orgID },
+    fetchPolicy: 'network-only',
+  })
 
-  const handleFinished = useCallback(() => {
-    localStorage.removeItem(batchStorageKey(orgID))
-  }, [orgID])
+  const openBatchID = ignoreOpenBatch
+    ? null
+    : (latestQuery.data?.latestRepositoryOnboarding?.id ?? null)
+  const batchID = startedBatchID ?? openBatchID
+  const currentStep = step ?? (batchID ? 'progress' : 'welcome')
+  const isResuming = latestQuery.loading && !latestQuery.data
 
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex shrink-0 flex-col items-center gap-3.5 px-6 pt-7 pb-5 sm:px-8">
         <UiGraphLogo className="size-9" />
-        <StepDots step={step} />
+        <StepDots step={currentStep} />
       </div>
 
-      {step === 'welcome' && <WelcomeStep onNext={() => setStep('teams')} />}
+      {isResuming && (
+        <div className="text-paragraph flex min-h-0 flex-1 items-center justify-center gap-2 text-sm">
+          <Loader2 className="size-4 animate-spin" /> Loading your onboarding
+        </div>
+      )}
 
-      {step === 'teams' && (
+      {!isResuming && currentStep === 'welcome' && (
+        <WelcomeStep onNext={() => setStep('teams')} />
+      )}
+
+      {!isResuming && currentStep === 'teams' && (
         <TeamsStep
           selectedTeamID={team?.id ?? null}
           onBack={() => setStep('welcome')}
@@ -87,7 +95,7 @@ function OrgOnboardingWizard({ orgID }: { orgID: string }) {
         />
       )}
 
-      {step === 'github' && (
+      {!isResuming && currentStep === 'github' && (
         <GitHubStep
           orgID={orgID}
           onBack={() => setStep('teams')}
@@ -95,25 +103,28 @@ function OrgOnboardingWizard({ orgID }: { orgID: string }) {
         />
       )}
 
-      {step === 'repositories' && team && (
+      {!isResuming && currentStep === 'repositories' && team && (
         <RepositoriesStep
           orgID={orgID}
           team={team}
           onBack={() => setStep('github')}
           onStarted={(id) => {
-            localStorage.setItem(batchStorageKey(orgID), id)
-            setBatchID(id)
+            setStartedBatchID(id)
+            setIgnoreOpenBatch(false)
             setStep('progress')
           }}
         />
       )}
 
-      {step === 'progress' && batchID && (
+      {!isResuming && currentStep === 'progress' && batchID && (
         <ProgressStep
           orgID={orgID}
           batchID={batchID}
-          onRestart={handleRestart}
-          onFinished={handleFinished}
+          onRestart={() => {
+            setStartedBatchID(null)
+            setIgnoreOpenBatch(true)
+            setStep('welcome')
+          }}
         />
       )}
     </div>

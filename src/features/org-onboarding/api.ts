@@ -63,6 +63,14 @@ export const REPOSITORY_ONBOARDING = graphql(`
   }
 `)
 
+export const LATEST_REPOSITORY_ONBOARDING = graphql(`
+  query OnboardingLatestRepositoryOnboarding($orgID: ID!) {
+    latestRepositoryOnboarding(orgId: $orgID) {
+      id
+    }
+  }
+`)
+
 export const GITHUB_APP_INSTALL_URL = graphql(`
   mutation OnboardingGitHubAppInstallURL($orgID: ID!) {
     githubAppInstallURL(orgId: $orgID)

@@ -55,6 +55,13 @@ export function GitHubStep({
     variables: { orgID },
     fetchPolicy: 'network-only',
     pollInterval: isConnecting ? 5000 : 0,
+    onCompleted: (data) => {
+      if (!data.githubApp) return
+      if (!isInstallationConnected(data.githubApp.status)) return
+      popupRef.current?.close()
+      popupRef.current = null
+      setIsConnecting(false)
+    },
   })
   const [getInstallURL, { loading: isStarting }] = useMutation(
     GITHUB_APP_INSTALL_URL
@@ -68,13 +75,6 @@ export function GitHubStep({
   )
   const isLoadingInstallation =
     installationQuery.loading && !installationQuery.data
-
-  useEffect(() => {
-    if (!connected) return
-    setIsConnecting(false)
-    popupRef.current?.close()
-    popupRef.current = null
-  }, [connected])
 
   useEffect(() => () => popupRef.current?.close(), [])
 

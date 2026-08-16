@@ -15,7 +15,7 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   COMPLETE_ONBOARDING,
@@ -125,27 +125,33 @@ export function ProgressStep({
   orgID,
   batchID,
   onRestart,
-  onFinished,
 }: {
   orgID: string
   batchID: string
   onRestart: () => void
-  onFinished: () => void
 }) {
-  const completedRef = useRef(false)
   const apolloClient = useApolloClient()
   const [pendingID, setPendingID] = useState('')
   const [actionError, setActionError] = useState('')
+  const [finishError, setFinishError] = useState('')
+  const [isPolling, setIsPolling] = useState(true)
   const batchQuery = useQuery(REPOSITORY_ONBOARDING, {
     variables: { orgID, batchID },
     fetchPolicy: 'network-only',
+    pollInterval: isPolling ? 5000 : 0,
+    onCompleted: (data) => {
+      const items = data.repositoryOnboarding.repositories
+      const done =
+        items.length > 0 && items.every((item) => isTerminal(item.status))
+      if (done) setIsPolling(false)
+      if (!done) setIsPolling(true)
+    },
   })
-  const [completeOnboarding, { error: completionError }] =
+  const [completeOnboarding, { called: finishCalled }] =
     useMutation(COMPLETE_ONBOARDING)
   const [recheck] = useMutation(RECHECK_REPOSITORY_ONBOARDING)
   const [retry] = useMutation(RETRY_REPOSITORY_ONBOARDING)
   const batch = batchQuery.data?.repositoryOnboarding
-  const { startPolling, stopPolling } = batchQuery
   const repositories = batch?.repositories ?? []
   const completedCount = repositories.filter((item) =>
     isCompleted(item.status)
@@ -159,41 +165,30 @@ export function ProgressStep({
   const allCompleted =
     repositories.length > 0 && completedCount === repositories.length
 
-  useEffect(() => {
-    if (batchQuery.error?.message.toLowerCase().includes('not found')) {
-      onRestart()
+  const finishOnboarding = useCallback(async () => {
+    setFinishError('')
+    try {
+      await completeOnboarding({ variables: { orgId: orgID } })
+      await Promise.all([
+        refreshOrganizations(),
+        apolloClient.refetchQueries({
+          include: 'active',
+          onQueryUpdated: (query) => query.queryName === 'Services',
+        }),
+      ])
+    } catch (caught) {
+      setFinishError(
+        caught instanceof Error
+          ? caught.message
+          : 'Could not finish the onboarding'
+      )
     }
-  }, [batchQuery.error, onRestart])
+  }, [apolloClient, completeOnboarding, orgID])
 
   useEffect(() => {
-    if (!batch) return
-    if (terminal) {
-      stopPolling()
-      return
-    }
-    startPolling(5000)
-    return () => stopPolling()
-  }, [batch, startPolling, stopPolling, terminal])
-
-  useEffect(() => {
-    if (!allCompleted || completedRef.current) return
-    completedRef.current = true
-    void (async () => {
-      try {
-        await completeOnboarding({ variables: { orgId: orgID } })
-        onFinished()
-        await Promise.all([
-          refreshOrganizations(),
-          apolloClient.refetchQueries({
-            include: 'active',
-            onQueryUpdated: (query) => query.queryName === 'Services',
-          }),
-        ])
-      } catch {
-        completedRef.current = false
-      }
-    })()
-  }, [allCompleted, apolloClient, completeOnboarding, onFinished, orgID])
+    if (!allCompleted || finishCalled) return
+    void finishOnboarding()
+  }, [allCompleted, finishCalled, finishOnboarding])
 
   async function handleRecheck(onboardingID: string) {
     setPendingID(onboardingID)
@@ -294,11 +289,20 @@ export function ProgressStep({
           </Alert>
         )}
 
-        {completionError && (
+        {finishError && (
           <Alert variant="destructive" className="mt-4 shrink-0">
             <AlertCircle />
             <AlertTitle>Onboarding could not finish</AlertTitle>
-            <AlertDescription>{completionError.message}</AlertDescription>
+            <AlertDescription>
+              <p>{finishError}</p>
+              <Button
+                preset="outline"
+                className={cn(compactButtonClass, 'mt-1')}
+                onClick={() => void finishOnboarding()}
+              >
+                <RefreshCw className="size-4" /> Try again
+              </Button>
+            </AlertDescription>
           </Alert>
         )}
 
