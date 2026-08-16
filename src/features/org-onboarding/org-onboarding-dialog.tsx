@@ -1,16 +1,20 @@
 'use client'
 
 import { UiGraphLogo } from '@/components/logo'
+import { Button } from '@/components/ui/button'
 import { Dialog, DialogOverlay, DialogPortal } from '@/components/ui/dialog'
 import { TeamContextProvider } from '@/features/dashboard-settings/context/team-context'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
-import { useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
+import {
+  refreshOrganizations,
+  useCurrentOrganization,
+} from '@/store/auth-store'
+import { useMutation, useQuery } from '@apollo/client'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
-import { LATEST_REPOSITORY_ONBOARDING } from './api'
+import { COMPLETE_ONBOARDING, LATEST_REPOSITORY_ONBOARDING } from './api'
 import { GitHubStep } from './github-step'
 import { ProgressStep } from './progress-step'
 import { RepositoriesStep } from './repositories-step'
@@ -56,6 +60,21 @@ function OrgOnboardingWizard({ orgID }: { orgID: string }) {
   const [startedBatchID, setStartedBatchID] = useState<string | null>(null)
   const [ignoreOpenBatch, setIgnoreOpenBatch] = useState(false)
   const [team, setTeam] = useState<{ id: string; name: string } | null>(null)
+  const [skipError, setSkipError] = useState('')
+  const [completeOnboarding, { loading: isSkipping }] =
+    useMutation(COMPLETE_ONBOARDING)
+
+  async function handleSkip() {
+    setSkipError('')
+    try {
+      await completeOnboarding({ variables: { orgId: orgID } })
+      await refreshOrganizations()
+    } catch (caught) {
+      setSkipError(
+        caught instanceof Error ? caught.message : 'Could not skip onboarding'
+      )
+    }
+  }
 
   const latestQuery = useQuery(LATEST_REPOSITORY_ONBOARDING, {
     variables: { orgID },
@@ -71,10 +90,25 @@ function OrgOnboardingWizard({ orgID }: { orgID: string }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 flex-col items-center gap-3.5 px-6 pt-7 pb-5 sm:px-8">
+      <div className="relative flex shrink-0 flex-col items-center gap-3.5 px-6 pt-7 pb-5 sm:px-8">
         <UiGraphLogo className="size-9" />
         <StepDots step={currentStep} />
+        <Button
+          preset="ghost"
+          disabled={isSkipping}
+          onClick={handleSkip}
+          className="text-paragraph absolute top-4 right-4 h-8 rounded-lg px-2.5 text-xs"
+        >
+          {isSkipping && <Loader2 className="size-3.5 animate-spin" />}
+          Skip for now
+        </Button>
       </div>
+
+      {skipError && (
+        <p className="text-destructive shrink-0 px-6 pb-3 text-center text-xs sm:px-8">
+          {skipError}
+        </p>
+      )}
 
       {isResuming && (
         <div className="text-paragraph flex min-h-0 flex-1 items-center justify-center gap-2 text-sm">
