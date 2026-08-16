@@ -244,7 +244,7 @@ export function ProgressStep({
       />
 
       <StepBody>
-        {batch && repositories.length > 0 && (
+        {batch && repositories.length > 1 && (
           <div className="shrink-0">
             <div className="flex items-center justify-between gap-3 text-xs">
               <span className="text-paragraph">
