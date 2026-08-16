@@ -99,33 +99,20 @@ function isCancelled(status: string) {
 
 function onboardingLabel(onboarding: {
   status: string
-  setupPullRequestUrl?: string | null
-  generationRunUrl?: string | null
-  artifactsPullRequestUrl?: string | null
-  syncRunUrl?: string | null
+  runUrl?: string | null
+  pullRequestUrl?: string | null
   missingAIConfiguration: string[]
 }) {
   if (onboarding.status === 'COMPLETED') return 'Completed'
   if (onboarding.status === 'FAILED') return 'Failed'
   if (onboarding.status === 'CANCELLED') return 'Cancelled'
   if (onboarding.status === 'SELECTED') return 'Selected'
-  if (onboarding.status === 'SETUP_PR_CREATING')
-    return 'Creating setup pull request'
-  if (onboarding.status === 'SETUP_PR_OPEN') return 'Setup pull request open'
-  if (onboarding.status === 'WAITING_SETUP_MERGE')
-    return 'Waiting for setup merge'
   if (onboarding.status === 'CHECKING_AI_CONFIGURATION')
     return 'Checking AI configuration'
   if (onboarding.status === 'WAITING_AI_CONFIGURATION')
     return 'AI configuration required'
-  if (onboarding.status === 'GENERATION_QUEUED') return 'Generation queued'
-  if (onboarding.status === 'GENERATION_RUNNING') return 'Generating artifacts'
-  if (onboarding.status === 'ARTIFACTS_PR_OPEN')
-    return 'Artifacts pull request open'
-  if (onboarding.status === 'WAITING_ARTIFACTS_MERGE')
-    return 'Waiting for artifacts merge'
-  if (onboarding.status === 'SYNC_QUEUED') return 'Sync queued'
-  if (onboarding.status === 'SYNC_RUNNING') return 'Syncing'
+  if (onboarding.status === 'RUN_QUEUED') return 'Run queued'
+  if (onboarding.status === 'RUN_RUNNING') return 'Generating and syncing'
   if (onboarding.status === 'RUNNING') return 'Starting onboarding'
   return readableStatus(onboarding.status)
 }
@@ -758,8 +745,8 @@ export function ProgressStep({
           Onboarding repositories
         </DialogTitle>
         <DialogDescription className="text-paragraph mx-auto mt-2 max-w-lg text-sm leading-relaxed">
-          Each repository progresses independently. You can follow pull requests
-          and Actions runs below.
+          Each repository progresses independently on its own branch. Nothing is
+          merged. You can follow the branches and Actions runs below.
         </DialogDescription>
       </div>
 
@@ -843,24 +830,17 @@ export function ProgressStep({
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs">
-                    {onboarding.setupPullRequestUrl && (
-                      <ProgressLink href={onboarding.setupPullRequestUrl}>
-                        Setup PR
-                      </ProgressLink>
+                    <ProgressLink
+                      href={`${onboarding.repository.url}/tree/${onboarding.branch}`}
+                    >
+                      Branch
+                    </ProgressLink>
+                    {onboarding.runUrl && (
+                      <ProgressLink href={onboarding.runUrl}>Run</ProgressLink>
                     )}
-                    {onboarding.generationRunUrl && (
-                      <ProgressLink href={onboarding.generationRunUrl}>
-                        Generation run
-                      </ProgressLink>
-                    )}
-                    {onboarding.artifactsPullRequestUrl && (
-                      <ProgressLink href={onboarding.artifactsPullRequestUrl}>
-                        Artifacts PR
-                      </ProgressLink>
-                    )}
-                    {onboarding.syncRunUrl && (
-                      <ProgressLink href={onboarding.syncRunUrl}>
-                        Sync run
+                    {onboarding.pullRequestUrl && (
+                      <ProgressLink href={onboarding.pullRequestUrl}>
+                        Pull request
                       </ProgressLink>
                     )}
                     {onboarding.serviceId && (

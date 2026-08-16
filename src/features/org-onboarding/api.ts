@@ -52,10 +52,9 @@ export const REPOSITORY_ONBOARDING = graphql(`
           private
           archived
         }
-        setupPullRequestUrl
-        generationRunUrl
-        artifactsPullRequestUrl
-        syncRunUrl
+        branch
+        runUrl
+        pullRequestUrl
         missingAIConfiguration
         error
         serviceId
