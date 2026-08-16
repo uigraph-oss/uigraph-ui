@@ -1,4 +1,4 @@
-import { DASHBOARD_NAV_LINKS, Paths } from '@/constants'
+import { DASHBOARD_NAV_LINKS } from '@/constants'
 import {
   AuthenticatedGuard,
   ProtectedDashboardLayout,
@@ -154,11 +154,6 @@ const AuthorizePage = lazy(() =>
 const OnboardingPage = lazy(() =>
   import('@/routes/onboarding-page').then((mod) => ({
     default: mod.OnboardingPage,
-  }))
-)
-const GitHubInstalledPage = lazy(() =>
-  import('@/routes/github-installed-page').then((mod) => ({
-    default: mod.GitHubInstalledPage,
   }))
 )
 const NotFoundPage = lazy(() =>
@@ -414,10 +409,6 @@ export function AppRoutes() {
         }
       />
       <Route path="/authorize" element={<AuthorizePage />} />
-      <Route
-        path={Paths.integrations.githubInstalled}
-        element={<GitHubInstalledPage />}
-      />
       <Route
         path="/onboarding"
         element={

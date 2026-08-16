@@ -10,9 +10,6 @@ export const Paths = {
   workspace: {
     create: '/create-workspace',
   },
-  integrations: {
-    githubInstalled: '/integrations/github/installed',
-  },
   dashboard: {
     root: '/dashboard',
   },
