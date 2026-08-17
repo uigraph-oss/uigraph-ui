@@ -40,7 +40,12 @@ export function SyncOptionStep({
     setError('')
     try {
       const result = await startImport({
-        variables: { orgID, teamID, repositoryID: repository.id },
+        variables: {
+          orgID,
+          teamID,
+          owner: repository.owner,
+          repo: repository.name,
+        },
       })
       const id = result.data?.startRepositoryImport.id
       if (!id) throw new Error('The import started without an ID')

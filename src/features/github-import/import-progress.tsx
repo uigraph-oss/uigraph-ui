@@ -139,14 +139,7 @@ export function ImportProgress({
           {!completed && !failed && 'Setting up your repository'}
         </h1>
         <p className="text-paragraph mt-2 text-sm">
-          <a
-            href={value.repository.url}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:underline"
-          >
-            {value.repository.fullName}
-          </a>
+          {value.githubRepo}
           {value.teamName && <> · {value.teamName}</>}
           {elapsed && <> · {elapsed}</>}
         </p>
@@ -161,9 +154,7 @@ export function ImportProgress({
       {completed && (
         <Alert className="border-success/25 bg-success/5">
           <PartyPopper className="text-success" />
-          <AlertTitle>
-            {value.repository.name} is documented in UIGraph
-          </AlertTitle>
+          <AlertTitle>{value.githubRepo} is documented in UIGraph</AlertTitle>
           <AlertDescription>
             <p>
               Its artifacts are live, and the workflows UIGraph added keep them
@@ -237,14 +228,7 @@ export function ImportProgress({
           </span>
         )}
         {value.branch && (
-          <a
-            href={`${value.repository.url}/tree/${value.branch}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-primary inline-flex items-center gap-1.5 text-xs hover:underline"
-          >
-            Branch <ExternalLink className="size-3" />
-          </a>
+          <span className="text-paragraph text-xs">Branch {value.branch}</span>
         )}
         {value.runUrl && (
           <a

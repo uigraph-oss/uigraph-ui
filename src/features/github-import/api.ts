@@ -3,10 +3,10 @@ import { graphql } from '@/api'
 export const GITHUB_APP = graphql(`
   query GitHubImportApp($orgID: ID!) {
     githubApp(orgId: $orgID) {
-      id
+      installationId
       accountLogin
       accountType
-      status
+      suspended
     }
   }
 `)
@@ -14,8 +14,8 @@ export const GITHUB_APP = graphql(`
 export const GITHUB_REPOSITORIES = graphql(`
   query GitHubImportRepositories($orgID: ID!) {
     githubRepositories(orgId: $orgID) {
-      id
       githubId
+      owner
       name
       fullName
       url
@@ -30,6 +30,7 @@ export const REPOSITORY_IMPORT = graphql(`
   query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {
     repositoryImport(orgId: $orgID, importId: $importID) {
       id
+      githubRepo
       status
       teamId
       teamName
@@ -42,14 +43,6 @@ export const REPOSITORY_IMPORT = graphql(`
       createdAt
       runStartedAt
       runCompletedAt
-      repository {
-        id
-        name
-        fullName
-        url
-        defaultBranch
-        private
-      }
       steps {
         number
         name
@@ -57,27 +50,6 @@ export const REPOSITORY_IMPORT = graphql(`
         conclusion
         startedAt
         completedAt
-      }
-    }
-  }
-`)
-
-export const REPOSITORY_IMPORTS = graphql(`
-  query GitHubImportRepositoryImports($orgID: ID!) {
-    repositoryImports(orgId: $orgID) {
-      id
-      status
-      teamName
-      branch
-      runUrl
-      pullRequestUrl
-      error
-      serviceId
-      createdAt
-      repository {
-        id
-        fullName
-        url
       }
     }
   }
@@ -105,11 +77,17 @@ export const DISCONNECT_GITHUB_APP = graphql(`
 `)
 
 export const START_REPOSITORY_IMPORT = graphql(`
-  mutation GitHubImportStart($orgID: ID!, $teamID: ID!, $repositoryID: ID!) {
+  mutation GitHubImportStart(
+    $orgID: ID!
+    $teamID: ID!
+    $owner: String!
+    $repo: String!
+  ) {
     startRepositoryImport(
       orgId: $orgID
       teamId: $teamID
-      repositoryId: $repositoryID
+      owner: $owner
+      repo: $repo
     ) {
       id
       status

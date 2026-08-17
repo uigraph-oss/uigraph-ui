@@ -23,7 +23,12 @@ import { useDeferredValue, useState } from 'react'
 import { GITHUB_REPOSITORIES } from './api'
 import { StepBody, StepFooter, StepHeader } from './step-layout'
 
-export type SelectedRepository = { id: string; fullName: string }
+export type SelectedRepository = {
+  githubId: string
+  owner: string
+  name: string
+  fullName: string
+}
 
 export function SelectRepositoryStep({
   orgID,
@@ -120,19 +125,21 @@ export function SelectRepositoryStep({
               {visibleRepositories.map((repository) => (
                 <button
                   type="button"
-                  key={repository.id}
+                  key={repository.githubId}
                   role="radio"
-                  aria-checked={selected?.id === repository.id}
+                  aria-checked={selected?.githubId === repository.githubId}
                   disabled={repository.archived}
                   className={cn(
                     'hover:bg-stock/30 flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
                     repository.archived &&
                       'cursor-not-allowed opacity-50 hover:bg-transparent',
-                    selected?.id === repository.id && 'bg-primary/5'
+                    selected?.githubId === repository.githubId && 'bg-primary/5'
                   )}
                   onClick={() =>
                     onSelect({
-                      id: repository.id,
+                      githubId: repository.githubId,
+                      owner: repository.owner,
+                      name: repository.name,
                       fullName: repository.fullName,
                     })
                   }
@@ -140,12 +147,13 @@ export function SelectRepositoryStep({
                   <span
                     className={cn(
                       'flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors',
-                      selected?.id === repository.id &&
+                      selected?.githubId === repository.githubId &&
                         'border-primary bg-primary text-primary-foreground',
-                      selected?.id !== repository.id && 'border-stock'
+                      selected?.githubId !== repository.githubId &&
+                        'border-stock'
                     )}
                   >
-                    {selected?.id === repository.id && (
+                    {selected?.githubId === repository.githubId && (
                       <Check className="size-3" />
                     )}
                   </span>

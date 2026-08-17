@@ -7,14 +7,6 @@ import {
   GITHUB_APP_INSTALL_URL,
 } from './api'
 
-export function isInstallationConnected(status: string) {
-  const normalized = status.toUpperCase()
-  if (normalized === 'CONNECTED') return true
-  if (normalized === 'ACTIVE') return true
-  if (normalized === 'INSTALLED') return true
-  return false
-}
-
 export function useGitHubConnection(orgID: string) {
   const [isConnecting, setIsConnecting] = useState(false)
   const tabRef = useRef<Window | null>(null)
@@ -25,8 +17,7 @@ export function useGitHubConnection(orgID: string) {
     pollInterval: isConnecting ? 5000 : 0,
     onError: (queryError) => toast.error(queryError.message),
     onCompleted: (data) => {
-      if (!data.githubApp) return
-      if (!isInstallationConnected(data.githubApp.status)) return
+      if (!data.githubApp || data.githubApp.suspended) return
       tabRef.current?.close()
       tabRef.current = null
       setIsConnecting(false)
@@ -50,8 +41,8 @@ export function useGitHubConnection(orgID: string) {
       tabRef.current = null
       setIsConnecting(false)
       void refetch().then((result) => {
-        const status = result.data?.githubApp?.status
-        if (status && isInstallationConnected(status)) return
+        const app = result.data?.githubApp
+        if (app && !app.suspended) return
         toast.error('GitHub was not connected. The installation was closed.')
       })
     }, 1000)
@@ -107,8 +98,7 @@ export function useGitHubConnection(orgID: string) {
 
   return {
     installation,
-    connected:
-      installation !== null && isInstallationConnected(installation.status),
+    connected: installation !== null && !installation.suspended,
     isLoading: installationQuery.loading && !installationQuery.data,
     isStarting,
     isConnecting,

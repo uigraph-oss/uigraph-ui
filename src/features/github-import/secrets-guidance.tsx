@@ -5,7 +5,6 @@ import { useQuery } from '@apollo/client'
 import { Check, Copy, ExternalLink, KeyRound, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { GITHUB_APP } from './api'
-import { isInstallationConnected } from './use-github-connection'
 
 const REQUIRED_SECRETS = [
   'AI_PROVIDER_API_KEY',
@@ -59,9 +58,7 @@ export function SecretsGuidance({
 
   const installation = installationQuery.data?.githubApp
   const accountLogin =
-    installation && isInstallationConnected(installation.status)
-      ? installation.accountLogin
-      : null
+    installation && !installation.suspended ? installation.accountLogin : null
   const names = missing && missing.length > 0 ? missing : REQUIRED_SECRETS
 
   return (
