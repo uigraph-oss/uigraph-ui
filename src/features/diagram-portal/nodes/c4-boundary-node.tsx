@@ -62,7 +62,7 @@ export function C4BoundaryNode({
 
   return (
     <div
-      className="relative size-full rounded-[0.25rem]"
+      className="c4-boundary-box relative size-full rounded-[0.25rem]"
       style={{
         backgroundColor: data.backgroundColor ?? DEFAULT_BACKGROUND,
         border: `2px dashed ${borderColor}`,
@@ -78,7 +78,7 @@ export function C4BoundaryNode({
       />
 
       {/* c4model.com labels a boundary at its bottom-left corner. */}
-      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 px-3 pb-2">
+      <div className="c4-boundary-label absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 px-3 pb-2">
         <TextareaAutosize
           value={localName}
           placeholder="Boundary"
@@ -99,7 +99,7 @@ export function C4BoundaryNode({
 
         {data.description && (
           <span
-            className="max-w-full text-left text-[0.625rem] leading-tight whitespace-pre-line opacity-80"
+            className="c4-boundary-description max-w-full text-left text-[0.625rem] leading-tight whitespace-pre-line opacity-80"
             style={{ color: data.fontColor ?? borderColor }}
           >
             {data.description}

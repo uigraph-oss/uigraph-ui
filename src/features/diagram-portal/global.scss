@@ -188,6 +188,43 @@
   }
 }
 
+.react-flow.lod-active .react-flow__viewport:not(.downloading) {
+  .react-flow__node.lod-hidden,
+  .react-flow__edge.lod-hidden {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .react-flow__edgelabel-renderer {
+    visibility: hidden;
+  }
+
+  .react-flow__node.lod-collapsed {
+    .c4-boundary-box {
+      border-style: solid !important;
+    }
+
+    .c4-boundary-label {
+      inset: 0;
+      margin: auto;
+      padding: 0;
+      height: fit-content;
+      align-items: center;
+      text-align: center;
+      width: calc(100% * var(--react-flow-scale));
+      transform: scale(calc(1 / var(--react-flow-scale)));
+    }
+
+    .c4-boundary-label textarea {
+      text-align: center;
+    }
+
+    .c4-boundary-description {
+      display: none;
+    }
+  }
+}
+
 .react-flow__edge-path {
   transition: filter 0.25s ease-in-out !important;
   filter: saturate(1) drop-shadow(0 0 2px transparent) !important;

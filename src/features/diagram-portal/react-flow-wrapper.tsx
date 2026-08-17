@@ -23,7 +23,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import * as React from 'react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { DebugNodeBounds } from './debug-node-bounds'
@@ -34,6 +34,7 @@ import { createEdgeMarker } from './edges/helpers'
 import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
 import { focusNodes, MAX_ZOOM, MIN_ZOOM } from './helpers/camera'
 import { findEditorAction } from './helpers/editor-actions'
+import { applyLevelOfDetail, resolveVisibleDepth } from './helpers/lod'
 import { handleOnGroupDrag, handleOnNodeDrag } from './helpers/on-node-drag'
 import { createGroupNode } from './helpers/xy-flow'
 import { useDiagramHistory } from './hooks/use-diagram-history'
@@ -424,6 +425,17 @@ export function ReactFlowWrapper({
     [reactFlowInstance, setNodes, setEdges]
   )
 
+  const [visibleDepth, setVisibleDepth] = useState<number>(Infinity)
+
+  useEffect(() => {
+    setVisibleDepth((prev) => resolveVisibleDepth(viewport?.zoom ?? 1, prev))
+  }, [viewport?.zoom])
+
+  const detailed = useMemo(
+    () => applyLevelOfDetail(nodes, edges, visibleDepth),
+    [nodes, edges, visibleDepth]
+  )
+
   const isNodeWritable = !drawingMode && !forceReadOnly && !isPreviewing
 
   const { undo, redo } = useDiagramHistory({
@@ -519,8 +531,8 @@ export function ReactFlowWrapper({
         selectionOnDrag={cursorMode === 'select'}
         panOnScroll={cursorMode === 'select'}
         noWheelClassName="skip-wheel"
-        nodes={nodes}
-        edges={edges}
+        nodes={detailed.nodes}
+        edges={detailed.edges}
         onDrop={onDrop}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
@@ -540,6 +552,7 @@ export function ReactFlowWrapper({
         className={cn(
           'relative isolate opacity-0 transition-opacity duration-100',
           reactFlowInstance && 'opacity-100',
+          visibleDepth !== Infinity && 'lod-active',
           sidebarActiveTool === 'add-comment' &&
             'cursor-none! [&_*]:cursor-none!',
 
