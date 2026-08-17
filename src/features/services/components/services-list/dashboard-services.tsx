@@ -13,13 +13,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import { GITHUB_APP_ENABLED } from '@/features/github-import/api'
 import {
   toCreateServiceInput,
   toUpdateServiceInput,
 } from '@/features/services/api/services'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
-import { CirclePlus, Network } from 'lucide-react'
+import { useQuery } from '@apollo/client'
+import { CirclePlus, Github, Network } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -50,6 +52,12 @@ export function DashboardServices() {
     updateService,
     deleteService,
   } = useDashboardServicesList()
+
+  const githubQuery = useQuery(GITHUB_APP_ENABLED, {
+    variables: { orgID: orgId! },
+    skip: !orgId,
+  })
+  const canImport = canWrite && (githubQuery.data?.githubAppEnabled ?? false)
 
   const categories = useMemo(() => {
     const counts = new Map<string, number>()
@@ -88,6 +96,15 @@ export function DashboardServices() {
             <Network />
             Dependency graph
           </Button>
+          {canImport && (
+            <Button
+              preset="outline"
+              onClick={() => navigate('/repositories/import')}
+            >
+              <Github />
+              Import from GitHub
+            </Button>
+          )}
           <Button
             preset="cta"
             disabled={!canWrite}
@@ -161,7 +178,18 @@ export function DashboardServices() {
       {isServicesLoading ? (
         <SectionLoader label="Loading services..." />
       ) : filtered.length === 0 ? (
-        <SectionNotFound label="No services match your search." />
+        <div className="flex flex-col items-center gap-4">
+          <SectionNotFound label="No services match your search." />
+          {canImport && services.length === 0 && (
+            <Button
+              preset="cta"
+              onClick={() => navigate('/repositories/import')}
+            >
+              <Github />
+              Import a repository from GitHub
+            </Button>
+          )}
+        </div>
       ) : (
         <div
           className="grid grid-cols-1 gap-4 pb-6"

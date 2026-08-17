@@ -124,6 +124,17 @@ type Documents = {
     "\n  query DiagramVersionContent($orgId: ID!, $diagramId: ID!, $versionId: ID!) {\n    diagramVersionContent(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      diagramId\n      content\n    }\n  }\n": typeof types.DiagramVersionContentDocument,
     "\n  mutation CreateDiagramVersion($orgId: ID!, $diagramId: ID!, $label: String) {\n    createDiagramVersion(orgId: $orgId, diagramId: $diagramId, label: $label) {\n      id\n      versionNumber\n    }\n  }\n": typeof types.CreateDiagramVersionDocument,
     "\n  mutation RestoreDiagramVersion(\n    $orgId: ID!\n    $diagramId: ID!\n    $versionId: ID!\n  ) {\n    restoreDiagramVersion(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      id\n    }\n  }\n": typeof types.RestoreDiagramVersionDocument,
+    "\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n": typeof types.GitHubAppEnabledDocument,
+    "\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": typeof types.GitHubImportAppDocument,
+    "\n  query GitHubImportRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n": typeof types.GitHubImportRepositoriesDocument,
+    "\n  query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {\n    repositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n      teamId\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      missingAIConfiguration\n      error\n      serviceId\n      createdAt\n      runStartedAt\n      runCompletedAt\n      repository {\n        id\n        name\n        fullName\n        url\n        defaultBranch\n        private\n      }\n      steps {\n        number\n        name\n        status\n        conclusion\n        startedAt\n        completedAt\n      }\n    }\n  }\n": typeof types.GitHubImportRepositoryImportDocument,
+    "\n  query GitHubImportRepositoryImports($orgID: ID!) {\n    repositoryImports(orgId: $orgID) {\n      id\n      status\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      error\n      serviceId\n      createdAt\n      repository {\n        id\n        fullName\n        url\n      }\n    }\n  }\n": typeof types.GitHubImportRepositoryImportsDocument,
+    "\n  query GitHubImportLatestRepositoryImport($orgID: ID!) {\n    latestRepositoryImport(orgId: $orgID) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportLatestRepositoryImportDocument,
+    "\n  mutation GitHubImportInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n": typeof types.GitHubImportInstallUrlDocument,
+    "\n  mutation GitHubImportDisconnect($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n": typeof types.GitHubImportDisconnectDocument,
+    "\n  mutation GitHubImportStart($orgID: ID!, $teamID: ID!, $repositoryID: ID!) {\n    startRepositoryImport(\n      orgId: $orgID\n      teamId: $teamID\n      repositoryId: $repositoryID\n    ) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportStartDocument,
+    "\n  mutation GitHubImportRecheck($orgID: ID!, $importID: ID!) {\n    recheckRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportRecheckDocument,
+    "\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportRetryDocument,
     "\n  query ApiEndpointById($orgId: ID!, $id: ID!) {\n    apiEndpointById(orgId: $orgId, id: $id) {\n      id\n      serviceId\n      apiGroupId\n      method\n      path\n      summary\n      description\n      tags\n      parameters\n      requestBody\n      responses\n      exampleRequests\n      exampleResponses\n      updatedAt\n      createdAt\n    }\n  }\n": typeof types.ApiEndpointByIdDocument,
     "\n  query TestPackById($orgId: ID!, $id: ID!) {\n    testPackById(orgId: $orgId, id: $id) {\n      testPackId\n      serviceId\n      name\n      type\n      updatedAt\n    }\n  }\n": typeof types.TestPackByIdDocument,
     "\n  query ServiceDocById($orgId: ID!, $id: ID!) {\n    serviceDocById(orgId: $orgId, id: $id) {\n      serviceId\n      docId\n    }\n  }\n": typeof types.ServiceDocByIdDocument,
@@ -208,15 +219,6 @@ type Documents = {
     "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.UpdateAuthRoleMappingDocument,
     "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": typeof types.DeleteAuthRoleMappingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": typeof types.CompleteOnboardingDocument,
-    "\n  query OnboardingGitHubApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": typeof types.OnboardingGitHubAppDocument,
-    "\n  query OnboardingGitHubRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n": typeof types.OnboardingGitHubRepositoriesDocument,
-    "\n  query OnboardingRepositoryOnboarding($orgID: ID!, $batchID: ID!) {\n    repositoryOnboarding(orgId: $orgID, batchId: $batchID) {\n      id\n      status\n      teamId\n      teamName\n      repositories {\n        id\n        status\n        repository {\n          id\n          githubId\n          name\n          fullName\n          url\n          defaultBranch\n          private\n          archived\n        }\n        branch\n        runUrl\n        pullRequestUrl\n        missingAIConfiguration\n        error\n        serviceId\n      }\n    }\n  }\n": typeof types.OnboardingRepositoryOnboardingDocument,
-    "\n  query OnboardingLatestRepositoryOnboarding($orgID: ID!) {\n    latestRepositoryOnboarding(orgId: $orgID) {\n      id\n    }\n  }\n": typeof types.OnboardingLatestRepositoryOnboardingDocument,
-    "\n  mutation OnboardingGitHubAppInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n": typeof types.OnboardingGitHubAppInstallUrlDocument,
-    "\n  mutation OnboardingDisconnectGitHubApp($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n": typeof types.OnboardingDisconnectGitHubAppDocument,
-    "\n  mutation OnboardingStartRepositoryOnboarding(\n    $input: StartRepositoryOnboardingInput!\n  ) {\n    startRepositoryOnboarding(input: $input) {\n      id\n      status\n    }\n  }\n": typeof types.OnboardingStartRepositoryOnboardingDocument,
-    "\n  mutation OnboardingRecheckRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    recheckRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n": typeof types.OnboardingRecheckRepositoryOnboardingDocument,
-    "\n  mutation OnboardingRetryRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    retryRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n": typeof types.OnboardingRetryRepositoryOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareServerOrgLogoUploadDocument,
@@ -417,6 +419,17 @@ const documents: Documents = {
     "\n  query DiagramVersionContent($orgId: ID!, $diagramId: ID!, $versionId: ID!) {\n    diagramVersionContent(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      diagramId\n      content\n    }\n  }\n": types.DiagramVersionContentDocument,
     "\n  mutation CreateDiagramVersion($orgId: ID!, $diagramId: ID!, $label: String) {\n    createDiagramVersion(orgId: $orgId, diagramId: $diagramId, label: $label) {\n      id\n      versionNumber\n    }\n  }\n": types.CreateDiagramVersionDocument,
     "\n  mutation RestoreDiagramVersion(\n    $orgId: ID!\n    $diagramId: ID!\n    $versionId: ID!\n  ) {\n    restoreDiagramVersion(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      id\n    }\n  }\n": types.RestoreDiagramVersionDocument,
+    "\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n": types.GitHubAppEnabledDocument,
+    "\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": types.GitHubImportAppDocument,
+    "\n  query GitHubImportRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n": types.GitHubImportRepositoriesDocument,
+    "\n  query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {\n    repositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n      teamId\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      missingAIConfiguration\n      error\n      serviceId\n      createdAt\n      runStartedAt\n      runCompletedAt\n      repository {\n        id\n        name\n        fullName\n        url\n        defaultBranch\n        private\n      }\n      steps {\n        number\n        name\n        status\n        conclusion\n        startedAt\n        completedAt\n      }\n    }\n  }\n": types.GitHubImportRepositoryImportDocument,
+    "\n  query GitHubImportRepositoryImports($orgID: ID!) {\n    repositoryImports(orgId: $orgID) {\n      id\n      status\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      error\n      serviceId\n      createdAt\n      repository {\n        id\n        fullName\n        url\n      }\n    }\n  }\n": types.GitHubImportRepositoryImportsDocument,
+    "\n  query GitHubImportLatestRepositoryImport($orgID: ID!) {\n    latestRepositoryImport(orgId: $orgID) {\n      id\n      status\n    }\n  }\n": types.GitHubImportLatestRepositoryImportDocument,
+    "\n  mutation GitHubImportInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n": types.GitHubImportInstallUrlDocument,
+    "\n  mutation GitHubImportDisconnect($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n": types.GitHubImportDisconnectDocument,
+    "\n  mutation GitHubImportStart($orgID: ID!, $teamID: ID!, $repositoryID: ID!) {\n    startRepositoryImport(\n      orgId: $orgID\n      teamId: $teamID\n      repositoryId: $repositoryID\n    ) {\n      id\n      status\n    }\n  }\n": types.GitHubImportStartDocument,
+    "\n  mutation GitHubImportRecheck($orgID: ID!, $importID: ID!) {\n    recheckRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": types.GitHubImportRecheckDocument,
+    "\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": types.GitHubImportRetryDocument,
     "\n  query ApiEndpointById($orgId: ID!, $id: ID!) {\n    apiEndpointById(orgId: $orgId, id: $id) {\n      id\n      serviceId\n      apiGroupId\n      method\n      path\n      summary\n      description\n      tags\n      parameters\n      requestBody\n      responses\n      exampleRequests\n      exampleResponses\n      updatedAt\n      createdAt\n    }\n  }\n": types.ApiEndpointByIdDocument,
     "\n  query TestPackById($orgId: ID!, $id: ID!) {\n    testPackById(orgId: $orgId, id: $id) {\n      testPackId\n      serviceId\n      name\n      type\n      updatedAt\n    }\n  }\n": types.TestPackByIdDocument,
     "\n  query ServiceDocById($orgId: ID!, $id: ID!) {\n    serviceDocById(orgId: $orgId, id: $id) {\n      serviceId\n      docId\n    }\n  }\n": types.ServiceDocByIdDocument,
@@ -501,15 +514,6 @@ const documents: Documents = {
     "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.UpdateAuthRoleMappingDocument,
     "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": types.DeleteAuthRoleMappingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": types.CompleteOnboardingDocument,
-    "\n  query OnboardingGitHubApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": types.OnboardingGitHubAppDocument,
-    "\n  query OnboardingGitHubRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n": types.OnboardingGitHubRepositoriesDocument,
-    "\n  query OnboardingRepositoryOnboarding($orgID: ID!, $batchID: ID!) {\n    repositoryOnboarding(orgId: $orgID, batchId: $batchID) {\n      id\n      status\n      teamId\n      teamName\n      repositories {\n        id\n        status\n        repository {\n          id\n          githubId\n          name\n          fullName\n          url\n          defaultBranch\n          private\n          archived\n        }\n        branch\n        runUrl\n        pullRequestUrl\n        missingAIConfiguration\n        error\n        serviceId\n      }\n    }\n  }\n": types.OnboardingRepositoryOnboardingDocument,
-    "\n  query OnboardingLatestRepositoryOnboarding($orgID: ID!) {\n    latestRepositoryOnboarding(orgId: $orgID) {\n      id\n    }\n  }\n": types.OnboardingLatestRepositoryOnboardingDocument,
-    "\n  mutation OnboardingGitHubAppInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n": types.OnboardingGitHubAppInstallUrlDocument,
-    "\n  mutation OnboardingDisconnectGitHubApp($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n": types.OnboardingDisconnectGitHubAppDocument,
-    "\n  mutation OnboardingStartRepositoryOnboarding(\n    $input: StartRepositoryOnboardingInput!\n  ) {\n    startRepositoryOnboarding(input: $input) {\n      id\n      status\n    }\n  }\n": types.OnboardingStartRepositoryOnboardingDocument,
-    "\n  mutation OnboardingRecheckRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    recheckRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n": types.OnboardingRecheckRepositoryOnboardingDocument,
-    "\n  mutation OnboardingRetryRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    retryRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n": types.OnboardingRetryRepositoryOnboardingDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareServerOrgLogoUploadDocument,
@@ -1057,6 +1061,50 @@ export function graphql(source: "\n  mutation RestoreDiagramVersion(\n    $orgId
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n"): (typeof documents)["\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GitHubImportRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {\n    repositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n      teamId\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      missingAIConfiguration\n      error\n      serviceId\n      createdAt\n      runStartedAt\n      runCompletedAt\n      repository {\n        id\n        name\n        fullName\n        url\n        defaultBranch\n        private\n      }\n      steps {\n        number\n        name\n        status\n        conclusion\n        startedAt\n        completedAt\n      }\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {\n    repositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n      teamId\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      missingAIConfiguration\n      error\n      serviceId\n      createdAt\n      runStartedAt\n      runCompletedAt\n      repository {\n        id\n        name\n        fullName\n        url\n        defaultBranch\n        private\n      }\n      steps {\n        number\n        name\n        status\n        conclusion\n        startedAt\n        completedAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GitHubImportRepositoryImports($orgID: ID!) {\n    repositoryImports(orgId: $orgID) {\n      id\n      status\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      error\n      serviceId\n      createdAt\n      repository {\n        id\n        fullName\n        url\n      }\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportRepositoryImports($orgID: ID!) {\n    repositoryImports(orgId: $orgID) {\n      id\n      status\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      error\n      serviceId\n      createdAt\n      repository {\n        id\n        fullName\n        url\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GitHubImportLatestRepositoryImport($orgID: ID!) {\n    latestRepositoryImport(orgId: $orgID) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportLatestRepositoryImport($orgID: ID!) {\n    latestRepositoryImport(orgId: $orgID) {\n      id\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GitHubImportInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n"): (typeof documents)["\n  mutation GitHubImportInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GitHubImportDisconnect($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n"): (typeof documents)["\n  mutation GitHubImportDisconnect($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GitHubImportStart($orgID: ID!, $teamID: ID!, $repositoryID: ID!) {\n    startRepositoryImport(\n      orgId: $orgID\n      teamId: $teamID\n      repositoryId: $repositoryID\n    ) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation GitHubImportStart($orgID: ID!, $teamID: ID!, $repositoryID: ID!) {\n    startRepositoryImport(\n      orgId: $orgID\n      teamId: $teamID\n      repositoryId: $repositoryID\n    ) {\n      id\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GitHubImportRecheck($orgID: ID!, $importID: ID!) {\n    recheckRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation GitHubImportRecheck($orgID: ID!, $importID: ID!) {\n    recheckRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query ApiEndpointById($orgId: ID!, $id: ID!) {\n    apiEndpointById(orgId: $orgId, id: $id) {\n      id\n      serviceId\n      apiGroupId\n      method\n      path\n      summary\n      description\n      tags\n      parameters\n      requestBody\n      responses\n      exampleRequests\n      exampleResponses\n      updatedAt\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query ApiEndpointById($orgId: ID!, $id: ID!) {\n    apiEndpointById(orgId: $orgId, id: $id) {\n      id\n      serviceId\n      apiGroupId\n      method\n      path\n      summary\n      description\n      tags\n      parameters\n      requestBody\n      responses\n      exampleRequests\n      exampleResponses\n      updatedAt\n      createdAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -1390,42 +1438,6 @@ export function graphql(source: "\n  mutation DeleteAuthRoleMapping(\n    $orgId
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"): (typeof documents)["\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query OnboardingGitHubApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"): (typeof documents)["\n  query OnboardingGitHubApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query OnboardingGitHubRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n"): (typeof documents)["\n  query OnboardingGitHubRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query OnboardingRepositoryOnboarding($orgID: ID!, $batchID: ID!) {\n    repositoryOnboarding(orgId: $orgID, batchId: $batchID) {\n      id\n      status\n      teamId\n      teamName\n      repositories {\n        id\n        status\n        repository {\n          id\n          githubId\n          name\n          fullName\n          url\n          defaultBranch\n          private\n          archived\n        }\n        branch\n        runUrl\n        pullRequestUrl\n        missingAIConfiguration\n        error\n        serviceId\n      }\n    }\n  }\n"): (typeof documents)["\n  query OnboardingRepositoryOnboarding($orgID: ID!, $batchID: ID!) {\n    repositoryOnboarding(orgId: $orgID, batchId: $batchID) {\n      id\n      status\n      teamId\n      teamName\n      repositories {\n        id\n        status\n        repository {\n          id\n          githubId\n          name\n          fullName\n          url\n          defaultBranch\n          private\n          archived\n        }\n        branch\n        runUrl\n        pullRequestUrl\n        missingAIConfiguration\n        error\n        serviceId\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query OnboardingLatestRepositoryOnboarding($orgID: ID!) {\n    latestRepositoryOnboarding(orgId: $orgID) {\n      id\n    }\n  }\n"): (typeof documents)["\n  query OnboardingLatestRepositoryOnboarding($orgID: ID!) {\n    latestRepositoryOnboarding(orgId: $orgID) {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation OnboardingGitHubAppInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n"): (typeof documents)["\n  mutation OnboardingGitHubAppInstallURL($orgID: ID!) {\n    githubAppInstallURL(orgId: $orgID)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation OnboardingDisconnectGitHubApp($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n"): (typeof documents)["\n  mutation OnboardingDisconnectGitHubApp($orgID: ID!) {\n    disconnectGitHubApp(orgId: $orgID)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation OnboardingStartRepositoryOnboarding(\n    $input: StartRepositoryOnboardingInput!\n  ) {\n    startRepositoryOnboarding(input: $input) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation OnboardingStartRepositoryOnboarding(\n    $input: StartRepositoryOnboardingInput!\n  ) {\n    startRepositoryOnboarding(input: $input) {\n      id\n      status\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation OnboardingRecheckRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    recheckRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation OnboardingRecheckRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    recheckRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation OnboardingRetryRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    retryRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation OnboardingRetryRepositoryOnboarding(\n    $orgID: ID!\n    $batchID: ID!\n    $onboardingID: ID!\n  ) {\n    retryRepositoryOnboarding(\n      orgId: $orgID\n      batchId: $batchID\n      onboardingId: $onboardingID\n    ) {\n      id\n      status\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

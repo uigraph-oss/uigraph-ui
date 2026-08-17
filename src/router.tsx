@@ -383,6 +383,26 @@ const CloudConnectionsPage = lazy(() =>
     (mod) => ({ default: mod.CloudConnectionsPage })
   )
 )
+const GitHubSettingsPage = lazy(() =>
+  import('@/features/dashboard-settings/github/github-settings-page').then(
+    (mod) => ({ default: mod.GitHubSettingsPage })
+  )
+)
+const GetStartedPage = lazy(() =>
+  import('@/features/org-onboarding/get-started-page').then((mod) => ({
+    default: mod.GetStartedPage,
+  }))
+)
+const ImportWizardPage = lazy(() =>
+  import('@/features/github-import/import-wizard-page').then((mod) => ({
+    default: mod.ImportWizardPage,
+  }))
+)
+const ImportProgressPage = lazy(() =>
+  import('@/features/github-import/import-progress-page').then((mod) => ({
+    default: mod.ImportProgressPage,
+  }))
+)
 const DiagramPortalPage = lazy(() =>
   import('@/features/diagram-portal/diagram-portal-page').then((mod) => ({
     default: mod.DiagramPortalPage,
@@ -443,6 +463,8 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedDashboardLayout />}>
+        <Route path="/get-started" element={<GetStartedPage />} />
+
         <Route
           path="/diagram/:diagramId"
           element={<DiagramPortalPage embedded={false} />}
@@ -510,6 +532,11 @@ export function AppRoutes() {
           <Route
             path="/services/graph"
             element={<OrganizationDependencyGraphPage />}
+          />
+          <Route path="/repositories/import" element={<ImportWizardPage />} />
+          <Route
+            path="/repositories/import/:importId"
+            element={<ImportProgressPage />}
           />
           <Route path="/services/:serviceId" element={<ServiceLayout />}>
             <Route index element={<Navigate to="overview" replace />} />
@@ -605,6 +632,7 @@ export function AppRoutes() {
             />
             <Route path="profile" element={<ProfileSettings />} />
             <Route path="security" element={<SecuritySettings />} />
+            <Route path="github" element={<GitHubSettingsPage />} />
 
             <Route element={<RequireOrgAdmin />}>
               <Route

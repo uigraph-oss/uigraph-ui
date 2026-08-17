@@ -24,7 +24,7 @@ import {
   StepHeader,
 } from './step-layout'
 
-function isInstallationConnected(status: string) {
+export function isInstallationConnected(status: string) {
   const normalized = status.toUpperCase()
   if (normalized === 'CONNECTED') return true
   if (normalized === 'ACTIVE') return true
@@ -32,20 +32,20 @@ function isInstallationConnected(status: string) {
   return false
 }
 
-function readableAccountType(accountType: string) {
+export function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
   if (normalized === 'ORGANIZATION') return 'Organization'
   if (normalized === 'USER') return 'Personal account'
   return accountType
 }
 
-export function GitHubStep({
+export function ConnectGitHubStep({
   orgID,
   onBack,
   onNext,
 }: {
   orgID: string
-  onBack: () => void
+  onBack?: () => void
   onNext: () => void
 }) {
   const [isConnecting, setIsConnecting] = useState(false)
@@ -127,7 +127,7 @@ export function GitHubStep({
       <StepHeader
         icon={<Github className="size-6" />}
         title="Connect GitHub"
-        description="Install the UIGraph app and grant it access to the repositories you want to onboard."
+        description="Install the UIGraph app and grant it access to the repository you want to import."
       />
 
       <StepBody className="justify-center">
@@ -196,11 +196,14 @@ export function GitHubStep({
       </StepBody>
 
       <StepFooter>
-        <Button preset="outline" onClick={onBack}>
-          <ArrowLeft /> Back
-        </Button>
+        {onBack && (
+          <Button preset="outline" onClick={onBack}>
+            <ArrowLeft /> Back
+          </Button>
+        )}
+        {!onBack && <span />}
         <Button preset="primary" disabled={!connected} onClick={onNext}>
-          Choose repositories <ArrowRight />
+          Choose a repository <ArrowRight />
         </Button>
       </StepFooter>
     </>

@@ -1,25 +1,23 @@
 import { Button } from '@/components/ui/button'
-import { DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { StepBody, StepFooter } from '@/features/github-import/step-layout'
 import { ArrowRight, FileText, Github, Users } from 'lucide-react'
-import { StepBody, StepFooter } from './step-layout'
 
 const highlights = [
   {
     icon: <Users className="size-4" />,
     title: 'Create a team',
-    description: 'Every repository you onboard is owned by one of your teams.',
+    description: 'Every repository you import is owned by one of your teams.',
   },
   {
     icon: <Github className="size-4" />,
     title: 'Connect GitHub',
-    description:
-      'Install the UIGraph app and pick the repositories to onboard.',
+    description: 'Install the UIGraph app and pick a repository to import.',
   },
   {
     icon: <FileText className="size-4" />,
     title: 'Generate documentation',
     description:
-      'UIGraph documents each repository on its own branch and syncs it here.',
+      'UIGraph documents the repository on its own branch and syncs it here.',
   },
 ]
 
@@ -27,15 +25,15 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
     <>
       <StepBody className="items-center justify-center text-center">
-        <DialogTitle className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight">
           Welcome to UIGraph
-        </DialogTitle>
-        <DialogDescription className="text-paragraph mt-2 max-w-sm text-sm leading-relaxed text-balance">
+        </h1>
+        <p className="text-paragraph mt-2 max-w-md text-sm leading-relaxed text-balance">
           Set up your organization in a few steps. Nothing is merged into your
           repositories.
-        </DialogDescription>
+        </p>
 
-        <ul className="mt-7 grid w-full max-w-sm gap-2.5 text-left">
+        <ul className="mt-8 grid w-full max-w-md gap-2.5 text-left">
           {highlights.map((highlight) => (
             <li
               key={highlight.title}

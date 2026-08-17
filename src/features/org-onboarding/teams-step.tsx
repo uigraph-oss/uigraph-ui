@@ -2,16 +2,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTeamContext } from '@/features/dashboard-settings/context/team-context'
-import { cn } from '@/lib/utils'
-import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react'
-import { useState } from 'react'
 import {
   fieldClass,
   scrollAreaClass,
   StepBody,
   StepFooter,
   StepHeader,
-} from './step-layout'
+} from '@/features/github-import/step-layout'
+import { cn } from '@/lib/utils'
+import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react'
+import { useState } from 'react'
 
 export function TeamsStep({
   selectedTeamID,
@@ -53,7 +53,7 @@ export function TeamsStep({
     <>
       <StepHeader
         title="Choose a team"
-        description="Every repository you onboard next will be owned by this team."
+        description="Every repository you import next will be owned by this team."
       />
 
       <StepBody>

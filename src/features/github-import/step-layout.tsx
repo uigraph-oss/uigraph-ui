@@ -1,4 +1,3 @@
-import { DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
 
@@ -22,18 +21,16 @@ export function StepHeader({
   description: ReactNode
 }) {
   return (
-    <header className="shrink-0 px-6 pb-5 text-center sm:px-8">
+    <header className="shrink-0 pb-6 text-center">
       {icon && (
         <span className="bg-stock mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl">
           {icon}
         </span>
       )}
-      <DialogTitle className="text-xl font-semibold tracking-tight">
-        {title}
-      </DialogTitle>
-      <DialogDescription className="text-paragraph mx-auto mt-2 max-w-sm text-sm leading-relaxed text-balance">
+      <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+      <p className="text-paragraph mx-auto mt-2 max-w-md text-sm leading-relaxed text-balance">
         {description}
-      </DialogDescription>
+      </p>
     </header>
   )
 }
@@ -46,7 +43,7 @@ export function StepBody({
   children: ReactNode
 }) {
   return (
-    <div className={cn('flex min-h-0 flex-1 flex-col px-6 sm:px-8', className)}>
+    <div className={cn('flex min-h-0 flex-1 flex-col', className)}>
       {children}
     </div>
   )
@@ -54,7 +51,7 @@ export function StepBody({
 
 export function StepFooter({ children }: { children: ReactNode }) {
   return (
-    <footer className="border-stock mt-6 flex shrink-0 items-center justify-between gap-3 border-t px-6 py-4 sm:px-8">
+    <footer className="border-stock mt-6 flex shrink-0 items-center justify-between gap-3 border-t pt-5">
       {children}
     </footer>
   )

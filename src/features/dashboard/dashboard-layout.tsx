@@ -3,22 +3,29 @@
 import { GridScrollBody } from '@/components/grid-scroll-body'
 import { DASHBOARD_SETTINGS_NAV_LINKS } from '@/constants'
 import { env } from '@/env'
-import { OrgOnboardingDialog } from '@/features/org-onboarding/org-onboarding-dialog'
+import { GITHUB_APP_ENABLED } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
-import { useAuthStore } from '@/store/auth-store'
+import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
+import { useQuery } from '@apollo/client'
 import { PropsWithChildren, ReactNode, useMemo } from 'react'
 import { LuCreditCard } from 'react-icons/lu'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { DashboardHeader } from './dashboard-header'
 import { DashboardSidebar } from './dashboard-sidebar'
 
 export function DashboardLayout({ children }: PropsWithChildren) {
+  const organization = useCurrentOrganization()
+  const { isAdmin } = usePermissions()
+
+  if (organization && isAdmin && !organization.onboardingDone) {
+    return <Navigate to="/get-started" replace />
+  }
+
   return (
     <main className="bg-shading-gray grid h-screen grid-cols-[5.25rem_1fr] grid-rows-[1fr] gap-2 overflow-hidden">
       <DashboardSidebar />
       {children}
-      <OrgOnboardingDialog />
     </main>
   )
 }
@@ -29,6 +36,11 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
   const currentOrganizationId = useAuthStore(
     (state) => state.currentOrganizationId
   )
+  const githubQuery = useQuery(GITHUB_APP_ENABLED, {
+    variables: { orgID: currentOrganizationId! },
+    skip: !currentOrganizationId,
+  })
+  const githubEnabled = githubQuery.data?.githubAppEnabled ?? false
 
   const crumbs = useMemo(() => {
     const segments = pathname.split('/').filter(Boolean)
@@ -60,7 +72,9 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
 
           <ul className="flex flex-col gap-2 px-4 py-2">
             {DASHBOARD_SETTINGS_NAV_LINKS.filter(
-              (item) => !item.adminOnly || isAdmin
+              (item) =>
+                (!item.adminOnly || isAdmin) &&
+                (item.id !== '/settings/github' || githubEnabled)
             ).map((item) => {
               const isActive = item.isActive(pathname)
 
