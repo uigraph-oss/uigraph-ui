@@ -1,6 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useMutation, useQuery } from '@apollo/client'
 import {
   AlertCircle,
   ArrowLeft,
@@ -10,21 +9,8 @@ import {
   Github,
   Loader2,
 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import {
-  DISCONNECT_GITHUB_APP,
-  GITHUB_APP,
-  GITHUB_APP_INSTALL_URL,
-} from './api'
 import { StepBody, StepFooter, StepHeader } from './step-layout'
-
-export function isInstallationConnected(status: string) {
-  const normalized = status.toUpperCase()
-  if (normalized === 'CONNECTED') return true
-  if (normalized === 'ACTIVE') return true
-  if (normalized === 'INSTALLED') return true
-  return false
-}
+import { useGitHubConnection } from './use-github-connection'
 
 function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
@@ -42,79 +28,7 @@ export function ConnectGitHubStep({
   onBack?: () => void
   onNext: () => void
 }) {
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [error, setError] = useState('')
-  const tabRef = useRef<Window | null>(null)
-  const installationQuery = useQuery(GITHUB_APP, {
-    variables: { orgID },
-    fetchPolicy: 'network-only',
-    pollInterval: isConnecting ? 5000 : 0,
-    onCompleted: (data) => {
-      if (!data.githubApp) return
-      if (!isInstallationConnected(data.githubApp.status)) return
-      tabRef.current?.close()
-      tabRef.current = null
-      setIsConnecting(false)
-    },
-  })
-  const [getInstallURL, { loading: isStarting }] = useMutation(
-    GITHUB_APP_INSTALL_URL
-  )
-  const [disconnect, { loading: isDisconnecting }] = useMutation(
-    DISCONNECT_GITHUB_APP
-  )
-  const installation = installationQuery.data?.githubApp
-  const connected = Boolean(
-    installation && isInstallationConnected(installation.status)
-  )
-  const isLoadingInstallation =
-    installationQuery.loading && !installationQuery.data
-
-  useEffect(() => () => tabRef.current?.close(), [])
-
-  async function handleConnect() {
-    setError('')
-    const tab = window.open('', 'uigraph-github-app')
-    if (!tab) {
-      setError('Allow UIGraph to open new tabs, then try again.')
-      return
-    }
-    tabRef.current = tab
-
-    try {
-      const result = await getInstallURL({ variables: { orgID } })
-      const installURL = result.data?.githubAppInstallURL
-      if (!installURL)
-        throw new Error('GitHub did not return an installation URL')
-      const url = new URL(installURL)
-      if (url.protocol !== 'https:') {
-        throw new Error('GitHub returned an invalid installation URL')
-      }
-      tab.opener = null
-      tab.location.href = url.href
-      setIsConnecting(true)
-      await installationQuery.refetch()
-    } catch (caught) {
-      tab.close()
-      tabRef.current = null
-      setError(
-        caught instanceof Error ? caught.message : 'Could not connect GitHub'
-      )
-    }
-  }
-
-  async function handleDisconnect() {
-    setError('')
-    try {
-      await disconnect({ variables: { orgID } })
-      setIsConnecting(false)
-      await installationQuery.refetch()
-    } catch (caught) {
-      setError(
-        caught instanceof Error ? caught.message : 'Could not disconnect GitHub'
-      )
-    }
-  }
+  const github = useGitHubConnection(orgID)
 
   return (
     <>
@@ -125,64 +39,67 @@ export function ConnectGitHubStep({
       />
 
       <StepBody>
-        {isLoadingInstallation && (
+        {github.isLoading && (
           <div className="text-paragraph flex items-center justify-center gap-2 py-6 text-sm">
             <Loader2 className="size-4 animate-spin" /> Checking installation
           </div>
         )}
 
-        {!isLoadingInstallation && connected && installation && (
+        {!github.isLoading && github.connected && github.installation && (
           <div className="border-stock bg-stock/30 flex items-center gap-3 rounded-xl border p-4">
             <span className="bg-success/10 text-success flex size-10 shrink-0 items-center justify-center rounded-xl">
               <Check className="size-5" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">
-                {installation.accountLogin}
+                {github.installation.accountLogin}
               </p>
               <p className="text-paragraph mt-0.5 text-xs">
-                {readableAccountType(installation.accountType)} · Connected
+                {readableAccountType(github.installation.accountType)} ·
+                Connected
               </p>
             </div>
             <Button
               preset="ghost"
               className="h-9 shrink-0 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
-              disabled={isDisconnecting}
-              onClick={handleDisconnect}
+              disabled={github.isDisconnecting}
+              onClick={github.disconnect}
             >
-              {isDisconnecting && <Loader2 className="size-4 animate-spin" />}
+              {github.isDisconnecting && (
+                <Loader2 className="size-4 animate-spin" />
+              )}
               Disconnect
             </Button>
           </div>
         )}
 
-        {!isLoadingInstallation && !connected && (
+        {!github.isLoading && !github.connected && (
           <div className="flex justify-center">
             <Button
               preset="primary"
-              disabled={isStarting || isConnecting}
-              onClick={handleConnect}
+              disabled={github.isStarting || github.isConnecting}
+              onClick={github.connect}
             >
-              {(isStarting || isConnecting) && (
+              {(github.isStarting || github.isConnecting) && (
                 <Loader2 className="animate-spin" />
               )}
-              {isConnecting && 'Waiting for GitHub…'}
-              {!isConnecting && 'Install GitHub App'}
-              {!isStarting && !isConnecting && <ExternalLink />}
+              {github.isConnecting && 'Waiting for GitHub…'}
+              {!github.isConnecting && 'Install GitHub App'}
+              {!github.isStarting && !github.isConnecting && <ExternalLink />}
             </Button>
           </div>
         )}
 
-        {error && (
+        {github.error && (
           <Alert variant="destructive" className="mt-4 text-left">
             <AlertCircle />
             <AlertTitle>GitHub connection failed</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{github.error}</AlertDescription>
           </Alert>
         )}
       </StepBody>
 
-      {(onBack || connected) && (
+      {(onBack || github.connected) && (
         <StepFooter>
           {onBack && (
             <Button preset="outline" onClick={onBack}>
@@ -190,7 +107,7 @@ export function ConnectGitHubStep({
             </Button>
           )}
           {!onBack && <span />}
-          {connected && (
+          {github.connected && (
             <Button preset="primary" onClick={onNext}>
               Choose a repository <ArrowRight />
             </Button>

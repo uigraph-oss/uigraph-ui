@@ -3,13 +3,10 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  DISCONNECT_GITHUB_APP,
-  GITHUB_APP,
-  GITHUB_APP_INSTALL_URL,
   REPOSITORY_IMPORTS,
   RETRY_REPOSITORY_IMPORT,
 } from '@/features/github-import/api'
-import { isInstallationConnected } from '@/features/github-import/connect-github-step'
+import { useGitHubConnection } from '@/features/github-import/use-github-connection'
 import { usePermissions } from '@/hooks/use-permissions'
 import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -21,7 +18,6 @@ import {
   RefreshCw,
   Unplug,
 } from 'lucide-react'
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
@@ -48,34 +44,14 @@ function GitHubSettings({ orgID }: { orgID: string }) {
   const { isAdmin } = usePermissions()
   const enabled = useAuthStore((state) => state.features.github)
   const navigate = useNavigate()
-  const [isConnecting, setIsConnecting] = useState(false)
+  const github = useGitHubConnection(orgID)
 
-  const installationQuery = useQuery(GITHUB_APP, {
-    variables: { orgID },
-    onError: (error) => toast.error(error.message),
-    pollInterval: isConnecting ? 5000 : 0,
-    onCompleted: (data) => {
-      if (!data.githubApp) return
-      if (!isInstallationConnected(data.githubApp.status)) return
-      setIsConnecting(false)
-    },
-  })
   const importsQuery = useQuery(REPOSITORY_IMPORTS, {
     variables: { orgID },
     onError: (error) => toast.error(error.message),
     pollInterval: 10000,
   })
 
-  const [disconnect, { loading: isDisconnecting }] = useMutation(
-    DISCONNECT_GITHUB_APP,
-    {
-      refetchQueries: [{ query: GITHUB_APP, variables: { orgID } }],
-      awaitRefetchQueries: true,
-    }
-  )
-  const [getInstallURL, { loading: isStarting }] = useMutation(
-    GITHUB_APP_INSTALL_URL
-  )
   const [retry, { loading: isRetrying }] = useMutation(
     RETRY_REPOSITORY_IMPORT,
     {
@@ -84,40 +60,13 @@ function GitHubSettings({ orgID }: { orgID: string }) {
     }
   )
 
-  const installation = installationQuery.data?.githubApp ?? null
-  const connected = installation
-    ? isInstallationConnected(installation.status)
-    : false
+  const installation = github.installation
+  const connected = github.connected
   const imports = importsQuery.data?.repositoryImports ?? []
 
   async function handleDisconnect() {
-    try {
-      await disconnect({ variables: { orgID } })
-      toast.success('GitHub disconnected. Your services and history are kept.')
-    } catch (error) {
-      toast.error((error as Error).message)
-    }
-  }
-
-  async function handleConnect() {
-    const tab = window.open('', 'uigraph-github-app')
-    if (!tab) {
-      toast.error('Allow UIGraph to open new tabs, then try again.')
-      return
-    }
-
-    try {
-      const result = await getInstallURL({ variables: { orgID } })
-      const installURL = result.data?.githubAppInstallURL
-      if (!installURL)
-        throw new Error('GitHub did not return an installation URL')
-      tab.opener = null
-      tab.location.href = installURL
-      setIsConnecting(true)
-    } catch (error) {
-      tab.close()
-      toast.error((error as Error).message)
-    }
+    if (!(await github.disconnect())) return
+    toast.success('GitHub disconnected. Your services and history are kept.')
   }
 
   async function handleRetry(importID: string) {
@@ -177,13 +126,16 @@ function GitHubSettings({ orgID }: { orgID: string }) {
                     'Install the UIGraph GitHub App to import a repository.'}
                 </p>
               )}
+              {github.error && (
+                <p className="text-destructive mt-1 text-xs">{github.error}</p>
+              )}
             </div>
 
             {isAdmin && connected && (
               <Button
                 preset="outline"
                 className="h-10 rounded-[0.75rem] text-sm"
-                disabled={isDisconnecting}
+                disabled={github.isDisconnecting}
                 onClick={handleDisconnect}
               >
                 <Unplug className="size-4" />
@@ -194,15 +146,17 @@ function GitHubSettings({ orgID }: { orgID: string }) {
             {isAdmin && !connected && (
               <Button
                 className="h-10 rounded-[0.75rem] text-sm"
-                disabled={isStarting || isConnecting}
-                onClick={handleConnect}
+                disabled={github.isStarting || github.isConnecting}
+                onClick={github.connect}
               >
-                {(isStarting || isConnecting) && (
+                {(github.isStarting || github.isConnecting) && (
                   <Loader2 className="size-4 animate-spin" />
                 )}
-                {!isStarting && !isConnecting && <Github className="size-4" />}
-                {isConnecting && 'Waiting for GitHub…'}
-                {!isConnecting && 'Connect GitHub'}
+                {!github.isStarting && !github.isConnecting && (
+                  <Github className="size-4" />
+                )}
+                {github.isConnecting && 'Waiting for GitHub…'}
+                {!github.isConnecting && 'Connect GitHub'}
               </Button>
             )}
           </div>
