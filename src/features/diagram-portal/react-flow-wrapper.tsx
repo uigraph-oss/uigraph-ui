@@ -86,9 +86,6 @@ export function ReactFlowWrapper({
     dataSources,
     isPreviewing,
 
-    activeEmbed,
-    deactivateEmbed,
-
     setIsCommandPaletteOpen,
 
     isC4Diagram,
@@ -304,8 +301,6 @@ export function ReactFlowWrapper({
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
-      if (activeEmbed) deactivateEmbed()
-
       if (!reactFlowInstance) return
       if (isPreviewing) return
       if (sidebarActiveTool !== 'add-comment') return
@@ -329,8 +324,6 @@ export function ReactFlowWrapper({
       setSidebarActiveTool(null)
     },
     [
-      activeEmbed,
-      deactivateEmbed,
       reactFlowInstance,
       isPreviewing,
       sidebarActiveTool,
