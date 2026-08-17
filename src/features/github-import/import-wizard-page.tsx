@@ -35,7 +35,7 @@ export function ImportWizardPage() {
         { to: '/repositories/import', label: 'Import from GitHub' },
       ]}
     >
-      <div className="mx-auto flex w-full max-w-2xl flex-col pb-8">
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center py-6">
         <ImportWizard orgID={organization.id} />
       </div>
     </DashboardPageSectionLayout>

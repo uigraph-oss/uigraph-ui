@@ -65,7 +65,7 @@ export function SelectRepositoryStep({
         title="Choose a repository"
         description={
           <>
-            One repository is imported at a time, into{' '}
+            Imported into{' '}
             <span className="text-foreground font-medium">{teamName}</span>.
           </>
         }
@@ -102,7 +102,7 @@ export function SelectRepositoryStep({
           )}
         </div>
 
-        <div className="border-stock mt-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
+        <div className="border-stock mt-3 flex h-80 flex-col overflow-hidden rounded-xl border">
           {repositoriesQuery.loading && !repositoriesQuery.data && (
             <div className="text-paragraph flex flex-1 items-center justify-center gap-2 text-sm">
               <Loader2 className="size-4 animate-spin" /> Loading repositories

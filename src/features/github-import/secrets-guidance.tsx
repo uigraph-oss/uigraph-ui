@@ -72,9 +72,8 @@ export function SecretsGuidance({
       </AlertTitle>
       <AlertDescription>
         <p>
-          UIGraph runs on your GitHub Actions runners with your own AI provider.
-          Add these as organization or repository Actions secrets — UIGraph
-          never receives or stores the values.
+          Add these as Actions secrets on your GitHub organization. UIGraph
+          never receives the values.
         </p>
         <ul className="flex flex-wrap gap-1">
           {names.map((name) => (
@@ -83,20 +82,6 @@ export function SecretsGuidance({
             </li>
           ))}
         </ul>
-        <p className="text-xs">
-          <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
-            AI_PROVIDER_API_KEY
-          </code>{' '}
-          must be a secret. The rest work as a secret or a variable, and either{' '}
-          <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
-            AI_PROVIDER_API_URL
-          </code>{' '}
-          or{' '}
-          <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
-            AI_PROVIDER_NPM
-          </code>{' '}
-          is enough.
-        </p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <a
             href={secretsSettingsURL(accountLogin)}

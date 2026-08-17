@@ -93,15 +93,15 @@ function GitHubSettings({ orgID }: { orgID: string }) {
     <>
       <SettingsHeader
         title="GitHub"
-        description="Connect the UIGraph GitHub App and import repositories. UIGraph documents a repository once — after that, its own workflows keep it in sync."
+        description="Connect the UIGraph GitHub App and import repositories."
         cta={
           isAdmin &&
-          enabled && (
+          enabled &&
+          connected && (
             <Button className="h-11 rounded-[0.75rem] px-6 text-sm" asChild>
               <Link to="/repositories/import">
-                {connected && <Plus className="mr-0.5 h-4 w-4" />}
-                {!connected && <Github className="mr-0.5 h-4 w-4" />}
-                {connected ? 'Add repository' : 'Connect GitHub'}
+                <Plus className="mr-0.5 h-4 w-4" />
+                Add repository
               </Link>
             </Button>
           )
@@ -130,18 +130,16 @@ function GitHubSettings({ orgID }: { orgID: string }) {
                   </Badge>
                 )}
               </p>
-              <p className="text-paragraph mt-1 text-xs">
-                {connected &&
-                  'UIGraph can read this organization’s repositories and open artifact pull requests.'}
-                {installation &&
-                  !connected &&
-                  'The app was disconnected. Past imports and their services are kept.'}
-                {!installation &&
-                  'Install the UIGraph GitHub App to import a repository.'}
-              </p>
+              {!connected && (
+                <p className="text-paragraph mt-1 text-xs">
+                  {installation && 'Disconnected. Past imports are kept.'}
+                  {!installation &&
+                    'Install the UIGraph GitHub App to import a repository.'}
+                </p>
+              )}
             </div>
 
-            {isAdmin && installation && connected && (
+            {isAdmin && connected && (
               <Button
                 preset="outline"
                 className="h-10 rounded-[0.75rem] text-sm"
@@ -152,10 +150,19 @@ function GitHubSettings({ orgID }: { orgID: string }) {
                 Disconnect
               </Button>
             )}
+
+            {isAdmin && !connected && (
+              <Button className="h-10 rounded-[0.75rem] text-sm" asChild>
+                <Link to="/repositories/import">
+                  <Github className="size-4" />
+                  Connect GitHub
+                </Link>
+              </Button>
+            )}
           </div>
         )}
 
-        {enabled && (
+        {enabled && imports.length > 0 && (
           <div className="overflow-x-auto rounded-[12px] border border-[#2A3242]">
             <table className="w-full">
               <thead>
@@ -176,17 +183,6 @@ function GitHubSettings({ orgID }: { orgID: string }) {
                 </tr>
               </thead>
               <tbody>
-                {imports.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="h-32 py-4 text-center text-[#828DA3]"
-                    >
-                      No repositories imported yet
-                    </td>
-                  </tr>
-                )}
-
                 {imports.map((value) => (
                   <tr
                     key={value.id}

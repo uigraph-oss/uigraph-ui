@@ -15,7 +15,7 @@ export function ImportProgressPage() {
   return (
     <DashboardPageSectionLayout
       title="Repository setup"
-      description="Live progress from the GitHub Actions run that documents your repository."
+      description="Progress from the GitHub Actions run that documents your repository."
       crumbs={[
         { to: '/services', label: 'Services' },
         { to: '/repositories/import', label: 'Import from GitHub' },

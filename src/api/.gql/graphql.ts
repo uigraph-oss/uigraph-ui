@@ -1162,6 +1162,8 @@ export type EndpointSlaInput = {
 };
 
 export type Features = {
+  billingUrl?: Maybe<Scalars['String']['output']>;
+  enterprise: Scalars['Boolean']['output'];
   github: Scalars['Boolean']['output'];
 };
 

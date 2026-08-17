@@ -32,11 +32,7 @@ export function StepBody({
   className?: string
   children: ReactNode
 }) {
-  return (
-    <div className={cn('flex min-h-0 flex-1 flex-col', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('flex flex-col', className)}>{children}</div>
 }
 
 export function StepFooter({ children }: { children: ReactNode }) {

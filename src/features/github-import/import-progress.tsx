@@ -166,8 +166,8 @@ export function ImportProgress({
           </AlertTitle>
           <AlertDescription>
             <p>
-              Its artifacts are live. From here, your repository keeps itself in
-              sync through the workflows UIGraph added.
+              Its artifacts are live, and the workflows UIGraph added keep them
+              in sync.
             </p>
             {value.serviceId && (
               <Button preset="primary" className="mt-1" asChild>
@@ -233,7 +233,7 @@ export function ImportProgress({
         {!isTerminalStatus(status) && (
           <span className="text-paragraph flex items-center gap-1.5 text-xs">
             <CircleDot className="size-3 animate-pulse" /> Live from GitHub
-            Actions. You can leave this page — setup continues.
+            Actions. You can leave this page.
           </span>
         )}
         {value.branch && (

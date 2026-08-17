@@ -121,10 +121,10 @@ export function ConnectGitHubStep({
       <StepHeader
         icon={<Github className="size-6" />}
         title="Connect GitHub"
-        description="Install the UIGraph app and grant it access to the repository you want to import."
+        description="Install the UIGraph app on the account that owns your repository."
       />
 
-      <StepBody className="justify-center">
+      <StepBody>
         {isLoadingInstallation && (
           <div className="text-paragraph flex items-center justify-center gap-2 py-6 text-sm">
             <Loader2 className="size-4 animate-spin" /> Checking installation
@@ -157,10 +157,9 @@ export function ConnectGitHubStep({
         )}
 
         {!isLoadingInstallation && !connected && (
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex justify-center">
             <Button
               preset="primary"
-              className="w-full max-w-xs"
               disabled={isStarting || isConnecting}
               onClick={handleConnect}
             >
@@ -171,12 +170,6 @@ export function ConnectGitHubStep({
               {!isConnecting && 'Install GitHub App'}
               {!isStarting && !isConnecting && <ExternalLink />}
             </Button>
-            {isConnecting && (
-              <p className="text-paragraph text-center text-xs">
-                Finish the installation in the GitHub tab. This step updates on
-                its own.
-              </p>
-            )}
           </div>
         )}
 
@@ -189,17 +182,21 @@ export function ConnectGitHubStep({
         )}
       </StepBody>
 
-      <StepFooter>
-        {onBack && (
-          <Button preset="outline" onClick={onBack}>
-            <ArrowLeft /> Back
-          </Button>
-        )}
-        {!onBack && <span />}
-        <Button preset="primary" disabled={!connected} onClick={onNext}>
-          Choose a repository <ArrowRight />
-        </Button>
-      </StepFooter>
+      {(onBack || connected) && (
+        <StepFooter>
+          {onBack && (
+            <Button preset="outline" onClick={onBack}>
+              <ArrowLeft /> Back
+            </Button>
+          )}
+          {!onBack && <span />}
+          {connected && (
+            <Button preset="primary" onClick={onNext}>
+              Choose a repository <ArrowRight />
+            </Button>
+          )}
+        </StepFooter>
+      )}
     </>
   )
 }

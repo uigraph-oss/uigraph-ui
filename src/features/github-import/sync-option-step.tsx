@@ -61,8 +61,7 @@ export function SyncOptionStep({
             <span className="text-foreground font-medium">
               {repository.fullName}
             </span>{' '}
-            is documented on its own branch. Nothing is merged into your default
-            branch.
+            is documented on its own branch.
           </>
         }
       />
@@ -78,8 +77,7 @@ export function SyncOptionStep({
               <Check className="text-primary size-4 shrink-0" />
             </div>
             <p className="text-paragraph mt-3 text-xs leading-relaxed">
-              UIGraph adds two workflows to your repository and runs them on
-              your own runners. Your code never leaves GitHub.
+              Runs on your own runners. Your code never leaves GitHub.
             </p>
           </div>
 
@@ -96,13 +94,12 @@ export function SyncOptionStep({
               </Badge>
             </div>
             <p className="text-paragraph mt-3 text-xs leading-relaxed">
-              Run the same generation in a UIGraph-hosted sandbox, with no
-              workflows added to your repository.
+              Runs in a UIGraph-hosted sandbox, with no workflows added.
             </p>
           </div>
         </div>
 
-        <div className="mt-5 min-h-0 flex-1">
+        <div className="mt-5">
           <SecretsGuidance orgID={orgID} />
         </div>
 

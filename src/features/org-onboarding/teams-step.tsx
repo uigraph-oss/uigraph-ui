@@ -84,10 +84,10 @@ export function TeamsStep({
           {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
         </div>
 
-        <div className="mt-5 flex min-h-0 flex-1 flex-col">
+        <div className="mt-5 flex flex-col">
           <Label className="shrink-0">Your teams</Label>
 
-          <div className="better-scrollbar mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+          <div className="better-scrollbar mt-2 h-64 space-y-2 overflow-y-auto pr-1">
             {isTeamsLoading && (
               <div className="text-paragraph flex h-full min-h-24 items-center justify-center gap-2 text-sm">
                 <Loader2 className="size-4 animate-spin" /> Loading teams

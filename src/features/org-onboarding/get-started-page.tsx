@@ -47,8 +47,8 @@ export function GetStartedPage() {
   if (!isAdmin) return <Navigate to="/services" replace />
 
   return (
-    <main className="bg-shading-gray flex min-h-screen justify-center overflow-y-auto px-6 py-10">
-      <div className="flex w-full max-w-2xl flex-col">
+    <main className="bg-shading-gray flex min-h-screen items-center justify-center overflow-y-auto px-6 py-10">
+      <div className="flex w-full max-w-lg flex-col">
         <TeamContextProvider>
           <GetStartedWizard orgID={organization.id} />
         </TeamContextProvider>
