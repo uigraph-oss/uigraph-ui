@@ -1,7 +1,5 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
-  AlertCircle,
   ArrowLeft,
   ArrowRight,
   Check,
@@ -88,14 +86,6 @@ export function ConnectGitHubStep({
               {!github.isStarting && !github.isConnecting && <ExternalLink />}
             </Button>
           </div>
-        )}
-
-        {github.error && (
-          <Alert variant="destructive" className="mt-4 text-left">
-            <AlertCircle />
-            <AlertTitle>GitHub connection failed</AlertTitle>
-            <AlertDescription>{github.error}</AlertDescription>
-          </Alert>
         )}
       </StepBody>
 

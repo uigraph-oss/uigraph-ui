@@ -126,9 +126,6 @@ function GitHubSettings({ orgID }: { orgID: string }) {
                     'Install the UIGraph GitHub App to import a repository.'}
                 </p>
               )}
-              {github.error && (
-                <p className="text-destructive mt-1 text-xs">{github.error}</p>
-              )}
             </div>
 
             {isAdmin && connected && (

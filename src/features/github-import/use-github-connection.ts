@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import {
   DISCONNECT_GITHUB_APP,
   GITHUB_APP,
@@ -16,14 +17,13 @@ export function isInstallationConnected(status: string) {
 
 export function useGitHubConnection(orgID: string) {
   const [isConnecting, setIsConnecting] = useState(false)
-  const [error, setError] = useState('')
   const tabRef = useRef<Window | null>(null)
 
   const installationQuery = useQuery(GITHUB_APP, {
     variables: { orgID },
     fetchPolicy: 'network-only',
     pollInterval: isConnecting ? 5000 : 0,
-    onError: (queryError) => setError(queryError.message),
+    onError: (queryError) => toast.error(queryError.message),
     onCompleted: (data) => {
       if (!data.githubApp) return
       if (!isInstallationConnected(data.githubApp.status)) return
@@ -41,11 +41,28 @@ export function useGitHubConnection(orgID: string) {
 
   useEffect(() => () => tabRef.current?.close(), [])
 
+  const { refetch } = installationQuery
+  useEffect(() => {
+    if (!isConnecting) return
+
+    const timer = window.setInterval(() => {
+      if (!tabRef.current?.closed) return
+      tabRef.current = null
+      setIsConnecting(false)
+      void refetch().then((result) => {
+        const status = result.data?.githubApp?.status
+        if (status && isInstallationConnected(status)) return
+        toast.error('GitHub was not connected. The installation was closed.')
+      })
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [isConnecting, refetch])
+
   async function connect() {
-    setError('')
     const tab = window.open('', 'uigraph-github-app')
     if (!tab) {
-      setError('Allow UIGraph to open new tabs, then try again.')
+      toast.error('Allow UIGraph to open new tabs, then try again.')
       return
     }
     tabRef.current = tab
@@ -66,21 +83,20 @@ export function useGitHubConnection(orgID: string) {
     } catch (caught) {
       tab.close()
       tabRef.current = null
-      setError(
+      toast.error(
         caught instanceof Error ? caught.message : 'Could not connect GitHub'
       )
     }
   }
 
   async function disconnect() {
-    setError('')
     try {
       await disconnectApp({ variables: { orgID } })
       setIsConnecting(false)
       await installationQuery.refetch()
       return true
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof Error ? caught.message : 'Could not disconnect GitHub'
       )
       return false
@@ -97,7 +113,6 @@ export function useGitHubConnection(orgID: string) {
     isStarting,
     isConnecting,
     isDisconnecting,
-    error,
     connect,
     disconnect,
   }
