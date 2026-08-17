@@ -19,9 +19,11 @@ import { LuImport } from 'react-icons/lu'
 import { SiMermaid } from 'react-icons/si'
 import { toast } from 'sonner'
 import * as icons from './components/icons'
+import { ZoomLevelControl } from './components/zoom-level-control'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
 import { beautifyDiagram } from './helpers/beautify-diagram'
+import { ZOOM_STEP, zoomBy } from './helpers/camera'
 import { downloadFlowDiagramImage } from './helpers/download-image'
 import {
   exportDiagramToMermaid,
@@ -120,16 +122,9 @@ export function FloatingCanvasToolbar() {
         <ToolbarSeparator />
 
         <ToolbarButton
-          onClick={() => reactFlowInstance?.zoomIn()}
-          delayDuration={100}
-          tooltipPosition="top"
-          tooltip="Zoom in"
-        >
-          <icons.ZoomInIcon />
-        </ToolbarButton>
-
-        <ToolbarButton
-          onClick={() => reactFlowInstance?.zoomOut()}
+          onClick={() =>
+            reactFlowInstance && zoomBy(reactFlowInstance, 1 / ZOOM_STEP)
+          }
           delayDuration={100}
           tooltipPosition="top"
           tooltip="Zoom out"
@@ -137,9 +132,18 @@ export function FloatingCanvasToolbar() {
           <icons.ZoomOutIcon />
         </ToolbarButton>
 
-        {/*        <ToolbarButton onClick={() => reactFlowInstance?.fitView()}>
-          <icons.FullScreenIcon />
-        </ToolbarButton> */}
+        <ZoomLevelControl />
+
+        <ToolbarButton
+          onClick={() =>
+            reactFlowInstance && zoomBy(reactFlowInstance, ZOOM_STEP)
+          }
+          delayDuration={100}
+          tooltipPosition="top"
+          tooltip="Zoom in"
+        >
+          <icons.ZoomInIcon />
+        </ToolbarButton>
 
         <ToolbarSeparator />
 

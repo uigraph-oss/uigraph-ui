@@ -23,7 +23,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import * as React from 'react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { DebugNodeBounds } from './debug-node-bounds'
@@ -32,7 +32,9 @@ import { CUSTOM_EDGE_TYPES } from './edges'
 import { EdgeMarkerDefs } from './edges/edge-marker-defs'
 import { createEdgeMarker } from './edges/helpers'
 import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
+import { focusNodes, MAX_ZOOM, MIN_ZOOM } from './helpers/camera'
 import { findEditorAction } from './helpers/editor-actions'
+import { applyLevelOfDetail, resolveVisibleDepth } from './helpers/lod'
 import { handleOnGroupDrag, handleOnNodeDrag } from './helpers/on-node-drag'
 import { createGroupNode } from './helpers/xy-flow'
 import { useDiagramHistory } from './hooks/use-diagram-history'
@@ -86,11 +88,16 @@ export function ReactFlowWrapper({
 
     activeEmbed,
     deactivateEmbed,
+
+    setIsCommandPaletteOpen,
+
+    isC4Diagram,
   } = useFlowDiagramContext()
 
   const ref = useAutoRef({
     reactFlowInstance,
     dataSources,
+    setIsCommandPaletteOpen,
   })
 
   const onConnect = useCallback(
@@ -420,6 +427,19 @@ export function ReactFlowWrapper({
     [reactFlowInstance, setNodes, setEdges]
   )
 
+  const [visibleDepth, setVisibleDepth] = useState<number>(Infinity)
+
+  useEffect(() => {
+    setVisibleDepth((prev) => resolveVisibleDepth(viewport?.zoom ?? 1, prev))
+  }, [viewport?.zoom])
+
+  const lodDepth = isC4Diagram ? visibleDepth : Infinity
+
+  const detailed = useMemo(
+    () => applyLevelOfDetail(nodes, edges, lodDepth),
+    [nodes, edges, lodDepth]
+  )
+
   const isNodeWritable = !drawingMode && !forceReadOnly && !isPreviewing
 
   const { undo, redo } = useDiagramHistory({
@@ -433,11 +453,24 @@ export function ReactFlowWrapper({
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const target = event.target as HTMLElement
-      if (
+      const isTyping =
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable
-      ) {
+
+      if (isTyping) {
+        const action = findEditorAction(event)
+        const rf = ref.current.reactFlowInstance
+
+        if (action?.allowInInput && rf) {
+          if (action.preventDefault) event.preventDefault()
+
+          void action.handler({
+            rf,
+            openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
+          })
+        }
+
         return
       }
 
@@ -463,7 +496,10 @@ export function ReactFlowWrapper({
             event.preventDefault()
           }
 
-          void action.handler({ rf })
+          void action.handler({
+            rf,
+            openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
+          })
         }
       }
     }
@@ -499,8 +535,8 @@ export function ReactFlowWrapper({
         selectionOnDrag={cursorMode === 'select'}
         panOnScroll={cursorMode === 'select'}
         noWheelClassName="skip-wheel"
-        nodes={nodes}
-        edges={edges}
+        nodes={detailed.nodes}
+        edges={detailed.edges}
         onDrop={onDrop}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
@@ -520,6 +556,7 @@ export function ReactFlowWrapper({
         className={cn(
           'relative isolate opacity-0 transition-opacity duration-100',
           reactFlowInstance && 'opacity-100',
+          lodDepth !== Infinity && 'lod-active',
           sidebarActiveTool === 'add-comment' &&
             'cursor-none! [&_*]:cursor-none!',
 
@@ -532,6 +569,12 @@ export function ReactFlowWrapper({
         defaultEdgeOptions={{ type: 'default', style: { strokeWidth: 3 } }}
         viewport={viewport ?? undefined}
         onViewportChange={setViewport}
+        onNodeDoubleClick={(_, node) => {
+          const rf = ref.current.reactFlowInstance
+          if (node.type !== 'c4Boundary' || !rf) return
+
+          focusNodes(rf, [node.id])
+        }}
         onInit={async (rf) => {
           const isEmpty =
             rf.getNodes().length === 0 && rf.getEdges().length === 0
@@ -554,8 +597,8 @@ export function ReactFlowWrapper({
         nodesConnectable={isNodeWritable}
         elementsSelectable={isNodeWritable}
         edgesReconnectable={isNodeWritable}
-        minZoom={0.1}
-        maxZoom={2}
+        minZoom={MIN_ZOOM}
+        maxZoom={MAX_ZOOM}
       >
         <EdgeMarkerDefs />
 

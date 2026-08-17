@@ -53,6 +53,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
     )
 
     const [cursorMode, setCursorMode] = useState<'select' | 'pan'>('select')
+    const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
 
     const [searchParams, setSearchParams] = useSearchParams()
     const childDiagramIds = (searchParams.get('children') ?? '')
@@ -98,6 +99,14 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
       return null
     }, [diagramData.nodes])
+
+    const isC4Diagram = useMemo(
+      () =>
+        diagramData.nodes.some(
+          (node) => node.type === 'c4' || node.type === 'c4Boundary'
+        ),
+      [diagramData.nodes]
+    )
 
     const dataTablesMap = useMemo(() => {
       const map = new Map<
@@ -179,6 +188,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
       selectedGroup,
       dataTablesMap,
+      isC4Diagram,
 
       showGrid,
       setShowGrid,
@@ -197,6 +207,9 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
       cursorMode,
       setCursorMode,
+
+      isCommandPaletteOpen,
+      setIsCommandPaletteOpen,
 
       isEdgeConnecting,
       setIsEdgeConnecting,

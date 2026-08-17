@@ -35,6 +35,8 @@ function nameField(value: string) {
 }
 
 const ELEMENT_SIZE = { width: 216, height: 120 }
+const BOUNDARY_BACKGROUND = 'rgba(130, 141, 163, 0.06)'
+const BOUNDARY_BORDER = '#828DA3'
 const BOUNDARY_SIZE = { width: 420, height: 300 }
 
 export const C4_ELEMENT_TOOLS: C4Tool[] = [
@@ -84,6 +86,21 @@ export const C4_ELEMENT_TOOLS: C4Tool[] = [
     recommendedSize: ELEMENT_SIZE,
   },
   {
+    id: 'c4-person-ext',
+    label: 'External Person',
+    icon: <LuUser className="h-4 w-4" />,
+    nodeType: 'c4',
+    dragData: {
+      c4Kind: 'person',
+      c4Shape: 'default',
+      isExternal: true,
+      fill: C4_COLORS.personExternal.fill,
+      stroke: C4_COLORS.personExternal.stroke,
+      componentFields: [nameField('External Person')],
+    },
+    recommendedSize: ELEMENT_SIZE,
+  },
+  {
     id: 'c4-container',
     label: 'Container',
     icon: <LuBoxes className="h-4 w-4" />,
@@ -96,6 +113,22 @@ export const C4_ELEMENT_TOOLS: C4Tool[] = [
       fill: C4_COLORS.container.fill,
       stroke: C4_COLORS.container.stroke,
       componentFields: [nameField('Container')],
+    },
+    recommendedSize: ELEMENT_SIZE,
+  },
+  {
+    id: 'c4-container-ext',
+    label: 'External Container',
+    icon: <LuBoxes className="h-4 w-4" />,
+    nodeType: 'c4',
+    dragData: {
+      c4Kind: 'container',
+      c4Shape: 'default',
+      isExternal: true,
+      technology: '',
+      fill: C4_COLORS.containerExternal.fill,
+      stroke: C4_COLORS.containerExternal.stroke,
+      componentFields: [nameField('External Container')],
     },
     recommendedSize: ELEMENT_SIZE,
   },
@@ -144,6 +177,21 @@ export const C4_ELEMENT_TOOLS: C4Tool[] = [
     },
     recommendedSize: ELEMENT_SIZE,
   },
+  {
+    id: 'c4-component-ext',
+    label: 'External Component',
+    icon: <LuComponent className="h-4 w-4" />,
+    nodeType: 'c4',
+    dragData: {
+      c4Kind: 'component',
+      c4Shape: 'default',
+      isExternal: true,
+      fill: C4_COLORS.componentExternal.fill,
+      stroke: C4_COLORS.componentExternal.stroke,
+      componentFields: [nameField('External Component')],
+    },
+    recommendedSize: ELEMENT_SIZE,
+  },
 ]
 
 export const C4_BOUNDARY_TOOLS: C4Tool[] = [
@@ -154,8 +202,8 @@ export const C4_BOUNDARY_TOOLS: C4Tool[] = [
     nodeType: 'c4Boundary',
     dragData: {
       c4BoundaryKind: 'enterprise',
-      backgroundColor: 'rgba(17, 104, 189, 0.06)',
-      borderColor: '#3B82F6',
+      backgroundColor: BOUNDARY_BACKGROUND,
+      borderColor: BOUNDARY_BORDER,
       componentFields: [nameField('Enterprise')],
     },
     recommendedSize: BOUNDARY_SIZE,
@@ -167,8 +215,8 @@ export const C4_BOUNDARY_TOOLS: C4Tool[] = [
     nodeType: 'c4Boundary',
     dragData: {
       c4BoundaryKind: 'system',
-      backgroundColor: 'rgba(67, 141, 213, 0.06)',
-      borderColor: '#60A5FA',
+      backgroundColor: BOUNDARY_BACKGROUND,
+      borderColor: BOUNDARY_BORDER,
       componentFields: [nameField('System Boundary')],
     },
     recommendedSize: BOUNDARY_SIZE,
@@ -180,8 +228,8 @@ export const C4_BOUNDARY_TOOLS: C4Tool[] = [
     nodeType: 'c4Boundary',
     dragData: {
       c4BoundaryKind: 'container',
-      backgroundColor: 'rgba(133, 187, 240, 0.06)',
-      borderColor: '#93C5FD',
+      backgroundColor: BOUNDARY_BACKGROUND,
+      borderColor: BOUNDARY_BORDER,
       componentFields: [nameField('Container Boundary')],
     },
     recommendedSize: BOUNDARY_SIZE,

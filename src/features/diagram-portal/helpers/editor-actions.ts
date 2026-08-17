@@ -1,23 +1,30 @@
 import { ReactFlowInstance } from '@xyflow/react'
 import { getControlKey } from '../utils/get-control-key'
+import { fitAllNodes, focusNodes, ZOOM_STEP, zoomBy } from './camera'
+
+type ActionContext = {
+  rf: ReactFlowInstance
+  openCommandPalette: () => void
+}
 
 type Action = {
   key: string
   isShift?: boolean
   isCtrlOrCmd?: boolean
   preventDefault?: boolean
+  allowInInput?: boolean
 
-  handler: (ctx: { rf: ReactFlowInstance }) => void | Promise<void>
+  handler: (ctx: ActionContext) => void | Promise<void>
 }
 
-export const editorActions = [
+export const editorActions: Action[] = [
   {
     key: '=',
     isShift: false,
     isCtrlOrCmd: true,
     preventDefault: true,
-    async handler({ rf }) {
-      await rf.zoomIn()
+    handler({ rf }) {
+      zoomBy(rf, ZOOM_STEP)
     },
   },
 
@@ -26,8 +33,8 @@ export const editorActions = [
     isShift: false,
     isCtrlOrCmd: true,
     preventDefault: true,
-    async handler({ rf }) {
-      await rf.zoomOut()
+    handler({ rf }) {
+      zoomBy(rf, 1 / ZOOM_STEP)
     },
   },
 
@@ -36,22 +43,37 @@ export const editorActions = [
     isShift: false,
     isCtrlOrCmd: true,
     preventDefault: true,
-    async handler({ rf }) {
-      if (rf.getNodes().length === 0) {
-        await rf.zoomTo(1)
-      } else {
-        await rf.fitView({
-          padding: {
-            top: '80px',
-            left: '20px',
-            right: '20px',
-            bottom: '20px',
-          },
-        })
-      }
+    handler({ rf }) {
+      fitAllNodes(rf)
     },
   },
-] satisfies Action[]
+
+  {
+    key: '2',
+    isShift: false,
+    isCtrlOrCmd: true,
+    preventDefault: true,
+    handler({ rf }) {
+      const selectedIds = rf
+        .getNodes()
+        .filter((node) => node.selected)
+        .map((node) => node.id)
+
+      focusNodes(rf, selectedIds)
+    },
+  },
+
+  {
+    key: 'k',
+    isShift: false,
+    isCtrlOrCmd: true,
+    preventDefault: true,
+    allowInInput: true,
+    handler({ openCommandPalette }) {
+      openCommandPalette()
+    },
+  },
+]
 
 export function findEditorAction(event: KeyboardEvent) {
   const isMac = getControlKey() === 'Meta'
