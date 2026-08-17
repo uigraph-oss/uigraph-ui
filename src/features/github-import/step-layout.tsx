@@ -1,16 +1,6 @@
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
 
-export const fieldClass = 'h-[2.7938125rem] rounded-[0.80315625rem]'
-
-export const compactButtonClass =
-  'h-9 rounded-[0.625rem] px-3 has-[>svg]:px-3 text-sm'
-
-export const codeClass =
-  'bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]'
-
-export const scrollAreaClass = 'better-scrollbar min-h-0 flex-1 overflow-y-auto'
-
 export function StepHeader({
   icon,
   title,

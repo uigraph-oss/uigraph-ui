@@ -1,9 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useQuery } from '@apollo/client'
 import { Check, Copy, ExternalLink, KeyRound, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
-import { codeClass, compactButtonClass } from './step-layout'
+import { GITHUB_APP } from './api'
+import { isInstallationConnected } from './connect-github-step'
 
 const REQUIRED_SECRETS = [
   'AI_PROVIDER_API_KEY',
@@ -33,7 +35,9 @@ function SecretName({ name }: { name: string }) {
       aria-label={`Copy ${name}`}
       className="hover:bg-stock inline-flex items-center gap-1.5 rounded px-1 py-0.5 transition-colors"
     >
-      <code className={codeClass}>{name}</code>
+      <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
+        {name}
+      </code>
       {copied && <Check className="text-success size-3" />}
       {!copied && <Copy className="text-paragraph size-3" />}
     </button>
@@ -41,16 +45,23 @@ function SecretName({ name }: { name: string }) {
 }
 
 export function SecretsGuidance({
-  accountLogin,
+  orgID,
   missing,
   onRecheck,
   isRechecking,
 }: {
-  accountLogin: string | null
+  orgID: string
   missing?: string[]
   onRecheck?: () => void
   isRechecking?: boolean
 }) {
+  const installationQuery = useQuery(GITHUB_APP, { variables: { orgID } })
+
+  const installation = installationQuery.data?.githubApp
+  const accountLogin =
+    installation && isInstallationConnected(installation.status)
+      ? installation.accountLogin
+      : null
   const names = missing && missing.length > 0 ? missing : REQUIRED_SECRETS
 
   return (
@@ -73,10 +84,18 @@ export function SecretsGuidance({
           ))}
         </ul>
         <p className="text-xs">
-          <code className={codeClass}>AI_PROVIDER_API_KEY</code> must be a
-          secret. The rest work as a secret or a variable, and either{' '}
-          <code className={codeClass}>AI_PROVIDER_API_URL</code> or{' '}
-          <code className={codeClass}>AI_PROVIDER_NPM</code> is enough.
+          <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
+            AI_PROVIDER_API_KEY
+          </code>{' '}
+          must be a secret. The rest work as a secret or a variable, and either{' '}
+          <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
+            AI_PROVIDER_API_URL
+          </code>{' '}
+          or{' '}
+          <code className="bg-stock/70 rounded px-1.5 py-0.5 font-mono text-[0.6875rem]">
+            AI_PROVIDER_NPM
+          </code>{' '}
+          is enough.
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <a
@@ -90,7 +109,7 @@ export function SecretsGuidance({
           {onRecheck && (
             <Button
               preset="outline"
-              className={compactButtonClass}
+              className="h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
               disabled={isRechecking}
               onClick={onRecheck}
             >

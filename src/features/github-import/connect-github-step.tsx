@@ -1,6 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
 import {
   AlertCircle,
@@ -17,12 +16,7 @@ import {
   GITHUB_APP,
   GITHUB_APP_INSTALL_URL,
 } from './api'
-import {
-  compactButtonClass,
-  StepBody,
-  StepFooter,
-  StepHeader,
-} from './step-layout'
+import { StepBody, StepFooter, StepHeader } from './step-layout'
 
 export function isInstallationConnected(status: string) {
   const normalized = status.toUpperCase()
@@ -32,7 +26,7 @@ export function isInstallationConnected(status: string) {
   return false
 }
 
-export function readableAccountType(accountType: string) {
+function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
   if (normalized === 'ORGANIZATION') return 'Organization'
   if (normalized === 'USER') return 'Personal account'
@@ -152,7 +146,7 @@ export function ConnectGitHubStep({
             </div>
             <Button
               preset="ghost"
-              className={cn(compactButtonClass, 'shrink-0')}
+              className="h-9 shrink-0 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
               disabled={isDisconnecting}
               onClick={handleDisconnect}
             >

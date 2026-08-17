@@ -21,13 +21,7 @@ import {
 } from 'lucide-react'
 import { useDeferredValue, useState } from 'react'
 import { GITHUB_REPOSITORIES } from './api'
-import {
-  fieldClass,
-  scrollAreaClass,
-  StepBody,
-  StepFooter,
-  StepHeader,
-} from './step-layout'
+import { StepBody, StepFooter, StepHeader } from './step-layout'
 
 export type SelectedRepository = { id: string; fullName: string }
 
@@ -45,7 +39,7 @@ export function SelectRepositoryStep({
   orgID: string
   teamID: string
   teamName: string
-  teams?: { teamId: string; teamName: string }[]
+  teams?: { id: string; name: string }[]
   selected: SelectedRepository | null
   onBack: () => void
   onSelectTeam?: (teamID: string) => void
@@ -85,7 +79,7 @@ export function SelectRepositoryStep({
               aria-label="Search repositories"
               value={search}
               placeholder="Search repositories"
-              className={cn(fieldClass, 'pl-11')}
+              className="h-[2.7938125rem] rounded-[0.80315625rem] pl-11"
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
@@ -93,14 +87,14 @@ export function SelectRepositoryStep({
             <Select value={teamID} onValueChange={onSelectTeam}>
               <SelectTrigger
                 aria-label="Owning team"
-                className={cn(fieldClass, 'w-44 shrink-0')}
+                className="h-[2.7938125rem] w-44 shrink-0 rounded-[0.80315625rem]"
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {teams.map((team) => (
-                  <SelectItem key={team.teamId} value={team.teamId}>
-                    {team.teamName}
+                  <SelectItem key={team.id} value={team.id}>
+                    {team.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -122,7 +116,7 @@ export function SelectRepositoryStep({
           )}
 
           {visibleRepositories.length > 0 && (
-            <div className={cn(scrollAreaClass, 'divide-stock divide-y')}>
+            <div className="better-scrollbar divide-stock min-h-0 flex-1 divide-y overflow-y-auto">
               {visibleRepositories.map((repository) => (
                 <button
                   type="button"

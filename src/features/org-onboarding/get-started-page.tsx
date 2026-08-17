@@ -7,10 +7,7 @@ import {
   GITHUB_APP,
   LATEST_REPOSITORY_IMPORT,
 } from '@/features/github-import/api'
-import {
-  ConnectGitHubStep,
-  isInstallationConnected,
-} from '@/features/github-import/connect-github-step'
+import { ConnectGitHubStep } from '@/features/github-import/connect-github-step'
 import { ImportProgress } from '@/features/github-import/import-progress'
 import {
   SelectRepositoryStep,
@@ -25,7 +22,7 @@ import {
 } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { Loader2 } from 'lucide-react'
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { COMPLETE_ONBOARDING } from './api'
 import { TeamsStep } from './teams-step'
@@ -80,11 +77,6 @@ function GetStartedWizard({ orgID }: { orgID: string }) {
   })
 
   const githubEnabled = installationQuery.data?.githubAppEnabled ?? false
-  const installation = installationQuery.data?.githubApp
-  const accountLogin =
-    installation && isInstallationConnected(installation.status)
-      ? installation.accountLogin
-      : null
 
   const latest = latestQuery.data?.latestRepositoryImport ?? null
   const importID = startedImportID ?? latest?.id ?? null
@@ -93,7 +85,7 @@ function GetStartedWizard({ orgID }: { orgID: string }) {
     (latestQuery.loading && !latestQuery.data) ||
     (installationQuery.loading && !installationQuery.data)
 
-  const finish = useCallback(async () => {
+  async function finish() {
     if (finishedRef.current) return
     finishedRef.current = true
     setFinishError('')
@@ -106,7 +98,7 @@ function GetStartedWizard({ orgID }: { orgID: string }) {
         caught instanceof Error ? caught.message : 'Could not finish onboarding'
       )
     }
-  }, [completeOnboarding, orgID])
+  }
 
   async function handleSkip() {
     await finish()
@@ -191,7 +183,6 @@ function GetStartedWizard({ orgID }: { orgID: string }) {
           orgID={orgID}
           teamID={team.id}
           repository={repository}
-          accountLogin={accountLogin}
           onBack={() => setStep('repository')}
           onStarted={(id) => {
             setStartedImportID(id)

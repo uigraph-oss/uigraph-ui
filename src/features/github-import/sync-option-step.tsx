@@ -22,14 +22,12 @@ export function SyncOptionStep({
   orgID,
   teamID,
   repository,
-  accountLogin,
   onBack,
   onStarted,
 }: {
   orgID: string
   teamID: string
   repository: SelectedRepository
-  accountLogin: string | null
   onBack: () => void
   onStarted: (importID: string) => void
 }) {
@@ -105,7 +103,7 @@ export function SyncOptionStep({
         </div>
 
         <div className="mt-5 min-h-0 flex-1">
-          <SecretsGuidance accountLogin={accountLogin} />
+          <SecretsGuidance orgID={orgID} />
         </div>
 
         {error && (

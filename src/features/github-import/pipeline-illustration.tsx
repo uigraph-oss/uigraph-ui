@@ -9,27 +9,21 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-const STAGES: { key: string; icon: ReactNode; label: string }[] = [
+const STAGES: { icon: ReactNode; label: string }[] = [
   {
-    key: 'repository',
     icon: <Github className="size-5" />,
     label: 'Your repository',
   },
   {
-    key: 'artifacts',
     icon: <FileCode2 className="size-5" />,
     label: 'Generating artifacts',
   },
   {
-    key: 'uigraph',
     icon: <Network className="size-5" />,
     label: 'Publishing to UIGraph',
   },
 ]
 
-// stage is the index of the stage that is genuinely in progress. A stage is
-// only drawn as complete when the real work behind it has finished, so the
-// animation loops in place rather than running ahead of GitHub.
 export function PipelineIllustration({
   stage,
   done,
@@ -47,7 +41,7 @@ export function PipelineIllustration({
         const errored = failed && index === stage
 
         return (
-          <div key={item.key} className="flex items-center gap-2 sm:gap-4">
+          <div key={item.label} className="flex items-center gap-2 sm:gap-4">
             {index > 0 && (
               <span className="relative flex h-px w-8 items-center sm:w-16">
                 <span

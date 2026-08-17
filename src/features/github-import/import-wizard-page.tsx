@@ -9,11 +9,7 @@ import { arrayNonNullable } from 'daily-code'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { GITHUB_APP } from './api'
-import {
-  ConnectGitHubStep,
-  isInstallationConnected,
-} from './connect-github-step'
+import { ConnectGitHubStep } from './connect-github-step'
 import {
   SelectRepositoryStep,
   type SelectedRepository,
@@ -53,18 +49,9 @@ function ImportWizard({ orgID }: { orgID: string }) {
   const [repository, setRepository] = useState<SelectedRepository | null>(null)
 
   const teamsQuery = useQuery(SETTINGS_TEAMS, { variables: { orgId: orgID } })
-  const installationQuery = useQuery(GITHUB_APP, { variables: { orgID } })
 
-  const teams = arrayNonNullable(teamsQuery.data?.teams).map((team) => ({
-    teamId: team.id,
-    teamName: team.name,
-  }))
-  const team = teams.find((item) => item.teamId === teamID) ?? teams[0] ?? null
-  const installation = installationQuery.data?.githubApp
-  const accountLogin =
-    installation && isInstallationConnected(installation.status)
-      ? installation.accountLogin
-      : null
+  const teams = arrayNonNullable(teamsQuery.data?.teams)
+  const team = teams.find((item) => item.id === teamID) ?? teams[0]
 
   if (teamsQuery.loading && !teamsQuery.data) {
     return (
@@ -110,8 +97,8 @@ function ImportWizard({ orgID }: { orgID: string }) {
     return (
       <SelectRepositoryStep
         orgID={orgID}
-        teamID={team.teamId}
-        teamName={team.teamName}
+        teamID={team.id}
+        teamName={team.name}
         teams={teams}
         selected={repository}
         onBack={() => setStep('connect')}
@@ -125,9 +112,8 @@ function ImportWizard({ orgID }: { orgID: string }) {
   return (
     <SyncOptionStep
       orgID={orgID}
-      teamID={team.teamId}
+      teamID={team.id}
       repository={repository}
-      accountLogin={accountLogin}
       onBack={() => setStep('repository')}
       onStarted={(importID) => navigate(`/repositories/import/${importID}`)}
     />

@@ -1,15 +1,7 @@
+import type { GT } from '@/api'
 import { cn } from '@/lib/utils'
 import { AlertCircle, Check, CircleSlash, Loader2, Minus } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-export type ImportStep = {
-  number: number
-  name: string
-  status: string
-  conclusion?: string | null
-  startedAt?: string | null
-  completedAt?: string | null
-}
 
 const FRIENDLY_LABELS: Record<string, string> = {
   'set up job': 'Preparing the runner',
@@ -31,12 +23,12 @@ export function stepLabel(name: string) {
   return FRIENDLY_LABELS[name.trim().toLowerCase()] ?? name
 }
 
-export function isStepFailed(step: ImportStep) {
+export function isStepFailed(step: GT.RepositoryImportStep) {
   const conclusion = (step.conclusion ?? '').toLowerCase()
   return conclusion === 'failure' || conclusion === 'timed_out'
 }
 
-export function formatElapsed(milliseconds: number) {
+function formatElapsed(milliseconds: number) {
   const total = Math.max(0, Math.floor(milliseconds / 1000))
   const minutes = Math.floor(total / 60)
   const seconds = total % 60
@@ -59,7 +51,7 @@ export function useElapsed(startedAt?: string | null, endedAt?: string | null) {
   return formatElapsed(end - start)
 }
 
-function StepDuration({ step }: { step: ImportStep }) {
+function StepDuration({ step }: { step: GT.RepositoryImportStep }) {
   const elapsed = useElapsed(step.startedAt, step.completedAt)
   if (!elapsed) return null
   return (
@@ -69,7 +61,7 @@ function StepDuration({ step }: { step: ImportStep }) {
   )
 }
 
-function StepIcon({ step }: { step: ImportStep }) {
+function StepIcon({ step }: { step: GT.RepositoryImportStep }) {
   const status = step.status.toLowerCase()
   const conclusion = (step.conclusion ?? '').toLowerCase()
 
@@ -88,7 +80,7 @@ function StepIcon({ step }: { step: ImportStep }) {
   return <Minus className="text-paragraph/50 size-4 shrink-0" />
 }
 
-export function StepTimeline({ steps }: { steps: ImportStep[] }) {
+export function StepTimeline({ steps }: { steps: GT.RepositoryImportStep[] }) {
   if (steps.length === 0) {
     return (
       <div className="text-paragraph border-stock flex items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-sm">

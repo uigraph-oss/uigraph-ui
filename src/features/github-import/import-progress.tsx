@@ -1,3 +1,4 @@
+import type { GT } from '@/api'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { usePermissions } from '@/hooks/use-permissions'
@@ -12,33 +13,27 @@ import {
   PartyPopper,
   RefreshCw,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  GITHUB_APP,
   RECHECK_REPOSITORY_IMPORT,
   REPOSITORY_IMPORT,
   RETRY_REPOSITORY_IMPORT,
 } from './api'
 import { PipelineIllustration } from './pipeline-illustration'
 import { SecretsGuidance } from './secrets-guidance'
-import { compactButtonClass } from './step-layout'
 import {
   isStepFailed,
   stepLabel,
   StepTimeline,
   useElapsed,
-  type ImportStep,
 } from './step-timeline'
 
-const linkClass =
-  'text-primary inline-flex items-center gap-1.5 text-xs hover:underline'
-
-export function isTerminalStatus(status: string) {
-  return status === 'COMPLETED' || status === 'FAILED' || status === 'CANCELLED'
+function isTerminalStatus(status: string) {
+  return status === 'COMPLETED' || status === 'FAILED'
 }
 
-function pipelineStage(status: string, steps: ImportStep[]) {
+function pipelineStage(status: string, steps: GT.RepositoryImportStep[]) {
   if (status === 'SELECTED') return 0
   if (status === 'CHECKING_AI_CONFIGURATION') return 0
   if (status === 'WAITING_AI_CONFIGURATION') return 0
@@ -70,26 +65,16 @@ export function ImportProgress({
     pollInterval: isPolling ? 5000 : 0,
     onCompleted: (data) => {
       setIsPolling(!isTerminalStatus(data.repositoryImport.status))
+      if (data.repositoryImport.status === 'COMPLETED') onCompleted?.()
     },
   })
-  const installationQuery = useQuery(GITHUB_APP, { variables: { orgID } })
   const [recheck, { loading: isRechecking }] = useMutation(
     RECHECK_REPOSITORY_IMPORT
   )
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
 
   const value = importQuery.data?.repositoryImport
-  const steps = value?.steps ?? []
-  const status = value?.status ?? 'SELECTED'
-  const completed = status === 'COMPLETED'
-  const failed = status === 'FAILED' || status === 'CANCELLED'
   const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
-  const failedStep = steps.find(isStepFailed)
-
-  useEffect(() => {
-    if (!completed || !onCompleted) return
-    onCompleted()
-  }, [completed, onCompleted])
 
   async function handleRecheck() {
     setActionError('')
@@ -138,6 +123,12 @@ export function ImportProgress({
       </Alert>
     )
   }
+
+  const steps = value.steps
+  const status = value.status
+  const completed = status === 'COMPLETED'
+  const failed = status === 'FAILED'
+  const failedStep = steps.find(isStepFailed)
 
   return (
     <div className="flex flex-col gap-5">
@@ -191,7 +182,7 @@ export function ImportProgress({
 
       {value.missingAIConfiguration.length > 0 && (
         <SecretsGuidance
-          accountLogin={installationQuery.data?.githubApp?.accountLogin ?? null}
+          orgID={orgID}
           missing={value.missingAIConfiguration}
           onRecheck={isAdmin ? handleRecheck : undefined}
           isRechecking={isRechecking}
@@ -214,7 +205,7 @@ export function ImportProgress({
             {isAdmin && (
               <Button
                 preset="outline"
-                className={cn(compactButtonClass, 'mt-1')}
+                className="mt-1 h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
                 disabled={isRetrying}
                 onClick={handleRetry}
               >
@@ -250,7 +241,7 @@ export function ImportProgress({
             href={`${value.repository.url}/tree/${value.branch}`}
             target="_blank"
             rel="noreferrer"
-            className={linkClass}
+            className="text-primary inline-flex items-center gap-1.5 text-xs hover:underline"
           >
             Branch <ExternalLink className="size-3" />
           </a>
@@ -260,7 +251,7 @@ export function ImportProgress({
             href={value.runUrl}
             target="_blank"
             rel="noreferrer"
-            className={linkClass}
+            className="text-primary inline-flex items-center gap-1.5 text-xs hover:underline"
           >
             Actions run <ExternalLink className="size-3" />
           </a>
@@ -270,7 +261,7 @@ export function ImportProgress({
             href={value.pullRequestUrl}
             target="_blank"
             rel="noreferrer"
-            className={linkClass}
+            className="text-primary inline-flex items-center gap-1.5 text-xs hover:underline"
           >
             Pull request <ExternalLink className="size-3" />
           </a>

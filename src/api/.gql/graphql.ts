@@ -4139,7 +4139,6 @@ export type RepositoryImport = {
 };
 
 export enum RepositoryImportStatus {
-  Cancelled = 'CANCELLED',
   CheckingAiConfiguration = 'CHECKING_AI_CONFIGURATION',
   Completed = 'COMPLETED',
   Failed = 'FAILED',

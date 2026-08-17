@@ -25,25 +25,26 @@ const STATUS_LABELS: Record<string, string> = {
   RUN_RUNNING: 'Running',
   COMPLETED: 'Imported',
   FAILED: 'Failed',
-  CANCELLED: 'Cancelled',
 }
 
-const linkClass =
-  'text-primary inline-flex items-center gap-1 text-xs hover:underline'
-
 export function GitHubSettingsPage() {
-  const orgID = useCurrentOrganization()?.id as string
+  const organization = useCurrentOrganization()
+
+  if (!organization) return null
+
+  return <GitHubSettings orgID={organization.id} />
+}
+
+function GitHubSettings({ orgID }: { orgID: string }) {
   const { isAdmin } = usePermissions()
   const navigate = useNavigate()
 
   const installationQuery = useQuery(GITHUB_APP, {
     variables: { orgID },
-    skip: !orgID,
     onError: (error) => toast.error(error.message),
   })
   const importsQuery = useQuery(REPOSITORY_IMPORTS, {
     variables: { orgID },
-    skip: !orgID,
     onError: (error) => toast.error(error.message),
     pollInterval: 10000,
   })
@@ -209,7 +210,7 @@ export function GitHubSettingsPage() {
                         {value.serviceId && (
                           <Link
                             to={`/services/${value.serviceId}`}
-                            className={linkClass}
+                            className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
                           >
                             Service
                           </Link>
@@ -219,7 +220,7 @@ export function GitHubSettingsPage() {
                             href={value.runUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className={linkClass}
+                            className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
                           >
                             Actions run <ExternalLink className="size-3" />
                           </a>
@@ -229,7 +230,7 @@ export function GitHubSettingsPage() {
                             href={value.pullRequestUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className={linkClass}
+                            className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
                           >
                             Pull request <ExternalLink className="size-3" />
                           </a>
@@ -254,7 +255,6 @@ export function GitHubSettingsPage() {
                       {isAdmin &&
                         connected &&
                         (value.status === 'FAILED' ||
-                          value.status === 'CANCELLED' ||
                           value.status === 'WAITING_AI_CONFIGURATION') && (
                           <Button
                             preset="outline"

@@ -3,8 +3,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTeamContext } from '@/features/dashboard-settings/context/team-context'
 import {
-  fieldClass,
-  scrollAreaClass,
   StepBody,
   StepFooter,
   StepHeader,
@@ -65,7 +63,7 @@ export function TeamsStep({
               value={teamName}
               placeholder="e.g. Engineering"
               autoComplete="off"
-              className={cn(fieldClass, 'flex-1')}
+              className="h-[2.7938125rem] flex-1 rounded-[0.80315625rem]"
               onChange={(event) => setTeamName(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key !== 'Enter') return
@@ -75,7 +73,7 @@ export function TeamsStep({
             />
             <Button
               preset="outline"
-              className={cn(fieldClass, 'shrink-0')}
+              className="h-[2.7938125rem] shrink-0 rounded-[0.80315625rem]"
               disabled={teamName.trim() === '' || isCreating}
               onClick={handleAddTeam}
             >
@@ -89,7 +87,7 @@ export function TeamsStep({
         <div className="mt-5 flex min-h-0 flex-1 flex-col">
           <Label className="shrink-0">Your teams</Label>
 
-          <div className={cn(scrollAreaClass, 'mt-2 space-y-2 pr-1')}>
+          <div className="better-scrollbar mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
             {isTeamsLoading && (
               <div className="text-paragraph flex h-full min-h-24 items-center justify-center gap-2 text-sm">
                 <Loader2 className="size-4 animate-spin" /> Loading teams
