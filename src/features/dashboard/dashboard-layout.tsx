@@ -3,11 +3,9 @@
 import { GridScrollBody } from '@/components/grid-scroll-body'
 import { DASHBOARD_SETTINGS_NAV_LINKS } from '@/constants'
 import { env } from '@/env'
-import { GITHUB_APP_ENABLED } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
-import { useQuery } from '@apollo/client'
 import { PropsWithChildren, ReactNode, useMemo } from 'react'
 import { LuCreditCard } from 'react-icons/lu'
 import { Link, Navigate, useLocation } from 'react-router-dom'
@@ -33,14 +31,10 @@ export function DashboardLayout({ children }: PropsWithChildren) {
 export function DashboardSettingsLayout({ children }: PropsWithChildren) {
   const { pathname } = useLocation()
   const { isAdmin } = usePermissions()
+  const features = useAuthStore((state) => state.features)
   const currentOrganizationId = useAuthStore(
     (state) => state.currentOrganizationId
   )
-  const githubQuery = useQuery(GITHUB_APP_ENABLED, {
-    variables: { orgID: currentOrganizationId! },
-    skip: !currentOrganizationId,
-  })
-  const githubEnabled = githubQuery.data?.githubAppEnabled ?? false
 
   const crumbs = useMemo(() => {
     const segments = pathname.split('/').filter(Boolean)
@@ -74,7 +68,7 @@ export function DashboardSettingsLayout({ children }: PropsWithChildren) {
             {DASHBOARD_SETTINGS_NAV_LINKS.filter(
               (item) =>
                 (!item.adminOnly || isAdmin) &&
-                (item.id !== '/settings/github' || githubEnabled)
+                (item.id !== '/settings/github' || features.github)
             ).map((item) => {
               const isActive = item.isActive(pathname)
 

@@ -18,6 +18,7 @@ import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import {
   refreshOrganizations,
+  useAuthStore,
   useCurrentOrganization,
 } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
@@ -58,6 +59,7 @@ export function GetStartedPage() {
 
 function GetStartedWizard({ orgID }: { orgID: string }) {
   const navigate = useNavigate()
+  const githubEnabled = useAuthStore((state) => state.features.github)
   const [step, setStep] = useState<Step | null>(null)
   const [team, setTeam] = useState<{ id: string; name: string } | null>(null)
   const [repository, setRepository] = useState<SelectedRepository | null>(null)
@@ -75,8 +77,6 @@ function GetStartedWizard({ orgID }: { orgID: string }) {
     variables: { orgID },
     fetchPolicy: 'network-only',
   })
-
-  const githubEnabled = installationQuery.data?.githubAppEnabled ?? false
 
   const latest = latestQuery.data?.latestRepositoryImport ?? null
   const importID = startedImportID ?? latest?.id ?? null

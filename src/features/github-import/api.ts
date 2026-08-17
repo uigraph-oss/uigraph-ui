@@ -1,14 +1,7 @@
 import { graphql } from '@/api'
 
-export const GITHUB_APP_ENABLED = graphql(`
-  query GitHubAppEnabled($orgID: ID!) {
-    githubAppEnabled(orgId: $orgID)
-  }
-`)
-
 export const GITHUB_APP = graphql(`
   query GitHubImportApp($orgID: ID!) {
-    githubAppEnabled(orgId: $orgID)
     githubApp(orgId: $orgID) {
       id
       accountLogin

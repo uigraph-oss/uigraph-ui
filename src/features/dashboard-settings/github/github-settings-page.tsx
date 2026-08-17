@@ -10,7 +10,7 @@ import {
 } from '@/features/github-import/api'
 import { isInstallationConnected } from '@/features/github-import/connect-github-step'
 import { usePermissions } from '@/hooks/use-permissions'
-import { useCurrentOrganization } from '@/store/auth-store'
+import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import { ExternalLink, Github, Plus, RefreshCw, Unplug } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -37,6 +37,7 @@ export function GitHubSettingsPage() {
 
 function GitHubSettings({ orgID }: { orgID: string }) {
   const { isAdmin } = usePermissions()
+  const enabled = useAuthStore((state) => state.features.github)
   const navigate = useNavigate()
 
   const installationQuery = useQuery(GITHUB_APP, {
@@ -64,7 +65,6 @@ function GitHubSettings({ orgID }: { orgID: string }) {
     }
   )
 
-  const enabled = installationQuery.data?.githubAppEnabled ?? false
   const installation = installationQuery.data?.githubApp ?? null
   const connected = installation
     ? isInstallationConnected(installation.status)

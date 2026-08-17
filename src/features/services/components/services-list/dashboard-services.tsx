@@ -13,14 +13,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
-import { GITHUB_APP_ENABLED } from '@/features/github-import/api'
 import {
   toCreateServiceInput,
   toUpdateServiceInput,
 } from '@/features/services/api/services'
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
-import { useQuery } from '@apollo/client'
+import { useAuthStore } from '@/store/auth-store'
 import { CirclePlus, Github, Network } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -32,6 +31,7 @@ import { ServiceCard } from './service-card'
 export function DashboardServices() {
   const navigate = useNavigate()
   const { canWrite } = usePermissions()
+  const features = useAuthStore((state) => state.features)
   const [createServiceOpen, setCreateServiceOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
@@ -53,11 +53,7 @@ export function DashboardServices() {
     deleteService,
   } = useDashboardServicesList()
 
-  const githubQuery = useQuery(GITHUB_APP_ENABLED, {
-    variables: { orgID: orgId! },
-    skip: !orgId,
-  })
-  const canImport = canWrite && (githubQuery.data?.githubAppEnabled ?? false)
+  const canImport = canWrite && features.github
 
   const categories = useMemo(() => {
     const counts = new Map<string, number>()

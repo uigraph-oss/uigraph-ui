@@ -124,8 +124,7 @@ type Documents = {
     "\n  query DiagramVersionContent($orgId: ID!, $diagramId: ID!, $versionId: ID!) {\n    diagramVersionContent(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      diagramId\n      content\n    }\n  }\n": typeof types.DiagramVersionContentDocument,
     "\n  mutation CreateDiagramVersion($orgId: ID!, $diagramId: ID!, $label: String) {\n    createDiagramVersion(orgId: $orgId, diagramId: $diagramId, label: $label) {\n      id\n      versionNumber\n    }\n  }\n": typeof types.CreateDiagramVersionDocument,
     "\n  mutation RestoreDiagramVersion(\n    $orgId: ID!\n    $diagramId: ID!\n    $versionId: ID!\n  ) {\n    restoreDiagramVersion(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      id\n    }\n  }\n": typeof types.RestoreDiagramVersionDocument,
-    "\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n": typeof types.GitHubAppEnabledDocument,
-    "\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": typeof types.GitHubImportAppDocument,
+    "\n  query GitHubImportApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": typeof types.GitHubImportAppDocument,
     "\n  query GitHubImportRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n": typeof types.GitHubImportRepositoriesDocument,
     "\n  query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {\n    repositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n      teamId\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      missingAIConfiguration\n      error\n      serviceId\n      createdAt\n      runStartedAt\n      runCompletedAt\n      repository {\n        id\n        name\n        fullName\n        url\n        defaultBranch\n        private\n      }\n      steps {\n        number\n        name\n        status\n        conclusion\n        startedAt\n        completedAt\n      }\n    }\n  }\n": typeof types.GitHubImportRepositoryImportDocument,
     "\n  query GitHubImportRepositoryImports($orgID: ID!) {\n    repositoryImports(orgId: $orgID) {\n      id\n      status\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      error\n      serviceId\n      createdAt\n      repository {\n        id\n        fullName\n        url\n      }\n    }\n  }\n": typeof types.GitHubImportRepositoryImportsDocument,
@@ -306,7 +305,7 @@ type Documents = {
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": typeof types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": typeof types.AssetUrlsDocument,
-    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
+    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
 };
 const documents: Documents = {
     "\n  query ChatSessions($orgId: ID!) {\n    chatSessions(orgId: $orgId) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": types.ChatSessionsDocument,
@@ -419,8 +418,7 @@ const documents: Documents = {
     "\n  query DiagramVersionContent($orgId: ID!, $diagramId: ID!, $versionId: ID!) {\n    diagramVersionContent(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      diagramId\n      content\n    }\n  }\n": types.DiagramVersionContentDocument,
     "\n  mutation CreateDiagramVersion($orgId: ID!, $diagramId: ID!, $label: String) {\n    createDiagramVersion(orgId: $orgId, diagramId: $diagramId, label: $label) {\n      id\n      versionNumber\n    }\n  }\n": types.CreateDiagramVersionDocument,
     "\n  mutation RestoreDiagramVersion(\n    $orgId: ID!\n    $diagramId: ID!\n    $versionId: ID!\n  ) {\n    restoreDiagramVersion(\n      orgId: $orgId\n      diagramId: $diagramId\n      versionId: $versionId\n    ) {\n      id\n    }\n  }\n": types.RestoreDiagramVersionDocument,
-    "\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n": types.GitHubAppEnabledDocument,
-    "\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": types.GitHubImportAppDocument,
+    "\n  query GitHubImportApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n": types.GitHubImportAppDocument,
     "\n  query GitHubImportRepositories($orgID: ID!) {\n    githubRepositories(orgId: $orgID) {\n      id\n      githubId\n      name\n      fullName\n      url\n      defaultBranch\n      private\n      archived\n    }\n  }\n": types.GitHubImportRepositoriesDocument,
     "\n  query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {\n    repositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n      teamId\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      missingAIConfiguration\n      error\n      serviceId\n      createdAt\n      runStartedAt\n      runCompletedAt\n      repository {\n        id\n        name\n        fullName\n        url\n        defaultBranch\n        private\n      }\n      steps {\n        number\n        name\n        status\n        conclusion\n        startedAt\n        completedAt\n      }\n    }\n  }\n": types.GitHubImportRepositoryImportDocument,
     "\n  query GitHubImportRepositoryImports($orgID: ID!) {\n    repositoryImports(orgId: $orgID) {\n      id\n      status\n      teamName\n      branch\n      runUrl\n      pullRequestUrl\n      error\n      serviceId\n      createdAt\n      repository {\n        id\n        fullName\n        url\n      }\n    }\n  }\n": types.GitHubImportRepositoryImportsDocument,
@@ -601,7 +599,7 @@ const documents: Documents = {
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": types.AssetUrlsDocument,
-    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n": types.MeAndOrgBootstrapDocument,
+    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n": types.MeAndOrgBootstrapDocument,
 };
 
 /**
@@ -1061,11 +1059,7 @@ export function graphql(source: "\n  mutation RestoreDiagramVersion(\n    $orgId
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n"): (typeof documents)["\n  query GitHubAppEnabled($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportApp($orgID: ID!) {\n    githubAppEnabled(orgId: $orgID)\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"];
+export function graphql(source: "\n  query GitHubImportApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"): (typeof documents)["\n  query GitHubImportApp($orgID: ID!) {\n    githubApp(orgId: $orgID) {\n      id\n      accountLogin\n      accountType\n      status\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -1789,7 +1783,7 @@ export function graphql(source: "\n  query AssetUrls($orgId: ID!, $assetIds: [ID
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n"): (typeof documents)["\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n  }\n"];
+export function graphql(source: "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n"): (typeof documents)["\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
