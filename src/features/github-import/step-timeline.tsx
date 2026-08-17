@@ -6,8 +6,6 @@ import { useEffect, useState } from 'react'
 const FRIENDLY_LABELS: Record<string, string> = {
   'set up job': 'Preparing the runner',
   'run actions/checkout@v4': 'Checking out your repository',
-  'checkout called ref': 'Checking out your repository',
-  'checkout pushed ref': 'Checking out your repository',
   'run actions/setup-node@v4': 'Installing tools',
   'run actions/setup-go@v5': 'Installing tools',
   'run go install github.com/uigraph-oss/uigraph-cli@main': 'Installing tools',
