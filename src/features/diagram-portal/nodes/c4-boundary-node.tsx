@@ -62,10 +62,10 @@ export function C4BoundaryNode({
 
   return (
     <div
-      className="size-full rounded-[0.25rem]"
+      className="c4-boundary-box relative size-full rounded-[0.25rem]"
       style={{
         backgroundColor: data.backgroundColor ?? DEFAULT_BACKGROUND,
-        border: `1px dashed ${borderColor}`,
+        border: `2px dashed ${borderColor}`,
       }}
     >
       <NodeResizer
@@ -77,14 +77,16 @@ export function C4BoundaryNode({
         }}
       />
 
-      <div className="flex flex-col items-center gap-0.5 px-3 pt-2">
+      {/* c4model.com labels a boundary at its bottom-left corner. */}
+      <div className="c4-boundary-label absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 px-3 pb-2">
         <TextareaAutosize
           value={localName}
           placeholder="Boundary"
           onKeyDown={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
+          onDoubleClick={(e) => e.stopPropagation()}
           onChange={(e) => updateName(e.currentTarget.value)}
-          className="w-full cursor-text resize-none bg-transparent text-center text-sm font-bold outline-none"
+          className="w-full cursor-text resize-none bg-transparent text-left text-sm font-bold outline-none"
           style={{ color: data.fontColor ?? borderColor }}
         />
 
@@ -97,12 +99,25 @@ export function C4BoundaryNode({
 
         {data.description && (
           <span
-            className="max-w-full text-center text-[0.625rem] leading-tight whitespace-pre-line opacity-80"
+            className="max-w-full text-left text-[0.625rem] leading-tight whitespace-pre-line opacity-80"
             style={{ color: data.fontColor ?? borderColor }}
           >
             {data.description}
           </span>
         )}
+      </div>
+
+      <div
+        className="c4-boundary-collapsed-label absolute inset-0 hidden flex-col items-center justify-center gap-[0.15em] px-[5%] text-center"
+        style={{ color: data.fontColor ?? borderColor }}
+      >
+        <span className="leading-tight font-bold wrap-anywhere">
+          {localName || 'Boundary'}
+        </span>
+
+        <span className="text-[0.6em] leading-tight opacity-80">
+          [{typeLabel}]
+        </span>
       </div>
     </div>
   )

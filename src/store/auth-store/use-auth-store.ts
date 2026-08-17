@@ -3,10 +3,13 @@ import { create } from 'zustand'
 
 type AuthenticatedUser = GT.MeAndOrgBootstrapQuery['me']
 type UserOrganization = GT.MeAndOrgBootstrapQuery['myOrgs'][number]
+type Features = GT.MeAndOrgBootstrapQuery['features']
 
 export const useAuthStore = create(() => ({
   status: 'loading' as 'authenticated' | 'loading' | 'unauthenticated',
   user: null as AuthenticatedUser | null,
+
+  features: { github: false } as Features,
 
   organizations: [] as UserOrganization[],
   currentOrganizationId: localStorage.getItem('currentOrganizationId') as

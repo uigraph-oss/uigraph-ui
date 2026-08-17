@@ -6,6 +6,14 @@ import { useRef } from 'react'
 import { LuExternalLink } from 'react-icons/lu'
 import TextareaAutosize from 'react-textarea-autosize'
 import { useComponentField } from '../hooks/use-component-field'
+import {
+  C4BoxShape,
+  C4CylinderShape,
+  C4PersonShape,
+  C4QueueShape,
+  PERSON_BODY_TOP_RATIO,
+  PERSON_HEAD_RATIO,
+} from './components/c4-shapes'
 import { NodeContainer } from './components/node-card'
 import { NodeDataGenerator } from './types/node.types'
 
@@ -32,10 +40,17 @@ export const C4_KIND_LABELS: Record<C4ElementKind, string> = {
   node: 'Node',
 }
 
+/** The wording c4model.com uses inside a node's `[…]` meta line. */
+const C4_META_LABELS: Record<C4ElementKind, string> = {
+  person: 'Person',
+  system: 'Software System',
+  container: 'Container',
+  component: 'Component',
+  node: 'Deployment Node',
+}
+
 const DEFAULT_FILL = '#1168BD'
 const DEFAULT_STROKE = '#0B4884'
-const CYLINDER_LIP = 14
-const QUEUE_CAP = 16
 
 export function C4Node({ id, data, selected }: NodeProps<TC4Node>) {
   const { updateNodeData, updateNode } = useReactFlow()
@@ -67,8 +82,8 @@ export function C4Node({ id, data, selected }: NodeProps<TC4Node>) {
   const shape = data.c4Shape ?? 'default'
   const isPerson = data.c4Kind === 'person'
 
-  const shapeSuffix = shape === 'db' ? '_db' : shape === 'queue' ? '_queue' : ''
-  const stereotype = `${data.isExternal ? 'external_' : ''}${data.c4Kind ?? 'system'}${shapeSuffix}`
+  const kindLabel = C4_META_LABELS[data.c4Kind ?? 'system']
+  const meta = data.technology ? `${kindLabel}: ${data.technology}` : kindLabel
 
   return (
     <NodeContainer
@@ -87,74 +102,33 @@ export function C4Node({ id, data, selected }: NodeProps<TC4Node>) {
         }}
       />
 
-      {shape === 'default' && (
-        <div
-          className="absolute inset-0 rounded-[0.25rem]"
-          style={{ backgroundColor: fill, border: `1px solid ${stroke}` }}
-        />
+      {isPerson && <C4PersonShape fill={fill} stroke={stroke} />}
+
+      {!isPerson && shape === 'default' && (
+        <C4BoxShape fill={fill} stroke={stroke} />
       )}
 
-      {shape === 'db' && (
-        <svg
-          className="absolute inset-0 size-full"
-          preserveAspectRatio="none"
-          viewBox="0 0 100 100"
-        >
-          <path
-            d={`M0,${CYLINDER_LIP} A50,${CYLINDER_LIP} 0 0 1 100,${CYLINDER_LIP} L100,${100 - CYLINDER_LIP} A50,${CYLINDER_LIP} 0 0 1 0,${100 - CYLINDER_LIP} Z`}
-            fill={fill}
-            stroke={stroke}
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            d={`M0,${CYLINDER_LIP} A50,${CYLINDER_LIP} 0 0 0 100,${CYLINDER_LIP}`}
-            fill="none"
-            stroke={stroke}
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+      {!isPerson && shape === 'db' && (
+        <C4CylinderShape fill={fill} stroke={stroke} />
       )}
 
-      {shape === 'queue' && (
-        <svg
-          className="absolute inset-0 size-full"
-          preserveAspectRatio="none"
-          viewBox="0 0 100 100"
-        >
-          <path
-            d={`M${QUEUE_CAP},0 L${100 - QUEUE_CAP},0 A${QUEUE_CAP},50 0 0 1 ${100 - QUEUE_CAP},100 L${QUEUE_CAP},100 A${QUEUE_CAP},50 0 0 1 ${QUEUE_CAP},0 Z`}
-            fill={fill}
-            stroke={stroke}
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            d={`M${100 - QUEUE_CAP},0 A${QUEUE_CAP},50 0 0 0 ${100 - QUEUE_CAP},100`}
-            fill="none"
-            stroke={stroke}
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+      {!isPerson && shape === 'queue' && (
+        <C4QueueShape fill={fill} stroke={stroke} />
       )}
 
       <div
         className={cn(
           'relative flex size-full flex-col items-center justify-center gap-0.5 text-center',
-          shape === 'queue' ? 'px-10 py-3' : 'px-4 py-3',
-          shape === 'db' && 'py-6'
+          !isPerson && shape === 'queue' ? 'px-10 py-3' : 'px-4 py-3',
+          !isPerson && shape === 'db' && 'py-6'
         )}
-        style={{ color: fontColor }}
+        style={{
+          color: fontColor,
+          paddingTop: isPerson
+            ? `${(PERSON_HEAD_RATIO + PERSON_BODY_TOP_RATIO) * 100}%`
+            : undefined,
+        }}
       >
-        {isPerson && (
-          <svg viewBox="0 0 24 24" className="size-6 shrink-0" fill={fontColor}>
-            <circle cx="12" cy="7" r="4" />
-            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z" />
-          </svg>
-        )}
-
-        <span className="text-[0.625rem] leading-tight italic opacity-80">
-          &laquo;{stereotype}&raquo;
-        </span>
-
         <TextareaAutosize
           value={localName}
           placeholder="Name"
@@ -168,11 +142,9 @@ export function C4Node({ id, data, selected }: NodeProps<TC4Node>) {
           style={{ color: fontColor }}
         />
 
-        {data.technology && (
-          <span className="text-[0.625rem] leading-tight opacity-90">
-            [{data.technology}]
-          </span>
-        )}
+        <span className="text-[0.625rem] leading-tight opacity-90">
+          [{meta}]
+        </span>
 
         {data.description && (
           <span className="text-[0.6875rem] leading-snug opacity-90">

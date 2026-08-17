@@ -108,18 +108,15 @@ export function FloatingProperties() {
     document.body.style.cursor = 'ew-resize'
   }
 
-  const { setSelectedNodeIds, setSelectedEdgeIds, activeEmbed } =
-    useFlowDiagramContext()
+  const { setSelectedNodeIds, setSelectedEdgeIds } = useFlowDiagramContext()
   const { node, updateData } = useSingleSelectedNode()
   const { edge } = useSingleSelectedEdge()
 
   function clearSelectedNodes() {
-    if (activeEmbed) return activeEmbed.setSelectedNodeIds([])
     setSelectedNodeIds([])
   }
 
   function clearSelectedEdges() {
-    if (activeEmbed) return activeEmbed.setSelectedEdgeIds([])
     setSelectedEdgeIds([])
   }
 

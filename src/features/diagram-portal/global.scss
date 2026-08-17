@@ -188,6 +188,33 @@
   }
 }
 
+.react-flow.lod-active .react-flow__viewport:not(.downloading) {
+  .react-flow__node.lod-hidden,
+  .react-flow__edge.lod-hidden {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .react-flow__edgelabel-renderer {
+    visibility: hidden;
+  }
+
+  .react-flow__node.lod-collapsed {
+    .c4-boundary-box {
+      border-style: solid !important;
+    }
+
+    .c4-boundary-label {
+      display: none;
+    }
+
+    .c4-boundary-collapsed-label {
+      display: flex;
+      font-size: var(--lod-font-size);
+    }
+  }
+}
+
 .react-flow__edge-path {
   transition: filter 0.25s ease-in-out !important;
   filter: saturate(1) drop-shadow(0 0 2px transparent) !important;

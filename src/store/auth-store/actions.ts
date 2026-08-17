@@ -18,6 +18,9 @@ const GET_ME_AND_ORG = graphql(`
       logoUrl
       onboardingDone
     }
+    features {
+      github
+    }
   }
 `)
 
@@ -29,6 +32,7 @@ export async function bootstrapSession() {
       status: 'authenticated',
       user: data.me,
       organizations: data.myOrgs,
+      features: data.features,
     })
   } catch {
     useAuthStore.setState({

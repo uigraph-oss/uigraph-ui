@@ -5,21 +5,10 @@ import { useFlowDiagramContext } from '../context/flow-diagram-context'
 export function useSingleSelectedNode<T extends Node>() {
   const reactFlow = useReactFlow()
   const ctx = useFlowDiagramContext()
-  const embed = ctx.activeEmbed
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   function resolveNode() {
-    if (embed) {
-      if (embed.selectedNodeIds.length !== 1) return null
-
-      const found = embed.mirror.nodes.find(
-        (item) => item.id === embed.selectedNodeIds[0]
-      )
-
-      return (found as T) ?? null
-    }
-
     if (ctx.selectedNodeIds.length !== 1) return null
 
     return (ctx.reactFlowInstance?.getNode(ctx.selectedNodeIds[0]) as T) ?? null
@@ -36,10 +25,6 @@ export function useSingleSelectedNode<T extends Node>() {
     const clonedNode = structuredClone(newNode)
 
     function runTimeout() {
-      if (embed) {
-        return embed.patchNode(nodeId, clonedNode)
-      }
-
       if (forcedUpdate) {
         return reactFlow.updateNode(nodeId, clonedNode)
       }
@@ -70,13 +55,6 @@ export function useSingleSelectedNode<T extends Node>() {
     const clonedData = structuredClone(newData)
 
     function runTimeout() {
-      if (embed) {
-        return embed.patchNodeData(
-          nodeId,
-          clonedData as Record<string, unknown>
-        )
-      }
-
       if (forcedUpdate) {
         return reactFlow.updateNodeData(nodeId, newData)
       }

@@ -1,7 +1,14 @@
 import { useAutoRef } from '@/hooks/use-auto-ref'
 import { Edge, Node, ReactFlowInstance } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ClipboardPaste, Copy, Files, Scissors, Trash2 } from 'lucide-react'
+import {
+  ClipboardPaste,
+  Copy,
+  Files,
+  Scan,
+  Scissors,
+  Trash2,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import {
@@ -10,6 +17,7 @@ import {
   diagramToolbarContainerClassName,
 } from './floating-canvas-toolbar'
 import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
+import { focusNodes } from './helpers/camera'
 import { getNextParticipantColumn } from './helpers/sequence-diagram-authoring'
 import { generateUUID } from './utils/uuid'
 
@@ -346,6 +354,19 @@ export function FloatingSelectionToolbar() {
           <div className={diagramToolbarContainerClassName}>
             {hasSelection && (
               <>
+                <ToolbarButton
+                  tooltip="Zoom to Selection"
+                  tooltipPosition="bottom"
+                  onClick={() =>
+                    reactFlowInstance &&
+                    focusNodes(reactFlowInstance, selectedNodeIds)
+                  }
+                >
+                  <Scan size={18} />
+                </ToolbarButton>
+
+                <ToolbarSeparator />
+
                 <ToolbarButton
                   tooltip="Cut Selection"
                   tooltipPosition="bottom"

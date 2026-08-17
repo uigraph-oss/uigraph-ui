@@ -1161,6 +1161,12 @@ export type EndpointSlaInput = {
   thresholds?: InputMaybe<Array<LoadTestThresholdInput>>;
 };
 
+export type Features = {
+  billingUrl?: Maybe<Scalars['String']['output']>;
+  enterprise: Scalars['Boolean']['output'];
+  github: Scalars['Boolean']['output'];
+};
+
 export type FileDownload = {
   apiGroupId: Scalars['ID']['output'];
   content: Scalars['String']['output'];
@@ -1341,6 +1347,24 @@ export type GrpcTestCaseInput = {
   serverAddress?: InputMaybe<Scalars['String']['input']>;
   serviceName: Scalars['String']['input'];
   useTLS: Scalars['Boolean']['input'];
+};
+
+export type GitHubAppInstallation = {
+  accountLogin: Scalars['String']['output'];
+  accountType: Scalars['String']['output'];
+  installationId: Scalars['ID']['output'];
+  suspended: Scalars['Boolean']['output'];
+};
+
+export type GitHubRepository = {
+  archived: Scalars['Boolean']['output'];
+  defaultBranch: Scalars['String']['output'];
+  fullName: Scalars['String']['output'];
+  githubId: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  owner: Scalars['String']['output'];
+  private: Scalars['Boolean']['output'];
+  url: Scalars['String']['output'];
 };
 
 export type GraphQlTestCase = {
@@ -1890,7 +1914,9 @@ export type Mutation = {
   deleteTestPack: Scalars['Boolean']['output'];
   deleteTimelineEvent: Scalars['Boolean']['output'];
   disableUser: Scalars['Boolean']['output'];
+  disconnectGitHubApp: Scalars['Boolean']['output'];
   generateDiagramThumbnail: Scalars['Boolean']['output'];
+  githubAppInstallURL: Scalars['String']['output'];
   linkMlVersionEvaluations: Array<MlEvaluation>;
   prepareAuthProviderIconUpload: AssetUpload;
   prepareDiagramThumbnailUpload: DiagramThumbnailUpload;
@@ -1898,6 +1924,7 @@ export type Mutation = {
   prepareServerOrgLogoUpload: AssetUpload;
   prepareServiceAccountAvatarUpload: AssetUpload;
   prepareUserAvatarUpload: AssetUpload;
+  recheckRepositoryImport: RepositoryImport;
   removeAuthProviderIcon: Scalars['Boolean']['output'];
   removeMember: Scalars['Boolean']['output'];
   removeOrgLogo: Scalars['Boolean']['output'];
@@ -1906,6 +1933,7 @@ export type Mutation = {
   restoreAPIGroupVersion: ApiGroup;
   restoreDiagramVersion: Diagram;
   restoreServiceDBVersion: ServiceDb;
+  retryRepositoryImport: RepositoryImport;
   revokeServiceAccountToken: Scalars['Boolean']['output'];
   setAuthProviderIcon: Scalars['Boolean']['output'];
   setMlModelVersionRun: MlModelVersion;
@@ -1913,6 +1941,7 @@ export type Mutation = {
   setOrgLogo: Scalars['Boolean']['output'];
   setServerOrgLogo: Scalars['Boolean']['output'];
   setServiceAccountAvatar: Scalars['Boolean']['output'];
+  startRepositoryImport: RepositoryImport;
   switchOrg: Scalars['Boolean']['output'];
   syncAPIGroup: SyncApiGroupResult;
   /** Kicks off an async sync and returns immediately (true = started) — a full multi-region scan can take too long for a synchronous request. Watch the connection's status field for progress. */
@@ -2608,8 +2637,18 @@ export type MutationDisableUserArgs = {
 };
 
 
+export type MutationDisconnectGitHubAppArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
 export type MutationGenerateDiagramThumbnailArgs = {
   diagramId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationGithubAppInstallUrlArgs = {
   orgId: Scalars['ID']['input'];
 };
 
@@ -2646,6 +2685,12 @@ export type MutationPrepareServerOrgLogoUploadArgs = {
 export type MutationPrepareServiceAccountAvatarUploadArgs = {
   orgId: Scalars['ID']['input'];
   saId: Scalars['ID']['input'];
+};
+
+
+export type MutationRecheckRepositoryImportArgs = {
+  importId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
 };
 
 
@@ -2701,6 +2746,12 @@ export type MutationRestoreServiceDbVersionArgs = {
 };
 
 
+export type MutationRetryRepositoryImportArgs = {
+  importId: Scalars['ID']['input'];
+  orgId: Scalars['ID']['input'];
+};
+
+
 export type MutationRevokeServiceAccountTokenArgs = {
   orgId: Scalars['ID']['input'];
   saId: Scalars['ID']['input'];
@@ -2734,6 +2785,14 @@ export type MutationSetServerOrgLogoArgs = {
 export type MutationSetServiceAccountAvatarArgs = {
   orgId: Scalars['ID']['input'];
   saId: Scalars['ID']['input'];
+};
+
+
+export type MutationStartRepositoryImportArgs = {
+  orgId: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  teamId: Scalars['ID']['input'];
 };
 
 
@@ -3174,6 +3233,7 @@ export type Query = {
   diagrams: DiagramPage;
   doc: Doc;
   docs: DocPage;
+  features: Features;
   flowDiagramComponents: FlowDiagramComponents;
   focalPointMeta: Array<FocalPointMeta>;
   focalPointMetaByLink: Array<FocalPointMeta>;
@@ -3185,6 +3245,9 @@ export type Query = {
   frameGroups: Array<FrameGroup>;
   frameLinks: Array<FrameLink>;
   frames: FramePage;
+  githubApp?: Maybe<GitHubAppInstallation>;
+  githubRepositories: Array<GitHubRepository>;
+  latestRepositoryImport?: Maybe<RepositoryImport>;
   ldap?: Maybe<LdapConfig>;
   map: UiMap;
   mappingOperators: Array<MappingOperator>;
@@ -3219,6 +3282,7 @@ export type Query = {
   org: Org;
   orgDomains: Array<OrgDomain>;
   orgs: Array<Org>;
+  repositoryImport: RepositoryImport;
   resourceDailyCosts: Array<ResourceDailyCost>;
   savedQueries: Array<SavedQuery>;
   savedQueryFolders: Array<SavedQueryFolder>;
@@ -3612,6 +3676,21 @@ export type QueryFramesArgs = {
 };
 
 
+export type QueryGithubAppArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryGithubRepositoriesArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryLatestRepositoryImportArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
 export type QueryMapArgs = {
   id: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
@@ -3808,6 +3887,12 @@ export type QueryOrgArgs = {
 
 
 export type QueryOrgDomainsArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
+export type QueryRepositoryImportArgs = {
+  importId: Scalars['ID']['input'];
   orgId: Scalars['ID']['input'];
 };
 
@@ -4029,6 +4114,44 @@ export type QueryTestRunsSummaryArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type RepositoryImport = {
+  branch: Scalars['String']['output'];
+  createdAt: Scalars['Time']['output'];
+  error?: Maybe<Scalars['String']['output']>;
+  githubOwnerId: Scalars['ID']['output'];
+  githubRepo: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  missingAIConfiguration: Array<Scalars['String']['output']>;
+  pullRequestUrl?: Maybe<Scalars['String']['output']>;
+  runCompletedAt?: Maybe<Scalars['Time']['output']>;
+  runStartedAt?: Maybe<Scalars['Time']['output']>;
+  runUrl?: Maybe<Scalars['String']['output']>;
+  serviceId?: Maybe<Scalars['ID']['output']>;
+  status: RepositoryImportStatus;
+  steps: Array<RepositoryImportStep>;
+  teamId: Scalars['ID']['output'];
+  teamName?: Maybe<Scalars['String']['output']>;
+};
+
+export enum RepositoryImportStatus {
+  CheckingAiConfiguration = 'CHECKING_AI_CONFIGURATION',
+  Completed = 'COMPLETED',
+  Failed = 'FAILED',
+  RunQueued = 'RUN_QUEUED',
+  RunRunning = 'RUN_RUNNING',
+  Selected = 'SELECTED',
+  WaitingAiConfiguration = 'WAITING_AI_CONFIGURATION'
+}
+
+export type RepositoryImportStep = {
+  completedAt?: Maybe<Scalars['Time']['output']>;
+  conclusion?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  number: Scalars['Int']['output'];
+  startedAt?: Maybe<Scalars['Time']['output']>;
+  status: Scalars['String']['output'];
 };
 
 export type ResourceDailyCost = {
@@ -5876,6 +5999,75 @@ export type RestoreDiagramVersionMutationVariables = Exact<{
 
 export type RestoreDiagramVersionMutation = { restoreDiagramVersion: { id: string } };
 
+export type GitHubImportAppQueryVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportAppQuery = { githubApp?: { installationId: string, accountLogin: string, accountType: string, suspended: boolean } | null };
+
+export type GitHubImportRepositoriesQueryVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportRepositoriesQuery = { githubRepositories: Array<{ githubId: string, owner: string, name: string, fullName: string, url: string, defaultBranch: string, private: boolean, archived: boolean }> };
+
+export type GitHubImportRepositoryImportQueryVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+  importID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportRepositoryImportQuery = { repositoryImport: { id: string, githubRepo: string, status: RepositoryImportStatus, teamId: string, teamName?: string | null, branch: string, runUrl?: string | null, pullRequestUrl?: string | null, missingAIConfiguration: Array<string>, error?: string | null, serviceId?: string | null, createdAt: string, runStartedAt?: string | null, runCompletedAt?: string | null, steps: Array<{ number: number, name: string, status: string, conclusion?: string | null, startedAt?: string | null, completedAt?: string | null }> } };
+
+export type GitHubImportLatestRepositoryImportQueryVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportLatestRepositoryImportQuery = { latestRepositoryImport?: { id: string, status: RepositoryImportStatus } | null };
+
+export type GitHubImportInstallUrlMutationVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportInstallUrlMutation = { githubAppInstallURL: string };
+
+export type GitHubImportDisconnectMutationVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportDisconnectMutation = { disconnectGitHubApp: boolean };
+
+export type GitHubImportStartMutationVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+  teamID: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+}>;
+
+
+export type GitHubImportStartMutation = { startRepositoryImport: { id: string, status: RepositoryImportStatus } };
+
+export type GitHubImportRecheckMutationVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+  importID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportRecheckMutation = { recheckRepositoryImport: { id: string, status: RepositoryImportStatus } };
+
+export type GitHubImportRetryMutationVariables = Exact<{
+  orgID: Scalars['ID']['input'];
+  importID: Scalars['ID']['input'];
+}>;
+
+
+export type GitHubImportRetryMutation = { retryRepositoryImport: { id: string, status: RepositoryImportStatus } };
+
 export type ApiEndpointByIdQueryVariables = Exact<{
   orgId: Scalars['ID']['input'];
   id: Scalars['ID']['input'];
@@ -7366,7 +7558,7 @@ export type AssetUrlsQuery = { assetUrls: Array<{ assetId: string, url: string }
 export type MeAndOrgBootstrapQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeAndOrgBootstrapQuery = { me: { userId: string, email: string, name: string, avatarUrl?: string | null, isServerAdmin: boolean }, myOrgs: Array<{ id: string, name: string, role: string, logoUrl?: string | null, onboardingDone: boolean }> };
+export type MeAndOrgBootstrapQuery = { me: { userId: string, email: string, name: string, avatarUrl?: string | null, isServerAdmin: boolean }, myOrgs: Array<{ id: string, name: string, role: string, logoUrl?: string | null, onboardingDone: boolean }>, features: { github: boolean } };
 
 
 export const ChatSessionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ChatSessions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chatSessions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orgId"}},{"kind":"Field","name":{"kind":"Name","value":"ownerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"isPinned"}},{"kind":"Field","name":{"kind":"Name","value":"messageCount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ChatSessionsQuery, ChatSessionsQueryVariables>;
@@ -7479,6 +7671,15 @@ export const DiagramVersionsDocument = {"kind":"Document","definitions":[{"kind"
 export const DiagramVersionContentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DiagramVersionContent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diagramVersionContent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"diagramId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}}},{"kind":"Argument","name":{"kind":"Name","value":"versionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diagramId"}},{"kind":"Field","name":{"kind":"Name","value":"content"}}]}}]}}]} as unknown as DocumentNode<DiagramVersionContentQuery, DiagramVersionContentQueryVariables>;
 export const CreateDiagramVersionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateDiagramVersion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"label"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createDiagramVersion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"diagramId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}}},{"kind":"Argument","name":{"kind":"Name","value":"label"},"value":{"kind":"Variable","name":{"kind":"Name","value":"label"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}}]}}]}}]} as unknown as DocumentNode<CreateDiagramVersionMutation, CreateDiagramVersionMutationVariables>;
 export const RestoreDiagramVersionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RestoreDiagramVersion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"restoreDiagramVersion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"diagramId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}}},{"kind":"Argument","name":{"kind":"Name","value":"versionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<RestoreDiagramVersionMutation, RestoreDiagramVersionMutationVariables>;
+export const GitHubImportAppDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportApp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubApp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"installationId"}},{"kind":"Field","name":{"kind":"Name","value":"accountLogin"}},{"kind":"Field","name":{"kind":"Name","value":"accountType"}},{"kind":"Field","name":{"kind":"Name","value":"suspended"}}]}}]}}]} as unknown as DocumentNode<GitHubImportAppQuery, GitHubImportAppQueryVariables>;
+export const GitHubImportRepositoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportRepositories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubRepositories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubId"}},{"kind":"Field","name":{"kind":"Name","value":"owner"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"defaultBranch"}},{"kind":"Field","name":{"kind":"Name","value":"private"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}}]}}]}}]} as unknown as DocumentNode<GitHubImportRepositoriesQuery, GitHubImportRepositoriesQueryVariables>;
+export const GitHubImportRepositoryImportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportRepositoryImport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"githubRepo"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"teamId"}},{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"runUrl"}},{"kind":"Field","name":{"kind":"Name","value":"pullRequestUrl"}},{"kind":"Field","name":{"kind":"Name","value":"missingAIConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"runStartedAt"}},{"kind":"Field","name":{"kind":"Name","value":"runCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"steps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"conclusion"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}}]}}]}}]}}]} as unknown as DocumentNode<GitHubImportRepositoryImportQuery, GitHubImportRepositoryImportQueryVariables>;
+export const GitHubImportLatestRepositoryImportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportLatestRepositoryImport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"latestRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportLatestRepositoryImportQuery, GitHubImportLatestRepositoryImportQueryVariables>;
+export const GitHubImportInstallUrlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportInstallURL"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubAppInstallURL"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}]}]}}]} as unknown as DocumentNode<GitHubImportInstallUrlMutation, GitHubImportInstallUrlMutationVariables>;
+export const GitHubImportDisconnectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportDisconnect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"disconnectGitHubApp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}]}]}}]} as unknown as DocumentNode<GitHubImportDisconnectMutation, GitHubImportDisconnectMutationVariables>;
+export const GitHubImportStartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportStart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"owner"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamID"}}},{"kind":"Argument","name":{"kind":"Name","value":"owner"},"value":{"kind":"Variable","name":{"kind":"Name","value":"owner"}}},{"kind":"Argument","name":{"kind":"Name","value":"repo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportStartMutation, GitHubImportStartMutationVariables>;
+export const GitHubImportRecheckDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportRecheck"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recheckRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportRecheckMutation, GitHubImportRecheckMutationVariables>;
+export const GitHubImportRetryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportRetry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"retryRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportRetryMutation, GitHubImportRetryMutationVariables>;
 export const ApiEndpointByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ApiEndpointById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiEndpointById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"parameters"}},{"kind":"Field","name":{"kind":"Name","value":"requestBody"}},{"kind":"Field","name":{"kind":"Name","value":"responses"}},{"kind":"Field","name":{"kind":"Name","value":"exampleRequests"}},{"kind":"Field","name":{"kind":"Name","value":"exampleResponses"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<ApiEndpointByIdQuery, ApiEndpointByIdQueryVariables>;
 export const TestPackByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TestPackById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testPackById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testPackId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<TestPackByIdQuery, TestPackByIdQueryVariables>;
 export const ServiceDocByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServiceDocById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceDocById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"docId"}}]}}]}}]} as unknown as DocumentNode<ServiceDocByIdQuery, ServiceDocByIdQueryVariables>;
@@ -7650,4 +7851,4 @@ export const DeleteTimelineEventDocument = {"kind":"Document","definitions":[{"k
 export const CreateAssetUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAssetUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAssetUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<CreateAssetUploadMutation, CreateAssetUploadMutationVariables>;
 export const AssetUrlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetUrl"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assetId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"assetId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assetId"}}}]}]}}]} as unknown as DocumentNode<AssetUrlQuery, AssetUrlQueryVariables>;
 export const AssetUrlsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetUrls"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assetIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetUrls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"assetIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assetIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]} as unknown as DocumentNode<AssetUrlsQuery, AssetUrlsQueryVariables>;
-export const MeAndOrgBootstrapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MeAndOrgBootstrap"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"isServerAdmin"}}]}},{"kind":"Field","name":{"kind":"Name","value":"myOrgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"onboardingDone"}}]}}]}}]} as unknown as DocumentNode<MeAndOrgBootstrapQuery, MeAndOrgBootstrapQueryVariables>;
+export const MeAndOrgBootstrapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MeAndOrgBootstrap"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"isServerAdmin"}}]}},{"kind":"Field","name":{"kind":"Name","value":"myOrgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"onboardingDone"}}]}},{"kind":"Field","name":{"kind":"Name","value":"features"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"github"}}]}}]}}]} as unknown as DocumentNode<MeAndOrgBootstrapQuery, MeAndOrgBootstrapQueryVariables>;

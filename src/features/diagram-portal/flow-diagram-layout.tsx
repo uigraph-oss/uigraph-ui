@@ -19,6 +19,7 @@ import { PropsWithChildren, useEffect, useRef } from 'react'
 import { LuMenu } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { UserDropdownMenu } from '../dashboard'
+import { CommandPalette } from './command-palette'
 import { AiBeautifyPreviewBar } from './components/ai-beautify-preview-bar'
 import { DiagramTestingOptions } from './components/diagram-testing-options'
 import { DiagramVersion } from './components/diagram-version'
@@ -66,10 +67,21 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
     if (!container) return
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.stopPropagation()
-        e.stopImmediatePropagation()
+      if (e.key !== 'Escape') return
+
+      const target = e.target as HTMLElement | null
+      if (
+        target?.closest(
+          '[role="dialog"],[role="menu"],[role="listbox"],[data-radix-popper-content-wrapper]'
+        )
+      ) {
+        return
       }
+
+      if (document.querySelector('[role="dialog"][data-state="open"]')) return
+
+      e.stopPropagation()
+      e.stopImmediatePropagation()
     }
 
     document.addEventListener('keydown', handleKeyDown, { capture: true })
@@ -196,6 +208,7 @@ export function FlowDiagramLayout({ children }: PropsWithChildren) {
           {!isPreviewing && <FloatingSelectionToolbar />}
           <AiBeautifyPreviewBar />
           <SubDiagramDialog />
+          <CommandPalette />
         </div>
       </div>
     </section>
