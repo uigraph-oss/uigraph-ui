@@ -100,6 +100,14 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       return null
     }, [diagramData.nodes])
 
+    const isC4Diagram = useMemo(
+      () =>
+        diagramData.nodes.some(
+          (node) => node.type === 'c4' || node.type === 'c4Boundary'
+        ),
+      [diagramData.nodes]
+    )
+
     const dataTablesMap = useMemo(() => {
       const map = new Map<
         string,
@@ -180,6 +188,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
       selectedGroup,
       dataTablesMap,
+      isC4Diagram,
 
       showGrid,
       setShowGrid,

@@ -90,6 +90,8 @@ export function ReactFlowWrapper({
     deactivateEmbed,
 
     setIsCommandPaletteOpen,
+
+    isC4Diagram,
   } = useFlowDiagramContext()
 
   const ref = useAutoRef({
@@ -431,9 +433,11 @@ export function ReactFlowWrapper({
     setVisibleDepth((prev) => resolveVisibleDepth(viewport?.zoom ?? 1, prev))
   }, [viewport?.zoom])
 
+  const lodDepth = isC4Diagram ? visibleDepth : Infinity
+
   const detailed = useMemo(
-    () => applyLevelOfDetail(nodes, edges, visibleDepth),
-    [nodes, edges, visibleDepth]
+    () => applyLevelOfDetail(nodes, edges, lodDepth),
+    [nodes, edges, lodDepth]
   )
 
   const isNodeWritable = !drawingMode && !forceReadOnly && !isPreviewing
@@ -552,7 +556,7 @@ export function ReactFlowWrapper({
         className={cn(
           'relative isolate opacity-0 transition-opacity duration-100',
           reactFlowInstance && 'opacity-100',
-          visibleDepth !== Infinity && 'lod-active',
+          lodDepth !== Infinity && 'lod-active',
           sidebarActiveTool === 'add-comment' &&
             'cursor-none! [&_*]:cursor-none!',
 
