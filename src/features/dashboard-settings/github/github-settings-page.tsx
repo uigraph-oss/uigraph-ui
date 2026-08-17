@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import {
   DISCONNECT_GITHUB_APP,
   GITHUB_APP,
+  GITHUB_APP_INSTALL_URL,
   REPOSITORY_IMPORTS,
   RETRY_REPOSITORY_IMPORT,
 } from '@/features/github-import/api'
@@ -12,7 +13,15 @@ import { isInstallationConnected } from '@/features/github-import/connect-github
 import { usePermissions } from '@/hooks/use-permissions'
 import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
-import { ExternalLink, Github, Plus, RefreshCw, Unplug } from 'lucide-react'
+import {
+  ExternalLink,
+  Github,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Unplug,
+} from 'lucide-react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
@@ -39,10 +48,17 @@ function GitHubSettings({ orgID }: { orgID: string }) {
   const { isAdmin } = usePermissions()
   const enabled = useAuthStore((state) => state.features.github)
   const navigate = useNavigate()
+  const [isConnecting, setIsConnecting] = useState(false)
 
   const installationQuery = useQuery(GITHUB_APP, {
     variables: { orgID },
     onError: (error) => toast.error(error.message),
+    pollInterval: isConnecting ? 5000 : 0,
+    onCompleted: (data) => {
+      if (!data.githubApp) return
+      if (!isInstallationConnected(data.githubApp.status)) return
+      setIsConnecting(false)
+    },
   })
   const importsQuery = useQuery(REPOSITORY_IMPORTS, {
     variables: { orgID },
@@ -56,6 +72,9 @@ function GitHubSettings({ orgID }: { orgID: string }) {
       refetchQueries: [{ query: GITHUB_APP, variables: { orgID } }],
       awaitRefetchQueries: true,
     }
+  )
+  const [getInstallURL, { loading: isStarting }] = useMutation(
+    GITHUB_APP_INSTALL_URL
   )
   const [retry, { loading: isRetrying }] = useMutation(
     RETRY_REPOSITORY_IMPORT,
@@ -76,6 +95,27 @@ function GitHubSettings({ orgID }: { orgID: string }) {
       await disconnect({ variables: { orgID } })
       toast.success('GitHub disconnected. Your services and history are kept.')
     } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
+  async function handleConnect() {
+    const tab = window.open('', 'uigraph-github-app')
+    if (!tab) {
+      toast.error('Allow UIGraph to open new tabs, then try again.')
+      return
+    }
+
+    try {
+      const result = await getInstallURL({ variables: { orgID } })
+      const installURL = result.data?.githubAppInstallURL
+      if (!installURL)
+        throw new Error('GitHub did not return an installation URL')
+      tab.opener = null
+      tab.location.href = installURL
+      setIsConnecting(true)
+    } catch (error) {
+      tab.close()
       toast.error((error as Error).message)
     }
   }
@@ -152,11 +192,17 @@ function GitHubSettings({ orgID }: { orgID: string }) {
             )}
 
             {isAdmin && !connected && (
-              <Button className="h-10 rounded-[0.75rem] text-sm" asChild>
-                <Link to="/repositories/import">
-                  <Github className="size-4" />
-                  Connect GitHub
-                </Link>
+              <Button
+                className="h-10 rounded-[0.75rem] text-sm"
+                disabled={isStarting || isConnecting}
+                onClick={handleConnect}
+              >
+                {(isStarting || isConnecting) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {!isStarting && !isConnecting && <Github className="size-4" />}
+                {isConnecting && 'Waiting for GitHub…'}
+                {!isConnecting && 'Connect GitHub'}
               </Button>
             )}
           </div>
