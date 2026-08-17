@@ -53,6 +53,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
     )
 
     const [cursorMode, setCursorMode] = useState<'select' | 'pan'>('select')
+    const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
 
     const [searchParams, setSearchParams] = useSearchParams()
     const childDiagramIds = (searchParams.get('children') ?? '')
@@ -197,6 +198,9 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
 
       cursorMode,
       setCursorMode,
+
+      isCommandPaletteOpen,
+      setIsCommandPaletteOpen,
 
       isEdgeConnecting,
       setIsEdgeConnecting,

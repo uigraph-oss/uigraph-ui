@@ -32,6 +32,7 @@ import { CUSTOM_EDGE_TYPES } from './edges'
 import { EdgeMarkerDefs } from './edges/edge-marker-defs'
 import { createEdgeMarker } from './edges/helpers'
 import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
+import { focusNodes, MAX_ZOOM, MIN_ZOOM } from './helpers/camera'
 import { findEditorAction } from './helpers/editor-actions'
 import { handleOnGroupDrag, handleOnNodeDrag } from './helpers/on-node-drag'
 import { createGroupNode } from './helpers/xy-flow'
@@ -86,11 +87,14 @@ export function ReactFlowWrapper({
 
     activeEmbed,
     deactivateEmbed,
+
+    setIsCommandPaletteOpen,
   } = useFlowDiagramContext()
 
   const ref = useAutoRef({
     reactFlowInstance,
     dataSources,
+    setIsCommandPaletteOpen,
   })
 
   const onConnect = useCallback(
@@ -433,11 +437,24 @@ export function ReactFlowWrapper({
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const target = event.target as HTMLElement
-      if (
+      const isTyping =
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable
-      ) {
+
+      if (isTyping) {
+        const action = findEditorAction(event)
+        const rf = ref.current.reactFlowInstance
+
+        if (action?.allowInInput && rf) {
+          if (action.preventDefault) event.preventDefault()
+
+          void action.handler({
+            rf,
+            openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
+          })
+        }
+
         return
       }
 
@@ -463,7 +480,10 @@ export function ReactFlowWrapper({
             event.preventDefault()
           }
 
-          void action.handler({ rf })
+          void action.handler({
+            rf,
+            openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
+          })
         }
       }
     }
@@ -532,6 +552,12 @@ export function ReactFlowWrapper({
         defaultEdgeOptions={{ type: 'default', style: { strokeWidth: 3 } }}
         viewport={viewport ?? undefined}
         onViewportChange={setViewport}
+        onNodeDoubleClick={(_, node) => {
+          const rf = ref.current.reactFlowInstance
+          if (node.type !== 'c4Boundary' || !rf) return
+
+          focusNodes(rf, [node.id])
+        }}
         onInit={async (rf) => {
           const isEmpty =
             rf.getNodes().length === 0 && rf.getEdges().length === 0
@@ -554,8 +580,8 @@ export function ReactFlowWrapper({
         nodesConnectable={isNodeWritable}
         elementsSelectable={isNodeWritable}
         edgesReconnectable={isNodeWritable}
-        minZoom={0.1}
-        maxZoom={2}
+        minZoom={MIN_ZOOM}
+        maxZoom={MAX_ZOOM}
       >
         <EdgeMarkerDefs />
 
