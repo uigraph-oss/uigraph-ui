@@ -99,12 +99,25 @@ export function C4BoundaryNode({
 
         {data.description && (
           <span
-            className="c4-boundary-description max-w-full text-left text-[0.625rem] leading-tight whitespace-pre-line opacity-80"
+            className="max-w-full text-left text-[0.625rem] leading-tight whitespace-pre-line opacity-80"
             style={{ color: data.fontColor ?? borderColor }}
           >
             {data.description}
           </span>
         )}
+      </div>
+
+      <div
+        className="c4-boundary-collapsed-label absolute inset-0 hidden flex-col items-center justify-center gap-[0.15em] px-[5%] text-center"
+        style={{ color: data.fontColor ?? borderColor }}
+      >
+        <span className="leading-tight font-bold wrap-anywhere">
+          {localName || 'Boundary'}
+        </span>
+
+        <span className="text-[0.6em] leading-tight opacity-80">
+          [{typeLabel}]
+        </span>
       </div>
     </div>
   )

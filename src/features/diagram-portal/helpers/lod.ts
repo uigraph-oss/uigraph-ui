@@ -1,4 +1,5 @@
 import { Edge, Node } from '@xyflow/react'
+import { CSSProperties } from 'react'
 
 export const LOD_HIDDEN_CLASS = 'lod-hidden'
 export const LOD_COLLAPSED_CLASS = 'lod-collapsed'
@@ -6,6 +7,10 @@ export const LOD_COLLAPSED_CLASS = 'lod-collapsed'
 const LOD_THRESHOLDS = [0.15, 0.3, 0.6]
 const LOD_HYSTERESIS = 0.02
 const MAX_PARENT_DEPTH = 32
+
+const COLLAPSED_FONT_WIDTH_RATIO = 0.08
+const COLLAPSED_FONT_HEIGHT_RATIO = 0.16
+const COLLAPSED_FONT_FALLBACK = 16
 
 export function resolveVisibleDepth(zoom: number, previousDepth: number) {
   for (let depth = 0; depth < LOD_THRESHOLDS.length; depth++) {
@@ -49,7 +54,25 @@ export function applyLevelOfDetail(
     }
 
     if (node.type === 'c4Boundary' && depth === visibleDepth) {
-      return { ...node, className: LOD_COLLAPSED_CLASS }
+      const width = node.width ?? node.measured?.width
+      const height = node.height ?? node.measured?.height
+
+      const fontSize =
+        width && height
+          ? Math.min(
+              width * COLLAPSED_FONT_WIDTH_RATIO,
+              height * COLLAPSED_FONT_HEIGHT_RATIO
+            )
+          : COLLAPSED_FONT_FALLBACK
+
+      return {
+        ...node,
+        className: LOD_COLLAPSED_CLASS,
+        style: {
+          ...node.style,
+          ['--lod-font-size']: `${fontSize}px`,
+        } as CSSProperties,
+      }
     }
 
     return { ...node, className: undefined }

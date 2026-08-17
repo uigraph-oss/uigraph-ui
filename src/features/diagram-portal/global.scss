@@ -205,22 +205,12 @@
     }
 
     .c4-boundary-label {
-      inset: 0;
-      margin: auto;
-      padding: 0;
-      height: fit-content;
-      align-items: center;
-      text-align: center;
-      width: calc(100% * var(--react-flow-scale));
-      transform: scale(calc(1 / var(--react-flow-scale)));
-    }
-
-    .c4-boundary-label textarea {
-      text-align: center;
-    }
-
-    .c4-boundary-description {
       display: none;
+    }
+
+    .c4-boundary-collapsed-label {
+      display: flex;
+      font-size: var(--lod-font-size);
     }
   }
 }
