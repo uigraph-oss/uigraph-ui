@@ -13,8 +13,9 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
+import { OnboardingTeamChip } from './onboarding-team-chip'
 import {
   OnboardingActions,
   OnboardingStepTicks,
@@ -67,14 +68,12 @@ function VariableName({ name }: { name: string }) {
 
 export function EnvironmentStep({
   orgID,
-  headerRight,
   owner,
   repo,
   onBack,
   onNext,
 }: {
   orgID: string
-  headerRight: ReactNode
   owner: string
   repo: string
   onBack: () => void
@@ -114,7 +113,7 @@ export function EnvironmentStep({
     <OnboardingLayout
       headerLeftContent={<OnboardingStepTitle current={3} />}
       headerCenterContent={<OnboardingStepTicks current={3} />}
-      headerRightContent={headerRight}
+      headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro

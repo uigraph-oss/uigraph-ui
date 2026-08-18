@@ -2,10 +2,11 @@ import { OnboardingRunner } from '@/api/.gql/graphql'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { LuCloud, LuGithub } from 'react-icons/lu'
 import { MappingRunAnimation } from './mapping-run-animation'
 import { OnboardingLayout } from './onboarding-layout'
+import { OnboardingTeamChip } from './onboarding-team-chip'
 import {
   OnboardingStepTicks,
   OnboardingStepTitle,
@@ -13,11 +14,9 @@ import {
 } from './onboarding-ui'
 
 export function RunnerStep({
-  headerRight,
   onBack,
   onNext,
 }: {
-  headerRight: ReactNode
   onBack: () => void
   onNext: (runner: OnboardingRunner) => Promise<void>
 }) {
@@ -34,7 +33,7 @@ export function RunnerStep({
     <OnboardingLayout
       headerLeftContent={<OnboardingStepTitle current={0} />}
       headerCenterContent={<OnboardingStepTicks current={0} />}
-      headerRightContent={headerRight}
+      headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto grid w-full max-w-6xl gap-x-20 gap-y-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
         <div className="min-w-0">

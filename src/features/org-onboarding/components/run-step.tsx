@@ -7,9 +7,10 @@ import {
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
 import { AlertCircle, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
-import { type ReactNode, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OnboardingLayout } from './onboarding-layout'
+import { OnboardingTeamChip } from './onboarding-team-chip'
 import {
   OnboardingActions,
   OnboardingStepTicks,
@@ -28,12 +29,10 @@ function isTerminalStatus(status: string) {
 
 export function RunStep({
   orgID,
-  headerRight,
   importID,
   onFinish,
 }: {
   orgID: string
-  headerRight: ReactNode
   importID: string
   onFinish: () => Promise<void>
 }) {
@@ -103,7 +102,7 @@ export function RunStep({
       <OnboardingLayout
         headerLeftContent={<OnboardingStepTitle current={4} />}
         headerCenterContent={<OnboardingStepTicks current={4} />}
-        headerRightContent={headerRight}
+        headerRightContent={<OnboardingTeamChip />}
       >
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
@@ -125,7 +124,7 @@ export function RunStep({
     <OnboardingLayout
       headerLeftContent={<OnboardingStepTitle current={4} />}
       headerCenterContent={<OnboardingStepTicks current={4} />}
-      headerRightContent={headerRight}
+      headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-2xl">
         <div className="flex flex-wrap items-baseline justify-between gap-2">

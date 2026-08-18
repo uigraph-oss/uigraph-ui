@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { Check, ExternalLink, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
+import { OnboardingTeamChip } from './onboarding-team-chip'
 import {
   OnboardingActions,
   OnboardingStepTicks,
@@ -58,12 +59,10 @@ function ChecklistRow({
 
 export function ConnectGitHubStep({
   orgID,
-  headerRight,
   onBack,
   onNext,
 }: {
   orgID: string
-  headerRight: ReactNode
   onBack: () => void
   onNext: () => Promise<void>
 }) {
@@ -74,7 +73,7 @@ export function ConnectGitHubStep({
     <OnboardingLayout
       headerLeftContent={<OnboardingStepTitle current={1} />}
       headerCenterContent={<OnboardingStepTicks current={1} />}
-      headerRightContent={headerRight}
+      headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro

@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 import { COMPLETE_ONBOARDING } from './api/onboarding'
 import { ConnectGitHubStep } from './components/connect-github-step'
 import { EnvironmentStep } from './components/environment-step'
-import { OnboardingTeamChip } from './components/onboarding-team-chip'
 import { RunStep } from './components/run-step'
 import { RunnerStep } from './components/runner-step'
 import { SelectRepositoryStep } from './components/select-repository-step'
@@ -76,15 +75,11 @@ function ImportFlow({ orgID }: { orgID: string }) {
   }
 
   const teamID = searchParams.get('team') ?? ''
-  if (teamID === '') return <OnboardingTeamChip />
-
   const step = resolveStep(progress)
-  const headerRight = <OnboardingTeamChip />
 
   if (step === OnboardingStep.Runner) {
     return (
       <RunnerStep
-        headerRight={headerRight}
         onBack={() =>
           void guard(async () => {
             await save({ step: OnboardingStep.Team })
@@ -102,7 +97,6 @@ function ImportFlow({ orgID }: { orgID: string }) {
     return (
       <ConnectGitHubStep
         orgID={orgID}
-        headerRight={headerRight}
         onBack={() => void guard(() => save({ step: OnboardingStep.Runner }))}
         onNext={() => guard(() => save({ step: OnboardingStep.Repository }))}
       />
@@ -113,7 +107,6 @@ function ImportFlow({ orgID }: { orgID: string }) {
     return (
       <SelectRepositoryStep
         orgID={orgID}
-        headerRight={headerRight}
         repoOwner={progress?.repoOwner ?? null}
         repoName={progress?.repoName ?? null}
         onBack={() => void guard(() => save({ step: OnboardingStep.Github }))}
@@ -134,7 +127,6 @@ function ImportFlow({ orgID }: { orgID: string }) {
     return (
       <EnvironmentStep
         orgID={orgID}
-        headerRight={headerRight}
         owner={progress.repoOwner ?? ''}
         repo={progress.repoName ?? ''}
         onBack={() =>
@@ -161,7 +153,6 @@ function ImportFlow({ orgID }: { orgID: string }) {
     return (
       <RunStep
         orgID={orgID}
-        headerRight={headerRight}
         importID={progress.importId}
         onFinish={() => guard(finish)}
       />
