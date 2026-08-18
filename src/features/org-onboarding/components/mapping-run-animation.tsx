@@ -23,9 +23,9 @@ const POINTS = {
   routes: { x: 215, y: 56 },
   components: { x: 215, y: 150 },
   services: { x: 215, y: 244 },
-  checkout: { x: 378, y: 42 },
-  cart: { x: 378, y: 150 },
-  api: { x: 378, y: 258 },
+  checkout: { x: 368, y: 42 },
+  cart: { x: 368, y: 150 },
+  api: { x: 368, y: 258 },
 }
 
 const NODES = [

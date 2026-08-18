@@ -38,7 +38,7 @@ export function RunnerStep({
       headerCenterContent={<OnboardingStepTicks current={0} />}
       headerRightContent={headerRight}
     >
-      <div className="mx-auto grid w-full max-w-5xl gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
+      <div className="mx-auto grid w-full max-w-6xl gap-x-20 gap-y-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
         <div className="min-w-0">
           <StepIntro
             title="Where should the mapping run?"
