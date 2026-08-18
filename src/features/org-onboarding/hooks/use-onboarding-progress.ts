@@ -9,20 +9,9 @@ import {
 export type OnboardingProgress =
   GT.OnboardingProgressQuery['onboardingProgress']
 
-let uiTeamID: string | null = null
-
-export function setUiTeamID(id: string) {
-  uiTeamID = id
-}
-
-export function getUiTeamID() {
-  return uiTeamID
-}
-
 export function resolveStep(progress: OnboardingProgress | null) {
-  if (!progress) return OnboardingStep.Team
-  if (progress.step === OnboardingStep.Team) return OnboardingStep.Team
-  if (!progress.teamId) return OnboardingStep.Team
+  if (!progress) return OnboardingStep.Runner
+  if (progress.step === OnboardingStep.Team) return OnboardingStep.Runner
   if (progress.step === OnboardingStep.Runner) return OnboardingStep.Runner
   if (progress.step === OnboardingStep.Github) return OnboardingStep.Github
   if (!progress.repoOwner || !progress.repoName)

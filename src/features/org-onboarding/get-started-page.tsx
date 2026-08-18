@@ -13,12 +13,7 @@ import { Loader2 } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { COMPLETE_ONBOARDING } from './api/onboarding'
 import { CreateTeamStep } from './components/create-team-step'
-import {
-  getUiTeamID,
-  resolveStep,
-  setUiTeamID,
-  useOnboardingProgress,
-} from './hooks/use-onboarding-progress'
+import { useOnboardingProgress } from './hooks/use-onboarding-progress'
 
 export function GetStartedPage() {
   const organization = useCurrentOrganization()
@@ -56,11 +51,14 @@ function TeamFlow({ orgID }: { orgID: string }) {
     )
   }
 
-  if (githubEnabled && resolveStep(progress) !== OnboardingStep.Team) {
-    const uiTeamID = getUiTeamID()
-    if (uiTeamID) {
-      return <Navigate to={`/get-started/import?team=${uiTeamID}`} replace />
-    }
+  if (
+    githubEnabled &&
+    progress?.teamId &&
+    progress.step !== OnboardingStep.Team
+  ) {
+    return (
+      <Navigate to={`/get-started/import?team=${progress.teamId}`} replace />
+    )
   }
 
   return (
@@ -73,7 +71,6 @@ function TeamFlow({ orgID }: { orgID: string }) {
           return
         }
         await save({ step: OnboardingStep.Runner, teamId: team.id })
-        setUiTeamID(team.id)
         void navigate(`/get-started/import?team=${team.id}`)
       }}
       onSkip={() => void navigate('/get-started/import')}
