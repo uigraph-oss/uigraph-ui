@@ -40,7 +40,7 @@ export function CreateTeamStep({
   return (
     <OnboardingLayout>
       <div className="mx-auto w-full max-w-lg">
-        <div className="bg-shading text-paragraph mb-5 flex size-10 items-center justify-center rounded-xl">
+        <div className="border-stock bg-shading mb-5 flex size-10 items-center justify-center rounded-xl border">
           <Users className="size-5" />
         </div>
         <h1 className="text-2xl font-medium tracking-tight">
