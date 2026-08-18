@@ -298,12 +298,14 @@ export function ImportGitHubModal({
       )}
 
       {!isLoading && team && step === 3 && (
-        <ImportRunStep
-          orgID={orgID}
-          importID={importID}
-          onCompleted={onImported}
-          onOpenService={() => onOpenChange(false)}
-        />
+        <div className="mx-auto w-full max-w-5xl">
+          <ImportRunStep
+            orgID={orgID}
+            importID={importID}
+            onCompleted={onImported}
+            onOpenService={() => onOpenChange(false)}
+          />
+        </div>
       )}
     </BetterDialogContent>
   )

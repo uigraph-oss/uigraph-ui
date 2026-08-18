@@ -276,7 +276,7 @@ export function DashboardServices() {
       <BetterDialogProvider
         open={importOpen}
         onOpenChange={setImportOpen}
-        className="[--height:100%] [--width:100%] h-full!"
+        className="h-full! [--height:100%] [--width:100%]"
       >
         <ImportGitHubModal
           orgID={orgId!}
