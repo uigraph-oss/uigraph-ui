@@ -8,7 +8,7 @@ const STEPS = [
   'Connect GitHub',
   'Select repository',
   'Check environment',
-  'Run',
+  'Build the graph',
 ]
 
 export function OnboardingStepTitle({ current }: { current: number }) {
