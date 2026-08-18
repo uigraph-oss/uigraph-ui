@@ -1,7 +1,10 @@
 import type { GT } from '@/api'
 import { OnboardingStep } from '@/api/.gql/graphql'
 import { useMutation, useQuery } from '@apollo/client'
-import { ONBOARDING_PROGRESS, SAVE_ONBOARDING_PROGRESS } from './api'
+import {
+  ONBOARDING_PROGRESS,
+  SAVE_ONBOARDING_PROGRESS,
+} from '../api/onboarding'
 
 export type OnboardingProgress =
   GT.OnboardingProgressQuery['onboardingProgress']

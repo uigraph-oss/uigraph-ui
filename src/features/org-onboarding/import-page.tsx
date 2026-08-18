@@ -21,13 +21,16 @@ import { useMutation } from '@apollo/client'
 import { Loader2 } from 'lucide-react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { COMPLETE_ONBOARDING } from './api'
-import { ConnectGitHubStep } from './connect-github-step'
-import { EnvironmentStep } from './environment-step'
-import { RunStep } from './run-step'
-import { RunnerStep } from './runner-step'
-import { SelectRepositoryStep } from './select-repository-step'
-import { resolveStep, useOnboardingProgress } from './use-onboarding-progress'
+import { COMPLETE_ONBOARDING } from './api/onboarding'
+import { ConnectGitHubStep } from './components/connect-github-step'
+import { EnvironmentStep } from './components/environment-step'
+import { RunStep } from './components/run-step'
+import { RunnerStep } from './components/runner-step'
+import { SelectRepositoryStep } from './components/select-repository-step'
+import {
+  resolveStep,
+  useOnboardingProgress,
+} from './hooks/use-onboarding-progress'
 
 export function ImportPage() {
   const organization = useCurrentOrganization()

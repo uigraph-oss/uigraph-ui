@@ -9,11 +9,12 @@ import { useMutation, useQuery } from '@apollo/client'
 import { AlertCircle, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { OnboardingLayout } from './onboarding-layout'
 import {
   OnboardingActions,
-  OnboardingLayout,
   OnboardingSteps,
-} from './onboarding-layout'
+  OnboardingTeamBadge,
+} from './onboarding-ui'
 import {
   isStepFailed,
   stepLabel,
@@ -100,7 +101,10 @@ export function RunStep({
   if (completed) {
     return (
       <OnboardingLayout
-        header={<OnboardingSteps current={4} teamName={teamName} />}
+        headerLeftContent={<OnboardingSteps current={4} />}
+        headerRightContent={
+          teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
+        }
       >
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
@@ -120,7 +124,10 @@ export function RunStep({
 
   return (
     <OnboardingLayout
-      header={<OnboardingSteps current={4} teamName={teamName} />}
+      headerLeftContent={<OnboardingSteps current={4} />}
+      headerRightContent={
+        teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
+      }
     >
       <div className="mx-auto w-full max-w-2xl">
         <div className="flex flex-wrap items-baseline justify-between gap-2">

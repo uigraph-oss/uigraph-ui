@@ -14,12 +14,13 @@ import {
   RefreshCw,
 } from 'lucide-react'
 import { useState } from 'react'
+import { OnboardingLayout } from './onboarding-layout'
 import {
   OnboardingActions,
-  OnboardingLayout,
   OnboardingSteps,
+  OnboardingTeamBadge,
   StepIntro,
-} from './onboarding-layout'
+} from './onboarding-ui'
 
 const VARIABLE_ROWS = [
   {
@@ -111,7 +112,10 @@ export function EnvironmentStep({
 
   return (
     <OnboardingLayout
-      header={<OnboardingSteps current={3} teamName={teamName} />}
+      headerLeftContent={<OnboardingSteps current={3} />}
+      headerRightContent={
+        teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
+      }
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro

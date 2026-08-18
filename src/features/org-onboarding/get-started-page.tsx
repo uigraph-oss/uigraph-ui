@@ -11,14 +11,14 @@ import {
 import { useMutation } from '@apollo/client'
 import { Loader2 } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { COMPLETE_ONBOARDING } from './api'
-import { CreateTeamStep } from './create-team-step'
+import { COMPLETE_ONBOARDING } from './api/onboarding'
+import { CreateTeamStep } from './components/create-team-step'
 import {
   getUiTeamID,
   resolveStep,
   setUiTeamID,
   useOnboardingProgress,
-} from './use-onboarding-progress'
+} from './hooks/use-onboarding-progress'
 
 export function GetStartedPage() {
   const organization = useCurrentOrganization()

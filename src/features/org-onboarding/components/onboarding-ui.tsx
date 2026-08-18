@@ -1,6 +1,4 @@
-import { UiGraphLogo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
-import { UserDropdownMenu } from '@/features/dashboard/dashboard-header'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { type ReactNode } from 'react'
@@ -13,45 +11,9 @@ const STEPS = [
   'Run',
 ]
 
-export function OnboardingLayout({
-  header,
-  footer,
-  children,
-}: {
-  header?: ReactNode
-  footer?: ReactNode
-  children: ReactNode
-}) {
+export function OnboardingSteps({ current }: { current: number }) {
   return (
-    <div className="bg-shading-gray text-foreground flex min-h-screen flex-col">
-      <header className="border-stock/60 flex h-16 shrink-0 items-center gap-6 border-b px-6 lg:px-10">
-        <UiGraphLogo className="size-6 shrink-0" />
-        <div className="flex min-w-0 flex-1 items-center gap-4">{header}</div>
-        <UserDropdownMenu />
-      </header>
-
-      <main className="flex w-full flex-1 flex-col px-6 py-12 lg:px-10">
-        <div className="m-auto w-full">{children}</div>
-      </main>
-
-      {footer && (
-        <footer className="border-stock/60 bg-shading-gray/90 sticky bottom-0 border-t px-6 py-4 backdrop-blur lg:px-10">
-          {footer}
-        </footer>
-      )}
-    </div>
-  )
-}
-
-export function OnboardingSteps({
-  current,
-  teamName,
-}: {
-  current: number
-  teamName?: string | null
-}) {
-  return (
-    <>
+    <div className="flex items-center gap-4">
       <div className="hidden items-center gap-1.5 sm:flex">
         {STEPS.map((label, index) => (
           <span
@@ -71,12 +33,15 @@ export function OnboardingSteps({
         </span>{' '}
         {STEPS[current]}
       </span>
-      {teamName && (
-        <span className="border-stock text-paragraph ml-auto hidden max-w-40 truncate rounded-md border px-2 py-1 font-mono text-[0.6875rem] lg:block">
-          {teamName}
-        </span>
-      )}
-    </>
+    </div>
+  )
+}
+
+export function OnboardingTeamBadge({ name }: { name: string }) {
+  return (
+    <span className="border-stock text-paragraph hidden max-w-40 truncate rounded-md border px-2 py-1 font-mono text-[0.6875rem] lg:block">
+      {name}
+    </span>
   )
 }
 
