@@ -12,7 +12,8 @@ export const OnboardingStep = {
   Run: 'RUN',
 } as const
 
-export type OnboardingStep = (typeof OnboardingStep)[keyof typeof OnboardingStep]
+export type OnboardingStep =
+  (typeof OnboardingStep)[keyof typeof OnboardingStep]
 
 export const OnboardingRunner = {
   GithubActions: 'GITHUB_ACTIONS',
