@@ -16,7 +16,7 @@ import {
   OnboardingStepTitle,
   StepIntro,
 } from './onboarding-ui'
-import { RunIllustration } from './run-illustration'
+import { RunPhaseDetail } from './run-phase-detail'
 import { isTerminal, RunPhaseList, runPhases, useElapsed } from './run-phases'
 
 export function RunStep({
@@ -57,7 +57,7 @@ export function RunStep({
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
 
   const value = importQuery.data?.repositoryImport ?? null
-  const elapsed = useElapsed(value?.createdAt, value?.runCompletedAt)
+  const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
 
   async function handleRecheck() {
     setActionError('')
@@ -87,8 +87,37 @@ export function RunStep({
 
   const completed = value?.status === 'COMPLETED'
   const failed = value?.status === 'FAILED'
+  const waiting = value?.status === 'WAITING_AI_CONFIGURATION'
   const phases = runPhases(value)
   const failedPhase = phases.find((phase) => phase.status === 'failed')
+
+  if (!value && importQuery.error) {
+    return (
+      <OnboardingLayout
+        headerLeftContent={<OnboardingStepTitle current={4} />}
+        headerCenterContent={<OnboardingStepTicks current={4} />}
+        headerRightContent={<OnboardingTeamChip />}
+      >
+        <div className="mx-auto w-full max-w-2xl">
+          <StepIntro
+            title="Could not load the run."
+            description={importQuery.error.message}
+          />
+          <Button
+            preset="outline"
+            className="mt-6 h-11 rounded-[0.625rem] px-5"
+            disabled={importQuery.loading}
+            onClick={() => void importQuery.refetch()}
+          >
+            <RefreshCw
+              className={cn('size-4', importQuery.loading && 'animate-spin')}
+            />
+            Try again
+          </Button>
+        </div>
+      </OnboardingLayout>
+    )
+  }
 
   if (completed) {
     return (
@@ -99,8 +128,8 @@ export function RunStep({
       >
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
-            <span className="font-mono">{value?.githubRepo}</span> is on the
-            graph.
+            <span className="font-mono break-all">{value?.githubRepo}</span> is
+            on the graph.
           </h1>
           <p className="text-paragraph mt-3 text-sm">
             Imported in {elapsed ?? '—'}.
@@ -120,35 +149,31 @@ export function RunStep({
       headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-5xl">
-        <div className="grid gap-x-16 gap-y-10 lg:grid-cols-2 lg:items-center">
+        <StepIntro
+          title={
+            <>
+              {failed ? 'Could not import ' : 'Importing '}
+              <span className="font-mono break-all">
+                {value?.githubRepo ?? 'your repository'}
+              </span>
+            </>
+          }
+          description={
+            failed
+              ? 'The run stopped before it finished.'
+              : waiting
+                ? 'The run starts as soon as the missing settings are in place.'
+                : 'This runs on GitHub Actions and takes a few minutes. You can leave this open.'
+          }
+        />
+
+        <div className="mt-10 grid gap-x-28 gap-y-8 lg:grid-cols-2 lg:items-start">
           <div className="min-w-0">
-            <StepIntro
-              title={
-                <>
-                  {failed ? 'Could not import ' : 'Importing '}
-                  <span className="font-mono">
-                    {value?.githubRepo ?? 'your repository'}
-                  </span>
-                </>
-              }
-              description={
-                failed
-                  ? 'The run stopped before it finished.'
-                  : 'This runs on GitHub Actions and takes a few minutes. You can leave this open.'
-              }
-            />
-
-            <div className="mt-8 h-[21rem]">
-              <RunPhaseList phases={phases} />
-            </div>
-
-            <p className="text-paragraph mt-6 font-mono text-xs tabular-nums">
-              {elapsed ?? '0s'} elapsed
-            </p>
+            <RunPhaseList phases={phases} />
           </div>
 
-          <div className="hidden h-[28rem] min-w-0 lg:block">
-            <RunIllustration phases={phases} />
+          <div className="min-w-0">
+            <RunPhaseDetail phases={phases} />
           </div>
         </div>
 
@@ -183,9 +208,7 @@ export function RunStep({
                 : 'The run did not finish'}
             </p>
             <p className="text-paragraph mt-2 text-sm leading-relaxed">
-              {failedPhase?.failureHint ??
-                value?.error ??
-                'The run stopped before it could finish.'}
+              {value?.error ?? 'The run stopped before it could finish.'}
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-5">
               <Button
