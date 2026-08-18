@@ -57,7 +57,7 @@ const PHASES = [
       'The results could not be saved back. Check that UIGraph can write to this repository, then retry.',
   },
   {
-    label: 'Publishing',
+    label: 'Uploading to UIGraph',
     icon: LuCloudUpload,
     summary: 'Your graph is being sent to UIGraph and put together.',
     note: 'Pages, components, services, and every link between them.',
