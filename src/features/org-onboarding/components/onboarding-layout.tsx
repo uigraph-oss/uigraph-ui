@@ -24,11 +24,9 @@ export function OnboardingLayout({
           {headerLeftContent}
         </div>
 
-        {headerCenterContent && (
-          <div className="flex min-w-0 flex-1 items-center justify-center">
-            {headerCenterContent}
-          </div>
-        )}
+        <div className="flex min-w-0 items-center justify-center">
+          {headerCenterContent}
+        </div>
 
         <div className="ml-auto flex items-center gap-4">
           {headerRightContent}
