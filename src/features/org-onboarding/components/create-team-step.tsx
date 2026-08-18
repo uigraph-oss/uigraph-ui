@@ -123,7 +123,7 @@ export function CreateTeamStep({
                 disabled={isCreating}
                 onClick={handleSkip}
               >
-                Pick an existing team
+                Skip for now
               </Button>
             </div>
           </div>
