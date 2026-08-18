@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from '@/components/ui/dialog'
 import {
@@ -38,12 +39,11 @@ export function OnboardingTeamChip() {
   if (teamID === '') {
     return (
       <Dialog open>
+        <DialogOverlay className="bg-transparent backdrop-blur-sm" />
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>Pick a team first</DialogTitle>
-            <DialogDescription>
-              This run needs a team to belong to. Choose one to continue.
-            </DialogDescription>
+            <DialogTitle>Pick a team</DialogTitle>
+            <DialogDescription>Where this repo belongs.</DialogDescription>
           </DialogHeader>
 
           {teamsQuery.loading && (
