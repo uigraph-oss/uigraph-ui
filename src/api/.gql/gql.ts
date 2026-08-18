@@ -217,8 +217,6 @@ type Documents = {
     "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n": typeof types.UpdateAuthRoleMappingDocument,
     "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": typeof types.DeleteAuthRoleMappingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": typeof types.CompleteOnboardingDocument,
-    "\n  query OnboardingProgress($orgID: ID!) {\n    onboardingProgress(orgId: $orgID) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n": typeof types.OnboardingProgressDocument,
-    "\n  mutation SaveOnboardingProgress(\n    $orgID: ID!\n    $input: OnboardingProgressInput!\n  ) {\n    saveOnboardingProgress(orgId: $orgID, input: $input) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n": typeof types.SaveOnboardingProgressDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": typeof types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.PrepareServerOrgLogoUploadDocument,
@@ -512,8 +510,6 @@ const documents: Documents = {
     "\n  mutation UpdateAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n    $input: AuthRoleMappingInput!\n  ) {\n    updateAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n      input: $input\n    ) {\n      id\n    }\n  }\n": types.UpdateAuthRoleMappingDocument,
     "\n  mutation DeleteAuthRoleMapping(\n    $orgId: ID!\n    $providerSlug: String!\n    $mappingId: ID!\n  ) {\n    deleteAuthRoleMapping(\n      orgId: $orgId\n      providerSlug: $providerSlug\n      mappingId: $mappingId\n    )\n  }\n": types.DeleteAuthRoleMappingDocument,
     "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n": types.CompleteOnboardingDocument,
-    "\n  query OnboardingProgress($orgID: ID!) {\n    onboardingProgress(orgId: $orgID) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n": types.OnboardingProgressDocument,
-    "\n  mutation SaveOnboardingProgress(\n    $orgID: ID!\n    $input: OnboardingProgressInput!\n  ) {\n    saveOnboardingProgress(orgId: $orgID, input: $input) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n": types.SaveOnboardingProgressDocument,
     "\n  query ServerOverview {\n    serverOverview {\n      totalUsers\n      activeUsers\n      totalOrgs\n    }\n    serverConfig {\n      storageBackend\n      storageBucket\n      storageEndpoint\n      vectorBackend\n      embeddingBackend\n      embeddingModel\n    }\n  }\n": types.ServerOverviewDocument,
     "\n  query ServerOrgs {\n    serverOrgs {\n      id\n      name\n      logoUrl\n      disabled\n      autoJoin\n      createdAt\n      updatedAt\n    }\n  }\n": types.ServerOrgsDocument,
     "\n  mutation PrepareServerOrgLogoUpload($orgId: ID!) {\n    prepareServerOrgLogoUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.PrepareServerOrgLogoUploadDocument,
@@ -1430,14 +1426,6 @@ export function graphql(source: "\n  mutation DeleteAuthRoleMapping(\n    $orgId
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"): (typeof documents)["\n  mutation CompleteOnboarding($orgId: ID!) {\n    completeOnboarding(orgId: $orgId)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query OnboardingProgress($orgID: ID!) {\n    onboardingProgress(orgId: $orgID) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n"): (typeof documents)["\n  query OnboardingProgress($orgID: ID!) {\n    onboardingProgress(orgId: $orgID) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation SaveOnboardingProgress(\n    $orgID: ID!\n    $input: OnboardingProgressInput!\n  ) {\n    saveOnboardingProgress(orgId: $orgID, input: $input) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n"): (typeof documents)["\n  mutation SaveOnboardingProgress(\n    $orgID: ID!\n    $input: OnboardingProgressInput!\n  ) {\n    saveOnboardingProgress(orgId: $orgID, input: $input) {\n      step\n      teamId\n      teamName\n      runner\n      repoOwner\n      repoName\n      importId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

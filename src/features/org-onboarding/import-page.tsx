@@ -1,6 +1,5 @@
 'use client'
 
-import { OnboardingStep } from '@/api/.gql/graphql'
 import { START_REPOSITORY_IMPORT } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
 import {
@@ -9,8 +8,7 @@ import {
   useCurrentOrganization,
 } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
-import { Loader2 } from 'lucide-react'
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { COMPLETE_ONBOARDING } from './api/onboarding'
 import { ConnectGitHubStep } from './components/connect-github-step'
@@ -19,9 +17,10 @@ import { RunStep } from './components/run-step'
 import { RunnerStep } from './components/runner-step'
 import { SelectRepositoryStep } from './components/select-repository-step'
 import {
-  resolveStep,
-  useOnboardingProgress,
-} from './hooks/use-onboarding-progress'
+  OnboardingProvider,
+  OnboardingStep,
+  useOnboarding,
+} from './context/onboarding-context'
 
 export function ImportPage() {
   const organization = useCurrentOrganization()
@@ -30,14 +29,17 @@ export function ImportPage() {
   if (!organization) return <Navigate to="/onboarding" replace />
   if (!isAdmin) return <Navigate to="/services" replace />
 
-  return <ImportFlow orgID={organization.id} />
+  return (
+    <OnboardingProvider orgID={organization.id}>
+      <ImportFlow />
+    </OnboardingProvider>
+  )
 }
 
-function ImportFlow({ orgID }: { orgID: string }) {
+function ImportFlow() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   const githubEnabled = useAuthStore((state) => state.features.github)
-  const { progress, isLoading, error, save } = useOnboardingProgress(orgID)
+  const { orgID, teamID, progress, step, save } = useOnboarding()
   const [completeOnboarding] = useMutation(COMPLETE_ONBOARDING)
   const [startImport] = useMutation(START_REPOSITORY_IMPORT)
 
@@ -57,25 +59,6 @@ function ImportFlow({ orgID }: { orgID: string }) {
   }
 
   if (!githubEnabled) return <Navigate to="/services" replace />
-
-  if (isLoading) {
-    return (
-      <div className="bg-shading-gray text-paragraph flex min-h-screen items-center justify-center gap-2 text-sm">
-        <Loader2 className="size-4 animate-spin" /> Loading your setup
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="bg-shading-gray text-destructive flex min-h-screen items-center justify-center px-6 text-center text-sm">
-        {error.message}
-      </div>
-    )
-  }
-
-  const teamID = searchParams.get('team') ?? ''
-  const step = resolveStep(progress)
 
   if (step === OnboardingStep.Runner) {
     return (
@@ -107,8 +90,8 @@ function ImportFlow({ orgID }: { orgID: string }) {
     return (
       <SelectRepositoryStep
         orgID={orgID}
-        repoOwner={progress?.repoOwner ?? null}
-        repoName={progress?.repoName ?? null}
+        repoOwner={progress.repoOwner}
+        repoName={progress.repoName}
         onBack={() => void guard(() => save({ step: OnboardingStep.Github }))}
         onNext={(repository) =>
           guard(() =>
@@ -123,7 +106,7 @@ function ImportFlow({ orgID }: { orgID: string }) {
     )
   }
 
-  if (step === OnboardingStep.Environment && progress) {
+  if (step === OnboardingStep.Environment) {
     return (
       <EnvironmentStep
         orgID={orgID}
@@ -149,7 +132,7 @@ function ImportFlow({ orgID }: { orgID: string }) {
     )
   }
 
-  if (step === OnboardingStep.Run && progress?.importId) {
+  if (step === OnboardingStep.Run && progress.importId) {
     return (
       <RunStep
         orgID={orgID}

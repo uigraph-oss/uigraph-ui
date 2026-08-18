@@ -1,6 +1,5 @@
 'use client'
 
-import { OnboardingStep } from '@/api/.gql/graphql'
 import { TeamContextProvider } from '@/features/dashboard-settings/context/team-context'
 import { usePermissions } from '@/hooks/use-permissions'
 import {
@@ -9,11 +8,14 @@ import {
   useCurrentOrganization,
 } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
-import { Loader2 } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { COMPLETE_ONBOARDING } from './api/onboarding'
 import { CreateTeamStep } from './components/create-team-step'
-import { useOnboardingProgress } from './hooks/use-onboarding-progress'
+import {
+  OnboardingProvider,
+  OnboardingStep,
+  useOnboarding,
+} from './context/onboarding-context'
 
 export function GetStartedPage() {
   const organization = useCurrentOrganization()
@@ -23,37 +25,23 @@ export function GetStartedPage() {
   if (!isAdmin) return <Navigate to="/services" replace />
 
   return (
-    <TeamContextProvider>
-      <TeamFlow orgID={organization.id} />
-    </TeamContextProvider>
+    <OnboardingProvider orgID={organization.id}>
+      <TeamContextProvider>
+        <TeamFlow />
+      </TeamContextProvider>
+    </OnboardingProvider>
   )
 }
 
-function TeamFlow({ orgID }: { orgID: string }) {
+function TeamFlow() {
   const navigate = useNavigate()
   const githubEnabled = useAuthStore((state) => state.features.github)
-  const { progress, isLoading, error, save } = useOnboardingProgress(orgID)
+  const { orgID, progress, save } = useOnboarding()
   const [completeOnboarding] = useMutation(COMPLETE_ONBOARDING)
-
-  if (isLoading) {
-    return (
-      <div className="bg-shading-gray text-paragraph flex min-h-screen items-center justify-center gap-2 text-sm">
-        <Loader2 className="size-4 animate-spin" /> Loading your setup
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="bg-shading-gray text-destructive flex min-h-screen items-center justify-center px-6 text-center text-sm">
-        {error.message}
-      </div>
-    )
-  }
 
   if (
     githubEnabled &&
-    progress?.teamId &&
+    progress.teamId &&
     progress.step !== OnboardingStep.Team
   ) {
     return (

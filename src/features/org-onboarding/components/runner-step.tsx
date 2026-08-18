@@ -1,10 +1,10 @@
-import { OnboardingRunner } from '@/api/.gql/graphql'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { LuCloud, LuGithub } from 'react-icons/lu'
 import { MappingRunAnimation } from './mapping-run-animation'
+import { OnboardingRunner } from '../context/onboarding-context'
 import { OnboardingLayout } from './onboarding-layout'
 import { OnboardingTeamChip } from './onboarding-team-chip'
 import {

@@ -1935,7 +1935,6 @@ export type Mutation = {
   restoreServiceDBVersion: ServiceDb;
   retryRepositoryImport: RepositoryImport;
   revokeServiceAccountToken: Scalars['Boolean']['output'];
-  saveOnboardingProgress: OnboardingProgress;
   setAuthProviderIcon: Scalars['Boolean']['output'];
   setMlModelVersionRun: MlModelVersion;
   setMyAvatar: Scalars['Boolean']['output'];
@@ -2760,12 +2759,6 @@ export type MutationRevokeServiceAccountTokenArgs = {
 };
 
 
-export type MutationSaveOnboardingProgressArgs = {
-  input: OnboardingProgressInput;
-  orgId: Scalars['ID']['input'];
-};
-
-
 export type MutationSetAuthProviderIconArgs = {
   orgId: Scalars['ID']['input'];
   slug: Scalars['String']['input'];
@@ -3171,38 +3164,6 @@ export type MutationUpsertLdapArgs = {
   input: UpsertLdapInput;
 };
 
-export type OnboardingProgress = {
-  importId?: Maybe<Scalars['ID']['output']>;
-  repoName?: Maybe<Scalars['String']['output']>;
-  repoOwner?: Maybe<Scalars['String']['output']>;
-  runner?: Maybe<OnboardingRunner>;
-  step: OnboardingStep;
-  teamId?: Maybe<Scalars['ID']['output']>;
-  teamName?: Maybe<Scalars['String']['output']>;
-};
-
-export type OnboardingProgressInput = {
-  importId?: InputMaybe<Scalars['ID']['input']>;
-  repoName?: InputMaybe<Scalars['String']['input']>;
-  repoOwner?: InputMaybe<Scalars['String']['input']>;
-  runner?: InputMaybe<OnboardingRunner>;
-  step: OnboardingStep;
-  teamId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-export enum OnboardingRunner {
-  GithubActions = 'GITHUB_ACTIONS'
-}
-
-export enum OnboardingStep {
-  Environment = 'ENVIRONMENT',
-  Github = 'GITHUB',
-  Repository = 'REPOSITORY',
-  Run = 'RUN',
-  Runner = 'RUNNER',
-  Team = 'TEAM'
-}
-
 export type Org = {
   autoJoin: Scalars['Boolean']['output'];
   createdAt: Scalars['Time']['output'];
@@ -3318,7 +3279,6 @@ export type Query = {
   mlVersionEvaluations: Array<MlEvaluation>;
   mlVersionEvaluationsPage: MlEvaluationPage;
   myOrgs: Array<OrgSummary>;
-  onboardingProgress: OnboardingProgress;
   org: Org;
   orgDomains: Array<OrgDomain>;
   orgs: Array<Org>;
@@ -3919,11 +3879,6 @@ export type QueryMlVersionEvaluationsPageArgs = {
   orgId: Scalars['ID']['input'];
   search?: InputMaybe<Scalars['String']['input']>;
   versionId: Scalars['ID']['input'];
-};
-
-
-export type QueryOnboardingProgressArgs = {
-  orgId: Scalars['ID']['input'];
 };
 
 
@@ -6849,21 +6804,6 @@ export type CompleteOnboardingMutationVariables = Exact<{
 
 export type CompleteOnboardingMutation = { completeOnboarding: boolean };
 
-export type OnboardingProgressQueryVariables = Exact<{
-  orgID: Scalars['ID']['input'];
-}>;
-
-
-export type OnboardingProgressQuery = { onboardingProgress: { step: OnboardingStep, teamId?: string | null, teamName?: string | null, runner?: OnboardingRunner | null, repoOwner?: string | null, repoName?: string | null, importId?: string | null } };
-
-export type SaveOnboardingProgressMutationVariables = Exact<{
-  orgID: Scalars['ID']['input'];
-  input: OnboardingProgressInput;
-}>;
-
-
-export type SaveOnboardingProgressMutation = { saveOnboardingProgress: { step: OnboardingStep, teamId?: string | null, teamName?: string | null, runner?: OnboardingRunner | null, repoOwner?: string | null, repoName?: string | null, importId?: string | null } };
-
 export type ServerOverviewQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -7839,8 +7779,6 @@ export const CreateAuthRoleMappingDocument = {"kind":"Document","definitions":[{
 export const UpdateAuthRoleMappingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAuthRoleMapping"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthRoleMappingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAuthRoleMapping"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"providerSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"mappingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateAuthRoleMappingMutation, UpdateAuthRoleMappingMutationVariables>;
 export const DeleteAuthRoleMappingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteAuthRoleMapping"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteAuthRoleMapping"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"providerSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"providerSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"mappingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mappingId"}}}]}]}}]} as unknown as DocumentNode<DeleteAuthRoleMappingMutation, DeleteAuthRoleMappingMutationVariables>;
 export const CompleteOnboardingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CompleteOnboarding"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"completeOnboarding"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}]}]}}]} as unknown as DocumentNode<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
-export const OnboardingProgressDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"OnboardingProgress"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"onboardingProgress"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"step"}},{"kind":"Field","name":{"kind":"Name","value":"teamId"}},{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"runner"}},{"kind":"Field","name":{"kind":"Name","value":"repoOwner"}},{"kind":"Field","name":{"kind":"Name","value":"repoName"}},{"kind":"Field","name":{"kind":"Name","value":"importId"}}]}}]}}]} as unknown as DocumentNode<OnboardingProgressQuery, OnboardingProgressQueryVariables>;
-export const SaveOnboardingProgressDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SaveOnboardingProgress"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OnboardingProgressInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"saveOnboardingProgress"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"step"}},{"kind":"Field","name":{"kind":"Name","value":"teamId"}},{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"runner"}},{"kind":"Field","name":{"kind":"Name","value":"repoOwner"}},{"kind":"Field","name":{"kind":"Name","value":"repoName"}},{"kind":"Field","name":{"kind":"Name","value":"importId"}}]}}]}}]} as unknown as DocumentNode<SaveOnboardingProgressMutation, SaveOnboardingProgressMutationVariables>;
 export const ServerOverviewDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serverOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalUsers"}},{"kind":"Field","name":{"kind":"Name","value":"activeUsers"}},{"kind":"Field","name":{"kind":"Name","value":"totalOrgs"}}]}},{"kind":"Field","name":{"kind":"Name","value":"serverConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageBackend"}},{"kind":"Field","name":{"kind":"Name","value":"storageBucket"}},{"kind":"Field","name":{"kind":"Name","value":"storageEndpoint"}},{"kind":"Field","name":{"kind":"Name","value":"vectorBackend"}},{"kind":"Field","name":{"kind":"Name","value":"embeddingBackend"}},{"kind":"Field","name":{"kind":"Name","value":"embeddingModel"}}]}}]}}]} as unknown as DocumentNode<ServerOverviewQuery, ServerOverviewQueryVariables>;
 export const ServerOrgsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerOrgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serverOrgs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}},{"kind":"Field","name":{"kind":"Name","value":"autoJoin"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ServerOrgsQuery, ServerOrgsQueryVariables>;
 export const PrepareServerOrgLogoUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PrepareServerOrgLogoUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prepareServerOrgLogoUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}}]}}]}}]} as unknown as DocumentNode<PrepareServerOrgLogoUploadMutation, PrepareServerOrgLogoUploadMutationVariables>;
