@@ -7,7 +7,7 @@ export function CreateTeamStep({
 }: {
   onCreated: (team: { id: string; name: string }) => Promise<void>
 }) {
-  const { createTeam } = useTeamContext()
+  const { teams, createTeam } = useTeamContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const [name, setName] = useState('')
   const [isCreating, setIsCreating] = useState(false)
@@ -35,7 +35,6 @@ export function CreateTeamStep({
 
   return (
     <OnboardingShell
-      stepIndex={0}
       primary={{
         label: 'Create team',
         onClick: handleCreate,
@@ -44,11 +43,34 @@ export function CreateTeamStep({
       }}
     >
       <StepIntro
-        title="Name your first team."
+        title={teams.length === 0 ? 'Name your first team.' : 'Name a team.'}
         description="A team owns the repositories UIGraph maps. You can add more teams and members later from settings."
       />
 
-      <div className="mt-10">
+      {teams.length > 0 && (
+        <div className="border-stock mt-8 rounded-xl border">
+          <p className="border-stock text-paragraph border-b px-4 py-2.5 text-xs">
+            Teams in this organization
+          </p>
+          <ul className="divide-stock divide-y">
+            {teams.map((team) => (
+              <li
+                key={team.teamId}
+                className="flex items-center justify-between gap-4 px-4 py-2.5"
+              >
+                <span className="truncate text-sm">{team.teamName}</span>
+                <span className="text-paragraph shrink-0 text-xs">
+                  {team.memberCount === 1
+                    ? '1 member'
+                    : `${team.memberCount} members`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-8">
         <label htmlFor="onboarding-team-name" className="text-sm font-medium">
           Team name
         </label>

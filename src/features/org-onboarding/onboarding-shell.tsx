@@ -6,7 +6,6 @@ import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { type ReactNode } from 'react'
 
 const STEP_LABELS = [
-  'Create team',
   'Choose runner',
   'Connect GitHub',
   'Select repository',
@@ -44,7 +43,7 @@ export function OnboardingShell({
   onBack,
   primary,
 }: {
-  stepIndex: number
+  stepIndex?: number
   teamName?: string | null
   aside?: ReactNode
   actionsAtBottom?: boolean
@@ -87,25 +86,29 @@ export function OnboardingShell({
     <div className="bg-shading-gray text-foreground flex min-h-screen flex-col">
       <header className="border-stock/60 flex items-center gap-4 border-b px-6 py-4 lg:px-10">
         <UiGraphLogo className="size-6 shrink-0" />
-        <div className="hidden items-center gap-1.5 sm:flex">
-          {STEP_LABELS.map((label, index) => (
-            <span
-              key={label}
-              className={cn(
-                'h-1 w-6 rounded-full transition-colors',
-                index === stepIndex && 'bg-primary',
-                index < stepIndex && 'bg-primary/40',
-                index > stepIndex && 'bg-stock'
-              )}
-            />
-          ))}
-        </div>
-        <span className="text-paragraph text-sm">
-          <span className="font-mono text-[0.6875rem]">
-            {String(stepIndex + 1).padStart(2, '0')}
-          </span>{' '}
-          {STEP_LABELS[stepIndex]}
-        </span>
+        {stepIndex !== undefined && (
+          <>
+            <div className="hidden items-center gap-1.5 sm:flex">
+              {STEP_LABELS.map((label, index) => (
+                <span
+                  key={label}
+                  className={cn(
+                    'h-1 w-6 rounded-full transition-colors',
+                    index === stepIndex && 'bg-primary',
+                    index < stepIndex && 'bg-primary/40',
+                    index > stepIndex && 'bg-stock'
+                  )}
+                />
+              ))}
+            </div>
+            <span className="text-paragraph text-sm">
+              <span className="font-mono text-[0.6875rem]">
+                {String(stepIndex + 1).padStart(2, '0')}
+              </span>{' '}
+              {STEP_LABELS[stepIndex]}
+            </span>
+          </>
+        )}
         <div className="ml-auto flex items-center gap-4">
           {teamName && (
             <span className="border-stock text-paragraph hidden max-w-40 truncate rounded-md border px-2 py-1 font-mono text-[0.6875rem] lg:block">

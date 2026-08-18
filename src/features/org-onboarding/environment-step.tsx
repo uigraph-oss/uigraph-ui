@@ -106,7 +106,7 @@ export function EnvironmentStep({
 
   return (
     <OnboardingShell
-      stepIndex={4}
+      stepIndex={3}
       teamName={teamName}
       onBack={onBack}
       primary={{

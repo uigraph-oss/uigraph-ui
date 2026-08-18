@@ -95,7 +95,7 @@ export function RunStep({
 
   if (completed) {
     return (
-      <OnboardingShell stepIndex={5} teamName={teamName}>
+      <OnboardingShell stepIndex={4} teamName={teamName}>
         <div className="flex min-h-[20rem] flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
             <span className="font-mono">{value?.githubRepo}</span> is on the
@@ -114,7 +114,7 @@ export function RunStep({
 
   return (
     <OnboardingShell
-      stepIndex={5}
+      stepIndex={4}
       teamName={teamName}
       primary={
         failed

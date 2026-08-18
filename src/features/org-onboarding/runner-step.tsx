@@ -28,7 +28,7 @@ export function RunnerStep({
 
   return (
     <OnboardingShell
-      stepIndex={1}
+      stepIndex={0}
       teamName={teamName}
       onBack={onBack}
       primary={{

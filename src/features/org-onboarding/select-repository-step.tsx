@@ -56,7 +56,7 @@ export function SelectRepositoryStep({
 
   return (
     <OnboardingShell
-      stepIndex={3}
+      stepIndex={2}
       teamName={teamName}
       actionsAtBottom
       onBack={onBack}

@@ -66,7 +66,7 @@ export function ConnectGitHubStep({
 
   return (
     <OnboardingShell
-      stepIndex={2}
+      stepIndex={1}
       teamName={teamName}
       onBack={onBack}
       primary={{
