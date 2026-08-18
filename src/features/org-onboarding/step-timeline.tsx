@@ -53,7 +53,7 @@ function StepDuration({ step }: { step: GT.RepositoryImportStep }) {
   const elapsed = useElapsed(step.startedAt, step.completedAt)
   if (!elapsed) return null
   return (
-    <span className="text-paragraph shrink-0 text-xs tabular-nums">
+    <span className="text-paragraph shrink-0 font-mono text-[0.6875rem] tabular-nums">
       {elapsed}
     </span>
   )
@@ -81,21 +81,20 @@ function StepIcon({ step }: { step: GT.RepositoryImportStep }) {
 export function StepTimeline({ steps }: { steps: GT.RepositoryImportStep[] }) {
   if (steps.length === 0) {
     return (
-      <div className="text-paragraph border-stock flex items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-sm">
-        <Loader2 className="size-4 animate-spin" /> Waiting for GitHub Actions
-        to report the first step
+      <div className="text-paragraph border-stock flex items-center justify-center gap-2 rounded-2xl border border-dashed p-8 font-mono text-[0.6875rem] tracking-[0.18em] uppercase">
+        <Loader2 className="size-4 animate-spin" /> Waiting for the first step
       </div>
     )
   }
 
   return (
-    <ol className="border-stock divide-stock divide-y overflow-hidden rounded-xl border">
+    <ol className="border-stock bg-shading divide-stock divide-y overflow-hidden rounded-2xl border">
       {steps.map((step, index) => (
         <li
           key={`${step.name}-${step.number}-${index}`}
           className={cn(
-            'flex items-center gap-3 px-4 py-2.5',
-            step.status.toLowerCase() === 'queued' && 'opacity-50'
+            'flex items-center gap-3 px-5 py-3',
+            step.status.toLowerCase() === 'queued' && 'opacity-40'
           )}
         >
           <StepIcon step={step} />

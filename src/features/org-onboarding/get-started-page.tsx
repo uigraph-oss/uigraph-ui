@@ -1,43 +1,46 @@
 'use client'
 
-import { UiGraphLogo } from '@/components/logo'
-import { Button } from '@/components/ui/button'
+import { OnboardingStep } from '@/api/.gql/graphql'
 import { TeamContextProvider } from '@/features/dashboard-settings/context/team-context'
-import {
-  GITHUB_APP,
-  LATEST_REPOSITORY_IMPORT,
-} from '@/features/github-import/api'
-import { ConnectGitHubStep } from '@/features/github-import/connect-github-step'
-import { ImportProgress } from '@/features/github-import/import-progress'
-import {
-  SelectRepositoryStep,
-  type SelectedRepository,
-} from '@/features/github-import/select-repository-step'
-import { SyncOptionStep } from '@/features/github-import/sync-option-step'
+import { START_REPOSITORY_IMPORT } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
-import { cn } from '@/lib/utils'
 import {
   refreshOrganizations,
   useAuthStore,
   useCurrentOrganization,
 } from '@/store/auth-store'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Loader2 } from 'lucide-react'
-import { useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { COMPLETE_ONBOARDING } from './api'
-import { TeamsStep } from './teams-step'
-import { WelcomeStep } from './welcome-step'
+import { ConnectGitHubStep } from './connect-github-step'
+import { CreateTeamStep } from './create-team-step'
+import { EnvironmentStep } from './environment-step'
+import { RunStep } from './run-step'
+import { RunnerStep } from './runner-step'
+import { SelectRepositoryStep } from './select-repository-step'
+import {
+  useOnboardingProgress,
+  type OnboardingProgress,
+} from './use-onboarding-progress'
 
-const STEPS = [
-  'welcome',
-  'teams',
-  'github',
-  'repository',
-  'sync',
-  'progress',
-] as const
-type Step = (typeof STEPS)[number]
+function resolveStep(progress: OnboardingProgress | null) {
+  if (!progress) return OnboardingStep.Team
+  if (progress.step === OnboardingStep.Team) return OnboardingStep.Team
+  if (!progress.teamId) return OnboardingStep.Team
+  if (progress.step === OnboardingStep.Runner) return OnboardingStep.Runner
+  if (progress.step === OnboardingStep.Github) return OnboardingStep.Github
+  if (!progress.repoOwner || !progress.repoName)
+    return OnboardingStep.Repository
+  if (progress.step === OnboardingStep.Repository) {
+    return OnboardingStep.Repository
+  }
+  if (progress.step === OnboardingStep.Run && progress.importId) {
+    return OnboardingStep.Run
+  }
+  return OnboardingStep.Environment
+}
 
 export function GetStartedPage() {
   const organization = useCurrentOrganization()
@@ -47,188 +50,152 @@ export function GetStartedPage() {
   if (!isAdmin) return <Navigate to="/services" replace />
 
   return (
-    <main className="bg-shading-gray flex min-h-screen items-center justify-center overflow-y-auto px-6 py-10">
-      <div className="flex w-full max-w-lg flex-col">
-        <TeamContextProvider>
-          <GetStartedWizard orgID={organization.id} />
-        </TeamContextProvider>
-      </div>
-    </main>
+    <TeamContextProvider>
+      <OnboardingFlow orgID={organization.id} />
+    </TeamContextProvider>
   )
 }
 
-function GetStartedWizard({ orgID }: { orgID: string }) {
+function OnboardingFlow({ orgID }: { orgID: string }) {
   const navigate = useNavigate()
   const githubEnabled = useAuthStore((state) => state.features.github)
-  const [step, setStep] = useState<Step | null>(null)
-  const [team, setTeam] = useState<{ id: string; name: string } | null>(null)
-  const [repository, setRepository] = useState<SelectedRepository | null>(null)
-  const [startedImportID, setStartedImportID] = useState<string | null>(null)
-  const [finishError, setFinishError] = useState('')
-  const finishedRef = useRef(false)
-
-  const [completeOnboarding, { loading: isSkipping }] =
-    useMutation(COMPLETE_ONBOARDING)
-  const installationQuery = useQuery(GITHUB_APP, {
-    variables: { orgID },
-    fetchPolicy: 'network-only',
-  })
-  const latestQuery = useQuery(LATEST_REPOSITORY_IMPORT, {
-    variables: { orgID },
-    fetchPolicy: 'network-only',
-  })
-
-  const latest = latestQuery.data?.latestRepositoryImport ?? null
-  const importID = startedImportID ?? latest?.id ?? null
-  const currentStep = step ?? (importID ? 'progress' : 'welcome')
-  const isResuming =
-    (latestQuery.loading && !latestQuery.data) ||
-    (installationQuery.loading && !installationQuery.data)
+  const { progress, isLoading, error, save } = useOnboardingProgress(orgID)
+  const [completeOnboarding] = useMutation(COMPLETE_ONBOARDING)
+  const [startImport] = useMutation(START_REPOSITORY_IMPORT)
 
   async function finish() {
-    if (finishedRef.current) return
-    finishedRef.current = true
-    setFinishError('')
+    await completeOnboarding({ variables: { orgId: orgID } })
+    await refreshOrganizations()
+  }
+
+  async function guard(action: () => Promise<void>) {
     try {
-      await completeOnboarding({ variables: { orgId: orgID } })
-      await refreshOrganizations()
+      await action()
     } catch (caught) {
-      finishedRef.current = false
-      setFinishError(
-        caught instanceof Error ? caught.message : 'Could not finish onboarding'
+      toast.error(
+        caught instanceof Error ? caught.message : 'Could not save your setup'
       )
     }
   }
 
-  async function handleSkip() {
-    await finish()
-    void navigate('/services')
+  if (isLoading) {
+    return (
+      <div className="bg-shading-gray text-paragraph flex min-h-screen items-center justify-center gap-2 font-mono text-[0.6875rem] tracking-[0.18em] uppercase">
+        <Loader2 className="size-4 animate-spin" /> Loading your setup
+      </div>
+    )
   }
 
-  const canSkip = currentStep !== 'welcome' && currentStep !== 'teams'
-
-  return (
-    <>
-      <div className="relative flex shrink-0 flex-col items-center gap-4 pb-8">
-        <UiGraphLogo className="size-10" />
-        <StepDots step={currentStep} githubEnabled={githubEnabled} />
-        {canSkip && (
-          <Button
-            preset="ghost"
-            disabled={isSkipping}
-            onClick={handleSkip}
-            className="text-paragraph absolute top-0 right-0 h-8 rounded-lg px-2.5 text-xs"
-          >
-            {isSkipping && <Loader2 className="size-3.5 animate-spin" />}
-            {currentStep === 'progress'
-              ? 'Continue to UIGraph'
-              : 'Skip for now'}
-          </Button>
-        )}
+  if (error) {
+    return (
+      <div className="bg-shading-gray text-destructive flex min-h-screen items-center justify-center px-6 text-center text-sm">
+        {error.message}
       </div>
+    )
+  }
 
-      {finishError && (
-        <p className="text-destructive shrink-0 pb-3 text-center text-xs">
-          {finishError}
-        </p>
-      )}
+  const step = githubEnabled ? resolveStep(progress) : OnboardingStep.Team
+  const teamName = progress?.teamName ?? null
 
-      {isResuming && (
-        <div className="text-paragraph flex flex-1 items-center justify-center gap-2 py-16 text-sm">
-          <Loader2 className="size-4 animate-spin" /> Loading your setup
-        </div>
-      )}
-
-      {!isResuming && currentStep === 'welcome' && (
-        <WelcomeStep onNext={() => setStep('teams')} />
-      )}
-
-      {!isResuming && currentStep === 'teams' && (
-        <TeamsStep
-          selectedTeamID={team?.id ?? null}
-          onBack={() => setStep('welcome')}
-          onSelect={setTeam}
-          onNext={() => {
+  if (step === OnboardingStep.Team) {
+    return (
+      <CreateTeamStep
+        onCreated={(team) =>
+          guard(async () => {
             if (!githubEnabled) {
-              void handleSkip()
+              await finish()
+              void navigate('/services')
               return
             }
-            setStep('github')
-          }}
-        />
-      )}
+            await save({ step: OnboardingStep.Runner, teamId: team.id })
+          })
+        }
+      />
+    )
+  }
 
-      {!isResuming && currentStep === 'github' && (
-        <ConnectGitHubStep
-          orgID={orgID}
-          onBack={() => setStep('teams')}
-          onNext={() => setStep('repository')}
-        />
-      )}
+  if (step === OnboardingStep.Runner) {
+    return (
+      <RunnerStep
+        teamName={teamName}
+        runner={progress?.runner ?? null}
+        onBack={() => void guard(() => save({ step: OnboardingStep.Team }))}
+        onNext={(runner) =>
+          guard(() => save({ step: OnboardingStep.Github, runner }))
+        }
+      />
+    )
+  }
 
-      {!isResuming && currentStep === 'repository' && team && (
-        <SelectRepositoryStep
-          orgID={orgID}
-          teamID={team.id}
-          teamName={team.name}
-          selected={repository}
-          onBack={() => setStep('github')}
-          onSelect={setRepository}
-          onNext={() => setStep('sync')}
-        />
-      )}
+  if (step === OnboardingStep.Github) {
+    return (
+      <ConnectGitHubStep
+        orgID={orgID}
+        teamName={teamName}
+        onBack={() => void guard(() => save({ step: OnboardingStep.Runner }))}
+        onNext={() => guard(() => save({ step: OnboardingStep.Repository }))}
+      />
+    )
+  }
 
-      {!isResuming && currentStep === 'sync' && team && repository && (
-        <SyncOptionStep
-          orgID={orgID}
-          teamID={team.id}
-          repository={repository}
-          onBack={() => setStep('repository')}
-          onStarted={(id) => {
-            setStartedImportID(id)
-            setStep('progress')
-          }}
-        />
-      )}
+  if (step === OnboardingStep.Repository) {
+    return (
+      <SelectRepositoryStep
+        orgID={orgID}
+        teamName={teamName}
+        repoOwner={progress?.repoOwner ?? null}
+        repoName={progress?.repoName ?? null}
+        onBack={() => void guard(() => save({ step: OnboardingStep.Github }))}
+        onNext={(repository) =>
+          guard(() =>
+            save({
+              step: OnboardingStep.Environment,
+              repoOwner: repository.owner,
+              repoName: repository.name,
+            })
+          )
+        }
+      />
+    )
+  }
 
-      {!isResuming && currentStep === 'progress' && importID && (
-        <ImportProgress
-          orgID={orgID}
-          importID={importID}
-          onCompleted={finish}
-        />
-      )}
-    </>
-  )
-}
+  if (step === OnboardingStep.Environment && progress) {
+    return (
+      <EnvironmentStep
+        orgID={orgID}
+        teamName={teamName}
+        owner={progress.repoOwner ?? ''}
+        repo={progress.repoName ?? ''}
+        onBack={() =>
+          void guard(() => save({ step: OnboardingStep.Repository }))
+        }
+        onNext={async () => {
+          const result = await startImport({
+            variables: {
+              orgID,
+              teamID: progress.teamId ?? '',
+              owner: progress.repoOwner ?? '',
+              repo: progress.repoName ?? '',
+            },
+          })
+          const importId = result.data?.startRepositoryImport.id
+          if (!importId) throw new Error('The run started without an ID')
+          await save({ step: OnboardingStep.Run, importId })
+        }}
+      />
+    )
+  }
 
-function StepDots({
-  step,
-  githubEnabled,
-}: {
-  step: Step
-  githubEnabled: boolean
-}) {
-  const visible = githubEnabled ? STEPS : STEPS.slice(0, 2)
-  const current = visible.indexOf(step)
-  if (current === -1) return null
+  if (step === OnboardingStep.Run && progress?.importId) {
+    return (
+      <RunStep
+        orgID={orgID}
+        teamName={teamName}
+        importID={progress.importId}
+        onFinish={() => guard(finish)}
+      />
+    )
+  }
 
-  return (
-    <div
-      className="flex items-center gap-1.5"
-      aria-label={`Step ${current + 1} of ${visible.length}`}
-    >
-      {visible.map((item, index) => (
-        <span
-          key={item}
-          className={cn(
-            'h-1.5 rounded-full transition-all duration-300',
-            index === current && 'bg-primary w-6',
-            index < current && 'bg-primary/40 w-1.5',
-            index > current && 'bg-stock w-1.5'
-          )}
-        />
-      ))}
-    </div>
-  )
+  return <Navigate to="/services" replace />
 }
