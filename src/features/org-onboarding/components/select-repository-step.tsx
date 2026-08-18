@@ -82,7 +82,7 @@ export function SelectRepositoryStep({
           />
         </div>
 
-        <div className="border-stock bg-shading mt-3 flex h-[22rem] flex-col overflow-hidden rounded-xl border">
+        <div className="border-stock bg-shading/40 mt-3 flex h-[22rem] flex-col overflow-hidden rounded-xl border">
           {repositoriesQuery.loading && !repositoriesQuery.data && (
             <div className="text-paragraph flex flex-1 items-center justify-center gap-2 text-sm">
               <Loader2 className="size-4 animate-spin" /> Loading repositories

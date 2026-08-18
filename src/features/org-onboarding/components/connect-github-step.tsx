@@ -36,7 +36,7 @@ export function ConnectGitHubStep({
       headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-lg text-center">
-        <div className="border-stock bg-shading rounded-2xl border px-8 py-10">
+        <div className="border-stock bg-shading/40 rounded-2xl border px-8 py-10">
           {github.isLoading && (
             <div className="text-paragraph flex h-64 items-center justify-center gap-2.5 text-sm">
               <Loader2 className="size-4 animate-spin" />
@@ -46,7 +46,7 @@ export function ConnectGitHubStep({
 
           {!github.isLoading && (
             <>
-              <span className="border-stock bg-shading-gray text-foreground mx-auto flex size-14 items-center justify-center rounded-2xl border">
+              <span className="border-stock bg-shading text-foreground mx-auto flex size-14 items-center justify-center rounded-2xl border">
                 <LuGithub className="size-7" />
               </span>
 
@@ -87,7 +87,7 @@ export function ConnectGitHubStep({
               )}
 
               {installation && (
-                <div className="border-stock bg-shading-gray mt-8 flex items-center gap-3 rounded-xl border px-4 py-3 text-left">
+                <div className="border-stock bg-shading mt-8 flex items-center gap-3 rounded-xl border px-4 py-3 text-left">
                   <span className="border-success/40 bg-success/10 text-success flex size-8 shrink-0 items-center justify-center rounded-full border">
                     <Check className="size-4" />
                   </span>
