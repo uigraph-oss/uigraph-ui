@@ -1,15 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { useGitHubConnection } from '@/features/github-import/use-github-connection'
-import { cn } from '@/lib/utils'
 import { Check, ExternalLink, Loader2 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { LuGithub } from 'react-icons/lu'
 import { OnboardingLayout } from './onboarding-layout'
 import { OnboardingTeamChip } from './onboarding-team-chip'
 import {
   OnboardingActions,
   OnboardingStepTicks,
   OnboardingStepTitle,
-  StepIntro,
 } from './onboarding-ui'
 
 function readableAccountType(accountType: string) {
@@ -17,44 +15,6 @@ function readableAccountType(accountType: string) {
   if (normalized === 'ORGANIZATION') return 'Organization'
   if (normalized === 'USER') return 'Personal account'
   return accountType
-}
-
-function installationSettingsURL(accountLogin: string, accountType: string) {
-  if (accountType.toUpperCase() === 'ORGANIZATION') {
-    return `https://github.com/organizations/${accountLogin}/settings/installations`
-  }
-  return 'https://github.com/settings/installations'
-}
-
-function ChecklistRow({
-  index,
-  title,
-  done,
-  children,
-}: {
-  index: number
-  title: string
-  done: boolean
-  children: ReactNode
-}) {
-  return (
-    <li className="flex gap-3 p-4">
-      <span
-        className={cn(
-          'flex size-5 shrink-0 items-center justify-center rounded-full border font-mono text-[0.625rem] transition-colors',
-          done && 'border-success/40 bg-success/10 text-success',
-          !done && 'border-stock text-paragraph'
-        )}
-      >
-        {done && <Check className="size-3" />}
-        {!done && index}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{title}</p>
-        <div className="mt-2">{children}</div>
-      </div>
-    </li>
-  )
 }
 
 export function ConnectGitHubStep({
@@ -75,31 +35,38 @@ export function ConnectGitHubStep({
       headerCenterContent={<OnboardingStepTicks current={1} />}
       headerRightContent={<OnboardingTeamChip />}
     >
-      <div className="mx-auto w-full max-w-2xl">
-        <StepIntro
-          title="Connect the account that owns your code."
-          description="UIGraph reads through a GitHub App you install and can remove at any time. It never asks for your password."
-        />
-
-        <div className="border-stock bg-shading mt-8 rounded-xl border">
+      <div className="mx-auto w-full max-w-lg text-center">
+        <div className="border-stock bg-shading rounded-2xl border px-8 py-10">
           {github.isLoading && (
-            <div className="text-paragraph flex items-center gap-2 p-5 text-sm">
-              <Loader2 className="size-4 animate-spin" /> Checking your
-              installation
+            <div className="text-paragraph flex h-64 items-center justify-center gap-2.5 text-sm">
+              <Loader2 className="size-4 animate-spin" />
+              Checking your installation
             </div>
           )}
 
           {!github.isLoading && (
-            <ol className="divide-stock divide-y">
-              <ChecklistRow
-                index={1}
-                title="Install the UIGraph app"
-                done={github.connected}
-              >
-                {!github.connected && (
+            <>
+              <span className="border-stock bg-shading-gray text-foreground mx-auto flex size-14 items-center justify-center rounded-2xl border">
+                <LuGithub className="size-7" />
+              </span>
+
+              <h1 className="mt-6 text-2xl font-medium tracking-tight">
+                {!installation && 'Connect the account that owns your code.'}
+                {installation && 'GitHub is connected.'}
+              </h1>
+
+              <p className="text-paragraph mx-auto mt-3 max-w-sm text-sm leading-relaxed">
+                {!installation &&
+                  'UIGraph reads through a GitHub App you install and can remove at any time. It never asks for your password.'}
+                {installation &&
+                  'UIGraph reads this account through the app you installed. Remove it on GitHub whenever you want to revoke access.'}
+              </p>
+
+              {!installation && (
+                <>
                   <Button
                     preset="primary"
-                    className="h-10 rounded-[0.625rem] text-sm"
+                    className="mt-8 w-full rounded-[0.625rem]"
                     disabled={github.isStarting || github.isConnecting}
                     onClick={github.connect}
                   >
@@ -112,83 +79,51 @@ export function ConnectGitHubStep({
                       <ExternalLink className="size-4" />
                     )}
                   </Button>
-                )}
-                {github.connected && (
-                  <p className="text-paragraph text-sm">Installed.</p>
-                )}
-              </ChecklistRow>
-
-              <ChecklistRow
-                index={2}
-                title="Account"
-                done={installation !== null}
-              >
-                {!installation && (
-                  <p className="text-paragraph text-sm">
-                    The account you install on shows up here.
+                  <p className="text-paragraph mt-3 text-xs">
+                    Opens github.com in a new tab and returns here once the
+                    install finishes.
                   </p>
-                )}
-                {installation && (
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="min-w-0 truncate font-mono text-sm">
+                </>
+              )}
+
+              {installation && (
+                <div className="border-stock bg-shading-gray mt-8 flex items-center gap-3 rounded-xl border px-4 py-3 text-left">
+                  <span className="border-success/40 bg-success/10 text-success flex size-8 shrink-0 items-center justify-center rounded-full border">
+                    <Check className="size-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-mono text-sm">
                       {installation.accountLogin}
                     </span>
-                    <span className="text-paragraph text-xs">
+                    <span className="text-paragraph mt-0.5 block text-xs">
                       {readableAccountType(installation.accountType)}
                     </span>
-                    <Button
-                      preset="ghost"
-                      className="text-paragraph ml-auto h-8 shrink-0 rounded-[0.625rem] px-2.5 text-xs has-[>svg]:px-2.5"
-                      disabled={github.isDisconnecting}
-                      onClick={github.disconnect}
-                    >
-                      {github.isDisconnecting && (
-                        <Loader2 className="size-3.5 animate-spin" />
-                      )}
-                      Disconnect
-                    </Button>
-                  </div>
-                )}
-              </ChecklistRow>
-
-              <ChecklistRow
-                index={3}
-                title="Repository access"
-                done={installation !== null}
-              >
-                {!installation && (
-                  <p className="text-paragraph text-sm">
-                    Choose which repositories UIGraph can read while you
-                    install.
-                  </p>
-                )}
-                {installation && (
-                  <a
-                    href={installationSettingsURL(
-                      installation.accountLogin,
-                      installation.accountType
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-primary inline-flex items-center gap-1.5 text-sm hover:underline"
+                  </span>
+                  <Button
+                    preset="ghost"
+                    className="text-paragraph h-9 shrink-0 rounded-[0.625rem] px-3 text-xs has-[>svg]:px-3"
+                    disabled={github.isDisconnecting}
+                    onClick={github.disconnect}
                   >
-                    Change repository access on GitHub
-                    <ExternalLink className="size-3.5" />
-                  </a>
-                )}
-              </ChecklistRow>
-            </ol>
+                    {github.isDisconnecting && (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    )}
+                    Disconnect
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
-        <div className="mt-10">
+        <div className="mt-6">
           <OnboardingActions
             onBack={onBack}
-            primary={{
-              label: 'Continue',
-              onClick: () => void onNext(),
-              disabled: !github.connected,
-            }}
+            primary={
+              installation
+                ? { label: 'Continue', onClick: () => void onNext() }
+                : undefined
+            }
           />
         </div>
       </div>
