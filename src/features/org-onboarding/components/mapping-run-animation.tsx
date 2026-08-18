@@ -100,7 +100,7 @@ export function MappingRunAnimation() {
       <div className="border-stock flex items-center justify-between gap-3 border-b px-4 py-2.5">
         <span className="flex items-center gap-2 text-xs font-medium">
           <LuWorkflow className="text-primary size-3.5" />
-          What a mapping run does
+          What the run does
         </span>
         <span className="text-paragraph text-[0.6875rem]">About 2 minutes</span>
       </div>

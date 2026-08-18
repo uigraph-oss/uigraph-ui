@@ -67,7 +67,7 @@ export function SelectRepositoryStep({
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro
-          title="Pick the repository to map."
+          title="Pick the repository to import."
           description="Start with one. UIGraph documents it end to end, then you can bring in the rest."
         />
 

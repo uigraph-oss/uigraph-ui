@@ -54,8 +54,8 @@ export function CreateTeamStep({
           {teams.length === 0 ? 'Name your first team' : 'Name a new team'}
         </h1>
         <p className="text-paragraph mt-3 text-sm leading-relaxed">
-          A team owns the repositories UIGraph maps. You can add more teams and
-          members later from settings.
+          A team owns the repositories UIGraph imports. You can add more teams
+          and members later from settings.
         </p>
 
         <div className="mt-8">

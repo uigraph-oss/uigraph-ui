@@ -103,7 +103,7 @@ export function RunStep({
             graph.
           </h1>
           <p className="text-paragraph mt-3 text-sm">
-            Mapped in {elapsed ?? '—'}.
+            Imported in {elapsed ?? '—'}.
           </p>
           <p className="text-paragraph mt-8 flex items-center gap-2 text-sm">
             <Loader2 className="size-4 animate-spin" /> Opening the service
@@ -125,7 +125,7 @@ export function RunStep({
             <StepIntro
               title={
                 <>
-                  {failed ? 'Could not map ' : 'Mapping '}
+                  {failed ? 'Could not import ' : 'Importing '}
                   <span className="font-mono">
                     {value?.githubRepo ?? 'your repository'}
                   </span>

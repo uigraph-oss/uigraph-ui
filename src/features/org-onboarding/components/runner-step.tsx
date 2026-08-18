@@ -38,7 +38,7 @@ export function RunnerStep({
       <div className="mx-auto grid w-full max-w-6xl gap-x-20 gap-y-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
         <div className="min-w-0">
           <StepIntro
-            title="Where should the mapping run?"
+            title="Where should UIGraph run?"
             description="UIGraph reads your repository, builds the graph, and pushes the artifacts back on a branch of its own."
           />
 
