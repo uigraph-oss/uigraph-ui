@@ -9,14 +9,15 @@ import { OnboardingLayout } from './onboarding-layout'
 
 export function CreateTeamStep({
   onContinue,
+  onSkip,
 }: {
   onContinue: (team: { id: string; name: string }) => Promise<void>
+  onSkip: () => void
 }) {
   const { teams, isTeamsLoading, createTeam } = useTeamContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const [name, setName] = useState('')
   const [isCreating, setIsCreating] = useState(false)
-  const [isSkipping, setIsSkipping] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => inputRef.current?.focus(), [])
@@ -39,17 +40,8 @@ export function CreateTeamStep({
     }
   }
 
-  async function handleSkip() {
-    const team = teams[0]
-    if (!team || isSkipping) return
-    setIsSkipping(true)
-    setError('')
-    try {
-      await onContinue({ id: team.teamId, name: team.teamName })
-    } catch (caught) {
-      setIsSkipping(false)
-      setError(caught instanceof Error ? caught.message : 'Could not continue')
-    }
+  function handleSkip() {
+    onSkip()
   }
 
   return (
@@ -87,7 +79,7 @@ export function CreateTeamStep({
             <Button
               preset="primary"
               className="h-[2.7938125rem] shrink-0 rounded-[0.80315625rem]"
-              disabled={name.trim() === '' || isCreating || isSkipping}
+              disabled={name.trim() === '' || isCreating}
               onClick={handleCreate}
             >
               {isCreating ? (
@@ -128,10 +120,9 @@ export function CreateTeamStep({
               <Button
                 preset="ghost"
                 className="text-paragraph h-8 rounded-[0.625rem] px-3 text-xs has-[>svg]:px-3"
-                disabled={isCreating || isSkipping}
+                disabled={isCreating}
                 onClick={handleSkip}
               >
-                {isSkipping && <Loader2 className="animate-spin" />}
                 Skip for now
               </Button>
             </div>

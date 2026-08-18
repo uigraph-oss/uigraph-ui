@@ -76,6 +76,7 @@ function TeamFlow({ orgID }: { orgID: string }) {
         setUiTeamID(team.id)
         void navigate(`/get-started/import?team=${team.id}`)
       }}
+      onSkip={() => void navigate('/get-started/import')}
     />
   )
 }
