@@ -1,6 +1,7 @@
 import { UiGraphLogo } from '@/components/logo'
 import { UserDropdownMenu } from '@/features/dashboard/dashboard-header'
 import { type ReactNode } from 'react'
+import { OnboardingSkip } from './onboarding-skip'
 
 export function OnboardingLayout({
   headerLeftContent,
@@ -31,6 +32,7 @@ export function OnboardingLayout({
 
         <div className="ml-auto flex items-center gap-4">
           {headerRightContent}
+          <OnboardingSkip />
           <UserDropdownMenu />
         </div>
       </header>

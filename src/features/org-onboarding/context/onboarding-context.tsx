@@ -54,11 +54,21 @@ function resolveStep(progress: OnboardingProgress) {
   return OnboardingStep.Environment
 }
 
+function progressKey(orgID: string) {
+  return `uigraph.onboarding.${orgID}`
+}
+
+export function clearOnboardingProgress(orgID: string) {
+  window.localStorage.removeItem(progressKey(orgID))
+}
+
 export const [OnboardingProvider, useOnboarding] = createContext(
   (props: { orgID: string }) => {
     const [searchParams] = useSearchParams()
-    const storageKey = `uigraph.onboarding.${props.orgID}`
-    const [progress, setProgress] = useLocalStorage(storageKey, EMPTY_PROGRESS)
+    const [progress, setProgress] = useLocalStorage(
+      progressKey(props.orgID),
+      EMPTY_PROGRESS
+    )
 
     return {
       orgID: props.orgID,
@@ -71,7 +81,7 @@ export const [OnboardingProvider, useOnboarding] = createContext(
       },
 
       clear() {
-        window.localStorage.removeItem(storageKey)
+        clearOnboardingProgress(props.orgID)
         setProgress(EMPTY_PROGRESS)
       },
     }
