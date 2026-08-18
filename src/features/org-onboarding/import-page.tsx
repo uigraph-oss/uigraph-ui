@@ -10,7 +10,7 @@ import {
 } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { Loader2 } from 'lucide-react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { COMPLETE_ONBOARDING } from './api'
 import { ConnectGitHubStep } from './connect-github-step'
@@ -19,8 +19,8 @@ import { RunStep } from './run-step'
 import { RunnerStep } from './runner-step'
 import { SelectRepositoryStep } from './select-repository-step'
 import { resolveStep, useOnboardingProgress } from './use-onboarding-progress'
-
-export function ImportPage() {
+   
+export function ImportPage() {  
   const organization = useCurrentOrganization()
   const { isAdmin } = usePermissions()
 
@@ -32,6 +32,7 @@ export function ImportPage() {
 
 function ImportFlow({ orgID }: { orgID: string }) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const githubEnabled = useAuthStore((state) => state.features.github)
   const { progress, isLoading, error, save } = useOnboardingProgress(orgID)
   const [completeOnboarding] = useMutation(COMPLETE_ONBOARDING)
@@ -72,9 +73,16 @@ function ImportFlow({ orgID }: { orgID: string }) {
 
   const step = resolveStep(progress)
   const teamName = progress?.teamName ?? null
+  const teamID = searchParams.get('team') ?? ''
 
   if (step === OnboardingStep.Team) {
     return <Navigate to="/get-started" replace />
+  }
+
+  if (teamID === '') {
+    return (
+      <Navigate to={`/get-started/import?team=${progress?.teamId}`} replace />
+    )
   }
 
   if (step === OnboardingStep.Runner) {
@@ -141,7 +149,7 @@ function ImportFlow({ orgID }: { orgID: string }) {
           const result = await startImport({
             variables: {
               orgID,
-              teamID: progress.teamId ?? '',
+              teamID,
               owner: progress.repoOwner ?? '',
               repo: progress.repoName ?? '',
             },
