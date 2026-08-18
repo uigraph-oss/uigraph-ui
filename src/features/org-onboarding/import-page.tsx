@@ -1,6 +1,15 @@
 'use client'
 
 import { OnboardingStep } from '@/api/.gql/graphql'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { START_REPOSITORY_IMPORT } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
 import {
@@ -18,11 +27,7 @@ import { EnvironmentStep } from './environment-step'
 import { RunStep } from './run-step'
 import { RunnerStep } from './runner-step'
 import { SelectRepositoryStep } from './select-repository-step'
-import {
-  getUiTeamID,
-  resolveStep,
-  useOnboardingProgress,
-} from './use-onboarding-progress'
+import { resolveStep, useOnboardingProgress } from './use-onboarding-progress'
 
 export function ImportPage() {
   const organization = useCurrentOrganization()
@@ -75,17 +80,11 @@ function ImportFlow({ orgID }: { orgID: string }) {
     )
   }
 
+  const teamID = searchParams.get('team') ?? ''
+  if (teamID === '') return <NoTeamDialog />
+
   const step = resolveStep(progress)
   const teamName = progress?.teamName ?? null
-  const teamID = searchParams.get('team') ?? getUiTeamID() ?? ''
-
-  if (step === OnboardingStep.Team) {
-    return <Navigate to="/get-started" replace />
-  }
-
-  if (teamID === '') {
-    return <Navigate to="/get-started" replace />
-  }
 
   if (step === OnboardingStep.Runner) {
     return (
@@ -176,4 +175,29 @@ function ImportFlow({ orgID }: { orgID: string }) {
   }
 
   return <Navigate to="/services" replace />
+}
+
+function NoTeamDialog() {
+  const navigate = useNavigate()
+
+  return (
+    <div className="bg-shading-gray min-h-screen">
+      <Dialog open>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>Pick a team first</DialogTitle>
+            <DialogDescription>
+              This run needs a team to belong to. Head back to create one or
+              choose an existing team, then continue.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button preset="primary" onClick={() => navigate('/get-started')}>
+              Choose a team
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
 }
