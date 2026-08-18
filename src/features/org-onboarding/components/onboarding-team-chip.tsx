@@ -15,28 +15,26 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { SETTINGS_TEAMS } from '@/features/dashboard-settings/api/teams'
-import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
 import { Loader2, Users } from 'lucide-react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useOnboarding } from '../context/onboarding-context'
 
 export function OnboardingTeamChip() {
-  const organization = useCurrentOrganization()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const teamID = searchParams.get('team') ?? ''
+  const { orgID, progress, save } = useOnboarding()
+  const teamID = progress.teamId ?? ''
 
-  const teamsQuery = useQuery(SETTINGS_TEAMS, {
-    variables: { orgId: organization?.id ?? '' },
-    skip: !organization,
-  })
+  const teamsQuery = useQuery(SETTINGS_TEAMS, { variables: { orgId: orgID } })
   const teams = teamsQuery.data?.teams ?? []
 
   function pick(id: string) {
-    void navigate(`/get-started/import?team=${id}`)
+    void save({ teamId: id })
   }
 
-  if (teamID === '') {
+  const isKnown = teams.some((team) => team.id === teamID)
+
+  if (teamID === '' || (!teamsQuery.loading && !isKnown)) {
     return (
       <Dialog open>
         <DialogOverlay className="bg-transparent backdrop-blur-sm" />

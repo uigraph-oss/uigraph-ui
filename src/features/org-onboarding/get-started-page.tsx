@@ -44,9 +44,7 @@ function TeamFlow() {
     progress.teamId &&
     progress.step !== OnboardingStep.Team
   ) {
-    return (
-      <Navigate to={`/get-started/import?team=${progress.teamId}`} replace />
-    )
+    return <Navigate to="/get-started/import" replace />
   }
 
   return (
@@ -59,7 +57,7 @@ function TeamFlow() {
           return
         }
         await save({ step: OnboardingStep.Runner, teamId: team.id })
-        void navigate(`/get-started/import?team=${team.id}`)
+        void navigate('/get-started/import')
       }}
       onSkip={() => void navigate('/get-started/import')}
     />

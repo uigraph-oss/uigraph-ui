@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useLocalStorage } from 'daily-code/react'
-import { useSearchParams } from 'react-router-dom'
 
 export const OnboardingStep = {
   Team: 'TEAM',
@@ -64,7 +63,6 @@ export function clearOnboardingProgress(orgID: string) {
 
 export const [OnboardingProvider, useOnboarding] = createContext(
   (props: { orgID: string }) => {
-    const [searchParams] = useSearchParams()
     const [progress, setProgress] = useLocalStorage(
       progressKey(props.orgID),
       EMPTY_PROGRESS
@@ -72,7 +70,6 @@ export const [OnboardingProvider, useOnboarding] = createContext(
 
     return {
       orgID: props.orgID,
-      teamID: searchParams.get('team') ?? '',
       progress,
       step: resolveStep(progress),
 

@@ -33,7 +33,7 @@ export function ImportPage() {
 function ImportFlow() {
   const navigate = useNavigate()
   const githubEnabled = useAuthStore((state) => state.features.github)
-  const { orgID, teamID, progress, step, save, clear } = useOnboarding()
+  const { orgID, progress, step, save, clear } = useOnboarding()
   const [startImport] = useMutation(START_REPOSITORY_IMPORT)
 
   async function guard(action: () => Promise<void>) {
@@ -104,13 +104,13 @@ function ImportFlow() {
           void guard(() => save({ step: OnboardingStep.Repository }))
         }
         onNext={async () => {
-          if (!teamID || !progress.repoOwner || !progress.repoName)
+          if (!progress.teamId || !progress.repoOwner || !progress.repoName)
             throw new Error('Some of your setup is missing. Go back a step.')
 
           const result = await startImport({
             variables: {
               orgID,
-              teamID,
+              teamID: progress.teamId,
               owner: progress.repoOwner,
               repo: progress.repoName,
             },
