@@ -17,16 +17,18 @@ export function OnboardingLayout({
 }) {
   return (
     <div className="bg-shading-gray text-foreground flex min-h-screen flex-col">
-      <header className="border-stock/60 flex h-16 shrink-0 items-center gap-4 border-b px-6 lg:px-10">
+      <header className="border-stock/60 grid h-16 shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b px-6 lg:px-10">
         <div className="flex min-w-0 items-center gap-6">
           <UiGraphLogo className="size-6 shrink-0" />
           {headerLeftContent}
         </div>
+
         {headerCenterContent && (
           <div className="flex min-w-0 flex-1 items-center justify-center">
             {headerCenterContent}
           </div>
         )}
+
         <div className="ml-auto flex items-center gap-4">
           {headerRightContent}
           <UserDropdownMenu />

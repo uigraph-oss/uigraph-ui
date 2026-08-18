@@ -16,7 +16,7 @@ import {
 import { SETTINGS_TEAMS } from '@/features/dashboard-settings/api/teams'
 import { useCurrentOrganization } from '@/store/auth-store'
 import { useQuery } from '@apollo/client'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Users } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 export function OnboardingTeamChip() {
@@ -86,6 +86,7 @@ export function OnboardingTeamChip() {
         size="sm"
         className="border-stock text-paragraph hidden h-8 max-w-44 rounded-md font-mono text-[0.6875rem] lg:flex"
       >
+        <Users className="size-3.5 shrink-0" />
         <SelectValue placeholder="Select team" />
       </SelectTrigger>
       <SelectContent>
