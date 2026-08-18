@@ -1,7 +1,7 @@
 import { OnboardingRunner } from '@/api/.gql/graphql'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { LuCloud, LuGithub } from 'react-icons/lu'
 import { MappingRunAnimation } from './mapping-run-animation'
@@ -14,12 +14,10 @@ import {
 
 export function RunnerStep({
   headerRight,
-  runner,
   onBack,
   onNext,
 }: {
   headerRight: ReactNode
-  runner: OnboardingRunner | null
   onBack: () => void
   onNext: (runner: OnboardingRunner) => Promise<void>
 }) {
@@ -49,30 +47,25 @@ export function RunnerStep({
             <button
               type="button"
               disabled={isSaving}
-              className="group border-stock bg-shading hover:border-primary/50 hover:bg-primary/[0.06] focus-visible:ring-primary/40 flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              className="group border-stock bg-shading hover:border-paragraph/30 hover:bg-stock/50 focus-visible:ring-primary/40 flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
               onClick={() => void handleChoose(OnboardingRunner.GithubActions)}
             >
-              <span className="border-stock bg-shading-gray group-hover:border-primary/40 group-hover:text-primary flex size-11 shrink-0 items-center justify-center rounded-lg border transition-colors">
+              <span className="border-stock/70 text-paragraph flex size-11 shrink-0 items-center justify-center rounded-lg border">
                 <LuGithub className="size-5" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                <span className="block text-sm font-medium">
                   GitHub Actions
-                  {runner === OnboardingRunner.GithubActions && (
-                    <span className="border-success/40 bg-success/10 text-success inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[0.625rem]">
-                      <Check className="size-2.5" /> Chosen
-                    </span>
-                  )}
                 </span>
                 <span className="text-paragraph mt-1 block text-sm">
                   Runs on your own runners, so your code never leaves GitHub.
                 </span>
               </span>
               {isSaving && (
-                <Loader2 className="text-primary size-4 shrink-0 animate-spin" />
+                <Loader2 className="text-paragraph size-4 shrink-0 animate-spin" />
               )}
               {!isSaving && (
-                <ArrowRight className="text-paragraph group-hover:text-primary size-4 shrink-0 transition-all group-hover:translate-x-0.5" />
+                <ArrowRight className="text-paragraph/50 group-hover:text-paragraph size-4 shrink-0 transition-colors" />
               )}
             </button>
 
