@@ -4,7 +4,12 @@ import { cn } from '@/lib/utils'
 import { Check, ExternalLink, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
+import {
+  OnboardingActions,
+  OnboardingStepTicks,
+  OnboardingStepTitle,
+  StepIntro,
+} from './onboarding-ui'
 
 function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
@@ -67,7 +72,8 @@ export function ConnectGitHubStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingSteps current={1} />}
+      headerLeftContent={<OnboardingStepTitle current={1} />}
+      headerCenterContent={<OnboardingStepTicks current={1} />}
       headerRightContent={headerRight}
     >
       <div className="mx-auto w-full max-w-2xl">

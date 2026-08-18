@@ -11,28 +11,28 @@ const STEPS = [
   'Run',
 ]
 
-export function OnboardingSteps({ current }: { current: number }) {
+export function OnboardingStepTitle({ current }: { current: number }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className="hidden items-center gap-1.5 sm:flex">
-        {STEPS.map((label, index) => (
-          <span
-            key={label}
-            className={cn(
-              'h-1 w-6 rounded-full transition-colors',
-              index === current && 'bg-primary',
-              index < current && 'bg-primary/40',
-              index > current && 'bg-stock'
-            )}
-          />
-        ))}
-      </div>
-      <span className="text-paragraph text-sm">
-        <span className="font-mono text-[0.6875rem]">
-          {String(current + 1).padStart(2, '0')}
-        </span>{' '}
-        {STEPS[current]}
-      </span>
+    <span className="text-foreground text-base font-medium tracking-tight">
+      {STEPS[current]}
+    </span>
+  )
+}
+
+export function OnboardingStepTicks({ current }: { current: number }) {
+  return (
+    <div className="hidden items-center gap-1.5 sm:flex">
+      {STEPS.map((label, index) => (
+        <span
+          key={label}
+          className={cn(
+            'h-1 w-6 rounded-full transition-colors',
+            index === current && 'bg-primary',
+            index < current && 'bg-primary/40',
+            index > current && 'bg-stock'
+          )}
+        />
+      ))}
     </div>
   )
 }

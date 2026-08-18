@@ -15,7 +15,12 @@ import {
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
+import {
+  OnboardingActions,
+  OnboardingStepTicks,
+  OnboardingStepTitle,
+  StepIntro,
+} from './onboarding-ui'
 
 const VARIABLE_ROWS = [
   {
@@ -107,7 +112,8 @@ export function EnvironmentStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingSteps current={3} />}
+      headerLeftContent={<OnboardingStepTitle current={3} />}
+      headerCenterContent={<OnboardingStepTicks current={3} />}
       headerRightContent={headerRight}
     >
       <div className="mx-auto w-full max-w-2xl">

@@ -10,7 +10,11 @@ import { AlertCircle, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
 import { type ReactNode, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OnboardingLayout } from './onboarding-layout'
-import { OnboardingActions, OnboardingSteps } from './onboarding-ui'
+import {
+  OnboardingActions,
+  OnboardingStepTicks,
+  OnboardingStepTitle,
+} from './onboarding-ui'
 import {
   isStepFailed,
   stepLabel,
@@ -97,7 +101,8 @@ export function RunStep({
   if (completed) {
     return (
       <OnboardingLayout
-        headerLeftContent={<OnboardingSteps current={4} />}
+        headerLeftContent={<OnboardingStepTitle current={4} />}
+        headerCenterContent={<OnboardingStepTicks current={4} />}
         headerRightContent={headerRight}
       >
         <div className="flex flex-col items-center justify-center text-center">
@@ -118,7 +123,8 @@ export function RunStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingSteps current={4} />}
+      headerLeftContent={<OnboardingStepTitle current={4} />}
+      headerCenterContent={<OnboardingStepTicks current={4} />}
       headerRightContent={headerRight}
     >
       <div className="mx-auto w-full max-w-2xl">

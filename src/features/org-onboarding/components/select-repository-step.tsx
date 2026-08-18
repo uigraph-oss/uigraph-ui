@@ -6,7 +6,12 @@ import { useQuery } from '@apollo/client'
 import { Check, Loader2, Search } from 'lucide-react'
 import { type ReactNode, useDeferredValue, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
+import {
+  OnboardingActions,
+  OnboardingStepTicks,
+  OnboardingStepTitle,
+  StepIntro,
+} from './onboarding-ui'
 
 export function SelectRepositoryStep({
   orgID,
@@ -57,7 +62,8 @@ export function SelectRepositoryStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingSteps current={2} />}
+      headerLeftContent={<OnboardingStepTitle current={2} />}
+      headerCenterContent={<OnboardingStepTicks current={2} />}
       headerRightContent={headerRight}
       footer={
         <OnboardingActions

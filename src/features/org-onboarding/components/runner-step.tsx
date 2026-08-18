@@ -3,7 +3,12 @@ import { cn } from '@/lib/utils'
 import { Check } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
+import {
+  OnboardingActions,
+  OnboardingStepTicks,
+  OnboardingStepTitle,
+  StepIntro,
+} from './onboarding-ui'
 import { WorkflowPreview } from './workflow-preview'
 
 export function RunnerStep({
@@ -29,7 +34,8 @@ export function RunnerStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingSteps current={0} />}
+      headerLeftContent={<OnboardingStepTitle current={0} />}
+      headerCenterContent={<OnboardingStepTicks current={0} />}
       headerRightContent={headerRight}
     >
       <div className="mx-auto grid w-full max-w-5xl gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start">
