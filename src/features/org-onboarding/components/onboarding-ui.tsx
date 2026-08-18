@@ -37,14 +37,6 @@ export function OnboardingSteps({ current }: { current: number }) {
   )
 }
 
-export function OnboardingTeamBadge({ name }: { name: string }) {
-  return (
-    <span className="border-stock text-paragraph hidden max-w-40 truncate rounded-md border px-2 py-1 font-mono text-[0.6875rem] lg:block">
-      {name}
-    </span>
-  )
-}
-
 export function OnboardingActions({
   onBack,
   primary,

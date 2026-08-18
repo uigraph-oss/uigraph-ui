@@ -4,25 +4,20 @@ import { GITHUB_REPOSITORIES } from '@/features/github-import/api'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@apollo/client'
 import { Check, Loader2, Search } from 'lucide-react'
-import { useDeferredValue, useState } from 'react'
+import { type ReactNode, useDeferredValue, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import {
-  OnboardingActions,
-  OnboardingSteps,
-  OnboardingTeamBadge,
-  StepIntro,
-} from './onboarding-ui'
+import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
 
 export function SelectRepositoryStep({
   orgID,
-  teamName,
+  headerRight,
   repoOwner,
   repoName,
   onBack,
   onNext,
 }: {
   orgID: string
-  teamName: string | null
+  headerRight: ReactNode
   repoOwner: string | null
   repoName: string | null
   onBack: () => void
@@ -63,9 +58,7 @@ export function SelectRepositoryStep({
   return (
     <OnboardingLayout
       headerLeftContent={<OnboardingSteps current={2} />}
-      headerRightContent={
-        teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
-      }
+      headerRightContent={headerRight}
       footer={
         <OnboardingActions
           onBack={onBack}

@@ -13,14 +13,9 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import {
-  OnboardingActions,
-  OnboardingSteps,
-  OnboardingTeamBadge,
-  StepIntro,
-} from './onboarding-ui'
+import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
 
 const VARIABLE_ROWS = [
   {
@@ -67,14 +62,14 @@ function VariableName({ name }: { name: string }) {
 
 export function EnvironmentStep({
   orgID,
-  teamName,
+  headerRight,
   owner,
   repo,
   onBack,
   onNext,
 }: {
   orgID: string
-  teamName: string | null
+  headerRight: ReactNode
   owner: string
   repo: string
   onBack: () => void
@@ -113,9 +108,7 @@ export function EnvironmentStep({
   return (
     <OnboardingLayout
       headerLeftContent={<OnboardingSteps current={3} />}
-      headerRightContent={
-        teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
-      }
+      headerRightContent={headerRight}
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro

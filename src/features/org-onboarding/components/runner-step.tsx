@@ -1,23 +1,18 @@
 import { OnboardingRunner } from '@/api/.gql/graphql'
 import { cn } from '@/lib/utils'
 import { Check } from 'lucide-react'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import {
-  OnboardingActions,
-  OnboardingSteps,
-  OnboardingTeamBadge,
-  StepIntro,
-} from './onboarding-ui'
+import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
 import { WorkflowPreview } from './workflow-preview'
 
 export function RunnerStep({
-  teamName,
+  headerRight,
   runner,
   onBack,
   onNext,
 }: {
-  teamName: string | null
+  headerRight: ReactNode
   runner: OnboardingRunner | null
   onBack: () => void
   onNext: (runner: OnboardingRunner) => Promise<void>
@@ -35,9 +30,7 @@ export function RunnerStep({
   return (
     <OnboardingLayout
       headerLeftContent={<OnboardingSteps current={0} />}
-      headerRightContent={
-        teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
-      }
+      headerRightContent={headerRight}
     >
       <div className="mx-auto grid w-full max-w-5xl gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start">
         <div className="min-w-0">

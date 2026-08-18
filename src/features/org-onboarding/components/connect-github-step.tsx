@@ -4,12 +4,7 @@ import { cn } from '@/lib/utils'
 import { Check, ExternalLink, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
-import {
-  OnboardingActions,
-  OnboardingSteps,
-  OnboardingTeamBadge,
-  StepIntro,
-} from './onboarding-ui'
+import { OnboardingActions, OnboardingSteps, StepIntro } from './onboarding-ui'
 
 function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
@@ -58,12 +53,12 @@ function ChecklistRow({
 
 export function ConnectGitHubStep({
   orgID,
-  teamName,
+  headerRight,
   onBack,
   onNext,
 }: {
   orgID: string
-  teamName: string | null
+  headerRight: ReactNode
   onBack: () => void
   onNext: () => Promise<void>
 }) {
@@ -73,9 +68,7 @@ export function ConnectGitHubStep({
   return (
     <OnboardingLayout
       headerLeftContent={<OnboardingSteps current={1} />}
-      headerRightContent={
-        teamName ? <OnboardingTeamBadge name={teamName} /> : undefined
-      }
+      headerRightContent={headerRight}
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro
