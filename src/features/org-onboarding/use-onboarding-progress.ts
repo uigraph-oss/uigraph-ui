@@ -1,9 +1,27 @@
 import type { GT } from '@/api'
+import { OnboardingStep } from '@/api/.gql/graphql'
 import { useMutation, useQuery } from '@apollo/client'
 import { ONBOARDING_PROGRESS, SAVE_ONBOARDING_PROGRESS } from './api'
 
 export type OnboardingProgress =
   GT.OnboardingProgressQuery['onboardingProgress']
+
+export function resolveStep(progress: OnboardingProgress | null) {
+  if (!progress) return OnboardingStep.Team
+  if (progress.step === OnboardingStep.Team) return OnboardingStep.Team
+  if (!progress.teamId) return OnboardingStep.Team
+  if (progress.step === OnboardingStep.Runner) return OnboardingStep.Runner
+  if (progress.step === OnboardingStep.Github) return OnboardingStep.Github
+  if (!progress.repoOwner || !progress.repoName)
+    return OnboardingStep.Repository
+  if (progress.step === OnboardingStep.Repository) {
+    return OnboardingStep.Repository
+  }
+  if (progress.step === OnboardingStep.Run && progress.importId) {
+    return OnboardingStep.Run
+  }
+  return OnboardingStep.Environment
+}
 
 type ProgressPatch = {
   step: GT.OnboardingStep
