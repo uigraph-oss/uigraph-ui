@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useTeamContext } from '@/features/dashboard-settings/context/team-context'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2, Users } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
 
@@ -9,17 +11,13 @@ export function CreateTeamStep({
 }: {
   onCreated: (team: { id: string; name: string }) => Promise<void>
 }) {
-  const { teams, createTeam } = useTeamContext()
+  const { teams, isTeamsLoading, createTeam } = useTeamContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const [name, setName] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => inputRef.current?.focus(), [])
-
-  const taken = teams.some(
-    (team) => team.teamName.toLowerCase() === name.trim().toLowerCase()
-  )
 
   async function handleCreate() {
     const teamName = name.trim()
@@ -41,70 +39,71 @@ export function CreateTeamStep({
 
   return (
     <OnboardingLayout>
-      <div className="mx-auto w-full max-w-md">
-        <div className="text-center">
-          <h1 className="text-2xl font-medium tracking-tight">
-            {teams.length === 0 ? 'Name your first team' : 'Name a new team'}
-          </h1>
-          <p className="text-paragraph mx-auto mt-3 max-w-sm text-sm leading-relaxed">
-            A team owns the repositories UIGraph maps. You can add more teams
-            and members later from settings.
-          </p>
+      <div className="mx-auto w-full max-w-lg">
+        <div className="bg-shading text-paragraph mb-5 flex size-10 items-center justify-center rounded-xl">
+          <Users className="size-5" />
+        </div>
+        <h1 className="text-2xl font-medium tracking-tight">
+          {teams.length === 0 ? 'Name your first team' : 'Name a new team'}
+        </h1>
+        <p className="text-paragraph mt-3 text-sm leading-relaxed">
+          A team owns the repositories UIGraph maps. You can add more teams and
+          members later from settings.
+        </p>
+
+        <div className="mt-8">
+          <Label htmlFor="onboarding-team-name">Team name</Label>
+          <div className="mt-2 flex items-start gap-2">
+            <Input
+              id="onboarding-team-name"
+              ref={inputRef}
+              value={name}
+              placeholder="e.g. Engineering"
+              autoComplete="off"
+              maxLength={64}
+              className="h-[2.7938125rem] flex-1 rounded-[0.80315625rem]"
+              onChange={(event) => setName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter') return
+                event.preventDefault()
+                void handleCreate()
+              }}
+            />
+            <Button
+              preset="primary"
+              className="h-[2.7938125rem] shrink-0 rounded-[0.80315625rem]"
+              disabled={name.trim() === '' || isCreating}
+              onClick={handleCreate}
+            >
+              {isCreating && <Loader2 className="animate-spin" />}
+              Create team
+              <ArrowRight />
+            </Button>
+          </div>
+          {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
         </div>
 
-        <div className="border-stock bg-shading mt-8 rounded-2xl border p-6">
-          <label htmlFor="onboarding-team-name" className="text-sm font-medium">
-            Team name
-          </label>
-          <input
-            id="onboarding-team-name"
-            ref={inputRef}
-            value={name}
-            autoComplete="off"
-            placeholder="Platform"
-            maxLength={64}
-            className="border-stock bg-shading-gray focus:border-primary placeholder:text-paragraph/40 mt-2 h-12 w-full rounded-xl border px-4 transition-colors outline-none"
-            onChange={(event) => setName(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key !== 'Enter') return
-              event.preventDefault()
-              void handleCreate()
-            }}
-          />
-
-          {taken && (
-            <p className="mt-2 text-xs text-amber-500">
-              A team with this name already exists.
-            </p>
-          )}
-          {error && <p className="text-destructive mt-2 text-xs">{error}</p>}
-
-          <Button
-            preset="primary"
-            className="mt-5 h-11 w-full rounded-xl"
-            disabled={name.trim() === '' || isCreating}
-            onClick={handleCreate}
-          >
-            {isCreating && <Loader2 className="animate-spin" />}
-            Create team
-            <ArrowRight />
-          </Button>
-        </div>
-
-        {teams.length > 0 && (
+        {!isTeamsLoading && teams.length > 0 && (
           <div className="mt-8">
-            <p className="text-paragraph text-center text-xs">
-              Teams you already have
-            </p>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-              {teams.map((team) => (
-                <span
-                  key={team.teamId}
-                  className="border-stock text-paragraph rounded-full border px-3 py-1 text-xs"
-                >
-                  {team.teamName}
-                </span>
-              ))}
+            <Label>Your teams</Label>
+            <div className="border-stock mt-2 overflow-hidden rounded-xl border">
+              <ul className="better-scrollbar divide-stock max-h-56 divide-y overflow-y-auto">
+                {teams.map((team) => (
+                  <li
+                    key={team.teamId}
+                    className="flex items-center justify-between gap-4 px-4 py-2.5"
+                  >
+                    <span className="truncate text-sm">{team.teamName}</span>
+                    {team.memberCount > 0 && (
+                      <span className="text-paragraph shrink-0 text-xs">
+                        {team.memberCount === 1
+                          ? '1 member'
+                          : `${team.memberCount} members`}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         )}
