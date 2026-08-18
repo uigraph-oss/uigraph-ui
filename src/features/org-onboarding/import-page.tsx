@@ -85,7 +85,6 @@ function ImportFlow({ orgID }: { orgID: string }) {
     return (
       <RunnerStep
         headerRight={headerRight}
-        runner={progress?.runner ?? null}
         onBack={() =>
           void guard(async () => {
             await save({ step: OnboardingStep.Team })
