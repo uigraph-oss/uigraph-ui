@@ -81,14 +81,14 @@ function StepIcon({ step }: { step: GT.RepositoryImportStep }) {
 export function StepTimeline({ steps }: { steps: GT.RepositoryImportStep[] }) {
   if (steps.length === 0) {
     return (
-      <div className="text-paragraph border-stock flex items-center justify-center gap-2 rounded-2xl border border-dashed p-8 font-mono text-[0.6875rem] tracking-[0.18em] uppercase">
+      <div className="text-paragraph border-stock flex items-center justify-center gap-2 rounded-xl border border-dashed p-8 text-sm">
         <Loader2 className="size-4 animate-spin" /> Waiting for the first step
       </div>
     )
   }
 
   return (
-    <ol className="border-stock bg-shading divide-stock divide-y overflow-hidden rounded-2xl border">
+    <ol className="border-stock bg-shading divide-stock divide-y overflow-hidden rounded-xl border">
       {steps.map((step, index) => (
         <li
           key={`${step.name}-${step.number}-${index}`}

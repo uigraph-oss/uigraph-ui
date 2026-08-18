@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 import { Check, ExternalLink, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { OnboardingShell, StepIntro } from './onboarding-shell'
-import { Constellation } from './visuals/constellation'
 
 function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
@@ -32,21 +31,19 @@ function ChecklistRow({
   children: ReactNode
 }) {
   return (
-    <li className="flex gap-4 px-5 py-5">
+    <li className="flex gap-3 p-4">
       <span
         className={cn(
-          'flex size-6 shrink-0 items-center justify-center rounded-full border font-mono text-[0.625rem] transition-colors',
+          'flex size-5 shrink-0 items-center justify-center rounded-full border font-mono text-[0.625rem] transition-colors',
           done && 'border-success/40 bg-success/10 text-success',
           !done && 'border-stock text-paragraph'
         )}
       >
-        {done && <Check className="size-3.5" />}
+        {done && <Check className="size-3" />}
         {!done && index}
       </span>
       <div className="min-w-0 flex-1">
-        <p className={cn('text-sm font-medium', !done && 'text-paragraph')}>
-          {title}
-        </p>
+        <p className="text-sm font-medium">{title}</p>
         <div className="mt-2">{children}</div>
       </div>
     </li>
@@ -77,23 +74,17 @@ export function ConnectGitHubStep({
         onClick: () => void onNext(),
         disabled: !github.connected,
       }}
-      aside={
-        <Constellation
-          connected={github.connected}
-          accountLogin={installation?.accountLogin}
-        />
-      }
     >
       <StepIntro
-        eyebrow="GitHub"
         title="Connect the account that owns your code."
         description="UIGraph reads through a GitHub App you install and can remove at any time. It never asks for your password."
       />
 
-      <div className="border-stock bg-shading mt-10 rounded-2xl border">
+      <div className="border-stock bg-shading mt-8 rounded-xl border">
         {github.isLoading && (
-          <div className="text-paragraph flex items-center gap-2 px-5 py-8 text-sm">
-            <Loader2 className="size-4 animate-spin" /> Checking installation
+          <div className="text-paragraph flex items-center gap-2 p-5 text-sm">
+            <Loader2 className="size-4 animate-spin" /> Checking your
+            installation
           </div>
         )}
 
@@ -122,9 +113,7 @@ export function ConnectGitHubStep({
                 </Button>
               )}
               {github.connected && (
-                <p className="text-paragraph font-mono text-[0.6875rem] tracking-[0.12em] uppercase">
-                  Installed
-                </p>
+                <p className="text-paragraph text-sm">Installed.</p>
               )}
             </ChecklistRow>
 
@@ -139,23 +128,21 @@ export function ConnectGitHubStep({
                 </p>
               )}
               {installation && (
-                <div className="flex items-center gap-3">
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-mono text-sm">
-                      {installation.accountLogin}
-                    </span>
-                    <span className="text-paragraph mt-0.5 block font-mono text-[0.6875rem] tracking-[0.12em] uppercase">
-                      {readableAccountType(installation.accountType)}
-                    </span>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <span className="min-w-0 truncate font-mono text-sm">
+                    {installation.accountLogin}
+                  </span>
+                  <span className="text-paragraph text-xs">
+                    {readableAccountType(installation.accountType)}
                   </span>
                   <Button
                     preset="ghost"
-                    className="text-paragraph h-9 shrink-0 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
+                    className="text-paragraph ml-auto h-8 shrink-0 rounded-[0.625rem] px-2.5 text-xs has-[>svg]:px-2.5"
                     disabled={github.isDisconnecting}
                     onClick={github.disconnect}
                   >
                     {github.isDisconnecting && (
-                      <Loader2 className="size-4 animate-spin" />
+                      <Loader2 className="size-3.5 animate-spin" />
                     )}
                     Disconnect
                   </Button>

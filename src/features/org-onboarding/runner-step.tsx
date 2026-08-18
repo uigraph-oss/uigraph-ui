@@ -1,9 +1,9 @@
 import { OnboardingRunner } from '@/api/.gql/graphql'
 import { cn } from '@/lib/utils'
-import { Check, FlaskConical, Workflow } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { OnboardingShell, StepIntro } from './onboarding-shell'
-import { WorkflowPreview } from './visuals/workflow-preview'
+import { WorkflowPreview } from './workflow-preview'
 
 export function RunnerStep({
   teamName,
@@ -40,62 +40,51 @@ export function RunnerStep({
       aside={<WorkflowPreview />}
     >
       <StepIntro
-        eyebrow="Runner"
         title="Where should the mapping run?"
         description="UIGraph reads your repository, builds the graph, and pushes the artifacts back on a branch of its own."
       />
 
-      <div className="mt-10 grid gap-3">
+      <div className="border-stock divide-stock mt-8 divide-y rounded-xl border">
         <button
           type="button"
           role="radio"
           aria-checked={selected === OnboardingRunner.GithubActions}
-          className={cn(
-            'group rounded-2xl border p-5 text-left transition-colors',
-            selected === OnboardingRunner.GithubActions &&
-              'border-primary bg-primary/5',
-            selected !== OnboardingRunner.GithubActions &&
-              'border-stock hover:border-paragraph/50'
-          )}
+          className="hover:bg-stock/25 flex w-full items-start gap-3 p-4 text-left transition-colors"
           onClick={() => setSelected(OnboardingRunner.GithubActions)}
         >
-          <div className="flex items-center gap-3">
-            <span
-              className={cn(
-                'flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors',
-                selected === OnboardingRunner.GithubActions &&
-                  'bg-primary text-primary-foreground',
-                selected !== OnboardingRunner.GithubActions &&
-                  'bg-stock text-paragraph'
-              )}
-            >
-              <Workflow className="size-4" />
-            </span>
-            <span className="flex-1 font-medium">GitHub Actions</span>
-            {selected === OnboardingRunner.GithubActions && (
-              <span className="text-primary flex items-center gap-1.5 font-mono text-[0.625rem] tracking-[0.18em] uppercase">
-                <Check className="size-3.5" /> Selected
-              </span>
+          <span
+            className={cn(
+              'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors',
+              selected === OnboardingRunner.GithubActions &&
+                'border-primary bg-primary text-primary-foreground',
+              selected !== OnboardingRunner.GithubActions && 'border-stock'
             )}
-          </div>
-          <p className="text-paragraph mt-3 text-sm leading-relaxed">
-            Runs on your own runners. Your code never leaves GitHub.
-          </p>
+          >
+            {selected === OnboardingRunner.GithubActions && (
+              <Check className="size-2.5" />
+            )}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-medium">GitHub Actions</span>
+            <span className="text-paragraph mt-1 block text-sm">
+              Runs on your own runners, so your code never leaves GitHub.
+            </span>
+          </span>
         </button>
 
-        <div className="border-stock rounded-2xl border border-dashed p-5 opacity-50">
-          <div className="flex items-center gap-3">
-            <span className="bg-stock text-paragraph flex size-9 shrink-0 items-center justify-center rounded-lg">
-              <FlaskConical className="size-4" />
+        <div className="flex items-start gap-3 p-4 opacity-45">
+          <span className="border-stock mt-0.5 size-4 shrink-0 rounded-full border" />
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-2 text-sm font-medium">
+              UIGraph Sandbox
+              <span className="border-stock text-paragraph rounded border px-1.5 py-0.5 font-mono text-[0.625rem]">
+                Coming soon
+              </span>
             </span>
-            <span className="flex-1 font-medium">UIGraph Sandbox</span>
-            <span className="text-paragraph font-mono text-[0.625rem] tracking-[0.18em] uppercase">
-              Coming soon
+            <span className="text-paragraph mt-1 block text-sm">
+              Runs in a UIGraph-hosted sandbox, with no workflow files added.
             </span>
-          </div>
-          <p className="text-paragraph mt-3 text-sm leading-relaxed">
-            Runs in a UIGraph-hosted sandbox, with no workflows added.
-          </p>
+          </span>
         </div>
       </div>
     </OnboardingShell>

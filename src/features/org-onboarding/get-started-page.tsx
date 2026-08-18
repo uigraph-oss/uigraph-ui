@@ -80,7 +80,7 @@ function OnboardingFlow({ orgID }: { orgID: string }) {
 
   if (isLoading) {
     return (
-      <div className="bg-shading-gray text-paragraph flex min-h-screen items-center justify-center gap-2 font-mono text-[0.6875rem] tracking-[0.18em] uppercase">
+      <div className="bg-shading-gray text-paragraph flex min-h-screen items-center justify-center gap-2 text-sm">
         <Loader2 className="size-4 animate-spin" /> Loading your setup
       </div>
     )
