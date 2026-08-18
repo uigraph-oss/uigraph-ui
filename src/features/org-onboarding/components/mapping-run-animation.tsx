@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import {
   LuBoxes,
-  LuCheck,
   LuComponent,
   LuFileCode,
   LuGitBranch,
@@ -16,16 +15,16 @@ import {
 } from 'react-icons/lu'
 
 const CANVAS_WIDTH = 440
-const CANVAS_HEIGHT = 300
+const CANVAS_HEIGHT = 264
 
 const POINTS = {
-  repo: { x: 58, y: 150 },
-  routes: { x: 215, y: 56 },
-  components: { x: 215, y: 150 },
-  services: { x: 215, y: 244 },
-  checkout: { x: 368, y: 42 },
-  cart: { x: 368, y: 150 },
-  api: { x: 368, y: 258 },
+  repo: { x: 58, y: 132 },
+  routes: { x: 215, y: 48 },
+  components: { x: 215, y: 132 },
+  services: { x: 215, y: 216 },
+  checkout: { x: 368, y: 36 },
+  cart: { x: 368, y: 132 },
+  api: { x: 368, y: 228 },
 }
 
 const NODES = [
@@ -86,6 +85,7 @@ function edgePath(
 
 export function MappingRunAnimation() {
   const [stage, setStage] = useState(0)
+  const StageIcon = STAGES[stage].icon
 
   useEffect(() => {
     const timer = window.setInterval(
@@ -105,7 +105,7 @@ export function MappingRunAnimation() {
         <span className="text-paragraph text-[0.6875rem]">About 2 minutes</span>
       </div>
 
-      <div className="relative aspect-[44/30] w-full overflow-hidden">
+      <div className="relative aspect-[5/3] w-full overflow-hidden">
         <div className="bg-primary/10 pointer-events-none absolute -top-20 left-1/2 size-64 -translate-x-1/2 rounded-full blur-3xl" />
 
         <svg
@@ -220,56 +220,42 @@ export function MappingRunAnimation() {
         </div>
       </div>
 
-      <div className="border-stock space-y-1 border-t p-3">
-        {STAGES.map((item, index) => {
-          const Icon = item.icon
-          return (
-            <div
+      <div className="border-stock flex items-center gap-3 border-t p-3">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={STAGES[stage].title}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="flex min-w-0 flex-1 items-center gap-3"
+          >
+            <span className="border-primary/40 bg-primary/15 text-primary flex size-8 shrink-0 items-center justify-center rounded-md border">
+              <StageIcon className="size-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-xs">
+                {STAGES[stage].title}
+              </span>
+              <span className="text-paragraph block truncate text-[0.6875rem]">
+                {STAGES[stage].hint}
+              </span>
+            </span>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex shrink-0 items-center gap-1.5">
+          {STAGES.map((item, index) => (
+            <span
               key={item.title}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors',
-                index === stage && 'bg-primary/10'
+                'h-1 rounded-full transition-all',
+                index === stage && 'bg-primary w-5',
+                index !== stage && 'bg-stock w-2.5'
               )}
-            >
-              <span
-                className={cn(
-                  'flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors',
-                  index === stage &&
-                    'border-primary/40 bg-primary/15 text-primary',
-                  index < stage &&
-                    'border-success/30 bg-success/10 text-success',
-                  index > stage && 'border-stock text-paragraph'
-                )}
-              >
-                {index < stage && <LuCheck className="size-3.5" />}
-                {index >= stage && <Icon className="size-3.5" />}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span
-                  className={cn(
-                    'block truncate text-xs',
-                    index === stage && 'text-foreground',
-                    index !== stage && 'text-paragraph'
-                  )}
-                >
-                  {item.title}
-                </span>
-              </span>
-              <AnimatePresence>
-                {index === stage && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-paragraph shrink-0 text-[0.6875rem]"
-                  >
-                    {item.hint}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </div>
-          )
-        })}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
