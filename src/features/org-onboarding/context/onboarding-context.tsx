@@ -9,7 +9,6 @@ export const OnboardingStep = {
   Github: 'GITHUB',
   Repository: 'REPOSITORY',
   Environment: 'ENVIRONMENT',
-  Run: 'RUN',
 } as const
 
 export type OnboardingStep =
@@ -28,7 +27,6 @@ export type OnboardingProgress = {
   runner: OnboardingRunner | null
   repoOwner: string | null
   repoName: string | null
-  importId: string | null
 }
 
 const EMPTY_PROGRESS: OnboardingProgress = {
@@ -37,20 +35,21 @@ const EMPTY_PROGRESS: OnboardingProgress = {
   runner: null,
   repoOwner: null,
   repoName: null,
-  importId: null,
 }
 
 function resolveStep(progress: OnboardingProgress) {
-  if (progress.step === OnboardingStep.Team) return OnboardingStep.Runner
-  if (progress.step === OnboardingStep.Runner) return OnboardingStep.Runner
+  if (!progress.runner) return OnboardingStep.Runner
+  if (
+    progress.step === OnboardingStep.Team ||
+    progress.step === OnboardingStep.Runner
+  ) {
+    return OnboardingStep.Runner
+  }
   if (progress.step === OnboardingStep.Github) return OnboardingStep.Github
   if (!progress.repoOwner || !progress.repoName)
     return OnboardingStep.Repository
   if (progress.step === OnboardingStep.Repository) {
     return OnboardingStep.Repository
-  }
-  if (progress.step === OnboardingStep.Run && progress.importId) {
-    return OnboardingStep.Run
   }
   return OnboardingStep.Environment
 }
@@ -58,10 +57,8 @@ function resolveStep(progress: OnboardingProgress) {
 export const [OnboardingProvider, useOnboarding] = createContext(
   (props: { orgID: string }) => {
     const [searchParams] = useSearchParams()
-    const [progress, setProgress] = useLocalStorage(
-      `uigraph.onboarding.${props.orgID}`,
-      EMPTY_PROGRESS
-    )
+    const storageKey = `uigraph.onboarding.${props.orgID}`
+    const [progress, setProgress] = useLocalStorage(storageKey, EMPTY_PROGRESS)
 
     return {
       orgID: props.orgID,
@@ -71,6 +68,11 @@ export const [OnboardingProvider, useOnboarding] = createContext(
 
       async save(patch: Partial<OnboardingProgress>) {
         setProgress((previous) => ({ ...previous, ...patch }))
+      },
+
+      clear() {
+        window.localStorage.removeItem(storageKey)
+        setProgress(EMPTY_PROGRESS)
       },
     }
   }

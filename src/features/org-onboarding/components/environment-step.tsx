@@ -10,6 +10,7 @@ import {
   Copy,
   Minus,
   RefreshCw,
+  Sparkles,
 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
@@ -36,6 +37,12 @@ const VARIABLE_ROWS = [
     names: ['AI_PROVIDER_API_URL', 'AI_PROVIDER_NPM'],
     description: 'Either one: the provider endpoint, or its npm package.',
   },
+]
+
+const UIGRAPH_VARIABLES = [
+  'UIGRAPH_API_URL',
+  'UIGRAPH_GATEWAY_URL',
+  'UIGRAPH_TOKEN',
 ]
 
 function VariableName({ name }: { name: string }) {
@@ -319,6 +326,24 @@ export function EnvironmentStep({
               </li>
             )
           })}
+
+          <li className="flex items-start gap-3 px-4 py-3.5">
+            <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
+              <Sparkles className="text-primary/70 size-4" />
+            </span>
+
+            <span className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center gap-x-2">
+                {UIGRAPH_VARIABLES.map((name) => (
+                  <VariableName key={name} name={name} />
+                ))}
+              </span>
+              <span className="text-paragraph mt-1 block text-xs">
+                UIGraph sets these on the repository when the import starts.
+                Nothing for you to add.
+              </span>
+            </span>
+          </li>
         </SecretsCard>
 
         {startError && (

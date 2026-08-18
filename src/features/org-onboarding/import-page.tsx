@@ -2,18 +2,12 @@
 
 import { START_REPOSITORY_IMPORT } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
-import {
-  refreshOrganizations,
-  useAuthStore,
-  useCurrentOrganization,
-} from '@/store/auth-store'
+import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { COMPLETE_ONBOARDING } from './api/onboarding'
 import { ConnectGitHubStep } from './components/connect-github-step'
 import { EnvironmentStep } from './components/environment-step'
-import { RunStep } from './components/run-step'
 import { RunnerStep } from './components/runner-step'
 import { SelectRepositoryStep } from './components/select-repository-step'
 import {
@@ -39,14 +33,8 @@ export function ImportPage() {
 function ImportFlow() {
   const navigate = useNavigate()
   const githubEnabled = useAuthStore((state) => state.features.github)
-  const { orgID, teamID, progress, step, save } = useOnboarding()
-  const [completeOnboarding] = useMutation(COMPLETE_ONBOARDING)
+  const { orgID, teamID, progress, step, save, clear } = useOnboarding()
   const [startImport] = useMutation(START_REPOSITORY_IMPORT)
-
-  async function finish() {
-    await completeOnboarding({ variables: { orgId: orgID } })
-    await refreshOrganizations()
-  }
 
   async function guard(action: () => Promise<void>) {
     try {
@@ -116,28 +104,23 @@ function ImportFlow() {
           void guard(() => save({ step: OnboardingStep.Repository }))
         }
         onNext={async () => {
+          if (!teamID || !progress.repoOwner || !progress.repoName)
+            throw new Error('Some of your setup is missing. Go back a step.')
+
           const result = await startImport({
             variables: {
               orgID,
               teamID,
-              owner: progress.repoOwner ?? '',
-              repo: progress.repoName ?? '',
+              owner: progress.repoOwner,
+              repo: progress.repoName,
             },
           })
-          const importId = result.data?.startRepositoryImport.id
-          if (!importId) throw new Error('The run started without an ID')
-          await save({ step: OnboardingStep.Run, importId })
-        }}
-      />
-    )
-  }
+          const importID = result.data?.startRepositoryImport.id
+          if (!importID) throw new Error('The run started without an ID')
 
-  if (step === OnboardingStep.Run && progress.importId) {
-    return (
-      <RunStep
-        orgID={orgID}
-        importID={progress.importId}
-        onFinish={() => guard(finish)}
+          clear()
+          void navigate(`/get-started/import/${importID}`, { replace: true })
+        }}
       />
     )
   }

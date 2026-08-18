@@ -398,6 +398,11 @@ const ImportPage = lazy(() =>
     default: mod.ImportPage,
   }))
 )
+const RunPage = lazy(() =>
+  import('@/features/org-onboarding/run-page').then((mod) => ({
+    default: mod.RunPage,
+  }))
+)
 const DiagramPortalPage = lazy(() =>
   import('@/features/diagram-portal/diagram-portal-page').then((mod) => ({
     default: mod.DiagramPortalPage,
@@ -460,6 +465,7 @@ export function AppRoutes() {
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/get-started" element={<GetStartedPage />} />
         <Route path="/get-started/import" element={<ImportPage />} />
+        <Route path="/get-started/import/:importID" element={<RunPage />} />
 
         <Route
           path="/diagram/:diagramId"

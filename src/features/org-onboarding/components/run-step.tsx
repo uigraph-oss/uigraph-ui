@@ -10,7 +10,6 @@ import { AlertCircle, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OnboardingLayout } from './onboarding-layout'
-import { OnboardingTeamChip } from './onboarding-team-chip'
 import {
   OnboardingStepTicks,
   OnboardingStepTitle,
@@ -96,24 +95,32 @@ export function RunStep({
       <OnboardingLayout
         headerLeftContent={<OnboardingStepTitle current={4} />}
         headerCenterContent={<OnboardingStepTicks current={4} />}
-        headerRightContent={<OnboardingTeamChip />}
       >
         <div className="mx-auto w-full max-w-2xl">
           <StepIntro
             title="Could not load the run."
             description={importQuery.error.message}
           />
-          <Button
-            preset="outline"
-            className="mt-6 h-11 rounded-[0.625rem] px-5"
-            disabled={importQuery.loading}
-            onClick={() => void importQuery.refetch()}
-          >
-            <RefreshCw
-              className={cn('size-4', importQuery.loading && 'animate-spin')}
-            />
-            Try again
-          </Button>
+          <div className="mt-6 flex items-center gap-3">
+            <Button
+              preset="outline"
+              className="h-11 rounded-[0.625rem] px-5"
+              disabled={importQuery.loading}
+              onClick={() => void importQuery.refetch()}
+            >
+              <RefreshCw
+                className={cn('size-4', importQuery.loading && 'animate-spin')}
+              />
+              Try again
+            </Button>
+            <Button
+              preset="ghost"
+              className="h-11 rounded-[0.625rem] px-5"
+              onClick={() => void navigate('/get-started/import')}
+            >
+              Start over
+            </Button>
+          </div>
         </div>
       </OnboardingLayout>
     )
@@ -124,7 +131,6 @@ export function RunStep({
       <OnboardingLayout
         headerLeftContent={<OnboardingStepTitle current={4} />}
         headerCenterContent={<OnboardingStepTicks current={4} />}
-        headerRightContent={<OnboardingTeamChip />}
       >
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
@@ -146,7 +152,6 @@ export function RunStep({
     <OnboardingLayout
       headerLeftContent={<OnboardingStepTitle current={4} />}
       headerCenterContent={<OnboardingStepTicks current={4} />}
-      headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-5xl">
         <StepIntro
