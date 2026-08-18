@@ -64,17 +64,6 @@ export function SelectRepositoryStep({
       headerLeftContent={<OnboardingStepTitle current={2} />}
       headerCenterContent={<OnboardingStepTicks current={2} />}
       headerRightContent={<OnboardingTeamChip />}
-      footer={
-        <OnboardingActions
-          onBack={onBack}
-          primary={{
-            label: 'Continue',
-            onClick: handleNext,
-            disabled: selected === null,
-            loading: isSaving,
-          }}
-        />
-      }
     >
       <div className="mx-auto w-full max-w-2xl">
         <StepIntro
@@ -108,7 +97,11 @@ export function SelectRepositoryStep({
           )}
 
           {visibleRepositories.length > 0 && (
-            <div className="better-scrollbar divide-stock min-h-0 flex-1 divide-y overflow-y-auto">
+            <div
+              role="radiogroup"
+              aria-label="Repositories"
+              className="better-scrollbar divide-stock min-h-0 flex-1 divide-y overflow-y-auto"
+            >
               {visibleRepositories.map((repository) => (
                 <button
                   type="button"
@@ -120,7 +113,8 @@ export function SelectRepositoryStep({
                     'hover:bg-stock/25 flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors',
                     repository.archived &&
                       'cursor-not-allowed opacity-50 hover:bg-transparent',
-                    selected?.githubId === repository.githubId && 'bg-primary/5'
+                    selected?.githubId === repository.githubId &&
+                      'bg-primary/10 hover:bg-primary/10'
                   )}
                   onClick={() => setSelectedID(repository.githubId)}
                 >
@@ -159,6 +153,18 @@ export function SelectRepositoryStep({
               ))}
             </div>
           )}
+        </div>
+
+        <div className="mt-6">
+          <OnboardingActions
+            onBack={onBack}
+            primary={{
+              label: 'Continue',
+              onClick: handleNext,
+              disabled: selected === null,
+              loading: isSaving,
+            }}
+          />
         </div>
       </div>
     </OnboardingLayout>
