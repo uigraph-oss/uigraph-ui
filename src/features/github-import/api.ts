@@ -68,6 +68,15 @@ export const REPOSITORY_IMPORT = graphql(`
   }
 `)
 
+export const LATEST_REPOSITORY_IMPORT = graphql(`
+  query GitHubImportLatestRepositoryImport($orgID: ID!) {
+    latestRepositoryImport(orgId: $orgID) {
+      id
+      status
+    }
+  }
+`)
+
 export const GITHUB_APP_INSTALL_URL = graphql(`
   mutation GitHubImportInstallURL($orgID: ID!) {
     githubAppInstallURL(orgId: $orgID)

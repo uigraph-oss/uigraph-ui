@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { useGitHubConnection } from '@/features/github-import/use-github-connection'
 import { usePermissions } from '@/hooks/use-permissions'
 import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
-import { Github, Loader2, Unplug } from 'lucide-react'
+import { Github, Loader2, Plus, Unplug } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
 
@@ -34,7 +35,19 @@ function GitHubSettings({ orgID }: { orgID: string }) {
     <>
       <SettingsHeader
         title="GitHub"
-        description="Connect the UIGraph GitHub App so it can read your repositories."
+        description="Connect the UIGraph GitHub App and import repositories."
+        cta={
+          isAdmin &&
+          enabled &&
+          connected && (
+            <Button className="h-11 rounded-[0.75rem] px-6 text-sm" asChild>
+              <Link to="/repositories/import">
+                <Plus className="mr-0.5 h-4 w-4" />
+                Add repository
+              </Link>
+            </Button>
+          )
+        }
       />
 
       <div className="space-y-4 px-6 pt-4 pb-8">
@@ -62,9 +75,9 @@ function GitHubSettings({ orgID }: { orgID: string }) {
               {!connected && (
                 <p className="text-paragraph mt-1 text-xs">
                   {installation &&
-                    'The app is suspended on GitHub. Re-enable it to keep your repositories in sync.'}
+                    'The app is suspended on GitHub. Re-enable it to import a repository.'}
                   {!installation &&
-                    'Install the UIGraph GitHub App to connect your repositories.'}
+                    'Install the UIGraph GitHub App to import a repository.'}
                 </p>
               )}
             </div>
