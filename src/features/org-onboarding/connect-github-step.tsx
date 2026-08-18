@@ -3,7 +3,12 @@ import { useGitHubConnection } from '@/features/github-import/use-github-connect
 import { cn } from '@/lib/utils'
 import { Check, ExternalLink, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { OnboardingShell, StepIntro } from './onboarding-shell'
+import {
+  OnboardingActions,
+  OnboardingLayout,
+  OnboardingSteps,
+  StepIntro,
+} from './onboarding-layout'
 
 function readableAccountType(accountType: string) {
   const normalized = accountType.toUpperCase()
@@ -65,119 +70,126 @@ export function ConnectGitHubStep({
   const installation = github.connected ? github.installation : null
 
   return (
-    <OnboardingShell
-      stepIndex={1}
-      teamName={teamName}
-      onBack={onBack}
-      primary={{
-        label: 'Continue',
-        onClick: () => void onNext(),
-        disabled: !github.connected,
-      }}
+    <OnboardingLayout
+      header={<OnboardingSteps current={1} teamName={teamName} />}
     >
-      <StepIntro
-        title="Connect the account that owns your code."
-        description="UIGraph reads through a GitHub App you install and can remove at any time. It never asks for your password."
-      />
+      <div className="mx-auto w-full max-w-2xl">
+        <StepIntro
+          title="Connect the account that owns your code."
+          description="UIGraph reads through a GitHub App you install and can remove at any time. It never asks for your password."
+        />
 
-      <div className="border-stock bg-shading mt-8 rounded-xl border">
-        {github.isLoading && (
-          <div className="text-paragraph flex items-center gap-2 p-5 text-sm">
-            <Loader2 className="size-4 animate-spin" /> Checking your
-            installation
-          </div>
-        )}
+        <div className="border-stock bg-shading mt-8 rounded-xl border">
+          {github.isLoading && (
+            <div className="text-paragraph flex items-center gap-2 p-5 text-sm">
+              <Loader2 className="size-4 animate-spin" /> Checking your
+              installation
+            </div>
+          )}
 
-        {!github.isLoading && (
-          <ol className="divide-stock divide-y">
-            <ChecklistRow
-              index={1}
-              title="Install the UIGraph app"
-              done={github.connected}
-            >
-              {!github.connected && (
-                <Button
-                  preset="primary"
-                  className="h-10 rounded-[0.625rem] text-sm"
-                  disabled={github.isStarting || github.isConnecting}
-                  onClick={github.connect}
-                >
-                  {(github.isStarting || github.isConnecting) && (
-                    <Loader2 className="size-4 animate-spin" />
-                  )}
-                  {github.isConnecting && 'Waiting for GitHub…'}
-                  {!github.isConnecting && 'Install GitHub App'}
-                  {!github.isStarting && !github.isConnecting && (
-                    <ExternalLink className="size-4" />
-                  )}
-                </Button>
-              )}
-              {github.connected && (
-                <p className="text-paragraph text-sm">Installed.</p>
-              )}
-            </ChecklistRow>
-
-            <ChecklistRow
-              index={2}
-              title="Account"
-              done={installation !== null}
-            >
-              {!installation && (
-                <p className="text-paragraph text-sm">
-                  The account you install on shows up here.
-                </p>
-              )}
-              {installation && (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="min-w-0 truncate font-mono text-sm">
-                    {installation.accountLogin}
-                  </span>
-                  <span className="text-paragraph text-xs">
-                    {readableAccountType(installation.accountType)}
-                  </span>
+          {!github.isLoading && (
+            <ol className="divide-stock divide-y">
+              <ChecklistRow
+                index={1}
+                title="Install the UIGraph app"
+                done={github.connected}
+              >
+                {!github.connected && (
                   <Button
-                    preset="ghost"
-                    className="text-paragraph ml-auto h-8 shrink-0 rounded-[0.625rem] px-2.5 text-xs has-[>svg]:px-2.5"
-                    disabled={github.isDisconnecting}
-                    onClick={github.disconnect}
+                    preset="primary"
+                    className="h-10 rounded-[0.625rem] text-sm"
+                    disabled={github.isStarting || github.isConnecting}
+                    onClick={github.connect}
                   >
-                    {github.isDisconnecting && (
-                      <Loader2 className="size-3.5 animate-spin" />
+                    {(github.isStarting || github.isConnecting) && (
+                      <Loader2 className="size-4 animate-spin" />
                     )}
-                    Disconnect
+                    {github.isConnecting && 'Waiting for GitHub…'}
+                    {!github.isConnecting && 'Install GitHub App'}
+                    {!github.isStarting && !github.isConnecting && (
+                      <ExternalLink className="size-4" />
+                    )}
                   </Button>
-                </div>
-              )}
-            </ChecklistRow>
+                )}
+                {github.connected && (
+                  <p className="text-paragraph text-sm">Installed.</p>
+                )}
+              </ChecklistRow>
 
-            <ChecklistRow
-              index={3}
-              title="Repository access"
-              done={installation !== null}
-            >
-              {!installation && (
-                <p className="text-paragraph text-sm">
-                  Choose which repositories UIGraph can read while you install.
-                </p>
-              )}
-              {installation && (
-                <a
-                  href={installationSettingsURL(
-                    installation.accountLogin,
-                    installation.accountType
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary inline-flex items-center gap-1.5 text-sm hover:underline"
-                >
-                  Change repository access on GitHub
-                  <ExternalLink className="size-3.5" />
-                </a>
-              )}
-            </ChecklistRow>
-          </ol>
-        )}
+              <ChecklistRow
+                index={2}
+                title="Account"
+                done={installation !== null}
+              >
+                {!installation && (
+                  <p className="text-paragraph text-sm">
+                    The account you install on shows up here.
+                  </p>
+                )}
+                {installation && (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="min-w-0 truncate font-mono text-sm">
+                      {installation.accountLogin}
+                    </span>
+                    <span className="text-paragraph text-xs">
+                      {readableAccountType(installation.accountType)}
+                    </span>
+                    <Button
+                      preset="ghost"
+                      className="text-paragraph ml-auto h-8 shrink-0 rounded-[0.625rem] px-2.5 text-xs has-[>svg]:px-2.5"
+                      disabled={github.isDisconnecting}
+                      onClick={github.disconnect}
+                    >
+                      {github.isDisconnecting && (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      )}
+                      Disconnect
+                    </Button>
+                  </div>
+                )}
+              </ChecklistRow>
+
+              <ChecklistRow
+                index={3}
+                title="Repository access"
+                done={installation !== null}
+              >
+                {!installation && (
+                  <p className="text-paragraph text-sm">
+                    Choose which repositories UIGraph can read while you
+                    install.
+                  </p>
+                )}
+                {installation && (
+                  <a
+                    href={installationSettingsURL(
+                      installation.accountLogin,
+                      installation.accountType
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary inline-flex items-center gap-1.5 text-sm hover:underline"
+                  >
+                    Change repository access on GitHub
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                )}
+              </ChecklistRow>
+            </ol>
+          )}
+        </div>
+
+        <div className="mt-10">
+          <OnboardingActions
+            onBack={onBack}
+            primary={{
+              label: 'Continue',
+              onClick: () => void onNext(),
+              disabled: !github.connected,
+            }}
+          />
+        </div>
       </div>
-    </OnboardingShell>
+    </OnboardingLayout>
   )
 }

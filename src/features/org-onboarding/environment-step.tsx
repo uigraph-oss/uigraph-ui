@@ -14,7 +14,12 @@ import {
   RefreshCw,
 } from 'lucide-react'
 import { useState } from 'react'
-import { OnboardingShell, StepIntro } from './onboarding-shell'
+import {
+  OnboardingActions,
+  OnboardingLayout,
+  OnboardingSteps,
+  StepIntro,
+} from './onboarding-layout'
 
 const VARIABLE_ROWS = [
   {
@@ -105,125 +110,131 @@ export function EnvironmentStep({
   }
 
   return (
-    <OnboardingShell
-      stepIndex={3}
-      teamName={teamName}
-      onBack={onBack}
-      primary={{
-        label: 'Go ahead',
-        onClick: handleNext,
-        disabled: !ready,
-        loading: isStarting,
-      }}
+    <OnboardingLayout
+      header={<OnboardingSteps current={3} teamName={teamName} />}
     >
-      <StepIntro
-        title={
-          ready
-            ? 'Everything the run needs is in place.'
-            : 'The run needs a few secrets first.'
-        }
-        description={
-          <>
-            Add these as Actions secrets on GitHub for{' '}
-            <span className="font-mono text-[0.8125rem]">
-              {owner}/{repo}
-            </span>
-            . UIGraph never receives the values, the workflow reads them on your
-            runner.
-          </>
-        }
-      />
+      <div className="mx-auto w-full max-w-2xl">
+        <StepIntro
+          title={
+            ready
+              ? 'Everything the run needs is in place.'
+              : 'The run needs a few secrets first.'
+          }
+          description={
+            <>
+              Add these as Actions secrets on GitHub for{' '}
+              <span className="font-mono text-[0.8125rem]">
+                {owner}/{repo}
+              </span>
+              . UIGraph never receives the values, the workflow reads them on
+              your runner.
+            </>
+          }
+        />
 
-      <div className="border-stock bg-shading mt-8 rounded-xl border">
-        <ul className="divide-stock divide-y">
-          {VARIABLE_ROWS.map((row) => {
-            const found = !row.names.some((name) => missing.includes(name))
-            return (
-              <li
-                key={row.names.join('-')}
-                className="flex items-start gap-4 p-4"
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="flex flex-wrap items-center gap-x-2">
-                    {row.names.map((name, index) => (
-                      <span key={name} className="flex items-center gap-2">
-                        {index > 0 && (
-                          <span className="text-paragraph text-xs">or</span>
-                        )}
-                        <VariableName name={name} />
-                      </span>
-                    ))}
-                  </span>
-                  <span className="text-paragraph mt-1 block text-xs">
-                    {row.description}
-                  </span>
-                </span>
-                <span
-                  className={cn(
-                    'flex shrink-0 items-center gap-1.5 text-xs',
-                    found && 'text-success',
-                    !found && 'text-amber-500'
-                  )}
+        <div className="border-stock bg-shading mt-8 rounded-xl border">
+          <ul className="divide-stock divide-y">
+            {VARIABLE_ROWS.map((row) => {
+              const found = !row.names.some((name) => missing.includes(name))
+              return (
+                <li
+                  key={row.names.join('-')}
+                  className="flex items-start gap-4 p-4"
                 >
-                  {found && <Check className="size-3.5" />}
-                  {found ? 'Found' : 'Missing'}
-                </span>
-              </li>
-            )
-          })}
-        </ul>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-x-2">
+                      {row.names.map((name, index) => (
+                        <span key={name} className="flex items-center gap-2">
+                          {index > 0 && (
+                            <span className="text-paragraph text-xs">or</span>
+                          )}
+                          <VariableName name={name} />
+                        </span>
+                      ))}
+                    </span>
+                    <span className="text-paragraph mt-1 block text-xs">
+                      {row.description}
+                    </span>
+                  </span>
+                  <span
+                    className={cn(
+                      'flex shrink-0 items-center gap-1.5 text-xs',
+                      found && 'text-success',
+                      !found && 'text-amber-500'
+                    )}
+                  >
+                    {found && <Check className="size-3.5" />}
+                    {found ? 'Found' : 'Missing'}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
 
-        <div className="border-stock flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3">
-          <span className="text-paragraph text-xs">
-            {ready ? 'Everything is in place.' : 'Checking every 5 seconds.'}
-          </span>
-          <div className="flex items-center gap-1">
-            <a
-              href={secretsSettingsURL(accountLogin)}
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary inline-flex items-center gap-1.5 px-2 text-xs hover:underline"
-            >
-              Open Actions secrets <ExternalLink className="size-3" />
-            </a>
-            <Button
-              preset="ghost"
-              className="text-paragraph h-8 rounded-[0.625rem] px-2.5 text-xs has-[>svg]:px-2.5"
-              disabled={configQuery.loading}
-              onClick={() => void configQuery.refetch()}
-            >
-              <RefreshCw
-                className={cn(
-                  'size-3.5',
-                  configQuery.loading && 'animate-spin'
-                )}
-              />
-              Check again
-            </Button>
+          <div className="border-stock flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3">
+            <span className="text-paragraph text-xs">
+              {ready ? 'Everything is in place.' : 'Checking every 5 seconds.'}
+            </span>
+            <div className="flex items-center gap-1">
+              <a
+                href={secretsSettingsURL(accountLogin)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary inline-flex items-center gap-1.5 px-2 text-xs hover:underline"
+              >
+                Open Actions secrets <ExternalLink className="size-3" />
+              </a>
+              <Button
+                preset="ghost"
+                className="text-paragraph h-8 rounded-[0.625rem] px-2.5 text-xs has-[>svg]:px-2.5"
+                disabled={configQuery.loading}
+                onClick={() => void configQuery.refetch()}
+              >
+                <RefreshCw
+                  className={cn(
+                    'size-3.5',
+                    configQuery.loading && 'animate-spin'
+                  )}
+                />
+                Check again
+              </Button>
+            </div>
           </div>
         </div>
+
+        {configQuery.loading && !configuration && (
+          <p className="text-paragraph mt-3 flex items-center gap-2 text-sm">
+            <Loader2 className="size-4 animate-spin" /> Reading the repository
+            configuration
+          </p>
+        )}
+
+        {configQuery.error && (
+          <p className="text-destructive mt-3 flex items-start gap-2 text-sm">
+            <AlertCircle className="mt-0.5 size-4 shrink-0" />
+            {configQuery.error.message}
+          </p>
+        )}
+
+        {startError && (
+          <p className="text-destructive mt-3 flex items-start gap-2 text-sm">
+            <AlertCircle className="mt-0.5 size-4 shrink-0" />
+            {startError}
+          </p>
+        )}
+
+        <div className="mt-10">
+          <OnboardingActions
+            onBack={onBack}
+            primary={{
+              label: 'Go ahead',
+              onClick: handleNext,
+              disabled: !ready,
+              loading: isStarting,
+            }}
+          />
+        </div>
       </div>
-
-      {configQuery.loading && !configuration && (
-        <p className="text-paragraph mt-3 flex items-center gap-2 text-sm">
-          <Loader2 className="size-4 animate-spin" /> Reading the repository
-          configuration
-        </p>
-      )}
-
-      {configQuery.error && (
-        <p className="text-destructive mt-3 flex items-start gap-2 text-sm">
-          <AlertCircle className="mt-0.5 size-4 shrink-0" />
-          {configQuery.error.message}
-        </p>
-      )}
-
-      {startError && (
-        <p className="text-destructive mt-3 flex items-start gap-2 text-sm">
-          <AlertCircle className="mt-0.5 size-4 shrink-0" />
-          {startError}
-        </p>
-      )}
-    </OnboardingShell>
+    </OnboardingLayout>
   )
 }

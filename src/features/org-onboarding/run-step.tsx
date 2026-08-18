@@ -9,7 +9,11 @@ import { useMutation, useQuery } from '@apollo/client'
 import { AlertCircle, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { OnboardingShell } from './onboarding-shell'
+import {
+  OnboardingActions,
+  OnboardingLayout,
+  OnboardingSteps,
+} from './onboarding-layout'
 import {
   isStepFailed,
   stepLabel,
@@ -95,8 +99,10 @@ export function RunStep({
 
   if (completed) {
     return (
-      <OnboardingShell stepIndex={4} teamName={teamName}>
-        <div className="flex min-h-[20rem] flex-col items-center justify-center text-center">
+      <OnboardingLayout
+        header={<OnboardingSteps current={4} teamName={teamName} />}
+      >
+        <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
             <span className="font-mono">{value?.githubRepo}</span> is on the
             graph.
@@ -108,117 +114,123 @@ export function RunStep({
             <Loader2 className="size-4 animate-spin" /> Opening the service
           </p>
         </div>
-      </OnboardingShell>
+      </OnboardingLayout>
     )
   }
 
   return (
-    <OnboardingShell
-      stepIndex={4}
-      teamName={teamName}
-      primary={
-        failed
-          ? {
-              label: 'Retry',
-              onClick: () => void handleRetry(),
-              loading: isRetrying,
-            }
-          : undefined
-      }
+    <OnboardingLayout
+      header={<OnboardingSteps current={4} teamName={teamName} />}
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="min-w-0">
-          <h1 className="truncate font-mono text-xl">
-            {value?.githubRepo ?? 'Preparing the run'}
-          </h1>
-          <p className="text-paragraph mt-1 text-sm">
-            {failed && 'The run stopped before it finished.'}
-            {!failed && 'Running on GitHub Actions. You can leave this open.'}
-          </p>
-        </div>
-        <span className="font-mono text-sm tabular-nums">
-          {elapsed ?? '0s'}
-        </span>
-      </div>
-
-      {importQuery.loading && !value && (
-        <p className="text-paragraph mt-8 flex items-center gap-2 text-sm">
-          <Loader2 className="size-4 animate-spin" /> Loading the run
-        </p>
-      )}
-
-      {value && (
-        <div className="mt-6">
-          <StepTimeline steps={value.steps} />
-
-          {value.missingAIConfiguration.length > 0 && (
-            <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
-              <p className="text-sm text-amber-500">
-                Waiting on{' '}
-                <span className="font-mono text-[0.75rem]">
-                  {value.missingAIConfiguration.join(', ')}
-                </span>
-              </p>
-              <Button
-                preset="outline"
-                className="mt-3 h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
-                disabled={isRechecking}
-                onClick={handleRecheck}
-              >
-                <RefreshCw
-                  className={cn('size-4', isRechecking && 'animate-spin')}
-                />
-                Recheck
-              </Button>
-            </div>
-          )}
-
-          {failed && (
-            <div className="border-destructive/30 bg-destructive/5 mt-4 rounded-xl border p-4">
-              <p className="text-destructive flex items-center gap-2 text-sm font-medium">
-                <AlertCircle className="size-4 shrink-0" />
-                {failedStep
-                  ? `Failed at “${stepLabel(failedStep.name)}”`
-                  : 'The run did not finish'}
-              </p>
-              <p className="text-paragraph mt-2 text-sm">
-                {value.error ??
-                  'Open the Actions run for the full log, then retry.'}
-              </p>
-            </div>
-          )}
-
-          {actionError && (
-            <p className="text-destructive mt-4 text-sm">{actionError}</p>
-          )}
-
-          <div className="text-paragraph mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
-            {value.branch && (
-              <span className="font-mono text-[0.6875rem]">{value.branch}</span>
-            )}
-            {value.runUrl && (
-              <a
-                href={value.runUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary inline-flex items-center gap-1.5 hover:underline"
-              >
-                Actions run <ExternalLink className="size-3" />
-              </a>
-            )}
-            {value.pullRequestUrl && (
-              <a
-                href={value.pullRequestUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary inline-flex items-center gap-1.5 hover:underline"
-              >
-                Pull request <ExternalLink className="size-3" />
-              </a>
-            )}
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div className="min-w-0">
+            <h1 className="truncate font-mono text-xl">
+              {value?.githubRepo ?? 'Preparing the run'}
+            </h1>
+            <p className="text-paragraph mt-1 text-sm">
+              {failed && 'The run stopped before it finished.'}
+              {!failed && 'Running on GitHub Actions. You can leave this open.'}
+            </p>
           </div>
+          <span className="font-mono text-sm tabular-nums">
+            {elapsed ?? '0s'}
+          </span>
         </div>
-      )}
-    </OnboardingShell>
+
+        {importQuery.loading && !value && (
+          <p className="text-paragraph mt-8 flex items-center gap-2 text-sm">
+            <Loader2 className="size-4 animate-spin" /> Loading the run
+          </p>
+        )}
+
+        {value && (
+          <div className="mt-6">
+            <StepTimeline steps={value.steps} />
+
+            {value.missingAIConfiguration.length > 0 && (
+              <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
+                <p className="text-sm text-amber-500">
+                  Waiting on{' '}
+                  <span className="font-mono text-[0.75rem]">
+                    {value.missingAIConfiguration.join(', ')}
+                  </span>
+                </p>
+                <Button
+                  preset="outline"
+                  className="mt-3 h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
+                  disabled={isRechecking}
+                  onClick={handleRecheck}
+                >
+                  <RefreshCw
+                    className={cn('size-4', isRechecking && 'animate-spin')}
+                  />
+                  Recheck
+                </Button>
+              </div>
+            )}
+
+            {failed && (
+              <div className="border-destructive/30 bg-destructive/5 mt-4 rounded-xl border p-4">
+                <p className="text-destructive flex items-center gap-2 text-sm font-medium">
+                  <AlertCircle className="size-4 shrink-0" />
+                  {failedStep
+                    ? `Failed at “${stepLabel(failedStep.name)}”`
+                    : 'The run did not finish'}
+                </p>
+                <p className="text-paragraph mt-2 text-sm">
+                  {value.error ??
+                    'Open the Actions run for the full log, then retry.'}
+                </p>
+              </div>
+            )}
+
+            {actionError && (
+              <p className="text-destructive mt-4 text-sm">{actionError}</p>
+            )}
+
+            <div className="text-paragraph mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
+              {value.branch && (
+                <span className="font-mono text-[0.6875rem]">
+                  {value.branch}
+                </span>
+              )}
+              {value.runUrl && (
+                <a
+                  href={value.runUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary inline-flex items-center gap-1.5 hover:underline"
+                >
+                  Actions run <ExternalLink className="size-3" />
+                </a>
+              )}
+              {value.pullRequestUrl && (
+                <a
+                  href={value.pullRequestUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary inline-flex items-center gap-1.5 hover:underline"
+                >
+                  Pull request <ExternalLink className="size-3" />
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        {failed && (
+          <div className="mt-10">
+            <OnboardingActions
+              primary={{
+                label: 'Retry',
+                onClick: () => void handleRetry(),
+                loading: isRetrying,
+              }}
+            />
+          </div>
+        )}
+      </div>
+    </OnboardingLayout>
   )
 }
