@@ -58,6 +58,7 @@ export function SelectRepositoryStep({
     <OnboardingShell
       stepIndex={3}
       teamName={teamName}
+      actionsAtBottom
       onBack={onBack}
       primary={{
         label: 'Continue',

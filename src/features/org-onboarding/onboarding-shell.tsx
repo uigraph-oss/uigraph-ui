@@ -39,6 +39,7 @@ export function OnboardingShell({
   stepIndex,
   teamName,
   aside,
+  actionsAtBottom,
   children,
   onBack,
   primary,
@@ -46,6 +47,7 @@ export function OnboardingShell({
   stepIndex: number
   teamName?: string | null
   aside?: ReactNode
+  actionsAtBottom?: boolean
   children: ReactNode
   onBack?: () => void
   primary?: {
@@ -55,6 +57,32 @@ export function OnboardingShell({
     loading?: boolean
   }
 }) {
+  const actions = (
+    <div className="flex items-center justify-center gap-3">
+      {onBack && (
+        <Button
+          preset="outline"
+          className="h-11 max-w-[18rem] flex-1 rounded-[0.625rem]"
+          onClick={onBack}
+        >
+          <ArrowLeft /> Back
+        </Button>
+      )}
+      {primary && (
+        <Button
+          preset="primary"
+          className="h-11 max-w-[18rem] flex-1 rounded-[0.625rem]"
+          disabled={primary.disabled || primary.loading}
+          onClick={primary.onClick}
+        >
+          {primary.loading && <Loader2 className="animate-spin" />}
+          {primary.label}
+          <ArrowRight />
+        </Button>
+      )}
+    </div>
+  )
+
   return (
     <div className="bg-shading-gray text-foreground flex min-h-screen flex-col">
       <header className="border-stock/60 flex items-center gap-4 border-b px-6 py-4 lg:px-10">
@@ -88,41 +116,35 @@ export function OnboardingShell({
         </div>
       </header>
 
-      <main className="w-full flex-1 px-6 pt-10 pb-28 lg:px-10">
+      <main
+        className={cn(
+          'w-full flex-1 px-6 pt-10 lg:px-10',
+          actionsAtBottom && 'pb-28',
+          !actionsAtBottom && 'pb-16'
+        )}
+      >
         {aside && (
           <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start">
-            <div className="min-w-0">{children}</div>
+            <div className="min-w-0">
+              {children}
+              {!actionsAtBottom && <div className="mt-10">{actions}</div>}
+            </div>
             <div className="hidden min-w-0 lg:block">{aside}</div>
           </div>
         )}
-        {!aside && <div className="mx-auto w-full max-w-2xl">{children}</div>}
+        {!aside && (
+          <div className="mx-auto w-full max-w-2xl">
+            {children}
+            {!actionsAtBottom && <div className="mt-10">{actions}</div>}
+          </div>
+        )}
       </main>
 
-      <footer className="border-stock/60 bg-shading-gray/90 fixed inset-x-0 bottom-0 border-t px-6 py-4 backdrop-blur lg:px-10">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-center gap-3">
-          {onBack && (
-            <Button
-              preset="outline"
-              className="h-11 max-w-[18rem] flex-1 rounded-[0.625rem]"
-              onClick={onBack}
-            >
-              <ArrowLeft /> Back
-            </Button>
-          )}
-          {primary && (
-            <Button
-              preset="primary"
-              className="h-11 max-w-[18rem] flex-1 rounded-[0.625rem]"
-              disabled={primary.disabled || primary.loading}
-              onClick={primary.onClick}
-            >
-              {primary.loading && <Loader2 className="animate-spin" />}
-              {primary.label}
-              <ArrowRight />
-            </Button>
-          )}
-        </div>
-      </footer>
+      {actionsAtBottom && (
+        <footer className="border-stock/60 bg-shading-gray/90 fixed inset-x-0 bottom-0 border-t px-6 py-4 backdrop-blur lg:px-10">
+          <div className="mx-auto w-full max-w-2xl">{actions}</div>
+        </footer>
+      )}
     </div>
   )
 }
