@@ -7,14 +7,19 @@ import {
   refreshOrganizations,
   useAuthStore,
   useCurrentOrganization,
-} from '@/store/auth-store'   
+} from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { Loader2 } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { COMPLETE_ONBOARDING  } from './api'
+import { COMPLETE_ONBOARDING } from './api'
 import { CreateTeamStep } from './create-team-step'
-import { resolveStep, useOnboardingProgress } from './use-onboarding-progress'
-  
+import {
+  getUiTeamID,
+  resolveStep,
+  setUiTeamID,
+  useOnboardingProgress,
+} from './use-onboarding-progress'
+
 export function GetStartedPage() {
   const organization = useCurrentOrganization()
   const { isAdmin } = usePermissions()
@@ -22,7 +27,7 @@ export function GetStartedPage() {
   if (!organization) return <Navigate to="/onboarding" replace />
   if (!isAdmin) return <Navigate to="/services" replace />
 
-  return ( 
+  return (
     <TeamContextProvider>
       <TeamFlow orgID={organization.id} />
     </TeamContextProvider>
@@ -52,9 +57,10 @@ function TeamFlow({ orgID }: { orgID: string }) {
   }
 
   if (githubEnabled && resolveStep(progress) !== OnboardingStep.Team) {
-    return (
-      <Navigate to={`/get-started/import?team=${progress?.teamId}`} replace />
-    )
+    const uiTeamID = getUiTeamID()
+    if (uiTeamID) {
+      return <Navigate to={`/get-started/import?team=${uiTeamID}`} replace />
+    }
   }
 
   return (
@@ -67,6 +73,7 @@ function TeamFlow({ orgID }: { orgID: string }) {
           return
         }
         await save({ step: OnboardingStep.Runner, teamId: team.id })
+        setUiTeamID(team.id)
         void navigate(`/get-started/import?team=${team.id}`)
       }}
     />

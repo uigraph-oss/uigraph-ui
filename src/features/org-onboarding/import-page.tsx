@@ -18,9 +18,13 @@ import { EnvironmentStep } from './environment-step'
 import { RunStep } from './run-step'
 import { RunnerStep } from './runner-step'
 import { SelectRepositoryStep } from './select-repository-step'
-import { resolveStep, useOnboardingProgress } from './use-onboarding-progress'
-   
-export function ImportPage() {  
+import {
+  getUiTeamID,
+  resolveStep,
+  useOnboardingProgress,
+} from './use-onboarding-progress'
+
+export function ImportPage() {
   const organization = useCurrentOrganization()
   const { isAdmin } = usePermissions()
 
@@ -73,16 +77,14 @@ function ImportFlow({ orgID }: { orgID: string }) {
 
   const step = resolveStep(progress)
   const teamName = progress?.teamName ?? null
-  const teamID = searchParams.get('team') ?? ''
+  const teamID = searchParams.get('team') ?? getUiTeamID() ?? ''
 
   if (step === OnboardingStep.Team) {
     return <Navigate to="/get-started" replace />
   }
 
   if (teamID === '') {
-    return (
-      <Navigate to={`/get-started/import?team=${progress?.teamId}`} replace />
-    )
+    return <Navigate to="/get-started" replace />
   }
 
   if (step === OnboardingStep.Runner) {

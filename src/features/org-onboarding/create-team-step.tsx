@@ -2,8 +2,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTeamContext } from '@/features/dashboard-settings/context/team-context'
-import { ArrowRight, Loader2, Users } from 'lucide-react'
+import { Loader2, Users } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 import { OnboardingLayout } from './onboarding-layout'
 
 export function CreateTeamStep({
@@ -89,9 +90,12 @@ export function CreateTeamStep({
               disabled={name.trim() === '' || isCreating || isSkipping}
               onClick={handleCreate}
             >
-              {isCreating && <Loader2 className="animate-spin" />}
+              {isCreating ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <AiOutlineUsergroupAdd />
+              )}
               Create team
-              <ArrowRight />
             </Button>
           </div>
           {error && <p className="text-destructive mt-2 text-sm">{error}</p>}

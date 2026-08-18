@@ -6,6 +6,16 @@ import { ONBOARDING_PROGRESS, SAVE_ONBOARDING_PROGRESS } from './api'
 export type OnboardingProgress =
   GT.OnboardingProgressQuery['onboardingProgress']
 
+let uiTeamID: string | null = null
+
+export function setUiTeamID(id: string) {
+  uiTeamID = id
+}
+
+export function getUiTeamID() {
+  return uiTeamID
+}
+
 export function resolveStep(progress: OnboardingProgress | null) {
   if (!progress) return OnboardingStep.Team
   if (progress.step === OnboardingStep.Team) return OnboardingStep.Team
