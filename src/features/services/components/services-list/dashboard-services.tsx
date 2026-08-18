@@ -4,6 +4,12 @@ import { BetterDialogProvider } from '@/components/better-dialog'
 import { SectionLoader } from '@/components/section-loader'
 import { SectionNotFound } from '@/components/section-not-found'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -13,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DashboardPageSectionLayout } from '@/features/dashboard'
+import { ImportGitHubModal } from '@/features/github-import/import-github-modal'
 import {
   toCreateServiceInput,
   toUpdateServiceInput,
@@ -20,7 +27,7 @@ import {
 import { usePermissions } from '@/hooks/use-permissions'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth-store'
-import { CirclePlus, Github, Network } from 'lucide-react'
+import { ChevronDown, CirclePlus, Github, Network } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -30,9 +37,10 @@ import { ServiceCard } from './service-card'
 
 export function DashboardServices() {
   const navigate = useNavigate()
-  const { canWrite } = usePermissions()
+  const { canWrite, isAdmin } = usePermissions()
   const features = useAuthStore((state) => state.features)
   const [createServiceOpen, setCreateServiceOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   const {
@@ -51,9 +59,10 @@ export function DashboardServices() {
     createService,
     updateService,
     deleteService,
+    refetchServices,
   } = useDashboardServicesList()
 
-  const canImport = canWrite && features.github
+  const canImport = isAdmin && features.github
 
   const categories = useMemo(() => {
     const counts = new Map<string, number>()
@@ -92,23 +101,40 @@ export function DashboardServices() {
             <Network />
             Dependency graph
           </Button>
-          {canImport && (
+          <div className="flex animate-[ug-glow-pulse_3s_ease-in-out_infinite] items-center rounded-[10px]">
             <Button
-              preset="outline"
-              onClick={() => navigate('/repositories/import')}
+              preset="cta"
+              disabled={!canWrite}
+              className={cn(
+                'animate-none',
+                canImport && 'rounded-r-none pr-3!'
+              )}
+              onClick={() => setCreateServiceOpen(true)}
             >
-              <Github />
-              Import from GitHub
+              <CirclePlus />
+              Create Service
             </Button>
-          )}
-          <Button
-            preset="cta"
-            disabled={!canWrite}
-            onClick={() => setCreateServiceOpen(true)}
-          >
-            <CirclePlus />
-            Create Service
-          </Button>
+
+            {canImport && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    preset="cta"
+                    aria-label="More create options"
+                    className="animate-none rounded-l-none border-l border-white/20 px-3!"
+                  >
+                    <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="bottom" align="end">
+                  <DropdownMenuItem onClick={() => setImportOpen(true)}>
+                    <Github />
+                    Import from GitHub
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
       }
     >
@@ -177,10 +203,7 @@ export function DashboardServices() {
         <div className="flex flex-col items-center gap-4">
           <SectionNotFound label="No services match your search." />
           {canImport && services.length === 0 && (
-            <Button
-              preset="cta"
-              onClick={() => navigate('/repositories/import')}
-            >
+            <Button preset="cta" onClick={() => setImportOpen(true)}>
               <Github />
               Import a repository from GitHub
             </Button>
@@ -247,6 +270,18 @@ export function DashboardServices() {
             toast.success('Service created successfully')
             setCreateServiceOpen(false)
           }}
+        />
+      </BetterDialogProvider>
+
+      <BetterDialogProvider
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        className="[--height:100%] [--width:100%] h-full!"
+      >
+        <ImportGitHubModal
+          orgID={orgId!}
+          onOpenChange={setImportOpen}
+          onImported={() => void refetchServices()}
         />
       </BetterDialogProvider>
     </DashboardPageSectionLayout>
