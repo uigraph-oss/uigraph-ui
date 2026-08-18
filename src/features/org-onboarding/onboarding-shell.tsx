@@ -1,5 +1,6 @@
 import { UiGraphLogo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
+import { UserDropdownMenu } from '@/features/dashboard/dashboard-header'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { type ReactNode } from 'react'
@@ -77,11 +78,14 @@ export function OnboardingShell({
           </span>{' '}
           {STEP_LABELS[stepIndex]}
         </span>
-        {teamName && (
-          <span className="border-stock text-paragraph ml-auto hidden max-w-40 truncate rounded-md border px-2 py-1 font-mono text-[0.6875rem] lg:block">
-            {teamName}
-          </span>
-        )}
+        <div className="ml-auto flex items-center gap-4">
+          {teamName && (
+            <span className="border-stock text-paragraph hidden max-w-40 truncate rounded-md border px-2 py-1 font-mono text-[0.6875rem] lg:block">
+              {teamName}
+            </span>
+          )}
+          <UserDropdownMenu />
+        </div>
       </header>
 
       <main className="w-full flex-1 px-6 pt-10 pb-28 lg:px-10">
