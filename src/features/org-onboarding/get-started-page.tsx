@@ -100,7 +100,7 @@ function OnboardingFlow({ orgID }: { orgID: string }) {
   if (step === OnboardingStep.Team) {
     return (
       <CreateTeamStep
-        onCreated={(team) =>
+        onContinue={(team) =>
           guard(async () => {
             if (!githubEnabled) {
               await finish()

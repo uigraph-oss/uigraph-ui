@@ -7,14 +7,15 @@ import { useEffect, useRef, useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
 
 export function CreateTeamStep({
-  onCreated,
+  onContinue,
 }: {
-  onCreated: (team: { id: string; name: string }) => Promise<void>
+  onContinue: (team: { id: string; name: string }) => Promise<void>
 }) {
   const { teams, isTeamsLoading, createTeam } = useTeamContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const [name, setName] = useState('')
   const [isCreating, setIsCreating] = useState(false)
+  const [isSkipping, setIsSkipping] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => inputRef.current?.focus(), [])
@@ -28,12 +29,25 @@ export function CreateTeamStep({
       const result = await createTeam({ teamName })
       const id = result.data?.createTeam.id
       if (!id) throw new Error('The team was created without an ID')
-      await onCreated({ id, name: teamName })
+      await onContinue({ id, name: teamName })
     } catch (caught) {
       setIsCreating(false)
       setError(
         caught instanceof Error ? caught.message : 'Could not create the team'
       )
+    }
+  }
+
+  async function handleSkip() {
+    const team = teams[0]
+    if (!team || isSkipping) return
+    setIsSkipping(true)
+    setError('')
+    try {
+      await onContinue({ id: team.teamId, name: team.teamName })
+    } catch (caught) {
+      setIsSkipping(false)
+      setError(caught instanceof Error ? caught.message : 'Could not continue')
     }
   }
 
@@ -72,7 +86,7 @@ export function CreateTeamStep({
             <Button
               preset="primary"
               className="h-[2.7938125rem] shrink-0 rounded-[0.80315625rem]"
-              disabled={name.trim() === '' || isCreating}
+              disabled={name.trim() === '' || isCreating || isSkipping}
               onClick={handleCreate}
             >
               {isCreating && <Loader2 className="animate-spin" />}
@@ -104,6 +118,18 @@ export function CreateTeamStep({
                   </li>
                 ))}
               </ul>
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <Button
+                preset="ghost"
+                className="text-paragraph h-8 rounded-[0.625rem] px-3 text-xs has-[>svg]:px-3"
+                disabled={isCreating || isSkipping}
+                onClick={handleSkip}
+              >
+                {isSkipping && <Loader2 className="animate-spin" />}
+                Skip for now
+              </Button>
             </div>
           </div>
         )}
