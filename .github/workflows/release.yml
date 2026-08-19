@@ -34,8 +34,8 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest
 
-      # No build-args -- the Dockerfile's own ARG defaults (both "") already
-      # compile billing out.
+      # No build-args -- the Dockerfile's own ARG defaults (all "") already
+      # compile every enterprise-gated feature out.
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -96,3 +96,5 @@ jobs:
           build-args: |
             VITE_FEATURE_ENABLE_BILLING=true
             VITE_BILLING_URL=${{ vars.ENTERPRISE_BILLING_URL }}
+            VITE_FEATURE_ENABLE_ENTERPRISE=true
+            VITE_FORGOT_PASSWORD_URL=${{ vars.ENTERPRISE_FORGOT_PASSWORD_URL }}

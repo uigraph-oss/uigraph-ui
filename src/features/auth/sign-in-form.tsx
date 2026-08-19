@@ -4,6 +4,7 @@ import { CircleLoader } from '@/components/loader/circle-loader'
 import { UigraphMark } from '@/components/logo'
 import { Input } from '@/components/ui/input'
 import { Paths } from '@/constants'
+import { env } from '@/env'
 import {
   discoverOrgs,
   useOrgAuthProviders,
@@ -85,7 +86,6 @@ export function SignInForm() {
   const { providers, isLoading: providersLoading } = useOrgAuthProviders(
     selectedOrg?.id ?? null
   )
-
   const emailForm = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: { email: '' },
@@ -157,9 +157,15 @@ export function SignInForm() {
       return
     }
 
-    window.location.replace(
-      `${location.host + Paths.auth.forgotPassword}?email=${encodeURIComponent(email)}`
-    )
+    // Self-service password reset only exists on the managed/enterprise
+    // deployment (see uigraph-enterprise's README) -- self-hosted builds
+    // never set these env vars, so there's nowhere to send the user.
+    if (!env.VITE_FEATURE_ENABLE_ENTERPRISE || !env.VITE_FORGOT_PASSWORD_URL) {
+      toast.error('Contact your workspace admin to reset your password.')
+      return
+    }
+
+    window.location.href = `${env.VITE_FORGOT_PASSWORD_URL}?email=${encodeURIComponent(email)}`
   }
 
   function handleSSO(loginUrl: string) {

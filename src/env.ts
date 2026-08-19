@@ -31,6 +31,22 @@ const envSchema = z.object({
     .transform((v) => v === 'true'),
 
   VITE_BILLING_URL: z.url().optional(),
+
+  // The general "this is the managed/enterprise build" flag -- gates
+  // enterprise-only UI that doesn't warrant its own dedicated flag (unlike
+  // VITE_FEATURE_ENABLE_BILLING, which stays billing-specific: a deployment
+  // could in principle be enterprise without billing being live yet).
+  // Self-hosted OSS builds never set this.
+  VITE_FEATURE_ENABLE_ENTERPRISE: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((v) => v === 'true'),
+
+  // Self-service forgot/reset password is an enterprise-only, managed-
+  // deployment feature (see uigraph-enterprise's README) -- self-hosted
+  // builds never set this, so the sign-in form shows a "contact your admin"
+  // message instead of a link.
+  VITE_FORGOT_PASSWORD_URL: z.url().optional(),
 })
 
 export const env = envSchema.parse({
