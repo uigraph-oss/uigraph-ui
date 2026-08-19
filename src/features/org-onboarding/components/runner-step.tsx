@@ -120,7 +120,7 @@ export function RunnerStep({
                 </span>
                 <span className="text-paragraph mt-1 block text-sm">
                   Paste one prompt into Claude Code or Cursor. It reads the
-                  guide, sets itself up, and maps the repository with you.
+                  guide, sets itself up, and generates the artifacts with you.
                 </span>
               </span>
               {saving === OnboardingRunner.CodingAgent && (
