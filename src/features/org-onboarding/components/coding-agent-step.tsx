@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ArrowUpRight, Check, Copy } from 'lucide-react'
+import { ArrowUpRight, BookOpen, Check, Copy } from 'lucide-react'
 import { useState } from 'react'
 import { OnboardingLayout } from './onboarding-layout'
 import { OnboardingTeamChip } from './onboarding-team-chip'
@@ -110,28 +110,29 @@ export function CodingAgentStep({
         />
       }
     >
-      <div className="mx-auto grid w-full max-w-6xl gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
-        <div className="min-w-0">
+      <div className="mx-auto grid w-full max-w-6xl gap-x-16 gap-y-10 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] xl:items-stretch">
+        <div className="flex min-w-0 flex-col">
           <StepIntro
             title="Add your project to UIGraph."
             description="Open your project in Claude Code or Cursor and let the agent do the setup. It writes the docs, diagrams, and API specs into .uigraph/ and syncs them here — your code never leaves your machine."
           />
 
-          <div className="mt-8 -ml-px">
+          <div className="relative mt-7 pl-5">
+            <span className="bg-stock absolute inset-y-0 left-0 w-0.5 rounded-full" />
             {MODES.map((entry) => (
               <button
                 key={entry.id}
                 type="button"
                 aria-pressed={entry.id === modeID}
                 onClick={() => setModeID(entry.id)}
-                className="group relative block w-full py-4 pl-5 text-left"
+                className="group relative block w-full py-3.5 text-left"
               >
                 <span
                   className={cn(
-                    'absolute inset-y-2 left-0 w-0.5 rounded-full transition-colors',
+                    'absolute inset-y-0 -left-5 w-0.5 rounded-full transition-colors',
                     entry.id === modeID && 'bg-primary',
                     entry.id !== modeID &&
-                      'bg-stock group-hover:bg-paragraph/40'
+                      'group-hover:bg-paragraph/40 bg-transparent'
                   )}
                 />
                 <span
@@ -146,7 +147,7 @@ export function CodingAgentStep({
                 </span>
                 <span
                   className={cn(
-                    'mt-1 block max-w-sm text-sm leading-relaxed transition-colors',
+                    'mt-1 block max-w-md text-sm leading-relaxed transition-colors',
                     entry.id === modeID && 'text-paragraph',
                     entry.id !== modeID && 'text-paragraph/60'
                   )}
@@ -161,15 +162,16 @@ export function CodingAgentStep({
             href={DOCS_URL}
             target="_blank"
             rel="noreferrer"
-            className="text-paragraph hover:text-foreground mt-8 inline-flex items-center gap-1.5 pl-5 text-sm transition-colors"
+            className="group text-paragraph hover:text-foreground mt-7 inline-flex items-center gap-2 self-start text-sm transition-colors xl:mt-auto xl:pt-7"
           >
+            <BookOpen className="size-4" />
             Read the onboarding guide
-            <ArrowUpRight className="size-4" />
+            <ArrowUpRight className="size-3.5 opacity-40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
           </a>
         </div>
 
         <div className="border-stock bg-shading/40 flex h-[26rem] min-w-0 flex-col overflow-hidden rounded-xl border">
-          <div className="border-stock/70 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2.5">
+          <div className="border-stock/70 flex shrink-0 items-center justify-between gap-4 border-b py-2 pr-2 pl-4">
             <span className="text-paragraph/70 text-xs">{mode.label}</span>
             <Button
               preset="ghost"
