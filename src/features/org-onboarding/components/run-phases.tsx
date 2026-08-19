@@ -12,14 +12,18 @@ import {
   LuServer,
 } from 'react-icons/lu'
 
+export const TROUBLESHOOTING_URL =
+  'https://docs.uigraph.app/onboarding/github-actions/troubleshooting'
+
 const PHASES = [
   {
     label: 'Creating Branch',
     icon: LuGitBranchPlus,
-    summary: 'UIGraph is opening a branch of its own on your repository.',
-    note: 'Your default branch is left alone. Everything from here happens on that branch.',
+    summary: 'UIGraph is opening a branch of its own to work on.',
+    note: 'Your default branch is left alone, and a pull request opens once the run finishes.',
     failureHint:
-      'The branch could not be created. Check that UIGraph is still connected here, then retry.',
+      'The branch could not be created. Check that UIGraph is still connected here and allowed to write to this repository, then retry.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#creating-branch`,
   },
   {
     label: 'Preparing',
@@ -29,6 +33,7 @@ const PHASES = [
     note: 'Everything runs on your own runners, so your code never leaves GitHub.',
     failureHint:
       'The run could not start. Check that GitHub Actions is enabled here, then retry.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#preparing`,
   },
   {
     label: 'Installing',
@@ -37,6 +42,7 @@ const PHASES = [
     note: 'This part is quick, and usually takes well under a minute.',
     failureHint:
       'The tools could not be installed. This is usually temporary, so a retry often clears it.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#installing`,
   },
   {
     label: 'Generating',
@@ -46,6 +52,7 @@ const PHASES = [
     note: 'This is the longest step of the run, and normally takes a few minutes.',
     failureHint:
       'Your repository could not be read through. Check your AI provider settings, then retry.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#generating`,
   },
   {
     label: 'Wrapping Up',
@@ -55,6 +62,7 @@ const PHASES = [
     note: 'It sits alongside your code, so the graph stays in step as your code changes.',
     failureHint:
       'The results could not be saved back. Check that UIGraph can write to this repository, then retry.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#wrapping-up`,
   },
   {
     label: 'Uploading to UIGraph',
@@ -63,6 +71,7 @@ const PHASES = [
     note: 'Pages, components, services, and every link between them.',
     failureHint:
       'The run could not reach UIGraph. Check this repository’s UIGraph connection, then retry.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#uploading-to-uigraph`,
   },
   {
     label: 'Finishing Up',
@@ -71,6 +80,7 @@ const PHASES = [
     note: 'Your service opens on the graph as soon as they pass.',
     failureHint:
       'The run did not close out cleanly. Retry, or open the run log to see what happened.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#finishing-up`,
   },
 ]
 

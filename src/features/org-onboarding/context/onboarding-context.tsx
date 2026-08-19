@@ -5,6 +5,7 @@ import { createContext, useLocalStorage } from 'daily-code/react'
 export const OnboardingStep = {
   Team: 'TEAM',
   Runner: 'RUNNER',
+  CodingAgent: 'CODING_AGENT',
   Github: 'GITHUB',
   Repository: 'REPOSITORY',
   Environment: 'ENVIRONMENT',
@@ -15,6 +16,7 @@ export type OnboardingStep =
 
 export const OnboardingRunner = {
   GithubActions: 'GITHUB_ACTIONS',
+  CodingAgent: 'CODING_AGENT',
 } as const
 
 export type OnboardingRunner =
@@ -43,6 +45,9 @@ function resolveStep(progress: OnboardingProgress) {
     progress.step === OnboardingStep.Runner
   ) {
     return OnboardingStep.Runner
+  }
+  if (progress.runner === OnboardingRunner.CodingAgent) {
+    return OnboardingStep.CodingAgent
   }
   if (progress.step === OnboardingStep.Github) return OnboardingStep.Github
   if (!progress.repoOwner || !progress.repoName)

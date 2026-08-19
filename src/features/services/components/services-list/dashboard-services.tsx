@@ -200,15 +200,7 @@ export function DashboardServices() {
       {isServicesLoading ? (
         <SectionLoader label="Loading services..." />
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center gap-4">
-          <SectionNotFound label="No services match your search." />
-          {canImport && services.length === 0 && (
-            <Button preset="cta" onClick={() => setImportOpen(true)}>
-              <Github />
-              Import a repository from GitHub
-            </Button>
-          )}
-        </div>
+        <SectionNotFound label="No services match your search." />
       ) : (
         <div
           className="grid grid-cols-1 gap-4 pb-6"

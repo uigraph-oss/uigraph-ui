@@ -20,10 +20,11 @@ import {
   Node,
   ReactFlow,
   SelectionMode,
+  Viewport,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import * as React from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { DebugNodeBounds } from './debug-node-bounds'
@@ -32,8 +33,14 @@ import { CUSTOM_EDGE_TYPES } from './edges'
 import { EdgeMarkerDefs } from './edges/edge-marker-defs'
 import { createEdgeMarker } from './edges/helpers'
 import { beautifySequenceDiagram } from './helpers/beautify-sequence-diagram'
-import { focusNodes, MAX_ZOOM, MIN_ZOOM } from './helpers/camera'
+import { FIT_DURATION, focusNodes, MAX_ZOOM, MIN_ZOOM } from './helpers/camera'
+import { applyCollapsedFrames } from './helpers/collapse-frames'
 import { findEditorAction } from './helpers/editor-actions'
+import {
+  isCollapsedFrame,
+  isFrameNode,
+  toggleFrameCollapsed,
+} from './helpers/frame-nodes'
 import { applyLevelOfDetail, resolveVisibleDepth } from './helpers/lod'
 import { handleOnGroupDrag, handleOnNodeDrag } from './helpers/on-node-drag'
 import { createGroupNode } from './helpers/xy-flow'
@@ -85,6 +92,7 @@ export function ReactFlowWrapper({
 
     dataSources,
     isPreviewing,
+    tempDiagramState,
 
     setIsCommandPaletteOpen,
 
@@ -95,7 +103,42 @@ export function ReactFlowWrapper({
     reactFlowInstance,
     dataSources,
     setIsCommandPaletteOpen,
+    viewport,
   })
+
+  const viewportFrameRef = useRef<number | null>(null)
+  const pendingViewportRef = useRef<Viewport | null>(null)
+
+  const handleViewportChange = useCallback(
+    (nextViewport: Viewport) => {
+      pendingViewportRef.current = nextViewport
+
+      if (viewportFrameRef.current !== null) return
+
+      viewportFrameRef.current = requestAnimationFrame(() => {
+        viewportFrameRef.current = null
+        if (pendingViewportRef.current) setViewport(pendingViewportRef.current)
+      })
+    },
+    [setViewport]
+  )
+
+  useEffect(() => {
+    return () => {
+      if (viewportFrameRef.current === null) return
+      cancelAnimationFrame(viewportFrameRef.current)
+    }
+  }, [])
+
+  /** The viewport is uncontrolled, so previewing a version must move the camera itself. */
+  const previewVersionId = tempDiagramState?.versionId ?? null
+
+  useEffect(() => {
+    const { reactFlowInstance: rf, viewport: nextViewport } = ref.current
+    if (!rf || !nextViewport) return
+
+    void rf.setViewport(nextViewport, { duration: FIT_DURATION })
+  }, [previewVersionId, ref])
 
   const onConnect = useCallback(
     (params: Connection) =>
@@ -139,7 +182,7 @@ export function ReactFlowWrapper({
         const toNodeId = nodeEl.getAttribute('data-id') || undefined
         if (toNodeId && toNodeId !== fromNode.id) {
           const toNode = nodes.find((n) => n.id === toNodeId)
-          if (toNode && toNode.type !== 'group') {
+          if (toNode && !isFrameNode(toNode)) {
             const edgeId = generateUUID()
             return setEdges((eds) => [
               ...eds,
@@ -253,10 +296,7 @@ export function ReactFlowWrapper({
         }),
       }
 
-      const isContainerNode =
-        newNode.type === 'group' || newNode.type === 'c4Boundary'
-
-      if (isContainerNode) {
+      if (isFrameNode(newNode)) {
         setNodes((nds) => [newNode, ...nds])
       } else {
         reactFlowInstance.addNodes([newNode])
@@ -347,7 +387,7 @@ export function ReactFlowWrapper({
       }
 
       const nodesInBounds = nodes.filter((node: Node) => {
-        if (node.type === 'group' || node.type === 'comment' || node.parentId) {
+        if (isFrameNode(node) || node.type === 'comment' || node.parentId) {
           return false
         }
 
@@ -396,7 +436,7 @@ export function ReactFlowWrapper({
     (event: MouseEvent | TouchEvent, node: Node) => {
       if (!reactFlowInstance) return
 
-      if (node.type === 'group') {
+      if (isFrameNode(node)) {
         handleOnGroupDrag(node, reactFlowInstance)
       } else if (node.id.startsWith('message-')) {
         // Dragging a message reorders it: re-sort by Y, snap row
@@ -428,10 +468,12 @@ export function ReactFlowWrapper({
 
   const lodDepth = isC4Diagram ? visibleDepth : Infinity
 
-  const detailed = useMemo(
-    () => applyLevelOfDetail(nodes, edges, lodDepth),
-    [nodes, edges, lodDepth]
-  )
+  /** LOD runs first so its font-size maths still sees the expanded widths. */
+  const detailed = useMemo(() => {
+    const lod = applyLevelOfDetail(nodes, edges, lodDepth)
+
+    return applyCollapsedFrames(lod.nodes, lod.edges)
+  }, [nodes, edges, lodDepth])
 
   const isNodeWritable = !drawingMode && !forceReadOnly && !isPreviewing
 
@@ -451,10 +493,35 @@ export function ReactFlowWrapper({
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable
 
-      if (isTyping) {
-        const action = findEditorAction(event)
-        const rf = ref.current.reactFlowInstance
+      const isCtrlOrCmd = event.ctrlKey || event.metaKey
+      const isEditingNodeLabel =
+        isTyping &&
+        target.closest('.react-flow__node') !== null &&
+        target.closest('.react-flow__node-comment') === null
+      const canUndoRedo = !isTyping || isEditingNodeLabel
 
+      if (isCtrlOrCmd && !event.shiftKey && event.key === 'z' && canUndoRedo) {
+        event.preventDefault()
+        event.stopPropagation()
+        undo()
+        return
+      }
+
+      if (
+        isCtrlOrCmd &&
+        (event.key === 'y' || (event.shiftKey && event.key === 'z')) &&
+        canUndoRedo
+      ) {
+        event.preventDefault()
+        event.stopPropagation()
+        redo()
+        return
+      }
+
+      const action = findEditorAction(event)
+      const rf = ref.current.reactFlowInstance
+
+      if (isTyping) {
         if (action?.allowInInput && rf) {
           if (action.preventDefault) event.preventDefault()
 
@@ -467,33 +534,15 @@ export function ReactFlowWrapper({
         return
       }
 
-      const isCtrlOrCmd = event.ctrlKey || event.metaKey
-
-      if (isCtrlOrCmd && !event.shiftKey && event.key === 'z') {
-        event.preventDefault()
-        event.stopPropagation()
-        undo()
-      } else if (
-        isCtrlOrCmd &&
-        (event.key === 'y' || (event.shiftKey && event.key === 'z'))
-      ) {
-        event.preventDefault()
-        event.stopPropagation()
-        redo()
-      } else {
-        const action = findEditorAction(event)
-        const rf = ref.current.reactFlowInstance
-
-        if (action && rf) {
-          if (action.preventDefault) {
-            event.preventDefault()
-          }
-
-          void action.handler({
-            rf,
-            openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
-          })
+      if (action && rf) {
+        if (action.preventDefault) {
+          event.preventDefault()
         }
+
+        void action.handler({
+          rf,
+          openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
+        })
       }
     }
 
@@ -560,9 +609,14 @@ export function ReactFlowWrapper({
         connectionMode={ConnectionMode.Strict}
         connectionLineStyle={{ strokeWidth: 3 }}
         defaultEdgeOptions={{ type: 'default', style: { strokeWidth: 3 } }}
-        viewport={viewport ?? undefined}
-        onViewportChange={setViewport}
+        defaultViewport={viewport ?? undefined}
+        onViewportChange={handleViewportChange}
+        onMoveEnd={(_, nextViewport) => setViewport(nextViewport)}
         onNodeDoubleClick={(_, node) => {
+          if (isCollapsedFrame(node)) {
+            return setNodes((prev) => toggleFrameCollapsed(prev, node.id))
+          }
+
           const rf = ref.current.reactFlowInstance
           if (node.type !== 'c4Boundary' || !rf) return
 

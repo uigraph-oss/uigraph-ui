@@ -1,12 +1,14 @@
 'use client'
 
+import { BetterDialogProvider } from '@/components/better-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ImportGitHubModal } from '@/features/github-import/import-github-modal'
 import { useGitHubConnection } from '@/features/github-import/use-github-connection'
 import { usePermissions } from '@/hooks/use-permissions'
 import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
 import { Github, Loader2, Plus, Unplug } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { SettingsHeader } from '../components/settings-header'
 
@@ -22,6 +24,7 @@ function GitHubSettings({ orgID }: { orgID: string }) {
   const { isAdmin } = usePermissions()
   const enabled = useAuthStore((state) => state.features.github)
   const github = useGitHubConnection(orgID)
+  const [importOpen, setImportOpen] = useState(false)
 
   const installation = github.installation
   const connected = github.connected
@@ -40,11 +43,12 @@ function GitHubSettings({ orgID }: { orgID: string }) {
           isAdmin &&
           enabled &&
           connected && (
-            <Button className="h-11 rounded-[0.75rem] px-6 text-sm" asChild>
-              <Link to="/repositories/import">
-                <Plus className="mr-0.5 h-4 w-4" />
-                Add repository
-              </Link>
+            <Button
+              className="h-11 rounded-[0.75rem] px-6 text-sm"
+              onClick={() => setImportOpen(true)}
+            >
+              <Plus className="mr-0.5 h-4 w-4" />
+              Add repository
             </Button>
           )
         }
@@ -113,6 +117,14 @@ function GitHubSettings({ orgID }: { orgID: string }) {
           </div>
         )}
       </div>
+
+      <BetterDialogProvider
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        className="h-full! [--height:100%] [--width:100%]"
+      >
+        <ImportGitHubModal orgID={orgID} onOpenChange={setImportOpen} />
+      </BetterDialogProvider>
     </>
   )
 }

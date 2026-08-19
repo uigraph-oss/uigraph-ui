@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { beautifyDiagramWithAI } from '../api/beautify'
 import { beautifyDiagram } from '../helpers/beautify-diagram'
+import { isFrameNode } from '../helpers/frame-nodes'
 import { useDiagramData } from './use-diagram-data'
 
 export function useAiBeautify({
@@ -55,10 +56,9 @@ export function useAiBeautify({
           ...node,
           selected: false,
           dragging: false,
-          data:
-            node.type === 'group'
-              ? { ...node.data, autoLayout: false }
-              : node.data,
+          data: isFrameNode(node)
+            ? { ...node.data, autoLayout: false }
+            : node.data,
         })),
         edges: laidOut.edges.map((edge) => ({ ...edge, selected: false })),
         theme: result.theme,

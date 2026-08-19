@@ -19,7 +19,6 @@ import { LuImport } from 'react-icons/lu'
 import { SiMermaid } from 'react-icons/si'
 import { toast } from 'sonner'
 import * as icons from './components/icons'
-import { ZoomLevelControl } from './components/zoom-level-control'
 import { useFlowDiagramContext } from './context/flow-diagram-context'
 import { applyAutoLayout } from './helpers/auto-layout'
 import { beautifyDiagram } from './helpers/beautify-diagram'
@@ -43,7 +42,7 @@ export function FloatingCanvasToolbar() {
     setNodes,
     setEdges,
 
-    selectedGroup,
+    selectedFrame,
     reactFlowInstance,
 
     cursorMode,
@@ -132,8 +131,6 @@ export function FloatingCanvasToolbar() {
           <icons.ZoomOutIcon />
         </ToolbarButton>
 
-        <ZoomLevelControl />
-
         <ToolbarButton
           onClick={() =>
             reactFlowInstance && zoomBy(reactFlowInstance, ZOOM_STEP)
@@ -150,27 +147,49 @@ export function FloatingCanvasToolbar() {
         <ToolbarButton
           delayDuration={100}
           tooltipPosition="top"
-          tooltip={selectedGroup ? 'Ungroup nodes' : 'Group nodes'}
+          tooltip={selectedFrame ? 'Ungroup nodes' : 'Group nodes'}
           disabled={isPreviewing}
-          isActive={drawingMode || !!selectedGroup}
+          isActive={drawingMode || !!selectedFrame}
           onClick={() => {
-            if (selectedGroup) {
+            if (selectedFrame) {
               const childNodesSet = new Set(
-                (selectedGroup.data?.childNodes as string[]) ?? []
+                (selectedFrame.data?.childNodes as string[]) ?? []
               )
+
+              /** A nested frame hands its children up to its own parent. */
+              const parentId = selectedFrame.parentId
 
               setNodes((prev) => {
                 return prev
-                  .filter((node) => node.id !== selectedGroup.id)
+                  .filter((node) => node.id !== selectedFrame.id)
                   .map((node) => {
                     if (childNodesSet.has(node.id)) {
                       return {
                         ...node,
                         selected: false,
-                        parentId: undefined,
+                        parentId,
                         position: {
-                          x: node.position.x + selectedGroup.position.x,
-                          y: node.position.y + selectedGroup.position.y,
+                          x: node.position.x + selectedFrame.position.x,
+                          y: node.position.y + selectedFrame.position.y,
+                        },
+                      }
+                    }
+
+                    if (parentId && node.id === parentId) {
+                      const siblings = (node.data?.childNodes as string[]) ?? []
+
+                      return {
+                        ...node,
+                        data: {
+                          ...node.data,
+                          childNodes: [
+                            ...siblings.filter(
+                              (childNodeId) =>
+                                childNodeId !== selectedFrame.id &&
+                                !childNodesSet.has(childNodeId)
+                            ),
+                            ...childNodesSet,
+                          ],
                         },
                       }
                     }

@@ -173,8 +173,8 @@ export function EnvironmentStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingStepTitle current={3} />}
-      headerCenterContent={<OnboardingStepTicks current={3} />}
+      headerLeftContent={<OnboardingStepTitle current={2} />}
+      headerCenterContent={<OnboardingStepTicks current={2} />}
       headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-2xl">

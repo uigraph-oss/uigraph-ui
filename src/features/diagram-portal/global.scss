@@ -188,15 +188,27 @@
   }
 }
 
+.react-flow__edge {
+  transition: opacity 0.15s ease-in-out;
+}
+
 .react-flow.lod-active .react-flow__viewport:not(.downloading) {
   .react-flow__node.lod-hidden,
   .react-flow__edge.lod-hidden {
+    opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    transition:
+      opacity 0.15s ease-in-out,
+      visibility 0s linear 0.15s !important;
   }
 
   .react-flow__edgelabel-renderer {
+    opacity: 0;
     visibility: hidden;
+    transition:
+      opacity 0.15s ease-in-out,
+      visibility 0s linear 0.15s;
   }
 
   .react-flow__node.lod-collapsed {

@@ -16,6 +16,7 @@ import { ConfigurePropertiesModal } from './configure-properties'
 import { EdgeConfigure } from './edge-configure'
 import { NodeBuilderConfigure } from './node-builder-configure'
 import { NodeBuilderStyle } from './node-builder-style'
+import { NodeC4Data } from './node-c4-data'
 import { NodeC4Style } from './node-c4-style'
 import { NodeCloudStyle } from './node-cloud-style'
 import { NodeCodeStyle } from './node-code-style'
@@ -179,6 +180,11 @@ export function FloatingProperties() {
                     <TableProperties />
                   ) : node.type === 'subDiagram' ? (
                     <NodeSubDiagramProperties />
+                  ) : node.type === 'c4' || node.type === 'c4Boundary' ? (
+                    <>
+                      <NodeBuilderConfigure />
+                      <NodeC4Data />
+                    </>
                   ) : (
                     <NodeBuilderConfigure />
                   )}

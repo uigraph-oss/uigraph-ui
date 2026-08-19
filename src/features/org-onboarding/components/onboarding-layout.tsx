@@ -7,12 +7,14 @@ export function OnboardingLayout({
   headerLeftContent,
   headerCenterContent,
   headerRightContent,
+  hideSkip,
   footer,
   children,
 }: {
   headerLeftContent?: ReactNode
   headerCenterContent?: ReactNode
   headerRightContent?: ReactNode
+  hideSkip?: boolean
   footer?: ReactNode
   children: ReactNode
 }) {
@@ -30,7 +32,7 @@ export function OnboardingLayout({
 
         <div className="ml-auto flex items-center gap-4">
           {headerRightContent}
-          <OnboardingSkip />
+          {!hideSkip && <OnboardingSkip />}
           <UserDropdownMenu />
         </div>
       </header>

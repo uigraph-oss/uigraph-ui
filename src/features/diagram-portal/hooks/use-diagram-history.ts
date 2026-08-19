@@ -2,7 +2,8 @@ import { Edge, Node } from '@xyflow/react'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useRef } from 'react'
 
-const MAX_HISTORY = 50
+const MAX_HISTORY = 100
+const COMMIT_DELAY = 500
 
 type Snapshot = {
   nodes: Node[]
@@ -26,21 +27,17 @@ export function useDiagramHistory({
 }: UseDiagramHistoryProps) {
   const historyRef = useRef<Snapshot[]>([])
   const indexRef = useRef(-1)
+  const pendingRef = useRef<Snapshot | null>(null)
 
-  useEffect(() => {
-    if (!enabled) return
+  const commitPending = useCallback(() => {
+    const snapshot = pendingRef.current
 
-    if (nodes.some((node) => node.dragging)) return
+    if (!snapshot) return
 
-    const snapshot = { nodes, edges }
+    pendingRef.current = null
+
     const history = historyRef.current
     const index = indexRef.current
-
-    if (history.length === 0) {
-      historyRef.current = [snapshot]
-      indexRef.current = 0
-      return
-    }
 
     if (isEqual(snapshot, history[index])) return
 
@@ -52,10 +49,34 @@ export function useDiagramHistory({
       history.shift()
       indexRef.current = history.length - 1
     }
-  }, [nodes, edges, enabled])
+  }, [])
+
+  useEffect(() => {
+    if (!enabled) return
+
+    if (nodes.some((node) => node.dragging)) return
+
+    const snapshot = { nodes, edges }
+    const history = historyRef.current
+
+    if (history.length === 0) {
+      historyRef.current = [snapshot]
+      indexRef.current = 0
+      return
+    }
+
+    if (isEqual(snapshot, history[indexRef.current])) return
+
+    pendingRef.current = snapshot
+    const timeout = setTimeout(commitPending, COMMIT_DELAY)
+
+    return () => clearTimeout(timeout)
+  }, [nodes, edges, enabled, commitPending])
 
   const undo = useCallback(() => {
     if (!enabled) return
+
+    commitPending()
 
     const index = indexRef.current
 
@@ -65,10 +86,12 @@ export function useDiagramHistory({
     const snapshot = historyRef.current[index - 1]
     setNodes(snapshot.nodes)
     setEdges(snapshot.edges)
-  }, [enabled, setNodes, setEdges])
+  }, [enabled, setNodes, setEdges, commitPending])
 
   const redo = useCallback(() => {
     if (!enabled) return
+
+    commitPending()
 
     const history = historyRef.current
     const index = indexRef.current
@@ -79,7 +102,7 @@ export function useDiagramHistory({
     const snapshot = history[index + 1]
     setNodes(snapshot.nodes)
     setEdges(snapshot.edges)
-  }, [enabled, setNodes, setEdges])
+  }, [enabled, setNodes, setEdges, commitPending])
 
   return { undo, redo }
 }

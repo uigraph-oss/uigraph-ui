@@ -4,6 +4,7 @@ import {
   currentRunPhase,
   isTerminal,
   runPhases,
+  TROUBLESHOOTING_URL,
   useElapsed,
   type RunPhase,
 } from '@/features/org-onboarding/components/run-phases'
@@ -332,15 +333,27 @@ export function ImportRunStep({
           <p className="text-paragraph mt-2 text-sm leading-relaxed">
             {value?.error ?? 'The run stopped before it could finish.'}
           </p>
-          <Button
-            preset="primary"
-            className="mt-4 h-9 rounded-[0.625rem] px-4 text-sm has-[>svg]:px-4"
-            disabled={isRetrying}
-            onClick={() => void handleRetry()}
-          >
-            {isRetrying && <Loader2 className="size-4 animate-spin" />}
-            Retry run
-          </Button>
+          <div className="mt-4 flex flex-wrap items-center gap-5">
+            <Button
+              preset="primary"
+              className="h-9 rounded-[0.625rem] px-4 text-sm has-[>svg]:px-4"
+              disabled={isRetrying}
+              onClick={() => void handleRetry()}
+            >
+              {isRetrying && <Loader2 className="size-4 animate-spin" />}
+              Retry run
+            </Button>
+            <a
+              href={
+                failedPhase ? failedPhase.troubleshooting : TROUBLESHOOTING_URL
+              }
+              target="_blank"
+              rel="noreferrer"
+              className="text-paragraph hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors"
+            >
+              What to check <ExternalLink className="size-3" />
+            </a>
+          </div>
         </div>
       )}
 

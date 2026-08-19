@@ -403,16 +403,6 @@ const RunPage = lazy(() =>
     default: mod.RunPage,
   }))
 )
-const ImportWizardPage = lazy(() =>
-  import('@/features/github-import/import-wizard-page').then((mod) => ({
-    default: mod.ImportWizardPage,
-  }))
-)
-const ImportProgressPage = lazy(() =>
-  import('@/features/github-import/import-progress-page').then((mod) => ({
-    default: mod.ImportProgressPage,
-  }))
-)
 const DiagramPortalPage = lazy(() =>
   import('@/features/diagram-portal/diagram-portal-page').then((mod) => ({
     default: mod.DiagramPortalPage,
@@ -544,11 +534,6 @@ export function AppRoutes() {
           <Route
             path="/services/graph"
             element={<OrganizationDependencyGraphPage />}
-          />
-          <Route path="/repositories/import" element={<ImportWizardPage />} />
-          <Route
-            path="/repositories/import/:importId"
-            element={<ImportProgressPage />}
           />
           <Route path="/services/:serviceId" element={<ServiceLayout />}>
             <Route index element={<Navigate to="overview" replace />} />

@@ -2,16 +2,23 @@
 
 import { START_REPOSITORY_IMPORT } from '@/features/github-import/api'
 import { usePermissions } from '@/hooks/use-permissions'
-import { useAuthStore, useCurrentOrganization } from '@/store/auth-store'
+import {
+  refreshOrganizations,
+  useAuthStore,
+  useCurrentOrganization,
+} from '@/store/auth-store'
 import { useMutation } from '@apollo/client'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { COMPLETE_ONBOARDING } from './api/onboarding'
+import { CodingAgentStep } from './components/coding-agent-step'
 import { ConnectGitHubStep } from './components/connect-github-step'
 import { EnvironmentStep } from './components/environment-step'
 import { RunnerStep } from './components/runner-step'
 import { SelectRepositoryStep } from './components/select-repository-step'
 import {
   OnboardingProvider,
+  OnboardingRunner,
   OnboardingStep,
   useOnboarding,
 } from './context/onboarding-context'
@@ -35,6 +42,7 @@ function ImportFlow() {
   const githubEnabled = useAuthStore((state) => state.features.github)
   const { orgID, progress, step, save, clear } = useOnboarding()
   const [startImport] = useMutation(START_REPOSITORY_IMPORT)
+  const [completeOnboarding] = useMutation(COMPLETE_ONBOARDING)
 
   async function guard(action: () => Promise<void>) {
     try {
@@ -58,7 +66,33 @@ function ImportFlow() {
           })
         }
         onNext={(runner) =>
-          guard(() => save({ step: OnboardingStep.Github, runner }))
+          guard(() =>
+            save({
+              step:
+                runner === OnboardingRunner.CodingAgent
+                  ? OnboardingStep.CodingAgent
+                  : OnboardingStep.Github,
+              runner,
+            })
+          )
+        }
+      />
+    )
+  }
+
+  if (step === OnboardingStep.CodingAgent) {
+    return (
+      <CodingAgentStep
+        onBack={() =>
+          void guard(() => save({ step: OnboardingStep.Runner, runner: null }))
+        }
+        onDone={() =>
+          guard(async () => {
+            await completeOnboarding({ variables: { orgId: orgID } })
+            await refreshOrganizations()
+            clear()
+            void navigate('/services')
+          })
         }
       />
     )

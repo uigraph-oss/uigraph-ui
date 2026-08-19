@@ -31,8 +31,8 @@ export function ConnectGitHubStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingStepTitle current={1} />}
-      headerCenterContent={<OnboardingStepTicks current={1} />}
+      headerLeftContent={<OnboardingStepTitle current={0} />}
+      headerCenterContent={<OnboardingStepTicks current={0} />}
       headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-lg text-center">

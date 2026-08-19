@@ -45,7 +45,7 @@ export function CreateTeamStep({
   }
 
   return (
-    <OnboardingLayout>
+    <OnboardingLayout hideSkip>
       <div className="mx-auto w-full max-w-lg">
         <div className="border-stock bg-shading mb-5 flex size-10 items-center justify-center rounded-xl border">
           <Users className="size-5" />

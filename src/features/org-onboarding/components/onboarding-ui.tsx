@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { type ReactNode } from 'react'
 
 const STEPS = [
-  'Choose runner',
   'Connect GitHub',
   'Select repository',
   'Check environment',
