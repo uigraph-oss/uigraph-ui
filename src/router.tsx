@@ -393,6 +393,16 @@ const GetStartedPage = lazy(() =>
     default: mod.GetStartedPage,
   }))
 )
+const ImportPage = lazy(() =>
+  import('@/features/org-onboarding/import-page').then((mod) => ({
+    default: mod.ImportPage,
+  }))
+)
+const RunPage = lazy(() =>
+  import('@/features/org-onboarding/run-page').then((mod) => ({
+    default: mod.RunPage,
+  }))
+)
 const ImportWizardPage = lazy(() =>
   import('@/features/github-import/import-wizard-page').then((mod) => ({
     default: mod.ImportWizardPage,
@@ -464,6 +474,8 @@ export function AppRoutes() {
 
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/get-started" element={<GetStartedPage />} />
+        <Route path="/get-started/import" element={<ImportPage />} />
+        <Route path="/get-started/import/:importID" element={<RunPage />} />
 
         <Route
           path="/diagram/:diagramId"

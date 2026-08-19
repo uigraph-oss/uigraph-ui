@@ -35,7 +35,7 @@ export function useDashboardServicesList() {
     sortDir,
   }
 
-  const { data, loading } = useQuery(SERVICES, {
+  const { data, loading, refetch } = useQuery(SERVICES, {
     variables: servicesVariables,
     fetchPolicy: 'cache-and-network',
     skip: !orgId,
@@ -113,5 +113,6 @@ export function useDashboardServicesList() {
     createService,
     updateService,
     deleteService,
+    refetchServices: refetch,
   }
 }

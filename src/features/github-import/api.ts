@@ -26,6 +26,19 @@ export const GITHUB_REPOSITORIES = graphql(`
   }
 `)
 
+export const REPOSITORY_AI_CONFIGURATION = graphql(`
+  query GitHubImportAIConfiguration(
+    $orgID: ID!
+    $owner: String!
+    $repo: String!
+  ) {
+    repositoryAIConfiguration(orgId: $orgID, owner: $owner, repo: $repo) {
+      missing
+      ready
+    }
+  }
+`)
+
 export const REPOSITORY_IMPORT = graphql(`
   query GitHubImportRepositoryImport($orgID: ID!, $importID: ID!) {
     repositoryImport(orgId: $orgID, importId: $importID) {
