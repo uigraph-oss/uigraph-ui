@@ -14,12 +14,13 @@ import {
 
 const PHASES = [
   {
-    label: 'Creating Branch',
+    label: 'Creating Branch and PR',
     icon: LuGitBranchPlus,
-    summary: 'UIGraph is opening a branch of its own on your repository.',
-    note: 'Your default branch is left alone. Everything from here happens on that branch.',
+    summary:
+      'UIGraph is opening a branch of its own, and a draft pull request for it.',
+    note: 'Your default branch is left alone, and the pull request stays a draft until the run finishes.',
     failureHint:
-      'The branch could not be created. Check that UIGraph is still connected here, then retry.',
+      'The branch or its pull request could not be created. Check that UIGraph is still connected here and allowed to open pull requests, then retry.',
   },
   {
     label: 'Preparing',
