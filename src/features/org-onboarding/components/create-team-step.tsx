@@ -44,8 +44,10 @@ export function CreateTeamStep({
     onSkip()
   }
 
+  const showSkipForNow = !isTeamsLoading && teams.length > 0
+
   return (
-    <OnboardingLayout>
+    <OnboardingLayout hideSkip={showSkipForNow}>
       <div className="mx-auto w-full max-w-lg">
         <div className="border-stock bg-shading mb-5 flex size-10 items-center justify-center rounded-xl border">
           <Users className="size-5" />
@@ -93,7 +95,7 @@ export function CreateTeamStep({
           {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
         </div>
 
-        {!isTeamsLoading && teams.length > 0 && (
+        {showSkipForNow && (
           <div className="mt-8">
             <Label>Your teams</Label>
             <div className="border-stock mt-2 overflow-hidden rounded-xl border">
