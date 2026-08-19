@@ -1,14 +1,58 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RiOpenaiFill } from 'react-icons/ri'
-import { SiAnthropic, SiGithub } from 'react-icons/si'
+import { SiClaude, SiCursor, SiGithub } from 'react-icons/si'
 import { OnboardingRunner } from '../context/onboarding-context'
 import { MappingRunAnimation } from './mapping-run-animation'
 import { OnboardingLayout } from './onboarding-layout'
 import { OnboardingTeamChip } from './onboarding-team-chip'
 import { StepIntro } from './onboarding-ui'
+
+const AGENT_ICONS = [
+  { name: 'Claude', icon: SiClaude, size: 'size-5' },
+  { name: 'Codex', icon: RiOpenaiFill, size: 'size-[1.5rem]' },
+  { name: 'Cursor', icon: SiCursor, size: 'size-5' },
+]
+
+const AGENT_PLACES = [
+  { x: 0, scale: 1, opacity: 1, filter: 'blur(0px)', zIndex: 2 },
+  { x: 12, scale: 0.5, opacity: 0.18, filter: 'blur(1.5px)', zIndex: 1 },
+  { x: -12, scale: 0.5, opacity: 0.18, filter: 'blur(1.5px)', zIndex: 1 },
+]
+
+function AgentIcons() {
+  const [front, setFront] = useState(0)
+
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setFront((current) => (current + 1) % AGENT_ICONS.length),
+      2200
+    )
+    return () => window.clearInterval(timer)
+  }, [])
+
+  return (
+    <span className="border-stock/70 text-paragraph relative flex size-11 shrink-0 items-center justify-center rounded-lg border">
+      {AGENT_ICONS.map((agent, index) => (
+        <motion.span
+          key={agent.name}
+          className="absolute flex items-center justify-center"
+          animate={
+            AGENT_PLACES[
+              (index - front + AGENT_ICONS.length) % AGENT_ICONS.length
+            ]
+          }
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+        >
+          <agent.icon className={agent.size} />
+        </motion.span>
+      ))}
+    </span>
+  )
+}
 
 export function RunnerStep({
   onBack,
@@ -69,10 +113,7 @@ export function RunnerStep({
               className="group border-stock bg-shading hover:border-paragraph/30 hover:bg-stock/50 focus-visible:ring-primary/40 flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
               onClick={() => void handleChoose(OnboardingRunner.CodingAgent)}
             >
-              <span className="border-stock/70 text-paragraph flex size-11 shrink-0 items-center justify-center gap-1.5 rounded-lg border">
-                <SiAnthropic className="size-4" />
-                <RiOpenaiFill className="size-4" />
-              </span>
+              <AgentIcons />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-medium">
                   Start with a coding agent
