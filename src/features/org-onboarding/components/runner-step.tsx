@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { useState } from 'react'
-import { LuGithub, LuTerminal } from 'react-icons/lu'
+import { RiOpenaiFill } from 'react-icons/ri'
+import { SiAnthropic, SiGithub } from 'react-icons/si'
 import { OnboardingRunner } from '../context/onboarding-context'
 import { MappingRunAnimation } from './mapping-run-animation'
 import { OnboardingLayout } from './onboarding-layout'
@@ -44,7 +45,7 @@ export function RunnerStep({
               onClick={() => void handleChoose(OnboardingRunner.GithubActions)}
             >
               <span className="border-stock/70 text-paragraph flex size-11 shrink-0 items-center justify-center rounded-lg border">
-                <LuGithub className="size-5" />
+                <SiGithub className="size-5" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-medium">
@@ -68,15 +69,13 @@ export function RunnerStep({
               className="group border-stock bg-shading hover:border-paragraph/30 hover:bg-stock/50 focus-visible:ring-primary/40 flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
               onClick={() => void handleChoose(OnboardingRunner.CodingAgent)}
             >
-              <span className="border-stock/70 text-paragraph flex size-11 shrink-0 items-center justify-center rounded-lg border">
-                <LuTerminal className="size-5" />
+              <span className="border-stock/70 text-paragraph flex size-11 shrink-0 items-center justify-center gap-1.5 rounded-lg border">
+                <SiAnthropic className="size-4" />
+                <RiOpenaiFill className="size-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                <span className="block text-sm font-medium">
                   Start with a coding agent
-                  <span className="border-primary/40 text-primary rounded border px-1.5 py-0.5 font-mono text-[0.625rem]">
-                    Recommended
-                  </span>
                 </span>
                 <span className="text-paragraph mt-1 block text-sm">
                   Paste one prompt into Claude Code or Cursor. It reads the
