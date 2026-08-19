@@ -61,8 +61,8 @@ export function SelectRepositoryStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingStepTitle current={2} />}
-      headerCenterContent={<OnboardingStepTicks current={2} />}
+      headerLeftContent={<OnboardingStepTitle current={1} />}
+      headerCenterContent={<OnboardingStepTicks current={1} />}
       headerRightContent={<OnboardingTeamChip />}
     >
       <div className="mx-auto w-full max-w-2xl">

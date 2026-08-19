@@ -93,8 +93,8 @@ export function RunStep({
   if (!value && importQuery.error) {
     return (
       <OnboardingLayout
-        headerLeftContent={<OnboardingStepTitle current={4} />}
-        headerCenterContent={<OnboardingStepTicks current={4} />}
+        headerLeftContent={<OnboardingStepTitle current={3} />}
+        headerCenterContent={<OnboardingStepTicks current={3} />}
       >
         <div className="mx-auto w-full max-w-2xl">
           <StepIntro
@@ -129,8 +129,8 @@ export function RunStep({
   if (completed) {
     return (
       <OnboardingLayout
-        headerLeftContent={<OnboardingStepTitle current={4} />}
-        headerCenterContent={<OnboardingStepTicks current={4} />}
+        headerLeftContent={<OnboardingStepTitle current={3} />}
+        headerCenterContent={<OnboardingStepTicks current={3} />}
       >
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
@@ -150,8 +150,8 @@ export function RunStep({
 
   return (
     <OnboardingLayout
-      headerLeftContent={<OnboardingStepTitle current={4} />}
-      headerCenterContent={<OnboardingStepTicks current={4} />}
+      headerLeftContent={<OnboardingStepTitle current={3} />}
+      headerCenterContent={<OnboardingStepTicks current={3} />}
     >
       <div className="mx-auto w-full max-w-5xl">
         <StepIntro
