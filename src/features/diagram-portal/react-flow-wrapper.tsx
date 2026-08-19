@@ -451,10 +451,35 @@ export function ReactFlowWrapper({
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable
 
-      if (isTyping) {
-        const action = findEditorAction(event)
-        const rf = ref.current.reactFlowInstance
+      const isCtrlOrCmd = event.ctrlKey || event.metaKey
+      const isEditingNodeLabel =
+        isTyping &&
+        target.closest('.react-flow__node') !== null &&
+        target.closest('.react-flow__node-comment') === null
+      const canUndoRedo = !isTyping || isEditingNodeLabel
 
+      if (isCtrlOrCmd && !event.shiftKey && event.key === 'z' && canUndoRedo) {
+        event.preventDefault()
+        event.stopPropagation()
+        undo()
+        return
+      }
+
+      if (
+        isCtrlOrCmd &&
+        (event.key === 'y' || (event.shiftKey && event.key === 'z')) &&
+        canUndoRedo
+      ) {
+        event.preventDefault()
+        event.stopPropagation()
+        redo()
+        return
+      }
+
+      const action = findEditorAction(event)
+      const rf = ref.current.reactFlowInstance
+
+      if (isTyping) {
         if (action?.allowInInput && rf) {
           if (action.preventDefault) event.preventDefault()
 
@@ -467,33 +492,15 @@ export function ReactFlowWrapper({
         return
       }
 
-      const isCtrlOrCmd = event.ctrlKey || event.metaKey
-
-      if (isCtrlOrCmd && !event.shiftKey && event.key === 'z') {
-        event.preventDefault()
-        event.stopPropagation()
-        undo()
-      } else if (
-        isCtrlOrCmd &&
-        (event.key === 'y' || (event.shiftKey && event.key === 'z'))
-      ) {
-        event.preventDefault()
-        event.stopPropagation()
-        redo()
-      } else {
-        const action = findEditorAction(event)
-        const rf = ref.current.reactFlowInstance
-
-        if (action && rf) {
-          if (action.preventDefault) {
-            event.preventDefault()
-          }
-
-          void action.handler({
-            rf,
-            openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
-          })
+      if (action && rf) {
+        if (action.preventDefault) {
+          event.preventDefault()
         }
+
+        void action.handler({
+          rf,
+          openCommandPalette: () => ref.current.setIsCommandPaletteOpen(true),
+        })
       }
     }
 
