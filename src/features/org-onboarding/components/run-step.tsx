@@ -16,7 +16,13 @@ import {
   StepIntro,
 } from './onboarding-ui'
 import { RunPhaseDetail } from './run-phase-detail'
-import { isTerminal, RunPhaseList, runPhases, useElapsed } from './run-phases'
+import {
+  isTerminal,
+  RunPhaseList,
+  runPhases,
+  TROUBLESHOOTING_URL,
+  useElapsed,
+} from './run-phases'
 
 export function RunStep({
   orgID,
@@ -225,6 +231,18 @@ export function RunStep({
                 {isRetrying && <Loader2 className="size-4 animate-spin" />}
                 Retry run
               </Button>
+              <a
+                href={
+                  failedPhase
+                    ? failedPhase.troubleshooting
+                    : TROUBLESHOOTING_URL
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="text-paragraph hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors"
+              >
+                What to check <ExternalLink className="size-3" />
+              </a>
               {value?.runUrl && (
                 <a
                   href={value.runUrl}
