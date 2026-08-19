@@ -9,6 +9,7 @@ import {
   MongoCollectionSchema,
   MongoEditorSchema,
 } from '../components/nosql-editor/nosql-schema'
+import { isFrameNode } from '../helpers/frame-nodes'
 import { useAiBeautify } from '../hooks/use-ai-beautify'
 import { useDiagramData } from '../hooks/use-diagram-data'
 import { useDiagramPortalMutation } from '../hooks/use-diagram-mutation'
@@ -52,7 +53,10 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       null
     )
 
-    const [cursorMode, setCursorMode] = useState<'select' | 'pan'>('select')
+    const [cursorMode, setCursorMode] = useLocalStorage<'select' | 'pan'>(
+      'flow-diagram-cursor-mode',
+      'select'
+    )
     const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
 
     const [searchParams, setSearchParams] = useSearchParams()
@@ -90,12 +94,12 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       false
     )
 
-    const selectedGroup = useMemo(() => {
-      const selectedGroups = diagramData.nodes.filter(
-        (node) => node.selected && node.type === 'group'
+    const selectedFrame = useMemo(() => {
+      const selectedFrames = diagramData.nodes.filter(
+        (node) => node.selected && isFrameNode(node)
       )
 
-      if (selectedGroups.length === 1) return selectedGroups[0]
+      if (selectedFrames.length === 1) return selectedFrames[0]
 
       return null
     }, [diagramData.nodes])
@@ -186,7 +190,7 @@ export const [FlowDiagramProvider, useFlowDiagramContext] = createContext(
       setChildDiagramIds,
       openChildDiagram,
 
-      selectedGroup,
+      selectedFrame,
       dataTablesMap,
       isC4Diagram,
 

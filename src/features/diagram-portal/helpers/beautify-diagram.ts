@@ -2,6 +2,7 @@ import { Edge, Node } from '@xyflow/react'
 import { applyAutoLayout } from './auto-layout'
 import { beautifySequenceDiagram } from './beautify-sequence-diagram'
 import { fixEdgeHandles } from './edge-handles'
+import { isFrameNode } from './frame-nodes'
 
 function beautifyStandardDiagram(
   nodes: Node[],
@@ -13,7 +14,7 @@ function beautifyStandardDiagram(
   // Prevent GroupNode's live `computeGroupAutoLayout` effect from
   // immediately re-fighting the box Beautify just computed for this group.
   const stabilized = laidOut.map((n) =>
-    n.type === 'group' && n.data?.autoLayout
+    isFrameNode(n) && n.data?.autoLayout
       ? { ...n, data: { ...n.data, autoLayout: false } }
       : n
   )

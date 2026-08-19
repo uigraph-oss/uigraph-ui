@@ -1,5 +1,6 @@
 import { Edge, Node } from '@xyflow/react'
 import dagre from 'dagre'
+import { isFrameNode } from './frame-nodes'
 
 const DEFAULT_NODE_WIDTH = 160
 const DEFAULT_NODE_HEIGHT = 60
@@ -89,7 +90,7 @@ function getAbsoluteBounds(node: Node) {
  */
 function normalizeParentIds(nodes: Node[]): Node[] {
   // Only top-level groups can adopt orphans
-  const groups = nodes.filter((n) => n.type === 'group' && !n.parentId)
+  const groups = nodes.filter((n) => isFrameNode(n) && !n.parentId)
   if (groups.length === 0) return nodes
 
   const result = [...nodes]
@@ -97,7 +98,7 @@ function normalizeParentIds(nodes: Node[]): Node[] {
   for (let i = 0; i < result.length; i++) {
     const node = result[i]
     // Skip groups themselves and nodes already parented
-    if (node.type === 'group' || node.parentId) continue
+    if (isFrameNode(node) || node.parentId) continue
 
     const nodeBounds = getAbsoluteBounds(node)
 
@@ -446,7 +447,7 @@ export function applyAutoLayout(
   const updatedChildrenMap = new Map<string, Node[]>()
 
   const groupsAfterInnerLayout = topLevel.map((node) => {
-    if (node.type !== 'group') return node
+    if (!isFrameNode(node)) return node
 
     const children = childrenByGroup.get(node.id) ?? []
     if (children.length === 0) return node

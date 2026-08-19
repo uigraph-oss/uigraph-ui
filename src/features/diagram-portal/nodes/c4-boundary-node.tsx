@@ -1,9 +1,13 @@
+import { cn } from '@/lib/utils'
 import { buildMetaData, C4BoundaryKind } from '@uigraph/sdk'
 import { Node, NodeProps, NodeResizer, useReactFlow } from '@xyflow/react'
 import { useEffectState } from 'daily-code/react'
 import { useRef } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { useComponentField } from '../hooks/use-component-field'
+import { useFrameAutoLayout } from '../hooks/use-frame-auto-layout'
+import { FrameCollapseButton } from './components/frame-collapse-button'
+import { FrameHandles } from './components/frame-handles'
 import { NodeDataGenerator } from './types/node.types'
 
 export type C4BoundaryNodeData = NodeDataGenerator<{
@@ -13,6 +17,9 @@ export type C4BoundaryNodeData = NodeDataGenerator<{
   backgroundColor?: string
   borderColor?: string
   fontColor?: string
+  childNodes?: string[]
+  autoLayout?: boolean
+  collapsed?: boolean
 }>
 
 export type TC4BoundaryNode = Node<C4BoundaryNodeData, 'c4Boundary'>
@@ -56,6 +63,11 @@ export function C4BoundaryNode({
     }, 1000)
   }
 
+  const autoLayout = data.autoLayout ?? false
+  const collapsed = data.collapsed ?? false
+
+  useFrameAutoLayout(id, autoLayout && !collapsed, 'bottom')
+
   const borderColor = data.borderColor ?? DEFAULT_BORDER
   const typeLabel =
     data.boundaryType ?? BOUNDARY_KIND_LABELS[data.c4BoundaryKind] ?? 'Boundary'
@@ -65,20 +77,35 @@ export function C4BoundaryNode({
       className="c4-boundary-box relative size-full rounded-[0.25rem]"
       style={{
         backgroundColor: data.backgroundColor ?? DEFAULT_BACKGROUND,
-        border: `2px dashed ${borderColor}`,
+        border: `2px ${data.c4BoundaryKind === 'generic' ? 'dotted' : 'dashed'} ${borderColor}`,
       }}
     >
       <NodeResizer
         minWidth={200}
         minHeight={140}
-        isVisible={selected}
+        isVisible={selected && !autoLayout && !collapsed}
         onResize={(_, params) => {
           updateNode(id, { width: params.width, height: params.height })
         }}
       />
 
+      <FrameHandles />
+
+      {(selected || collapsed) && (
+        <FrameCollapseButton
+          id={id}
+          collapsed={collapsed}
+          color={data.fontColor ?? borderColor}
+        />
+      )}
+
       {/* c4model.com labels a boundary at its bottom-left corner. */}
-      <div className="c4-boundary-label absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 px-3 pb-2">
+      <div
+        className={cn(
+          'c4-boundary-label absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 px-3 pb-2',
+          collapsed && 'hidden'
+        )}
+      >
         <TextareaAutosize
           value={localName}
           placeholder="Boundary"
@@ -108,7 +135,10 @@ export function C4BoundaryNode({
       </div>
 
       <div
-        className="c4-boundary-collapsed-label absolute inset-0 hidden flex-col items-center justify-center gap-[0.15em] px-[5%] text-center"
+        className={cn(
+          'c4-boundary-collapsed-label absolute inset-0 flex-col items-center justify-center gap-[0.15em] px-[5%] text-center',
+          collapsed ? 'flex' : 'hidden'
+        )}
         style={{ color: data.fontColor ?? borderColor }}
       >
         <span className="leading-tight font-bold wrap-anywhere">
@@ -118,6 +148,13 @@ export function C4BoundaryNode({
         <span className="text-[0.6em] leading-tight opacity-80">
           [{typeLabel}]
         </span>
+
+        {/* Hiding the details is only useful if the card still says what is inside. */}
+        {data.description && (
+          <span className="line-clamp-2 text-[0.55em] leading-snug wrap-anywhere opacity-70">
+            {data.description}
+          </span>
+        )}
       </div>
     </div>
   )

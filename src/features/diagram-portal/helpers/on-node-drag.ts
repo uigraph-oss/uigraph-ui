@@ -1,5 +1,6 @@
 import { Node, ReactFlowInstance } from '@xyflow/react'
 import { MouseEvent } from 'react'
+import { isCollapsedFrame, isDescendantOf, isFrameNode } from './frame-nodes'
 
 function getGroupChildNodes(node: Node) {
   return Array.isArray(node.data?.childNodes) ? node.data.childNodes : []
@@ -15,12 +16,41 @@ function updateGroupChildNodes(node: Node, childNodes: string[]) {
   }
 }
 
-function getNodeBounds(node: Node) {
+/** Frames nest, so `node.position` is parent-relative and unusable for hit testing. */
+function getAbsolutePosition(node: Node, rf: ReactFlowInstance) {
+  return (
+    rf.getInternalNode(node.id)?.internals.positionAbsolute ?? node.position
+  )
+}
+
+function getAbsoluteBounds(node: Node, rf: ReactFlowInstance) {
+  const position = getAbsolutePosition(node, rf)
+
+  const width = node.measured?.width ?? node.width ?? 0
+  const height = node.measured?.height ?? node.height ?? 0
+
   return {
-    left: node.position.x,
-    top: node.position.y,
-    right: node.position.x + (node.measured?.width ?? node.width ?? 0),
-    bottom: node.position.y + (node.measured?.height ?? node.height ?? 0),
+    left: position.x,
+    top: position.y,
+    right: position.x + width,
+    bottom: position.y + height,
+    area: width * height,
+  }
+}
+
+/** The dragged node's own absolute position lags a frame behind, so derive it. */
+function getDraggedAbsolutePosition(
+  inputNode: Node,
+  prevFrame: Node | undefined,
+  rf: ReactFlowInstance
+) {
+  if (!prevFrame) return inputNode.position
+
+  const framePosition = getAbsolutePosition(prevFrame, rf)
+
+  return {
+    x: inputNode.position.x + framePosition.x,
+    y: inputNode.position.y + framePosition.y,
   }
 }
 
@@ -31,16 +61,11 @@ export function handleOnNodeDrag(
 ) {
   const nodes = rf.getNodes()
 
-  const prevGroup = nodes.find(
-    (n) => n.type === 'group' && n.id === inputNode.parentId
+  const prevFrame = nodes.find(
+    (n) => n.id === inputNode.parentId && isFrameNode(n)
   )
 
-  const absolutePosition = prevGroup
-    ? {
-        x: inputNode.position.x + prevGroup.position.x,
-        y: inputNode.position.y + prevGroup.position.y,
-      }
-    : { x: inputNode.position.x, y: inputNode.position.y }
+  const absolutePosition = getDraggedAbsolutePosition(inputNode, prevFrame, rf)
 
   const nodeWidth = inputNode.measured?.width ?? inputNode.width ?? 0
   const nodeHeight = inputNode.measured?.height ?? inputNode.height ?? 0
@@ -49,51 +74,50 @@ export function handleOnNodeDrag(
     y: absolutePosition.y + nodeHeight / 2,
   }
 
-  const groupArea = nodes.find((n) => {
-    if (n.type !== 'group') return false
-    if (n.id === inputNode.id) return false
+  /** Boundaries nest by definition, so the innermost frame under the cursor wins. */
+  let targetFrame: Node | undefined
+  let targetArea = Infinity
 
-    const groupBounds = getNodeBounds(n)
+  for (const n of nodes) {
+    if (!isFrameNode(n)) continue
+    if (n.id === inputNode.id) continue
+    if (isCollapsedFrame(n)) continue
+    if (isDescendantOf(nodes, n.id, inputNode.id)) continue
 
-    return (
-      nodeCenter.x >= groupBounds.left &&
-      nodeCenter.x <= groupBounds.right &&
-      nodeCenter.y >= groupBounds.top &&
-      nodeCenter.y <= groupBounds.bottom
-    )
-  })
+    const bounds = getAbsoluteBounds(n, rf)
 
-  if (groupArea) {
-    if (inputNode.parentId === groupArea.id) {
-      return console.log('Node already in group', inputNode.id)
-    }
+    const contains =
+      nodeCenter.x >= bounds.left &&
+      nodeCenter.x <= bounds.right &&
+      nodeCenter.y >= bounds.top &&
+      nodeCenter.y <= bounds.bottom
 
-    console.log('Updating node to group', inputNode.id, groupArea.id)
+    if (!contains) continue
+    if (bounds.area >= targetArea) continue
+
+    targetFrame = n
+    targetArea = bounds.area
+  }
+
+  if (targetFrame) {
+    if (inputNode.parentId === targetFrame.id) return
+
+    const targetPosition = getAbsolutePosition(targetFrame, rf)
+
     return rf.setNodes((currentNodes) =>
       currentNodes.map((node) => {
         if (node.id === inputNode.id) {
           return {
             ...node,
-            parentId: groupArea.id,
-            position: prevGroup
-              ? {
-                  x:
-                    inputNode.position.x +
-                    prevGroup.position.x -
-                    groupArea.position.x,
-                  y:
-                    inputNode.position.y +
-                    prevGroup.position.y -
-                    groupArea.position.y,
-                }
-              : {
-                  x: inputNode.position.x - groupArea.position.x,
-                  y: inputNode.position.y - groupArea.position.y,
-                },
+            parentId: targetFrame.id,
+            position: {
+              x: absolutePosition.x - targetPosition.x,
+              y: absolutePosition.y - targetPosition.y,
+            },
           }
         }
 
-        if (prevGroup && node.id === prevGroup.id) {
+        if (prevFrame && node.id === prevFrame.id) {
           return updateGroupChildNodes(
             node,
             getGroupChildNodes(node).filter(
@@ -102,7 +126,7 @@ export function handleOnNodeDrag(
           )
         }
 
-        if (node.id === groupArea.id) {
+        if (node.id === targetFrame.id) {
           return updateGroupChildNodes(node, [
             ...getGroupChildNodes(node).filter(
               (childNodeId) => childNodeId !== inputNode.id
@@ -116,25 +140,19 @@ export function handleOnNodeDrag(
     )
   }
 
-  if (!prevGroup) {
-    return console.log('Node group not found', inputNode.id)
-  }
+  if (!prevFrame) return
 
-  console.log('Updating node to no group', inputNode.id)
   rf.setNodes((currentNodes) =>
     currentNodes.map((node) => {
       if (node.id === inputNode.id) {
         return {
           ...node,
           parentId: undefined,
-          position: {
-            x: inputNode.position.x + prevGroup.position.x,
-            y: inputNode.position.y + prevGroup.position.y,
-          },
+          position: absolutePosition,
         }
       }
 
-      if (node.id === prevGroup.id) {
+      if (node.id === prevFrame.id) {
         return updateGroupChildNodes(
           node,
           getGroupChildNodes(node).filter(
@@ -149,26 +167,25 @@ export function handleOnNodeDrag(
 }
 
 export function handleOnGroupDrag(inputNode: Node, rf: ReactFlowInstance) {
-  const groupBounds = getNodeBounds(inputNode)
+  if (isCollapsedFrame(inputNode)) return
+
+  const framePosition = getAbsolutePosition(inputNode, rf)
+  const frameBounds = getAbsoluteBounds(inputNode, rf)
 
   rf.setNodes((currentNodes) => {
     const targetNodeIds = currentNodes
       .filter((node) => {
-        if (
-          node.id === inputNode.id ||
-          node.type === 'group' ||
-          node.parentId
-        ) {
+        if (node.id === inputNode.id || isFrameNode(node) || node.parentId) {
           return false
         }
 
-        const nodeBounds = getNodeBounds(node)
+        const nodeBounds = getAbsoluteBounds(node, rf)
 
         return (
-          nodeBounds.left >= groupBounds.left &&
-          nodeBounds.right <= groupBounds.right &&
-          nodeBounds.top >= groupBounds.top &&
-          nodeBounds.bottom <= groupBounds.bottom
+          nodeBounds.left >= frameBounds.left &&
+          nodeBounds.right <= frameBounds.right &&
+          nodeBounds.top >= frameBounds.top &&
+          nodeBounds.bottom <= frameBounds.bottom
         )
       })
       .map((node) => node.id)
@@ -185,8 +202,8 @@ export function handleOnGroupDrag(inputNode: Node, rf: ReactFlowInstance) {
           ...node,
           parentId: inputNode.id,
           position: {
-            x: node.position.x - inputNode.position.x,
-            y: node.position.y - inputNode.position.y,
+            x: node.position.x - framePosition.x,
+            y: node.position.y - framePosition.y,
           },
         }
       }

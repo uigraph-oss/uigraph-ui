@@ -46,9 +46,22 @@ export function NodeGroupStyle() {
 
       <div className="flex items-center justify-between gap-3">
         <Label className="text-sm font-normal text-[#F4F7FC]">
+          Hide Details
+        </Label>
+        <CustomSwitch
+          checked={data.collapsed ?? false}
+          onCheckedChange={(checked) => {
+            updateData({ collapsed: checked })
+          }}
+        />
+      </div>
+
+      <div className="flex items-center justify-between gap-3">
+        <Label className="text-sm font-normal text-[#F4F7FC]">
           Auto Layout
         </Label>
         <CustomSwitch
+          disabled={data.collapsed ?? false}
           checked={data.autoLayout ?? false}
           onCheckedChange={(checked) => {
             updateData({ autoLayout: checked })
