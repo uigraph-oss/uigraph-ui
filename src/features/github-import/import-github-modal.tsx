@@ -42,7 +42,7 @@ export function ImportGitHubModal({
 }: {
   orgID: string
   onOpenChange: (open: boolean) => void
-  onImported: () => void
+  onImported?: () => void
 }) {
   const [step, setStep] = useState<number | null>(null)
   const [teamID, setTeamID] = useState('')
@@ -302,7 +302,7 @@ export function ImportGitHubModal({
           <ImportRunStep
             orgID={orgID}
             importID={importID}
-            onCompleted={onImported}
+            onCompleted={() => onImported?.()}
             onOpenService={() => onOpenChange(false)}
           />
         </div>
