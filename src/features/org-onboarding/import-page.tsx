@@ -152,6 +152,8 @@ function ImportFlow() {
           const importID = result.data?.startRepositoryImport.id
           if (!importID) throw new Error('The run started without an ID')
 
+          await completeOnboarding({ variables: { orgId: orgID } })
+          await refreshOrganizations()
           clear()
           void navigate(`/get-started/import/${importID}`, { replace: true })
         }}

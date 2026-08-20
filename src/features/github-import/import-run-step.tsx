@@ -8,7 +8,6 @@ import {
 import { RunPhaseFigure } from '@/features/org-onboarding/components/run-phase-figure'
 import {
   currentRunPhase,
-  isTerminal,
   runPhases,
   TROUBLESHOOTING_URL,
   useElapsed,
@@ -28,7 +27,6 @@ import {
   Minus,
   RefreshCw,
 } from 'lucide-react'
-import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
@@ -173,28 +171,16 @@ function PhaseDetail({ phases }: { phases: RunPhase[] }) {
 export function ImportRunStep({
   orgID,
   importID,
-  onCompleted,
   onOpenService,
 }: {
   orgID: string
   importID: string
-  onCompleted: () => void
   onOpenService: () => void
 }) {
-  const finishedRef = useRef(false)
-  const [isPolling, setIsPolling] = useState(true)
-
   const importQuery = useQuery(REPOSITORY_IMPORT, {
     variables: { orgID, importID },
     fetchPolicy: 'network-only',
-    pollInterval: isPolling ? 5000 : 0,
-    onCompleted: (data) => {
-      const value = data.repositoryImport
-      setIsPolling(!isTerminal(value.status))
-      if (value.status !== 'COMPLETED' || finishedRef.current) return
-      finishedRef.current = true
-      onCompleted()
-    },
+    pollInterval: 5000,
   })
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
   const [rerunFailedJobs, { loading: isRerunning }] = useMutation(
@@ -207,7 +193,6 @@ export function ImportRunStep({
   async function handleRetry() {
     try {
       await retry({ variables: { orgID, importID } })
-      setIsPolling(true)
       await importQuery.refetch()
     } catch (caught) {
       toast.error('Could not start a new run', {
@@ -219,7 +204,6 @@ export function ImportRunStep({
   async function handleRerunFailedJobs() {
     try {
       await rerunFailedJobs({ variables: { orgID, importID } })
-      setIsPolling(true)
       await importQuery.refetch()
     } catch (caught) {
       toast.error('Could not re-run the failed jobs', {

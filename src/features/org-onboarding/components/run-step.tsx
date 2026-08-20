@@ -19,8 +19,7 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react'
-import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { OnboardingLayout } from './onboarding-layout'
 import {
@@ -29,44 +28,21 @@ import {
   StepIntro,
 } from './onboarding-ui'
 import { RunPhaseDetail } from './run-phase-detail'
-import {
-  isTerminal,
-  RunPhaseList,
-  runPhases,
-  TROUBLESHOOTING_URL,
-  useElapsed,
-} from './run-phases'
+import { RunPhaseList, runPhases, TROUBLESHOOTING_URL } from './run-phases'
 
 export function RunStep({
   orgID,
   importID,
-  onFinish,
 }: {
   orgID: string
   importID: string
-  onFinish: () => Promise<void>
 }) {
   const navigate = useNavigate()
-  const finishedRef = useRef(false)
-  const [isPolling, setIsPolling] = useState(true)
 
   const importQuery = useQuery(REPOSITORY_IMPORT, {
     variables: { orgID, importID },
     fetchPolicy: 'network-only',
-    pollInterval: isPolling ? 5000 : 0,
-    onCompleted: (data) => {
-      const value = data.repositoryImport
-      setIsPolling(!isTerminal(value.status))
-      if (value.status !== 'COMPLETED' || finishedRef.current) return
-      finishedRef.current = true
-      void onFinish().then(() => {
-        window.setTimeout(() => {
-          void navigate(
-            value.serviceId ? `/services/${value.serviceId}` : '/services'
-          )
-        }, 1500)
-      })
-    },
+    pollInterval: 5000,
   })
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
   const [rerunFailedJobs, { loading: isRerunning }] = useMutation(
@@ -74,12 +50,10 @@ export function RunStep({
   )
 
   const value = importQuery.data?.repositoryImport ?? null
-  const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
 
   async function handleRetry() {
     try {
       await retry({ variables: { orgID, importID } })
-      setIsPolling(true)
       await importQuery.refetch()
     } catch (caught) {
       toast.error('Could not start a new run', {
@@ -91,7 +65,6 @@ export function RunStep({
   async function handleRerunFailedJobs() {
     try {
       await rerunFailedJobs({ variables: { orgID, importID } })
-      setIsPolling(true)
       await importQuery.refetch()
     } catch (caught) {
       toast.error('Could not re-run the failed jobs', {
@@ -100,7 +73,6 @@ export function RunStep({
     }
   }
 
-  const completed = value?.status === 'COMPLETED'
   const failed = value?.status === 'FAILED'
   const phases = runPhases(value)
   const failedPhase = phases.find((phase) => phase.status === 'failed')
@@ -141,25 +113,12 @@ export function RunStep({
     )
   }
 
-  if (completed) {
+  if (value?.status === 'COMPLETED') {
     return (
-      <OnboardingLayout
-        headerLeftContent={<OnboardingStepTitle current={3} />}
-        headerCenterContent={<OnboardingStepTicks current={3} />}
-      >
-        <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
-            <span className="font-mono break-all">{value?.githubRepo}</span> is
-            on the graph.
-          </h1>
-          <p className="text-paragraph mt-3 text-sm">
-            Imported in {elapsed ?? '—'}.
-          </p>
-          <p className="text-paragraph mt-8 flex items-center gap-2 text-sm">
-            <Loader2 className="size-4 animate-spin" /> Opening the service
-          </p>
-        </div>
-      </OnboardingLayout>
+      <Navigate
+        to={value.serviceId ? `/services/${value.serviceId}` : '/services'}
+        replace
+      />
     )
   }
 

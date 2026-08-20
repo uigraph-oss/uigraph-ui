@@ -292,8 +292,10 @@ export function ImportGitHubModal({
           <ImportRunStep
             orgID={orgID}
             importID={importID}
-            onCompleted={() => onImported?.()}
-            onOpenService={() => onOpenChange(false)}
+            onOpenService={() => {
+              onImported?.()
+              onOpenChange(false)
+            }}
           />
         </div>
       )}
