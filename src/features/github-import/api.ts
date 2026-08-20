@@ -121,3 +121,12 @@ export const RETRY_REPOSITORY_IMPORT = graphql(`
     }
   }
 `)
+
+export const RERUN_REPOSITORY_IMPORT_FAILED_JOBS = graphql(`
+  mutation GitHubImportRerunFailedJobs($orgID: ID!, $importID: ID!) {
+    rerunRepositoryImportFailedJobs(orgId: $orgID, importId: $importID) {
+      id
+      status
+    }
+  }
+`)

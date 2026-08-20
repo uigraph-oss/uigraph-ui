@@ -134,6 +134,7 @@ type Documents = {
     "\n  mutation GitHubImportStart(\n    $orgID: ID!\n    $teamID: ID!\n    $owner: String!\n    $repo: String!\n  ) {\n    startRepositoryImport(\n      orgId: $orgID\n      teamId: $teamID\n      owner: $owner\n      repo: $repo\n    ) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportStartDocument,
     "\n  mutation GitHubImportCreateToken(\n    $orgID: ID!\n    $owner: String!\n    $repo: String!\n  ) {\n    createRepositoryImportToken(orgId: $orgID, owner: $owner, repo: $repo)\n  }\n": typeof types.GitHubImportCreateTokenDocument,
     "\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportRetryDocument,
+    "\n  mutation GitHubImportRerunFailedJobs($orgID: ID!, $importID: ID!) {\n    rerunRepositoryImportFailedJobs(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": typeof types.GitHubImportRerunFailedJobsDocument,
     "\n  query ApiEndpointById($orgId: ID!, $id: ID!) {\n    apiEndpointById(orgId: $orgId, id: $id) {\n      id\n      serviceId\n      apiGroupId\n      method\n      path\n      summary\n      description\n      tags\n      parameters\n      requestBody\n      responses\n      exampleRequests\n      exampleResponses\n      updatedAt\n      createdAt\n    }\n  }\n": typeof types.ApiEndpointByIdDocument,
     "\n  query TestPackById($orgId: ID!, $id: ID!) {\n    testPackById(orgId: $orgId, id: $id) {\n      testPackId\n      serviceId\n      name\n      type\n      updatedAt\n    }\n  }\n": typeof types.TestPackByIdDocument,
     "\n  query ServiceDocById($orgId: ID!, $id: ID!) {\n    serviceDocById(orgId: $orgId, id: $id) {\n      serviceId\n      docId\n    }\n  }\n": typeof types.ServiceDocByIdDocument,
@@ -428,6 +429,7 @@ const documents: Documents = {
     "\n  mutation GitHubImportStart(\n    $orgID: ID!\n    $teamID: ID!\n    $owner: String!\n    $repo: String!\n  ) {\n    startRepositoryImport(\n      orgId: $orgID\n      teamId: $teamID\n      owner: $owner\n      repo: $repo\n    ) {\n      id\n      status\n    }\n  }\n": types.GitHubImportStartDocument,
     "\n  mutation GitHubImportCreateToken(\n    $orgID: ID!\n    $owner: String!\n    $repo: String!\n  ) {\n    createRepositoryImportToken(orgId: $orgID, owner: $owner, repo: $repo)\n  }\n": types.GitHubImportCreateTokenDocument,
     "\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": types.GitHubImportRetryDocument,
+    "\n  mutation GitHubImportRerunFailedJobs($orgID: ID!, $importID: ID!) {\n    rerunRepositoryImportFailedJobs(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n": types.GitHubImportRerunFailedJobsDocument,
     "\n  query ApiEndpointById($orgId: ID!, $id: ID!) {\n    apiEndpointById(orgId: $orgId, id: $id) {\n      id\n      serviceId\n      apiGroupId\n      method\n      path\n      summary\n      description\n      tags\n      parameters\n      requestBody\n      responses\n      exampleRequests\n      exampleResponses\n      updatedAt\n      createdAt\n    }\n  }\n": types.ApiEndpointByIdDocument,
     "\n  query TestPackById($orgId: ID!, $id: ID!) {\n    testPackById(orgId: $orgId, id: $id) {\n      testPackId\n      serviceId\n      name\n      type\n      updatedAt\n    }\n  }\n": types.TestPackByIdDocument,
     "\n  query ServiceDocById($orgId: ID!, $id: ID!) {\n    serviceDocById(orgId: $orgId, id: $id) {\n      serviceId\n      docId\n    }\n  }\n": types.ServiceDocByIdDocument,
@@ -1096,6 +1098,10 @@ export function graphql(source: "\n  mutation GitHubImportCreateToken(\n    $org
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation GitHubImportRetry($orgID: ID!, $importID: ID!) {\n    retryRepositoryImport(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GitHubImportRerunFailedJobs($orgID: ID!, $importID: ID!) {\n    rerunRepositoryImportFailedJobs(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"): (typeof documents)["\n  mutation GitHubImportRerunFailedJobs($orgID: ID!, $importID: ID!) {\n    rerunRepositoryImportFailedJobs(orgId: $orgID, importId: $importID) {\n      id\n      status\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
