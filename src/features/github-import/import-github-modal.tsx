@@ -288,7 +288,7 @@ export function ImportGitHubModal({
       )}
 
       {!isLoading && team && step === 3 && (
-        <div className="mx-auto w-full max-w-5xl">
+        <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
           <ImportRunStep
             orgID={orgID}
             importID={importID}

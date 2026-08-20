@@ -243,24 +243,52 @@ export function ImportRunStep({
 
   if (completed) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 text-center">
-        <span className="border-success/40 bg-success/10 text-success flex size-11 items-center justify-center rounded-full border">
-          <Check className="size-5" />
+      <div className="m-auto flex flex-col items-center text-center">
+        <span className="border-success/30 bg-success/10 text-success ring-success/10 flex size-14 items-center justify-center rounded-full border ring-8">
+          <Check className="size-6" />
         </span>
-        <h2 className="mt-5 text-lg font-medium tracking-tight">
+        <h2 className="mt-6 text-xl font-medium tracking-tight">
           <span className="font-mono break-all">{value.githubRepo}</span> is on
           the graph.
         </h2>
-        <p className="text-paragraph mt-1.5 text-sm">
-          Imported in {elapsed ?? '—'}.
+        <p className="text-paragraph mt-2 text-sm">
+          {value.teamName} · imported in {elapsed ?? '—'}
         </p>
+
         {value.serviceId && (
-          <Button preset="primary" className="mt-6" asChild>
+          <Button
+            preset="primary"
+            className="mt-8 h-11 rounded-xl px-6"
+            asChild
+          >
             <Link to={`/services/${value.serviceId}`} onClick={onOpenService}>
-              Open the service <ArrowRight />
+              Open the service <ArrowRight className="size-4" />
             </Link>
           </Button>
         )}
+
+        <div className="text-paragraph mt-8 flex items-center gap-6 text-xs">
+          {value.pullRequestUrl && (
+            <a
+              href={value.pullRequestUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground inline-flex items-center gap-1.5 transition-colors"
+            >
+              Review the pull request <ExternalLink className="size-3" />
+            </a>
+          )}
+          {value.runUrl && (
+            <a
+              href={value.runUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground inline-flex items-center gap-1.5 transition-colors"
+            >
+              Open the run log <ExternalLink className="size-3" />
+            </a>
+          )}
+        </div>
       </div>
     )
   }
