@@ -118,6 +118,18 @@ export const RETRY_REPOSITORY_IMPORT = graphql(`
     retryRepositoryImport(orgId: $orgID, importId: $importID) {
       id
       status
+      error
+      runUrl
+      runStartedAt
+      runCompletedAt
+      steps {
+        number
+        name
+        status
+        conclusion
+        startedAt
+        completedAt
+      }
     }
   }
 `)
@@ -127,6 +139,18 @@ export const RERUN_REPOSITORY_IMPORT_FAILED_JOBS = graphql(`
     rerunRepositoryImportFailedJobs(orgId: $orgID, importId: $importID) {
       id
       status
+      error
+      runUrl
+      runStartedAt
+      runCompletedAt
+      steps {
+        number
+        name
+        status
+        conclusion
+        startedAt
+        completedAt
+      }
     }
   }
 `)

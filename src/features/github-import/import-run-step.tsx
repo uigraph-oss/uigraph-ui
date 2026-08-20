@@ -1,4 +1,10 @@
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { RunPhaseFigure } from '@/features/org-onboarding/components/run-phase-figure'
 import {
   currentRunPhase,
@@ -15,6 +21,7 @@ import {
   AlertCircle,
   ArrowRight,
   Check,
+  ChevronDown,
   Clock,
   ExternalLink,
   Loader2,
@@ -23,7 +30,12 @@ import {
 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { REPOSITORY_IMPORT, RETRY_REPOSITORY_IMPORT } from './api'
+import { toast } from 'sonner'
+import {
+  REPOSITORY_IMPORT,
+  RERUN_REPOSITORY_IMPORT_FAILED_JOBS,
+  RETRY_REPOSITORY_IMPORT,
+} from './api'
 
 function PhaseDuration({ phase }: { phase: RunPhase }) {
   const elapsed = useElapsed(phase.startedAt, phase.completedAt)
@@ -170,7 +182,6 @@ export function ImportRunStep({
   onOpenService: () => void
 }) {
   const finishedRef = useRef(false)
-  const [actionError, setActionError] = useState('')
   const [isPolling, setIsPolling] = useState(true)
 
   const importQuery = useQuery(REPOSITORY_IMPORT, {
@@ -186,20 +197,34 @@ export function ImportRunStep({
     },
   })
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
+  const [rerunFailedJobs, { loading: isRerunning }] = useMutation(
+    RERUN_REPOSITORY_IMPORT_FAILED_JOBS
+  )
 
   const value = importQuery.data?.repositoryImport ?? null
   const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
 
   async function handleRetry() {
-    setActionError('')
     try {
       await retry({ variables: { orgID, importID } })
       setIsPolling(true)
       await importQuery.refetch()
     } catch (caught) {
-      setActionError(
-        caught instanceof Error ? caught.message : 'Could not retry the run'
-      )
+      toast.error('Could not start a new run', {
+        description: caught instanceof Error ? caught.message : undefined,
+      })
+    }
+  }
+
+  async function handleRerunFailedJobs() {
+    try {
+      await rerunFailedJobs({ variables: { orgID, importID } })
+      setIsPolling(true)
+      await importQuery.refetch()
+    } catch (caught) {
+      toast.error('Could not re-run the failed jobs', {
+        description: caught instanceof Error ? caught.message : undefined,
+      })
     }
   }
 
@@ -287,15 +312,50 @@ export function ImportRunStep({
             {value?.error ?? 'The run stopped before it could finish.'}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-5">
-            <Button
-              preset="primary"
-              className="h-9 rounded-[0.625rem] px-4 text-sm has-[>svg]:px-4"
-              disabled={isRetrying}
-              onClick={() => void handleRetry()}
-            >
-              {isRetrying && <Loader2 className="size-4 animate-spin" />}
-              Retry run
-            </Button>
+            {value?.runUrl && (
+              <div className="flex items-center">
+                <Button
+                  preset="primary"
+                  className="h-9 rounded-l-[0.625rem] rounded-r-none px-4 text-sm has-[>svg]:px-4"
+                  disabled={isRetrying || isRerunning}
+                  onClick={() => void handleRerunFailedJobs()}
+                >
+                  {(isRetrying || isRerunning) && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  Retry failed jobs
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      preset="primary"
+                      aria-label="More retry options"
+                      disabled={isRetrying || isRerunning}
+                      className="border-primary-foreground/25 h-9 rounded-l-none rounded-r-[0.625rem] border-l px-2 has-[>svg]:px-2"
+                    >
+                      <ChevronDown className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem onSelect={() => void handleRetry()}>
+                      <RefreshCw className="size-4" />
+                      Start a new run
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+            {!value?.runUrl && (
+              <Button
+                preset="primary"
+                className="h-9 rounded-[0.625rem] px-4 text-sm has-[>svg]:px-4"
+                disabled={isRetrying}
+                onClick={() => void handleRetry()}
+              >
+                {isRetrying && <Loader2 className="size-4 animate-spin" />}
+                Retry run
+              </Button>
+            )}
             <a
               href={
                 failedPhase ? failedPhase.troubleshooting : TROUBLESHOOTING_URL
@@ -308,10 +368,6 @@ export function ImportRunStep({
             </a>
           </div>
         </div>
-      )}
-
-      {actionError && (
-        <p className="text-destructive mt-4 text-sm">{actionError}</p>
       )}
 
       {value?.runUrl && (
