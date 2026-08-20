@@ -157,9 +157,6 @@ function ImportTokenRow({
       const created = result.data?.createRepositoryImportToken
       if (!created) throw new Error('The token came back empty')
       setToken(created)
-      toast.success('Token created', {
-        description: 'Copy it now. It is shown once and cannot be read again.',
-      })
     } catch (caught) {
       toast.error('Could not create the token', {
         description: caught instanceof Error ? caught.message : undefined,
