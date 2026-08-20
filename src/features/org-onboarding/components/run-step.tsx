@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button'
 import {
-  RECHECK_REPOSITORY_IMPORT,
   REPOSITORY_IMPORT,
   RETRY_REPOSITORY_IMPORT,
 } from '@/features/github-import/api'
@@ -56,26 +55,10 @@ export function RunStep({
       })
     },
   })
-  const [recheck, { loading: isRechecking }] = useMutation(
-    RECHECK_REPOSITORY_IMPORT
-  )
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
 
   const value = importQuery.data?.repositoryImport ?? null
   const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
-
-  async function handleRecheck() {
-    setActionError('')
-    try {
-      await recheck({ variables: { orgID, importID } })
-      setIsPolling(true)
-      await importQuery.refetch()
-    } catch (caught) {
-      setActionError(
-        caught instanceof Error ? caught.message : 'Could not recheck the run'
-      )
-    }
-  }
 
   async function handleRetry() {
     setActionError('')
@@ -92,7 +75,6 @@ export function RunStep({
 
   const completed = value?.status === 'COMPLETED'
   const failed = value?.status === 'FAILED'
-  const waiting = value?.status === 'WAITING_AI_CONFIGURATION'
   const phases = runPhases(value)
   const failedPhase = phases.find((phase) => phase.status === 'failed')
 
@@ -172,9 +154,7 @@ export function RunStep({
           description={
             failed
               ? 'The run stopped before it finished.'
-              : waiting
-                ? 'The run starts as soon as the missing settings are in place.'
-                : 'This runs on GitHub Actions and takes a few minutes. You can leave this open.'
+              : 'This runs on GitHub Actions and takes a few minutes. You can leave this open.'
           }
         />
 
@@ -187,28 +167,6 @@ export function RunStep({
             <RunPhaseDetail phases={phases} />
           </div>
         </div>
-
-        {value?.missingAIConfiguration.length ? (
-          <div className="mt-10 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
-            <p className="text-sm text-amber-500">
-              Waiting on{' '}
-              <span className="font-mono text-[0.75rem]">
-                {value.missingAIConfiguration.join(', ')}
-              </span>
-            </p>
-            <Button
-              preset="outline"
-              className="mt-3 h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
-              disabled={isRechecking}
-              onClick={handleRecheck}
-            >
-              <RefreshCw
-                className={cn('size-4', isRechecking && 'animate-spin')}
-              />
-              Recheck
-            </Button>
-          </div>
-        ) : null}
 
         {failed && (
           <div className="border-destructive/30 bg-destructive/5 mt-10 rounded-xl border p-4">

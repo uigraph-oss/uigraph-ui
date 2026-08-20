@@ -26,15 +26,11 @@ export const GITHUB_REPOSITORIES = graphql(`
   }
 `)
 
-export const REPOSITORY_AI_CONFIGURATION = graphql(`
-  query GitHubImportAIConfiguration(
-    $orgID: ID!
-    $owner: String!
-    $repo: String!
-  ) {
-    repositoryAIConfiguration(orgId: $orgID, owner: $owner, repo: $repo) {
-      missing
-      ready
+export const GITHUB_IMPORT_ENVIRONMENT = graphql(`
+  query GitHubImportEnvironment($orgID: ID!) {
+    githubImportEnvironment(orgId: $orgID) {
+      apiUrl
+      gatewayUrl
     }
   }
 `)
@@ -50,7 +46,6 @@ export const REPOSITORY_IMPORT = graphql(`
       branch
       runUrl
       pullRequestUrl
-      missingAIConfiguration
       error
       serviceId
       createdAt
@@ -108,12 +103,13 @@ export const START_REPOSITORY_IMPORT = graphql(`
   }
 `)
 
-export const RECHECK_REPOSITORY_IMPORT = graphql(`
-  mutation GitHubImportRecheck($orgID: ID!, $importID: ID!) {
-    recheckRepositoryImport(orgId: $orgID, importId: $importID) {
-      id
-      status
-    }
+export const CREATE_REPOSITORY_IMPORT_TOKEN = graphql(`
+  mutation GitHubImportCreateToken(
+    $orgID: ID!
+    $owner: String!
+    $repo: String!
+  ) {
+    createRepositoryImportToken(orgId: $orgID, owner: $owner, repo: $repo)
   }
 `)
 

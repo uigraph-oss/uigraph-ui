@@ -1356,6 +1356,11 @@ export type GitHubAppInstallation = {
   suspended: Scalars['Boolean']['output'];
 };
 
+export type GitHubImportEnvironment = {
+  apiUrl: Scalars['String']['output'];
+  gatewayUrl: Scalars['String']['output'];
+};
+
 export type GitHubRepository = {
   archived: Scalars['Boolean']['output'];
   defaultBranch: Scalars['String']['output'];
@@ -1853,6 +1858,7 @@ export type Mutation = {
   createMlVersionDeploymentUpdate: MlVersionDeploymentUpdate;
   createOrg: Org;
   createOrgDomain: OrgDomain;
+  createRepositoryImportToken: Scalars['String']['output'];
   createSavedQuery: SavedQuery;
   createSavedQueryFolder: SavedQueryFolder;
   createServerOrg: Org;
@@ -1924,7 +1930,6 @@ export type Mutation = {
   prepareServerOrgLogoUpload: AssetUpload;
   prepareServiceAccountAvatarUpload: AssetUpload;
   prepareUserAvatarUpload: AssetUpload;
-  recheckRepositoryImport: RepositoryImport;
   removeAuthProviderIcon: Scalars['Boolean']['output'];
   removeMember: Scalars['Boolean']['output'];
   removeOrgLogo: Scalars['Boolean']['output'];
@@ -2237,6 +2242,13 @@ export type MutationCreateOrgArgs = {
 export type MutationCreateOrgDomainArgs = {
   domain: Scalars['String']['input'];
   orgId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateRepositoryImportTokenArgs = {
+  orgId: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
 };
 
 
@@ -2685,12 +2697,6 @@ export type MutationPrepareServerOrgLogoUploadArgs = {
 export type MutationPrepareServiceAccountAvatarUploadArgs = {
   orgId: Scalars['ID']['input'];
   saId: Scalars['ID']['input'];
-};
-
-
-export type MutationRecheckRepositoryImportArgs = {
-  importId: Scalars['ID']['input'];
-  orgId: Scalars['ID']['input'];
 };
 
 
@@ -3246,6 +3252,7 @@ export type Query = {
   frameLinks: Array<FrameLink>;
   frames: FramePage;
   githubApp?: Maybe<GitHubAppInstallation>;
+  githubImportEnvironment: GitHubImportEnvironment;
   githubRepositories: Array<GitHubRepository>;
   latestRepositoryImport?: Maybe<RepositoryImport>;
   ldap?: Maybe<LdapConfig>;
@@ -3282,7 +3289,6 @@ export type Query = {
   org: Org;
   orgDomains: Array<OrgDomain>;
   orgs: Array<Org>;
-  repositoryAIConfiguration: RepositoryAiConfiguration;
   repositoryImport: RepositoryImport;
   resourceDailyCosts: Array<ResourceDailyCost>;
   savedQueries: Array<SavedQuery>;
@@ -3682,6 +3688,11 @@ export type QueryGithubAppArgs = {
 };
 
 
+export type QueryGithubImportEnvironmentArgs = {
+  orgId: Scalars['ID']['input'];
+};
+
+
 export type QueryGithubRepositoriesArgs = {
   orgId: Scalars['ID']['input'];
 };
@@ -3889,13 +3900,6 @@ export type QueryOrgArgs = {
 
 export type QueryOrgDomainsArgs = {
   orgId: Scalars['ID']['input'];
-};
-
-
-export type QueryRepositoryAiConfigurationArgs = {
-  orgId: Scalars['ID']['input'];
-  owner: Scalars['String']['input'];
-  repo: Scalars['String']['input'];
 };
 
 
@@ -4124,11 +4128,6 @@ export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type RepositoryAiConfiguration = {
-  missing: Array<Scalars['String']['output']>;
-  ready: Scalars['Boolean']['output'];
-};
-
 export type RepositoryImport = {
   branch: Scalars['String']['output'];
   createdAt: Scalars['Time']['output'];
@@ -4136,7 +4135,6 @@ export type RepositoryImport = {
   githubOwnerId: Scalars['ID']['output'];
   githubRepo: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  missingAIConfiguration: Array<Scalars['String']['output']>;
   pullRequestUrl?: Maybe<Scalars['String']['output']>;
   runCompletedAt?: Maybe<Scalars['Time']['output']>;
   runStartedAt?: Maybe<Scalars['Time']['output']>;
@@ -4149,13 +4147,11 @@ export type RepositoryImport = {
 };
 
 export enum RepositoryImportStatus {
-  CheckingAiConfiguration = 'CHECKING_AI_CONFIGURATION',
   Completed = 'COMPLETED',
   Failed = 'FAILED',
   RunQueued = 'RUN_QUEUED',
   RunRunning = 'RUN_RUNNING',
-  Selected = 'SELECTED',
-  WaitingAiConfiguration = 'WAITING_AI_CONFIGURATION'
+  Selected = 'SELECTED'
 }
 
 export type RepositoryImportStep = {
@@ -6026,14 +6022,12 @@ export type GitHubImportRepositoriesQueryVariables = Exact<{
 
 export type GitHubImportRepositoriesQuery = { githubRepositories: Array<{ githubId: string, owner: string, name: string, fullName: string, url: string, defaultBranch: string, private: boolean, archived: boolean }> };
 
-export type GitHubImportAiConfigurationQueryVariables = Exact<{
+export type GitHubImportEnvironmentQueryVariables = Exact<{
   orgID: Scalars['ID']['input'];
-  owner: Scalars['String']['input'];
-  repo: Scalars['String']['input'];
 }>;
 
 
-export type GitHubImportAiConfigurationQuery = { repositoryAIConfiguration: { missing: Array<string>, ready: boolean } };
+export type GitHubImportEnvironmentQuery = { githubImportEnvironment: { apiUrl: string, gatewayUrl: string } };
 
 export type GitHubImportRepositoryImportQueryVariables = Exact<{
   orgID: Scalars['ID']['input'];
@@ -6041,7 +6035,7 @@ export type GitHubImportRepositoryImportQueryVariables = Exact<{
 }>;
 
 
-export type GitHubImportRepositoryImportQuery = { repositoryImport: { id: string, githubRepo: string, status: RepositoryImportStatus, teamId: string, teamName?: string | null, branch: string, runUrl?: string | null, pullRequestUrl?: string | null, missingAIConfiguration: Array<string>, error?: string | null, serviceId?: string | null, createdAt: string, runStartedAt?: string | null, runCompletedAt?: string | null, steps: Array<{ number: number, name: string, status: string, conclusion?: string | null, startedAt?: string | null, completedAt?: string | null }> } };
+export type GitHubImportRepositoryImportQuery = { repositoryImport: { id: string, githubRepo: string, status: RepositoryImportStatus, teamId: string, teamName?: string | null, branch: string, runUrl?: string | null, pullRequestUrl?: string | null, error?: string | null, serviceId?: string | null, createdAt: string, runStartedAt?: string | null, runCompletedAt?: string | null, steps: Array<{ number: number, name: string, status: string, conclusion?: string | null, startedAt?: string | null, completedAt?: string | null }> } };
 
 export type GitHubImportLatestRepositoryImportQueryVariables = Exact<{
   orgID: Scalars['ID']['input'];
@@ -6074,13 +6068,14 @@ export type GitHubImportStartMutationVariables = Exact<{
 
 export type GitHubImportStartMutation = { startRepositoryImport: { id: string, status: RepositoryImportStatus } };
 
-export type GitHubImportRecheckMutationVariables = Exact<{
+export type GitHubImportCreateTokenMutationVariables = Exact<{
   orgID: Scalars['ID']['input'];
-  importID: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
 }>;
 
 
-export type GitHubImportRecheckMutation = { recheckRepositoryImport: { id: string, status: RepositoryImportStatus } };
+export type GitHubImportCreateTokenMutation = { createRepositoryImportToken: string };
 
 export type GitHubImportRetryMutationVariables = Exact<{
   orgID: Scalars['ID']['input'];
@@ -7695,13 +7690,13 @@ export const CreateDiagramVersionDocument = {"kind":"Document","definitions":[{"
 export const RestoreDiagramVersionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RestoreDiagramVersion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"restoreDiagramVersion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"diagramId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"diagramId"}}},{"kind":"Argument","name":{"kind":"Name","value":"versionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"versionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<RestoreDiagramVersionMutation, RestoreDiagramVersionMutationVariables>;
 export const GitHubImportAppDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportApp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubApp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"installationId"}},{"kind":"Field","name":{"kind":"Name","value":"accountLogin"}},{"kind":"Field","name":{"kind":"Name","value":"accountType"}},{"kind":"Field","name":{"kind":"Name","value":"suspended"}}]}}]}}]} as unknown as DocumentNode<GitHubImportAppQuery, GitHubImportAppQueryVariables>;
 export const GitHubImportRepositoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportRepositories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubRepositories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubId"}},{"kind":"Field","name":{"kind":"Name","value":"owner"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"defaultBranch"}},{"kind":"Field","name":{"kind":"Name","value":"private"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}}]}}]}}]} as unknown as DocumentNode<GitHubImportRepositoriesQuery, GitHubImportRepositoriesQueryVariables>;
-export const GitHubImportAiConfigurationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportAIConfiguration"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"owner"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositoryAIConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"owner"},"value":{"kind":"Variable","name":{"kind":"Name","value":"owner"}}},{"kind":"Argument","name":{"kind":"Name","value":"repo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"missing"}},{"kind":"Field","name":{"kind":"Name","value":"ready"}}]}}]}}]} as unknown as DocumentNode<GitHubImportAiConfigurationQuery, GitHubImportAiConfigurationQueryVariables>;
-export const GitHubImportRepositoryImportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportRepositoryImport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"githubRepo"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"teamId"}},{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"runUrl"}},{"kind":"Field","name":{"kind":"Name","value":"pullRequestUrl"}},{"kind":"Field","name":{"kind":"Name","value":"missingAIConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"runStartedAt"}},{"kind":"Field","name":{"kind":"Name","value":"runCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"steps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"conclusion"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}}]}}]}}]}}]} as unknown as DocumentNode<GitHubImportRepositoryImportQuery, GitHubImportRepositoryImportQueryVariables>;
+export const GitHubImportEnvironmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportEnvironment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubImportEnvironment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiUrl"}},{"kind":"Field","name":{"kind":"Name","value":"gatewayUrl"}}]}}]}}]} as unknown as DocumentNode<GitHubImportEnvironmentQuery, GitHubImportEnvironmentQueryVariables>;
+export const GitHubImportRepositoryImportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportRepositoryImport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"githubRepo"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"teamId"}},{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"branch"}},{"kind":"Field","name":{"kind":"Name","value":"runUrl"}},{"kind":"Field","name":{"kind":"Name","value":"pullRequestUrl"}},{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"runStartedAt"}},{"kind":"Field","name":{"kind":"Name","value":"runCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"steps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"conclusion"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}}]}}]}}]}}]} as unknown as DocumentNode<GitHubImportRepositoryImportQuery, GitHubImportRepositoryImportQueryVariables>;
 export const GitHubImportLatestRepositoryImportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GitHubImportLatestRepositoryImport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"latestRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportLatestRepositoryImportQuery, GitHubImportLatestRepositoryImportQueryVariables>;
 export const GitHubImportInstallUrlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportInstallURL"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"githubAppInstallURL"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}]}]}}]} as unknown as DocumentNode<GitHubImportInstallUrlMutation, GitHubImportInstallUrlMutationVariables>;
 export const GitHubImportDisconnectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportDisconnect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"disconnectGitHubApp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}}]}]}}]} as unknown as DocumentNode<GitHubImportDisconnectMutation, GitHubImportDisconnectMutationVariables>;
 export const GitHubImportStartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportStart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"owner"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"teamId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamID"}}},{"kind":"Argument","name":{"kind":"Name","value":"owner"},"value":{"kind":"Variable","name":{"kind":"Name","value":"owner"}}},{"kind":"Argument","name":{"kind":"Name","value":"repo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportStartMutation, GitHubImportStartMutationVariables>;
-export const GitHubImportRecheckDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportRecheck"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recheckRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportRecheckMutation, GitHubImportRecheckMutationVariables>;
+export const GitHubImportCreateTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportCreateToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"owner"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRepositoryImportToken"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"owner"},"value":{"kind":"Variable","name":{"kind":"Name","value":"owner"}}},{"kind":"Argument","name":{"kind":"Name","value":"repo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}]}]}}]} as unknown as DocumentNode<GitHubImportCreateTokenMutation, GitHubImportCreateTokenMutationVariables>;
 export const GitHubImportRetryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GitHubImportRetry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"importID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"retryRepositoryImport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgID"}}},{"kind":"Argument","name":{"kind":"Name","value":"importId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"importID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GitHubImportRetryMutation, GitHubImportRetryMutationVariables>;
 export const ApiEndpointByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ApiEndpointById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"apiEndpointById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"apiGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"parameters"}},{"kind":"Field","name":{"kind":"Name","value":"requestBody"}},{"kind":"Field","name":{"kind":"Name","value":"responses"}},{"kind":"Field","name":{"kind":"Name","value":"exampleRequests"}},{"kind":"Field","name":{"kind":"Name","value":"exampleResponses"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<ApiEndpointByIdQuery, ApiEndpointByIdQueryVariables>;
 export const TestPackByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TestPackById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testPackById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orgId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orgId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testPackId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<TestPackByIdQuery, TestPackByIdQueryVariables>;

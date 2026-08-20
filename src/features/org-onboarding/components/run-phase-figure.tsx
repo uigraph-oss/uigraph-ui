@@ -129,6 +129,48 @@ function MachineScene({ running }: { running: boolean }) {
   )
 }
 
+const SECRET_ROWS = [30, 54, 78]
+
+function ConfigScene({ running }: { running: boolean }) {
+  return (
+    <>
+      {SECRET_ROWS.map((y, index) => (
+        <motion.rect
+          key={y}
+          x={48}
+          y={y}
+          width={56}
+          height={4}
+          rx={2}
+          className="fill-stock"
+          {...fade(index)}
+        />
+      ))}
+      {SECRET_ROWS.map((y, index) => (
+        <motion.path
+          key={`link-${y}`}
+          d={`M110 ${y + 2} C 146 ${y + 2} 152 60 178 60`}
+          className="stroke-primary/40"
+          {...draw(index + 1)}
+        />
+      ))}
+      <Ping cx={192} cy={60} running={running} />
+      <motion.circle
+        cx={192}
+        cy={60}
+        r={14}
+        className="stroke-primary/50 fill-primary/10"
+        {...fade(4)}
+      />
+      <motion.path
+        d="M186 60 l4 4.5 l8 -10"
+        className="stroke-primary"
+        {...draw(5)}
+      />
+    </>
+  )
+}
+
 function PackagesScene({ running }: { running: boolean }) {
   return (
     <>
@@ -434,11 +476,12 @@ function FailureScene() {
 function Scene({ index, running }: { index: number; running: boolean }) {
   if (index === 0) return <BranchScene running={running} />
   if (index === 1) return <MachineScene running={running} />
-  if (index === 2) return <PackagesScene running={running} />
-  if (index === 3) return <GraphScene running={running} />
-  if (index === 4) return <CommitScene running={running} />
-  if (index === 5) return <PublishScene running={running} />
-  if (index === 6) return <ChecksScene running={running} />
+  if (index === 2) return <ConfigScene running={running} />
+  if (index === 3) return <PackagesScene running={running} />
+  if (index === 4) return <GraphScene running={running} />
+  if (index === 5) return <CommitScene running={running} />
+  if (index === 6) return <PublishScene running={running} />
+  if (index === 7) return <ChecksScene running={running} />
   throw new Error(`No figure for run phase ${index}`)
 }
 

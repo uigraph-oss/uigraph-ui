@@ -23,11 +23,7 @@ import {
 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  RECHECK_REPOSITORY_IMPORT,
-  REPOSITORY_IMPORT,
-  RETRY_REPOSITORY_IMPORT,
-} from './api'
+import { REPOSITORY_IMPORT, RETRY_REPOSITORY_IMPORT } from './api'
 
 function PhaseDuration({ phase }: { phase: RunPhase }) {
   const elapsed = useElapsed(phase.startedAt, phase.completedAt)
@@ -189,26 +185,10 @@ export function ImportRunStep({
       onCompleted()
     },
   })
-  const [recheck, { loading: isRechecking }] = useMutation(
-    RECHECK_REPOSITORY_IMPORT
-  )
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
 
   const value = importQuery.data?.repositoryImport ?? null
   const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
-
-  async function handleRecheck() {
-    setActionError('')
-    try {
-      await recheck({ variables: { orgID, importID } })
-      setIsPolling(true)
-      await importQuery.refetch()
-    } catch (caught) {
-      setActionError(
-        caught instanceof Error ? caught.message : 'Could not recheck the run'
-      )
-    }
-  }
 
   async function handleRetry() {
     setActionError('')
@@ -249,7 +229,6 @@ export function ImportRunStep({
 
   const completed = value?.status === 'COMPLETED'
   const failed = value?.status === 'FAILED'
-  const waiting = value?.status === 'WAITING_AI_CONFIGURATION'
   const phases = runPhases(value)
   const failedPhase = phases.find((phase) => phase.status === 'failed')
 
@@ -288,10 +267,6 @@ export function ImportRunStep({
       <p className="text-paragraph mt-1.5 text-sm leading-relaxed">
         {failed && 'The run stopped before it finished.'}
         {!failed &&
-          waiting &&
-          'The run starts as soon as the missing settings are in place.'}
-        {!failed &&
-          !waiting &&
           'This runs on GitHub Actions and takes a few minutes. You can close this and come back.'}
       </p>
 
@@ -299,28 +274,6 @@ export function ImportRunStep({
         <PhaseList phases={phases} />
         <PhaseDetail phases={phases} />
       </div>
-
-      {value?.missingAIConfiguration.length ? (
-        <div className="mt-5 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
-          <p className="text-sm text-amber-500">
-            Waiting on{' '}
-            <span className="font-mono text-[0.75rem]">
-              {value.missingAIConfiguration.join(', ')}
-            </span>
-          </p>
-          <Button
-            preset="outline"
-            className="mt-3 h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
-            disabled={isRechecking}
-            onClick={() => void handleRecheck()}
-          >
-            <RefreshCw
-              className={cn('size-4', isRechecking && 'animate-spin')}
-            />
-            Recheck
-          </Button>
-        </div>
-      ) : null}
 
       {failed && (
         <div className="border-destructive/30 bg-destructive/5 mt-5 rounded-xl border p-4">

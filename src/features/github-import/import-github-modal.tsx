@@ -20,10 +20,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { START_REPOSITORY_IMPORT } from './api'
 import { ConnectGitHubCard } from './connect-github-card'
-import {
-  EnvironmentSecrets,
-  useRepositoryEnvironment,
-} from './environment-secrets'
+import { EnvironmentSecrets } from './environment-secrets'
 import { ImportRunStep } from './import-run-step'
 import { RepositoryPicker, type SelectedRepository } from './repository-picker'
 import { useGitHubConnection } from './use-github-connection'
@@ -55,13 +52,6 @@ export function ImportGitHubModal({
   const [startImport, { loading: isStarting }] = useMutation(
     START_REPOSITORY_IMPORT
   )
-
-  const environment = useRepositoryEnvironment({
-    orgID,
-    owner: repository?.owner ?? '',
-    repo: repository?.name ?? '',
-    skip: step !== 2 || repository === null,
-  })
 
   useEffect(() => {
     if (step !== null || github.isLoading) return
@@ -194,7 +184,7 @@ export function ImportGitHubModal({
               </Button>
               <Button
                 preset="primary"
-                disabled={!environment.isReady || isStarting}
+                disabled={isStarting}
                 onClick={() => void handleStart()}
               >
                 {isStarting && <Loader2 className="animate-spin" />}
@@ -286,9 +276,9 @@ export function ImportGitHubModal({
       {!isLoading && team && step === 2 && repository && (
         <div className="mx-auto w-full max-w-2xl">
           <EnvironmentSecrets
+            orgID={orgID}
             owner={repository.owner}
             repo={repository.name}
-            environment={environment}
           />
 
           {startError && (
