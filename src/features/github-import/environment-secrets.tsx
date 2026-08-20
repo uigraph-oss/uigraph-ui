@@ -11,10 +11,13 @@ import {
   BookOpen,
   Check,
   Copy,
+  KeyRound,
   Loader2,
+  RotateCw,
 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { LuGithub } from 'react-icons/lu'
+import { toast } from 'sonner'
 import {
   CREATE_REPOSITORY_IMPORT_TOKEN,
   GITHUB_IMPORT_ENVIRONMENT,
@@ -154,19 +157,17 @@ function ImportTokenRow({
 }) {
   const [createToken, { loading }] = useMutation(CREATE_REPOSITORY_IMPORT_TOKEN)
   const [token, setToken] = useState('')
-  const [error, setError] = useState('')
 
   async function handleCreate() {
-    setError('')
     try {
       const result = await createToken({ variables: { orgID, owner, repo } })
       const created = result.data?.createRepositoryImportToken
       if (!created) throw new Error('The token came back empty')
       setToken(created)
     } catch (caught) {
-      setError(
-        caught instanceof Error ? caught.message : 'Could not create the token'
-      )
+      toast.error('Could not create the token', {
+        description: caught instanceof Error ? caught.message : undefined,
+      })
     }
   }
 
@@ -175,26 +176,25 @@ function ImportTokenRow({
       name="UIGRAPH_TOKEN"
       info="A UIGraph service account token the workflow signs in with. Create it here, then paste it into GitHub — it is shown only once."
       note={
-        <>
-          {token && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-xs text-amber-500">
-              <AlertTriangle className="size-3.5 shrink-0" />
-              Copy it now. It is shown once and cannot be read again.
-            </p>
-          )}
-          {error && <p className="text-destructive mt-1.5 text-xs">{error}</p>}
-        </>
+        token && (
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-amber-500">
+            <AlertTriangle className="size-3.5 shrink-0" />
+            Copy it now. It is shown once and cannot be read again.
+          </p>
+        )
       }
       value={
         <div className="flex items-center gap-2">
           {token && <ValueChip value={token} />}
           <Button
             preset="outline"
-            className="h-8 shrink-0 rounded-lg px-3 text-xs has-[>svg]:px-3"
+            className="border-primary/30 bg-primary/10 text-primary hover:border-primary/50 hover:bg-primary/15 hover:text-primary h-8 shrink-0 gap-1.5 rounded-lg px-3 text-xs has-[>svg]:px-3"
             disabled={loading}
             onClick={() => void handleCreate()}
           >
             {loading && <Loader2 className="size-3.5 animate-spin" />}
+            {!loading && token && <RotateCw className="size-3.5" />}
+            {!loading && !token && <KeyRound className="size-3.5" />}
             {token ? 'Create another' : 'Create token'}
           </Button>
         </div>
@@ -227,6 +227,10 @@ export function EnvironmentSecrets({
 }) {
   const environmentQuery = useQuery(GITHUB_IMPORT_ENVIRONMENT, {
     variables: { orgID },
+    onError: (error) =>
+      toast.error('Could not read this instance configuration', {
+        description: error.message,
+      }),
   })
 
   const environment = environmentQuery.data?.githubImportEnvironment
@@ -289,13 +293,6 @@ export function EnvironmentSecrets({
           />
           <ImportTokenRow orgID={orgID} owner={owner} repo={repo} />
         </ul>
-
-        {environmentQuery.error && (
-          <p className="text-destructive border-stock flex items-center gap-2 border-t px-4 py-2.5 text-xs">
-            <AlertTriangle className="size-3.5 shrink-0" />
-            {environmentQuery.error.message}
-          </p>
-        )}
 
         <div className="border-stock bg-shading-gray/40 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t px-4 py-2">
           <span className="text-paragraph min-w-0 truncate text-[0.8125rem]">
