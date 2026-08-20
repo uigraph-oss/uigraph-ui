@@ -58,7 +58,7 @@ export function EnvironmentStep({
           <OnboardingActions
             onBack={onBack}
             primary={{
-              label: 'Go ahead',
+              label: 'Start importing',
               onClick: handleNext,
               loading: isStarting,
             }}
