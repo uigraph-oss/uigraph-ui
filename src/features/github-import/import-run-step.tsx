@@ -382,11 +382,21 @@ export function ImportRunStep({
             >
               What to check <ExternalLink className="size-3" />
             </a>
+            {value?.runUrl && (
+              <a
+                href={value.runUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-paragraph hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors"
+              >
+                Open the run log <ExternalLink className="size-3" />
+              </a>
+            )}
           </div>
         </div>
       )}
 
-      {value?.runUrl && (
+      {!failed && value?.runUrl && (
         <a
           href={value.runUrl}
           target="_blank"
