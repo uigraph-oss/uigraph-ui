@@ -1,93 +1,49 @@
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { NetworkStatus, useQuery } from '@apollo/client'
-import { motion } from 'framer-motion'
 import {
-  AlertCircle,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { useAuthStore } from '@/store/auth-store'
+import { useMutation, useQuery } from '@apollo/client'
+import {
+  ArrowUpRight,
   BookOpen,
   Check,
   Copy,
-  Minus,
-  RefreshCw,
-  Sparkles,
+  KeyRound,
+  Loader2,
 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
-import { REPOSITORY_AI_CONFIGURATION } from './api'
+import { LuGithub } from 'react-icons/lu'
+import { toast } from 'sonner'
+import {
+  CREATE_REPOSITORY_IMPORT_TOKEN,
+  GITHUB_IMPORT_ENVIRONMENT,
+} from './api'
 
 const DOCS_URL = 'https://docs.uigraph.app/self-hosting/ai-providers'
 
-const VARIABLE_ROWS = [
+const PROVIDER_ROWS = [
   {
-    names: ['AI_PROVIDER_API_KEY'],
-    description: 'The key the workflow uses to call your model provider.',
+    name: 'AI_PROVIDER_API_URL',
+    info: 'The OpenAI compatible endpoint the workflow calls. Providers that ship as an npm package are set up differently.',
+    infoHref: DOCS_URL,
+    example: 'https://api.openai.com/v1',
   },
   {
-    names: ['AI_PROVIDER_MODEL'],
-    description: 'The model that reads the repository.',
+    name: 'AI_PROVIDER_MODEL',
+    info: 'The model that reads the repository and writes its artifacts.',
+    example: 'gpt-5.6-terra',
   },
   {
-    names: ['AI_PROVIDER_API_URL', 'AI_PROVIDER_NPM'],
-    description: 'Either one: the provider endpoint, or its npm package.',
+    name: 'AI_PROVIDER_API_KEY',
+    info: 'The API key the workflow uses to call your model provider. It is read inside your own GitHub Actions run, never by UIGraph.',
+    example: 'sk-proj-…',
   },
 ]
 
-const UIGRAPH_VARIABLES = [
-  'UIGRAPH_API_URL',
-  'UIGRAPH_GATEWAY_URL',
-  'UIGRAPH_TOKEN',
-]
-
-export function useRepositoryEnvironment({
-  orgID,
-  owner,
-  repo,
-  skip,
-}: {
-  orgID: string
-  owner: string
-  repo: string
-  skip?: boolean
-}) {
-  const configQuery = useQuery(REPOSITORY_AI_CONFIGURATION, {
-    variables: { orgID, owner, repo },
-    skip,
-    fetchPolicy: 'network-only',
-    pollInterval: 5000,
-    notifyOnNetworkStatusChange: true,
-  })
-
-  const configuration = configQuery.data?.repositoryAIConfiguration ?? null
-
-  return {
-    missing: configuration?.missing ?? [],
-    isReady: configuration?.ready === true,
-    isIncomplete: configuration?.ready === false,
-    isChecking: !configuration && configQuery.loading,
-    isFailed: !configuration && !configQuery.loading,
-    isRefetching: configQuery.networkStatus === NetworkStatus.refetch,
-    errorMessage: configQuery.error?.message ?? '',
-    refetch: () => void configQuery.refetch(),
-  }
-}
-
-function StepIntro({
-  title,
-  description,
-}: {
-  title: ReactNode
-  description: ReactNode
-}) {
-  return (
-    <div>
-      <h2 className="text-lg font-medium tracking-tight">{title}</h2>
-      <p className="text-paragraph mt-1.5 max-w-lg text-sm leading-relaxed">
-        {description}
-      </p>
-    </div>
-  )
-}
-
-function VariableName({ name }: { name: string }) {
+function SecretName({ name, info }: { name: string; info: string }) {
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
@@ -99,247 +55,261 @@ function VariableName({ name }: { name: string }) {
   return (
     <button
       type="button"
-      onClick={handleCopy}
+      onClick={() => void handleCopy()}
       aria-label={`Copy ${name}`}
-      className="hover:bg-stock/50 -mx-1 inline-flex items-center gap-1.5 rounded px-1 py-0.5 font-mono text-[0.8125rem] transition-colors"
+      className="group/name hover:bg-stock/50 -mx-1.5 flex min-w-0 items-center gap-1.5 rounded px-1.5 py-1 transition-colors"
     >
-      {name}
-      {copied && <Check className="text-success size-3" />}
-      {!copied && <Copy className="text-paragraph/70 size-3" />}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="decoration-paragraph/30 hover:decoration-paragraph min-w-0 truncate font-mono text-[0.8125rem] underline decoration-dotted underline-offset-4 transition-colors">
+            {name}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs leading-relaxed">
+          {info}
+        </TooltipContent>
+      </Tooltip>
+      {copied && <Check className="text-success size-3.5 shrink-0" />}
+      {!copied && (
+        <Copy className="text-paragraph/50 group-hover/name:text-paragraph size-3.5 shrink-0 transition-colors" />
+      )}
     </button>
   )
 }
 
-function ReadyMark({ delay }: { delay: number }) {
+function ValueChip({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(value)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1500)
+  }
+
   return (
-    <svg viewBox="0 0 32 32" fill="none" className="size-4">
-      <motion.path
-        d="M6 17 L13 24 L26 8"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="stroke-success"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.35, delay, ease: 'easeOut' }}
-      />
-    </svg>
+    <button
+      type="button"
+      onClick={() => void handleCopy()}
+      aria-label={`Copy ${value}`}
+      className="border-stock bg-shading-gray hover:border-primary/40 flex h-8 max-w-[17rem] min-w-0 items-center gap-2 rounded-lg border px-2.5 font-mono text-xs transition-colors"
+    >
+      <span className="truncate">{value}</span>
+      {copied && <Check className="text-success size-3.5 shrink-0" />}
+      {!copied && <Copy className="text-paragraph/60 size-3.5 shrink-0" />}
+    </button>
   )
 }
 
-function SecretsCard({
-  actions,
-  children,
+function PlaceholderChip({ label }: { label: string }) {
+  return (
+    <span className="border-stock/70 text-paragraph/60 flex h-8 max-w-[17rem] cursor-default items-center truncate rounded-lg border border-dashed px-2.5 font-mono text-xs select-none">
+      {label}
+    </span>
+  )
+}
+
+function SecretRow({
+  name,
+  info,
+  infoHref,
+  value,
 }: {
-  actions?: ReactNode
-  children: ReactNode
+  name: string
+  info: string
+  infoHref?: string
+  value: ReactNode
 }) {
   return (
-    <div className="border-stock bg-shading/40 mt-5 overflow-hidden rounded-xl border">
-      <ul className="divide-stock divide-y">{children}</ul>
-      {actions && (
-        <div className="border-stock bg-shading-gray/40 flex flex-wrap items-center justify-end gap-0.5 border-t px-2.5 py-2.5">
-          {actions}
-        </div>
-      )}
-    </div>
+    <li className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-2.5">
+      <div className="flex min-w-0 items-center gap-2">
+        <SecretName name={name} info={info} />
+        {infoHref && (
+          <a
+            href={infoHref}
+            target="_blank"
+            rel="noreferrer"
+            className="border-stock/70 text-paragraph/70 hover:border-primary/40 hover:text-primary flex h-6 shrink-0 items-center gap-1 rounded-full border px-2 text-[0.6875rem] transition-colors"
+          >
+            Learn more
+            <ArrowUpRight className="size-3" />
+          </a>
+        )}
+      </div>
+      {value}
+    </li>
   )
+}
+
+function ImportTokenRow({
+  orgID,
+  owner,
+  repo,
+}: {
+  orgID: string
+  owner: string
+  repo: string
+}) {
+  const [createToken, { loading }] = useMutation(CREATE_REPOSITORY_IMPORT_TOKEN)
+  const [token, setToken] = useState('')
+
+  async function handleCreate() {
+    try {
+      const result = await createToken({ variables: { orgID, owner, repo } })
+      const created = result.data?.createRepositoryImportToken
+      if (!created) throw new Error('The token came back empty')
+      setToken(created)
+    } catch (caught) {
+      toast.error('Could not create the token', {
+        description: caught instanceof Error ? caught.message : undefined,
+      })
+    }
+  }
+
+  return (
+    <SecretRow
+      name="UIGRAPH_TOKEN"
+      info="A UIGraph service account token the workflow signs in with. Create it here, then paste it into GitHub — it is shown only once."
+      value={
+        token ? (
+          <ValueChip value={token} />
+        ) : (
+          <Button
+            preset="outline"
+            className="border-primary/30 bg-primary/10 text-primary hover:border-primary/50 hover:bg-primary/15 hover:text-primary h-8 shrink-0 gap-1.5 rounded-lg px-3 text-xs has-[>svg]:px-3"
+            disabled={loading}
+            onClick={() => void handleCreate()}
+          >
+            {loading && <Loader2 className="size-3.5 animate-spin" />}
+            {!loading && <KeyRound className="size-3.5" />}
+            Create token
+          </Button>
+        )
+      }
+    />
+  )
+}
+
+function InstanceValue({
+  value,
+  loading,
+}: {
+  value: string
+  loading: boolean
+}) {
+  if (loading)
+    return <span className="bg-stock h-8 w-44 animate-pulse rounded-lg" />
+  if (value) return <ValueChip value={value} />
+  return <PlaceholderChip label="not configured" />
 }
 
 export function EnvironmentSecrets({
+  orgID,
   owner,
   repo,
-  environment,
 }: {
+  orgID: string
   owner: string
   repo: string
-  environment: ReturnType<typeof useRepositoryEnvironment>
 }) {
-  const { missing, isReady, isIncomplete, isChecking, isFailed } = environment
+  const isEnterprise = useAuthStore((state) => state.features.enterprise)
 
-  const repoName = (
-    <span className="font-mono text-[0.8125rem]">
-      {owner}/{repo}
-    </span>
-  )
+  const environmentQuery = useQuery(GITHUB_IMPORT_ENVIRONMENT, {
+    variables: { orgID },
+    skip: isEnterprise,
+    onError: (error) =>
+      toast.error('Could not read this instance configuration', {
+        description: error.message,
+      }),
+  })
+
+  const environment = environmentQuery.data?.githubImportEnvironment
+  const isLoading = !environment && environmentQuery.loading
 
   return (
     <>
-      <div className="flex items-center justify-between gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div className="min-w-0">
-          {isChecking && (
-            <StepIntro
-              title="Checking the secrets on your repository."
-              description={<>Reading the Actions secrets on {repoName}.</>}
-            />
-          )}
-
-          {isReady && (
-            <StepIntro
-              title="Everything is ready to go."
-              description={<>{repoName} has every secret the workflow needs.</>}
-            />
-          )}
-
-          {isIncomplete && (
-            <StepIntro
-              title="The run needs a few secrets first."
-              description={<>Add them as Actions secrets on {repoName}.</>}
-            />
-          )}
-
-          {isFailed && (
-            <StepIntro
-              title="Could not check the secrets."
-              description={
-                <>Could not read the Actions secrets on {repoName}.</>
-              }
-            />
-          )}
+          <h2 className="text-lg font-medium tracking-tight">
+            Add these secrets to your repository.
+          </h2>
+          <p className="text-paragraph mt-1.5 text-sm">
+            The run checks them before reading your code.
+          </p>
         </div>
 
         <Button
           preset="outline"
           asChild
-          className="h-9 shrink-0 gap-2 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
+          className="h-10 shrink-0 gap-2 rounded-xl px-4 text-sm has-[>svg]:px-4"
         >
           <a href={DOCS_URL} target="_blank" rel="noreferrer">
             <BookOpen className="size-4" />
-            Docs
+            View Docs
           </a>
         </Button>
       </div>
 
-      {isFailed && (
-        <p className="text-destructive mt-3 flex items-start gap-2 text-sm">
-          <AlertCircle className="mt-0.5 size-4 shrink-0" />
-          {environment.errorMessage || 'The check did not go through'}
-        </p>
-      )}
-
-      <SecretsCard
-        actions={
-          isIncomplete || isFailed ? (
+      <div className="border-stock bg-shading/40 mt-5 overflow-hidden rounded-xl border">
+        <ul className="divide-stock divide-y">
+          {PROVIDER_ROWS.map((row) => (
+            <SecretRow
+              key={row.name}
+              name={row.name}
+              info={row.info}
+              infoHref={row.infoHref}
+              value={<PlaceholderChip label={row.example} />}
+            />
+          ))}
+          {!isEnterprise && (
             <>
-              <span className="text-paragraph mr-auto px-1.5 text-[0.8125rem]">
-                Not sure what to add?{' '}
-                <a
-                  href={DOCS_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Read the setup guide
-                </a>
-              </span>
-              <Button
-                preset="ghost"
-                aria-label="Check again"
-                className="text-paragraph size-9 rounded-[0.625rem] p-0 has-[>svg]:px-0"
-                disabled={environment.isRefetching}
-                onClick={environment.refetch}
-              >
-                <RefreshCw
-                  className={cn(
-                    'size-4',
-                    environment.isRefetching && 'animate-spin'
-                  )}
-                />
-              </Button>
-              <Button
-                preset="ghost"
-                asChild
-                className="text-paragraph h-9 rounded-[0.625rem] px-3 text-[0.8125rem]"
-              >
-                <a
-                  href={`https://github.com/${owner}/${repo}/settings/secrets/actions`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Open GitHub settings
-                </a>
-              </Button>
+              <SecretRow
+                name="UIGRAPH_API_URL"
+                info="Where the workflow reaches this UIGraph instance to report the run back."
+                value={
+                  <InstanceValue
+                    value={environment?.apiUrl ?? ''}
+                    loading={isLoading}
+                  />
+                }
+              />
+              <SecretRow
+                name="UIGRAPH_GATEWAY_URL"
+                info="Where the workflow uploads the graph it generates."
+                value={
+                  <InstanceValue
+                    value={environment?.gatewayUrl ?? ''}
+                    loading={isLoading}
+                  />
+                }
+              />
             </>
-          ) : undefined
-        }
-      >
-        {VARIABLE_ROWS.map((row, index) => {
-          const isRowMissing = row.names.some((name) => missing.includes(name))
+          )}
+          <ImportTokenRow orgID={orgID} owner={owner} repo={repo} />
+        </ul>
 
-          return (
-            <li
-              key={row.names.join('-')}
-              className={cn(
-                'flex items-start gap-3 px-4 py-3.5',
-                isRowMissing && 'bg-destructive/5'
-              )}
+        <div className="border-stock bg-shading-gray/40 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t px-4 py-2">
+          <span className="text-paragraph min-w-0 truncate text-[0.8125rem]">
+            <span className="font-mono">
+              {owner}/{repo}
+            </span>{' '}
+            &gt; Settings &gt; Secrets
+          </span>
+          <Button
+            preset="ghost"
+            asChild
+            className="text-paragraph -mx-2 h-8 gap-2 rounded-lg px-2 text-[0.8125rem] has-[>svg]:px-2"
+          >
+            <a
+              href={`https://github.com/${owner}/${repo}/settings/secrets/actions`}
+              target="_blank"
+              rel="noreferrer"
             >
-              <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
-                {isChecking && (
-                  <span className="bg-stock size-3.5 animate-pulse rounded-full" />
-                )}
-                {isFailed && <Minus className="text-paragraph/40 size-4" />}
-                {(isReady || isIncomplete) && isRowMissing && (
-                  <AlertCircle className="text-destructive size-4" />
-                )}
-                {(isReady || isIncomplete) && !isRowMissing && (
-                  <ReadyMark delay={index * 0.08} />
-                )}
-              </span>
-
-              <span className="min-w-0 flex-1">
-                {isChecking && (
-                  <>
-                    <span className="bg-stock block h-3.5 w-44 max-w-full animate-pulse rounded" />
-                    <span className="bg-stock/60 mt-1.5 block h-3 w-64 max-w-full animate-pulse rounded" />
-                  </>
-                )}
-
-                {!isChecking && (
-                  <>
-                    <span
-                      className={cn(
-                        'flex flex-wrap items-center gap-x-2',
-                        isRowMissing && 'text-destructive'
-                      )}
-                    >
-                      {row.names.map((name, nameIndex) => (
-                        <span key={name} className="flex items-center gap-2">
-                          {nameIndex > 0 && (
-                            <span className="text-paragraph text-xs">or</span>
-                          )}
-                          <VariableName name={name} />
-                        </span>
-                      ))}
-                    </span>
-                    <span className="text-paragraph mt-1 block text-xs">
-                      {row.description}
-                    </span>
-                  </>
-                )}
-              </span>
-            </li>
-          )
-        })}
-
-        <li className="flex items-start gap-3 px-4 py-3.5">
-          <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
-            <Sparkles className="text-primary/70 size-4" />
-          </span>
-
-          <span className="min-w-0 flex-1">
-            <span className="flex flex-wrap items-center gap-x-2">
-              {UIGRAPH_VARIABLES.map((name) => (
-                <VariableName key={name} name={name} />
-              ))}
-            </span>
-            <span className="text-paragraph mt-1 block text-xs">
-              UIGraph sets these on the repository when the import starts.
-              Nothing for you to add.
-            </span>
-          </span>
-        </li>
-      </SecretsCard>
+              <LuGithub className="size-4" />
+              Open Settings
+            </a>
+          </Button>
+        </div>
+      </div>
     </>
   )
 }

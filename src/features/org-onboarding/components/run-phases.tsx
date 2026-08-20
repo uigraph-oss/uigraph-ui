@@ -10,6 +10,7 @@ import {
   LuPackage,
   LuScanSearch,
   LuServer,
+  LuShieldCheck,
 } from 'react-icons/lu'
 
 export const TROUBLESHOOTING_URL =
@@ -34,6 +35,15 @@ const PHASES = [
     failureHint:
       'The run could not start. Check that GitHub Actions is enabled here, then retry.',
     troubleshooting: `${TROUBLESHOOTING_URL}#preparing`,
+  },
+  {
+    label: 'Validating Configuration',
+    icon: LuShieldCheck,
+    summary: 'The secrets the run needs are being checked on your repository.',
+    note: 'Nothing is read from your code until this passes.',
+    failureHint:
+      'A required secret is missing or empty. Add the ones named in the run log as Actions secrets, then retry.',
+    troubleshooting: `${TROUBLESHOOTING_URL}#validating-configuration`,
   },
   {
     label: 'Installing',
@@ -87,19 +97,21 @@ const PHASES = [
 const ARTIFACT_PHASE_BY_STEP: Record<string, number> = {
   'set up job': 1,
   'run actions/checkout@v4': 1,
-  'run actions/setup-node@v4': 2,
-  'generate repository artifacts': 3,
-  'restrict generated changes': 4,
-  'push generated artifacts': 4,
+  'validating configuration': 2,
+  'run actions/setup-node@v4': 3,
+  'generate repository artifacts': 4,
+  'restrict generated changes': 5,
+  'push generated artifacts': 5,
 }
 
 const SYNC_PHASE_BY_STEP: Record<string, number> = {
-  'set up job': 5,
-  'run actions/checkout@v4': 5,
-  'run actions/setup-go@v5': 5,
-  'run go install github.com/uigraph-oss/uigraph-cli@main': 5,
-  sync: 5,
-  'complete job': 6,
+  'set up job': 6,
+  'validating configuration': 6,
+  'run actions/checkout@v4': 6,
+  'run actions/setup-go@v5': 6,
+  'run go install github.com/uigraph-oss/uigraph-cli@main': 6,
+  sync: 6,
+  'complete job': 7,
 }
 
 type RunPhaseStatus = 'pending' | 'active' | 'done' | 'failed' | 'skipped'
@@ -137,13 +149,12 @@ export function runPhases(value: RunImport | null): RunPhase[] {
 
   const steps = value?.steps ?? []
   const isRunning = value === null || !isTerminal(value.status)
-  const blocked = value?.status === 'WAITING_AI_CONFIGURATION'
 
   if (value === null) tracked[0].running = true
   else if (value.status === 'FAILED' && steps.length === 0)
     tracked[0].failed = true
   else if (hasRunStarted(value.status)) tracked[0].completed = true
-  else if (!blocked) tracked[0].running = true
+  else tracked[0].running = true
 
   let jobIndex = 0
   let previousNumber = 0
@@ -206,7 +217,7 @@ export function runPhases(value: RunImport | null): RunPhase[] {
   const settled = phases.some(
     (phase) => phase.status === 'active' || phase.status === 'failed'
   )
-  if (isRunning && !blocked && !settled) {
+  if (isRunning && !settled) {
     const next = phases.find((phase) => phase.status === 'pending')
     if (next) next.status = 'active'
   }

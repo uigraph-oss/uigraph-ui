@@ -1,14 +1,26 @@
 import { Button } from '@/components/ui/button'
 import {
-  RECHECK_REPOSITORY_IMPORT,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
   REPOSITORY_IMPORT,
+  RERUN_REPOSITORY_IMPORT_FAILED_JOBS,
   RETRY_REPOSITORY_IMPORT,
 } from '@/features/github-import/api'
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery } from '@apollo/client'
-import { AlertCircle, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
-import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import {
+  AlertCircle,
+  ChevronDown,
+  ExternalLink,
+  Loader2,
+  RefreshCw,
+} from 'lucide-react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { OnboardingLayout } from './onboarding-layout'
 import {
   OnboardingStepTicks,
@@ -16,83 +28,52 @@ import {
   StepIntro,
 } from './onboarding-ui'
 import { RunPhaseDetail } from './run-phase-detail'
-import {
-  isTerminal,
-  RunPhaseList,
-  runPhases,
-  TROUBLESHOOTING_URL,
-  useElapsed,
-} from './run-phases'
+import { RunPhaseList, runPhases, TROUBLESHOOTING_URL } from './run-phases'
 
 export function RunStep({
   orgID,
   importID,
-  onFinish,
 }: {
   orgID: string
   importID: string
-  onFinish: () => Promise<void>
 }) {
   const navigate = useNavigate()
-  const finishedRef = useRef(false)
-  const [actionError, setActionError] = useState('')
-  const [isPolling, setIsPolling] = useState(true)
 
   const importQuery = useQuery(REPOSITORY_IMPORT, {
     variables: { orgID, importID },
     fetchPolicy: 'network-only',
-    pollInterval: isPolling ? 5000 : 0,
-    onCompleted: (data) => {
-      const value = data.repositoryImport
-      setIsPolling(!isTerminal(value.status))
-      if (value.status !== 'COMPLETED' || finishedRef.current) return
-      finishedRef.current = true
-      void onFinish().then(() => {
-        window.setTimeout(() => {
-          void navigate(
-            value.serviceId ? `/services/${value.serviceId}` : '/services'
-          )
-        }, 1500)
-      })
-    },
+    pollInterval: 5000,
   })
-  const [recheck, { loading: isRechecking }] = useMutation(
-    RECHECK_REPOSITORY_IMPORT
-  )
   const [retry, { loading: isRetrying }] = useMutation(RETRY_REPOSITORY_IMPORT)
+  const [rerunFailedJobs, { loading: isRerunning }] = useMutation(
+    RERUN_REPOSITORY_IMPORT_FAILED_JOBS
+  )
 
   const value = importQuery.data?.repositoryImport ?? null
-  const elapsed = useElapsed(value?.runStartedAt, value?.runCompletedAt)
-
-  async function handleRecheck() {
-    setActionError('')
-    try {
-      await recheck({ variables: { orgID, importID } })
-      setIsPolling(true)
-      await importQuery.refetch()
-    } catch (caught) {
-      setActionError(
-        caught instanceof Error ? caught.message : 'Could not recheck the run'
-      )
-    }
-  }
 
   async function handleRetry() {
-    setActionError('')
     try {
       await retry({ variables: { orgID, importID } })
-      setIsPolling(true)
       await importQuery.refetch()
     } catch (caught) {
-      setActionError(
-        caught instanceof Error ? caught.message : 'Could not retry the run'
-      )
+      toast.error('Could not start a new run', {
+        description: caught instanceof Error ? caught.message : undefined,
+      })
     }
   }
 
-  const completed = value?.status === 'COMPLETED'
+  async function handleRerunFailedJobs() {
+    try {
+      await rerunFailedJobs({ variables: { orgID, importID } })
+      await importQuery.refetch()
+    } catch (caught) {
+      toast.error('Could not re-run the failed jobs', {
+        description: caught instanceof Error ? caught.message : undefined,
+      })
+    }
+  }
+
   const failed = value?.status === 'FAILED'
-  const waiting = value?.status === 'WAITING_AI_CONFIGURATION'
   const phases = runPhases(value)
   const failedPhase = phases.find((phase) => phase.status === 'failed')
 
@@ -132,25 +113,12 @@ export function RunStep({
     )
   }
 
-  if (completed) {
+  if (value?.status === 'COMPLETED') {
     return (
-      <OnboardingLayout
-        headerLeftContent={<OnboardingStepTitle current={3} />}
-        headerCenterContent={<OnboardingStepTicks current={3} />}
-      >
-        <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-2xl font-medium tracking-tight lg:text-[1.75rem]">
-            <span className="font-mono break-all">{value?.githubRepo}</span> is
-            on the graph.
-          </h1>
-          <p className="text-paragraph mt-3 text-sm">
-            Imported in {elapsed ?? '—'}.
-          </p>
-          <p className="text-paragraph mt-8 flex items-center gap-2 text-sm">
-            <Loader2 className="size-4 animate-spin" /> Opening the service
-          </p>
-        </div>
-      </OnboardingLayout>
+      <Navigate
+        to={value.serviceId ? `/services/${value.serviceId}` : '/services'}
+        replace
+      />
     )
   }
 
@@ -172,9 +140,7 @@ export function RunStep({
           description={
             failed
               ? 'The run stopped before it finished.'
-              : waiting
-                ? 'The run starts as soon as the missing settings are in place.'
-                : 'This runs on GitHub Actions and takes a few minutes. You can leave this open.'
+              : 'This runs on GitHub Actions and takes a few minutes. You can leave this open.'
           }
         />
 
@@ -188,28 +154,6 @@ export function RunStep({
           </div>
         </div>
 
-        {value?.missingAIConfiguration.length ? (
-          <div className="mt-10 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
-            <p className="text-sm text-amber-500">
-              Waiting on{' '}
-              <span className="font-mono text-[0.75rem]">
-                {value.missingAIConfiguration.join(', ')}
-              </span>
-            </p>
-            <Button
-              preset="outline"
-              className="mt-3 h-9 rounded-[0.625rem] px-3 text-sm has-[>svg]:px-3"
-              disabled={isRechecking}
-              onClick={handleRecheck}
-            >
-              <RefreshCw
-                className={cn('size-4', isRechecking && 'animate-spin')}
-              />
-              Recheck
-            </Button>
-          </div>
-        ) : null}
-
         {failed && (
           <div className="border-destructive/30 bg-destructive/5 mt-10 rounded-xl border p-4">
             <p className="text-destructive flex items-center gap-2 text-sm font-medium">
@@ -222,15 +166,54 @@ export function RunStep({
               {value?.error ?? 'The run stopped before it could finish.'}
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-5">
-              <Button
-                preset="primary"
-                className="h-9 rounded-[0.625rem] px-4 text-sm has-[>svg]:px-4"
-                disabled={isRetrying}
-                onClick={() => void handleRetry()}
-              >
-                {isRetrying && <Loader2 className="size-4 animate-spin" />}
-                Retry run
-              </Button>
+              {value?.runUrl && (
+                <div className="flex items-center">
+                  <Button
+                    preset="primary"
+                    className="h-9 rounded-l-[0.625rem] rounded-r-none px-4 text-sm has-[>svg]:px-4"
+                    disabled={isRetrying || isRerunning}
+                    onClick={() => void handleRerunFailedJobs()}
+                  >
+                    {(isRetrying || isRerunning) && (
+                      <Loader2 className="size-4 animate-spin" />
+                    )}
+                    {!isRetrying && !isRerunning && (
+                      <RefreshCw className="size-4" />
+                    )}
+                    Retry failed jobs
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        preset="primary"
+                        aria-label="More retry options"
+                        disabled={isRetrying || isRerunning}
+                        className="border-primary-foreground/5 h-9 rounded-l-none rounded-r-[0.625rem] border-l px-2 has-[>svg]:px-2"
+                      >
+                        <ChevronDown className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" sideOffset={6}>
+                      <DropdownMenuItem onSelect={() => void handleRetry()}>
+                        <RefreshCw className="size-4" />
+                        Start a new run
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+              {!value?.runUrl && (
+                <Button
+                  preset="primary"
+                  className="h-9 rounded-[0.625rem] px-4 text-sm has-[>svg]:px-4"
+                  disabled={isRetrying}
+                  onClick={() => void handleRetry()}
+                >
+                  {isRetrying && <Loader2 className="size-4 animate-spin" />}
+                  {!isRetrying && <RefreshCw className="size-4" />}
+                  Retry run
+                </Button>
+              )}
               <a
                 href={
                   failedPhase
@@ -255,10 +238,6 @@ export function RunStep({
               )}
             </div>
           </div>
-        )}
-
-        {actionError && (
-          <p className="text-destructive mt-4 text-sm">{actionError}</p>
         )}
       </div>
     </OnboardingLayout>
