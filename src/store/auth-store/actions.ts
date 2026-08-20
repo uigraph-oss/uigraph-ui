@@ -20,6 +20,7 @@ const GET_ME_AND_ORG = graphql(`
     }
     features {
       github
+      enterprise
     }
   }
 `)

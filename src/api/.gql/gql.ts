@@ -306,7 +306,7 @@ type Documents = {
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": typeof types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": typeof types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": typeof types.AssetUrlsDocument,
-    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
+    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n      enterprise\n    }\n  }\n": typeof types.MeAndOrgBootstrapDocument,
 };
 const documents: Documents = {
     "\n  query ChatSessions($orgId: ID!) {\n    chatSessions(orgId: $orgId) {\n      id\n      orgId\n      ownerUserId\n      title\n      isPinned\n      messageCount\n      createdAt\n      updatedAt\n    }\n  }\n": types.ChatSessionsDocument,
@@ -601,7 +601,7 @@ const documents: Documents = {
     "\n  mutation CreateAssetUpload($orgId: ID!) {\n    createAssetUpload(orgId: $orgId) {\n      assetId\n      uploadUrl\n    }\n  }\n": types.CreateAssetUploadDocument,
     "\n  query AssetUrl($orgId: ID!, $assetId: ID!) {\n    assetUrl(orgId: $orgId, assetId: $assetId)\n  }\n": types.AssetUrlDocument,
     "\n  query AssetUrls($orgId: ID!, $assetIds: [ID!]!) {\n    assetUrls(orgId: $orgId, assetIds: $assetIds) {\n      assetId\n      url\n    }\n  }\n": types.AssetUrlsDocument,
-    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n": types.MeAndOrgBootstrapDocument,
+    "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n      enterprise\n    }\n  }\n": types.MeAndOrgBootstrapDocument,
 };
 
 /**
@@ -1789,7 +1789,7 @@ export function graphql(source: "\n  query AssetUrls($orgId: ID!, $assetIds: [ID
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n"): (typeof documents)["\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n    }\n  }\n"];
+export function graphql(source: "\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n      enterprise\n    }\n  }\n"): (typeof documents)["\n  query MeAndOrgBootstrap {\n    me {\n      userId\n      email\n      name\n      avatarUrl\n      isServerAdmin\n    }\n    myOrgs {\n      id\n      name\n      role\n      logoUrl\n      onboardingDone\n    }\n    features {\n      github\n      enterprise\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

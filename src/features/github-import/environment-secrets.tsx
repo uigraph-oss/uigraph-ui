@@ -4,6 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useAuthStore } from '@/store/auth-store'
 import { useMutation, useQuery } from '@apollo/client'
 import {
   ArrowUpRight,
@@ -210,8 +211,11 @@ export function EnvironmentSecrets({
   owner: string
   repo: string
 }) {
+  const isEnterprise = useAuthStore((state) => state.features.enterprise)
+
   const environmentQuery = useQuery(GITHUB_IMPORT_ENVIRONMENT, {
     variables: { orgID },
+    skip: isEnterprise,
     onError: (error) =>
       toast.error('Could not read this instance configuration', {
         description: error.message,
@@ -256,26 +260,30 @@ export function EnvironmentSecrets({
               value={<PlaceholderChip label={row.example} />}
             />
           ))}
-          <SecretRow
-            name="UIGRAPH_API_URL"
-            info="Where the workflow reaches this UIGraph instance to report the run back."
-            value={
-              <InstanceValue
-                value={environment?.apiUrl ?? ''}
-                loading={isLoading}
+          {!isEnterprise && (
+            <>
+              <SecretRow
+                name="UIGRAPH_API_URL"
+                info="Where the workflow reaches this UIGraph instance to report the run back."
+                value={
+                  <InstanceValue
+                    value={environment?.apiUrl ?? ''}
+                    loading={isLoading}
+                  />
+                }
               />
-            }
-          />
-          <SecretRow
-            name="UIGRAPH_GATEWAY_URL"
-            info="Where the workflow uploads the graph it generates."
-            value={
-              <InstanceValue
-                value={environment?.gatewayUrl ?? ''}
-                loading={isLoading}
+              <SecretRow
+                name="UIGRAPH_GATEWAY_URL"
+                info="Where the workflow uploads the graph it generates."
+                value={
+                  <InstanceValue
+                    value={environment?.gatewayUrl ?? ''}
+                    loading={isLoading}
+                  />
+                }
               />
-            }
-          />
+            </>
+          )}
           <ImportTokenRow orgID={orgID} owner={owner} repo={repo} />
         </ul>
 

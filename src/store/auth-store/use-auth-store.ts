@@ -9,7 +9,7 @@ export const useAuthStore = create(() => ({
   status: 'loading' as 'authenticated' | 'loading' | 'unauthenticated',
   user: null as AuthenticatedUser | null,
 
-  features: { github: false } as Features,
+  features: { github: false, enterprise: false } as Features,
 
   organizations: [] as UserOrganization[],
   currentOrganizationId: localStorage.getItem('currentOrganizationId') as
