@@ -6,14 +6,12 @@ import {
 } from '@/components/ui/tooltip'
 import { useMutation, useQuery } from '@apollo/client'
 import {
-  AlertTriangle,
   ArrowUpRight,
   BookOpen,
   Check,
   Copy,
   KeyRound,
   Loader2,
-  RotateCw,
 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { LuGithub } from 'react-icons/lu'
@@ -113,33 +111,28 @@ function SecretRow({
   name,
   info,
   infoHref,
-  note,
   value,
 }: {
   name: string
   info: string
   infoHref?: string
-  note?: ReactNode
   value: ReactNode
 }) {
   return (
     <li className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-2.5">
-      <div className="min-w-0">
-        <div className="flex min-w-0 items-center gap-2">
-          <SecretName name={name} info={info} />
-          {infoHref && (
-            <a
-              href={infoHref}
-              target="_blank"
-              rel="noreferrer"
-              className="border-stock/70 text-paragraph/70 hover:border-primary/40 hover:text-primary flex h-6 shrink-0 items-center gap-1 rounded-full border px-2 text-[0.6875rem] transition-colors"
-            >
-              Learn more
-              <ArrowUpRight className="size-3" />
-            </a>
-          )}
-        </div>
-        {note}
+      <div className="flex min-w-0 items-center gap-2">
+        <SecretName name={name} info={info} />
+        {infoHref && (
+          <a
+            href={infoHref}
+            target="_blank"
+            rel="noreferrer"
+            className="border-stock/70 text-paragraph/70 hover:border-primary/40 hover:text-primary flex h-6 shrink-0 items-center gap-1 rounded-full border px-2 text-[0.6875rem] transition-colors"
+          >
+            Learn more
+            <ArrowUpRight className="size-3" />
+          </a>
+        )}
       </div>
       {value}
     </li>
@@ -164,6 +157,9 @@ function ImportTokenRow({
       const created = result.data?.createRepositoryImportToken
       if (!created) throw new Error('The token came back empty')
       setToken(created)
+      toast.success('Token created', {
+        description: 'Copy it now. It is shown once and cannot be read again.',
+      })
     } catch (caught) {
       toast.error('Could not create the token', {
         description: caught instanceof Error ? caught.message : undefined,
@@ -175,17 +171,10 @@ function ImportTokenRow({
     <SecretRow
       name="UIGRAPH_TOKEN"
       info="A UIGraph service account token the workflow signs in with. Create it here, then paste it into GitHub — it is shown only once."
-      note={
-        token && (
-          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-amber-500">
-            <AlertTriangle className="size-3.5 shrink-0" />
-            Copy it now. It is shown once and cannot be read again.
-          </p>
-        )
-      }
       value={
-        <div className="flex items-center gap-2">
-          {token && <ValueChip value={token} />}
+        token ? (
+          <ValueChip value={token} />
+        ) : (
           <Button
             preset="outline"
             className="border-primary/30 bg-primary/10 text-primary hover:border-primary/50 hover:bg-primary/15 hover:text-primary h-8 shrink-0 gap-1.5 rounded-lg px-3 text-xs has-[>svg]:px-3"
@@ -193,11 +182,10 @@ function ImportTokenRow({
             onClick={() => void handleCreate()}
           >
             {loading && <Loader2 className="size-3.5 animate-spin" />}
-            {!loading && token && <RotateCw className="size-3.5" />}
-            {!loading && !token && <KeyRound className="size-3.5" />}
-            {token ? 'Create another' : 'Create token'}
+            {!loading && <KeyRound className="size-3.5" />}
+            Create token
           </Button>
-        </div>
+        )
       }
     />
   )
