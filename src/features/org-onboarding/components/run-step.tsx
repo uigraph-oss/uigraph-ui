@@ -218,6 +218,9 @@ export function RunStep({
                     {(isRetrying || isRerunning) && (
                       <Loader2 className="size-4 animate-spin" />
                     )}
+                    {!isRetrying && !isRerunning && (
+                      <RefreshCw className="size-4" />
+                    )}
                     Retry failed jobs
                   </Button>
                   <DropdownMenu>
@@ -226,12 +229,12 @@ export function RunStep({
                         preset="primary"
                         aria-label="More retry options"
                         disabled={isRetrying || isRerunning}
-                        className="border-primary-foreground/25 h-9 rounded-l-none rounded-r-[0.625rem] border-l px-2 has-[>svg]:px-2"
+                        className="border-primary-foreground/5 h-9 rounded-l-none rounded-r-[0.625rem] border-l px-2 has-[>svg]:px-2"
                       >
                         <ChevronDown className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
+                    <DropdownMenuContent align="end" sideOffset={6}>
                       <DropdownMenuItem onSelect={() => void handleRetry()}>
                         <RefreshCw className="size-4" />
                         Start a new run
@@ -248,6 +251,7 @@ export function RunStep({
                   onClick={() => void handleRetry()}
                 >
                   {isRetrying && <Loader2 className="size-4 animate-spin" />}
+                  {!isRetrying && <RefreshCw className="size-4" />}
                   Retry run
                 </Button>
               )}
