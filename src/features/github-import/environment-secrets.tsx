@@ -11,18 +11,9 @@ import {
 const DOCS_URL = 'https://docs.uigraph.app/self-hosting/ai-providers'
 
 const PROVIDER_ROWS = [
-  {
-    names: ['AI_PROVIDER_API_KEY'],
-    description: 'The key the workflow uses to call your model provider.',
-  },
-  {
-    names: ['AI_PROVIDER_MODEL'],
-    description: 'The model that reads the repository.',
-  },
-  {
-    names: ['AI_PROVIDER_API_URL', 'AI_PROVIDER_NPM'],
-    description: 'Either one: the provider endpoint, or its npm package.',
-  },
+  ['AI_PROVIDER_API_KEY'],
+  ['AI_PROVIDER_MODEL'],
+  ['AI_PROVIDER_API_URL', 'AI_PROVIDER_NPM'],
 ]
 
 function CopyValue({
@@ -88,30 +79,25 @@ function PlaceholderChip({ label }: { label: string }) {
   )
 }
 
-function SectionHeader({ title, hint }: { title: string; hint: string }) {
+function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="border-stock bg-shading-gray/50 flex items-center justify-between gap-4 border-b px-4 py-2">
-      <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
-        {title}
-      </span>
-      <span className="text-paragraph/70 text-[0.6875rem]">{hint}</span>
+    <div className="border-stock bg-shading-gray/50 text-paragraph border-b px-4 py-1.5 text-[0.6875rem] font-medium tracking-wider uppercase">
+      {title}
     </div>
   )
 }
 
 function SecretRow({
   names,
-  description,
   note,
   value,
 }: {
   names: string[]
-  description: string
   note?: ReactNode
   value: ReactNode
 }) {
   return (
-    <li className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2.5 px-4 py-3">
+    <li className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-2.5">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-2">
           {names.map((name, index) => (
@@ -121,7 +107,6 @@ function SecretRow({
             </span>
           ))}
         </div>
-        <p className="text-paragraph mt-0.5 text-xs">{description}</p>
         {note}
       </div>
       {value}
@@ -159,7 +144,6 @@ function ImportTokenRow({
   return (
     <SecretRow
       names={['UIGRAPH_TOKEN']}
-      description="The token the workflow signs in with."
       note={
         <>
           {token && (
@@ -225,13 +209,11 @@ export function EnvironmentSecrets({
           <h2 className="text-lg font-medium tracking-tight">
             Add these secrets to your repository.
           </h2>
-          <p className="text-paragraph mt-1.5 max-w-lg text-sm leading-relaxed">
-            The run checks them on{' '}
+          <p className="text-paragraph mt-1.5 text-sm">
             <span className="font-mono text-[0.8125rem]">
               {owner}/{repo}
             </span>{' '}
-            before it reads any code. Add them under Settings → Secrets and
-            variables → Actions.
+            → Settings → Secrets and variables → Actions.
           </p>
         </div>
 
@@ -248,23 +230,16 @@ export function EnvironmentSecrets({
       </div>
 
       <div className="border-stock bg-shading/40 mt-5 overflow-hidden rounded-xl border">
-        <SectionHeader title="Your AI provider" hint="You supply the values" />
         <ul className="divide-stock divide-y">
-          {PROVIDER_ROWS.map((row) => (
+          {PROVIDER_ROWS.map((names) => (
             <SecretRow
-              key={row.names.join('-')}
-              names={row.names}
-              description={row.description}
+              key={names.join('-')}
+              names={names}
               value={<PlaceholderChip label="your value" />}
             />
           ))}
-        </ul>
-
-        <SectionHeader title="From UIGraph" hint="Copy the values across" />
-        <ul className="divide-stock divide-y">
           <SecretRow
             names={['UIGRAPH_API_URL']}
-            description="Where the workflow reaches this UIGraph instance."
             value={
               <InstanceValue
                 value={environment?.apiUrl ?? ''}
@@ -274,7 +249,6 @@ export function EnvironmentSecrets({
           />
           <SecretRow
             names={['UIGRAPH_GATEWAY_URL']}
-            description="Where the workflow uploads the graph it generates."
             value={
               <InstanceValue
                 value={environment?.gatewayUrl ?? ''}
@@ -292,22 +266,11 @@ export function EnvironmentSecrets({
           </p>
         )}
 
-        <div className="border-stock bg-shading-gray/40 flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2.5">
-          <span className="text-paragraph text-[0.8125rem]">
-            Not sure what to add?{' '}
-            <a
-              href={DOCS_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary hover:underline"
-            >
-              Read the setup guide
-            </a>
-          </span>
+        <div className="border-stock bg-shading-gray/40 border-t px-4 py-2">
           <Button
             preset="ghost"
             asChild
-            className="text-paragraph h-8 rounded-lg px-3 text-[0.8125rem]"
+            className="text-paragraph -mx-2 h-8 rounded-lg px-2 text-[0.8125rem]"
           >
             <a
               href={`https://github.com/${owner}/${repo}/settings/secrets/actions`}
